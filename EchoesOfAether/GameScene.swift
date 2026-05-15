@@ -191,8 +191,3 @@ final class GameScene: SKScene {
     }
 }
 
-private extension CGPoint {
-    func distance(to other: CGPoint) -> CGFloat {
-        hypot(x - other.x, y - other.y)
-    }
-}

@@ -2,6 +2,7 @@ import SpriteKit
 
 struct DialogueChoice {
     let title: String
+    let responseSpeaker: String
     let response: String
 }
 
@@ -20,7 +21,7 @@ final class DialogueSystem {
     private var choiceNodes: [SKShapeNode] = []
     private var steps: [DialogueStep] = []
     private var index = 0
-    private var pendingResponse: String?
+    private var pendingNPC: (speaker: String, text: String)?
     private var completion: (() -> Void)?
 
     private let panelHeightLine: CGFloat = 170
@@ -88,7 +89,7 @@ final class DialogueSystem {
     func start(_ steps: [DialogueStep], completion: (() -> Void)? = nil) {
         self.steps = steps
         self.index = 0
-        self.pendingResponse = nil
+        self.pendingNPC = nil
         self.completion = completion
         root.isHidden = false
         showCurrentStep()
@@ -98,27 +99,33 @@ final class DialogueSystem {
         guard isActive, !root.isHidden else { return false }
 
         let localPoint = root.convert(point, from: scene)
+
+        // Phase 1 : joueur tape un choix → Kael parle
         for node in choiceNodes where node.contains(localPoint) {
-            guard let response = node.userData?["response"] as? String else { continue }
-            pendingResponse = response
+            guard let title = node.userData?["title"] as? String,
+                  let npcSpeaker = node.userData?["responseSpeaker"] as? String,
+                  let npcText = node.userData?["response"] as? String else { continue }
+            pendingNPC = (speaker: npcSpeaker, text: npcText)
             clearChoices()
-            speakerLabel.text = String(localized: "dialogue.response")
-            bodyLabel.text = response
+            speakerLabel.text = String(localized: "dialogue.kael")
+            bodyLabel.text = title
+            continueIndicator.isHidden = false
+            layout(in: scene.size, safeBottom: safeBottom)
+            return true
+        }
+
+        // Phase 2 : Kael a parlé → NPC réagit
+        if let npc = pendingNPC {
+            pendingNPC = nil
+            speakerLabel.text = npc.speaker
+            bodyLabel.text = npc.text
             continueIndicator.isHidden = false
             layout(in: scene.size, safeBottom: safeBottom)
             index += 1
             return true
         }
 
-        if pendingResponse != nil {
-            pendingResponse = nil
-            showCurrentStep()
-            if let sceneRef = root.scene {
-                layout(in: sceneRef.size, safeBottom: safeBottom)
-            }
-            return true
-        }
-
+        // Phase normale : avancer
         index += 1
         showCurrentStep()
         if let sceneRef = root.scene {
@@ -162,7 +169,11 @@ final class DialogueSystem {
             button.fillColor = SKColor(red: 0.10, green: 0.10, blue: 0.15, alpha: 1)
             button.strokeColor = SKColor(red: 0.42, green: 0.38, blue: 0.68, alpha: 1)
             button.lineWidth = 1.5
-            button.userData = ["response": option.response]
+            button.userData = [
+                "title": option.title,
+                "responseSpeaker": option.responseSpeaker,
+                "response": option.response
+            ]
 
             let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
             label.text = option.title

@@ -103,6 +103,12 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "ATB charging..." } }
       }
     },
+    "dialogue.kael" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael" } }
+      }
+    },
     "dialogue.response" : {
       "localizations" : {
         "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réponse" } },
@@ -166,8 +172,8 @@
     },
     "dialogue.wake.response1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: ...D'accord. On commencera par le silence alors. Au moins tu es vivant." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: ...Fine. We'll start with silence then. At least you're alive." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "...D'accord. On commencera par le silence alors. Au moins tu es vivant." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "...Fine. We'll start with silence then. At least you're alive." } }
       }
     },
     "dialogue.wake.choice2" : {
@@ -178,8 +184,8 @@
     },
     "dialogue.wake.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Charmant. L'amnésie avec de la répartie, c'est une première ici." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Charming. Amnesia with attitude — that's a first around here." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Charmant. L'amnésie avec de la répartie, c'est une première ici." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Charming. Amnesia with attitude — that's a first around here." } }
       }
     },
     "dialogue.wake.choice3" : {
@@ -190,8 +196,8 @@
     },
     "dialogue.wake.response3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Kael... Ce nom ne me dit rien. Mais ta marque, elle, dit beaucoup." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Kael... That name means nothing to me. But your mark says a lot." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael... Ce nom ne me dit rien. Mais ta marque, elle, dit beaucoup." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael... That name means nothing to me. But your mark says a lot." } }
       }
     },
     "dialogue.wake.kael1" : {
@@ -257,8 +263,8 @@
     },
     "dialogue.dorin.response1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Même ton silence a quelque chose de menaçant. Mais les monstres, eux, ne se taisent pas." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Even your silence feels threatening. But the monsters out there don't stay quiet." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Même ton silence a quelque chose de menaçant. Mais les monstres, eux, ne se taisent pas." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Even your silence feels threatening. But the monsters out there don't stay quiet." } }
       }
     },
     "dialogue.dorin.choice2" : {
@@ -269,8 +275,8 @@
     },
     "dialogue.dorin.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Tes réponses sont au nord, Kael. Que tu le veuilles ou non, vos chemins mènent au même endroit." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Your answers are to the north, Kael. Whether you like it or not, your paths lead to the same place." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tes réponses sont au nord, Kael. Que tu le veuilles ou non, vos chemins mènent au même endroit." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your answers are to the north, Kael. Whether you like it or not, your paths lead to the same place." } }
       }
     },
     "dialogue.dorin.choice3" : {
@@ -281,8 +287,8 @@
     },
     "dialogue.dorin.response3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Du courage ou de l'inconscience. Dans les deux cas, ça m'arrange." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Courage or recklessness. Either way, it suits me." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Du courage ou de l'inconscience. Dans les deux cas, ça m'arrange." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Courage or recklessness. Either way, it suits me." } }
       }
     },
     "dialogue.dorin.dorin3" : {
@@ -330,8 +336,8 @@
     },
     "dialogue.aether.response1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: « Toujours » ? Depuis combien de temps tu fais ça, Kael ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: \"Always\"? How long have you been doing this, Kael?" } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "« Toujours » ? Depuis combien de temps tu fais ça, Kael ?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"Always\"? How long have you been doing this, Kael?" } }
       }
     },
     "dialogue.aether.choice2" : {
@@ -342,8 +348,8 @@
     },
     "dialogue.aether.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Non. Mais il y a une différence entre se battre et... ce que tu as fait à la fin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: No. But there's a difference between fighting and... what you did at the end." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non. Mais il y a une différence entre se battre et... ce que tu as fait à la fin." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No. But there's a difference between fighting and... what you did at the end." } }
       }
     },
     "dialogue.aether.choice3" : {
@@ -354,8 +360,8 @@
     },
     "dialogue.aether.response3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: « Il m'obéit. » Tu t'entends ? On dirait que tu parles d'un animal sauvage, pas d'une partie de toi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: \"It obeys me.\" Do you hear yourself? You sound like you're talking about a wild animal, not a part of you." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "« Il m'obéit. » Tu t'entends ? On dirait que tu parles d'un animal sauvage, pas d'une partie de toi." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"It obeys me.\" Do you hear yourself? You sound like you're talking about a wild animal, not a part of you." } }
       }
     },
     "dialogue.aether.lyra3" : {
@@ -415,8 +421,8 @@
     },
     "dialogue.shrine.response1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La Voix: Tu reviendras. Ils reviennent tous." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Voice: You'll come back. They all come back." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu reviendras. Ils reviennent tous." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You'll come back. They all come back." } }
       }
     },
     "dialogue.shrine.choice2" : {
@@ -427,8 +433,8 @@
     },
     "dialogue.shrine.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La Voix: Admirable. Mais le vide ne demande pas de permission. Il prend." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Voice: Admirable. But the void doesn't ask permission. It takes." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Admirable. Mais le vide ne demande pas de permission. Il prend." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Admirable. But the void doesn't ask permission. It takes." } }
       }
     },
     "dialogue.shrine.choice3" : {
@@ -439,8 +445,8 @@
     },
     "dialogue.shrine.response3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La Voix: Tu étais quelqu'un qui ne posait pas de questions. Quelqu'un qui prenait." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Voice: You were someone who didn't ask questions. Someone who took." } }
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu étais quelqu'un qui ne posait pas de questions. Quelqu'un qui prenait." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You were someone who didn't ask questions. Someone who took." } }
       }
     },
     "dialogue.shrine.lyra2" : {

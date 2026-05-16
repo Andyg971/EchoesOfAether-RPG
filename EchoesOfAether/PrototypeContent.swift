@@ -12,14 +12,17 @@ enum PrototypeContent {
             options: [
                 DialogueChoice(
                     title: String(localized: "dialogue.wake.choice1"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.wake.response1")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.wake.choice2"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.wake.response2")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.wake.choice3"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.wake.response3")
                 )
             ]
@@ -42,14 +45,17 @@ enum PrototypeContent {
             options: [
                 DialogueChoice(
                     title: String(localized: "dialogue.dorin.choice1"),
+                    responseSpeaker: "Dorin",
                     response: String(localized: "dialogue.dorin.response1")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.dorin.choice2"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.dorin.response2")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.dorin.choice3"),
+                    responseSpeaker: "Dorin",
                     response: String(localized: "dialogue.dorin.response3")
                 )
             ]
@@ -69,14 +75,17 @@ enum PrototypeContent {
             options: [
                 DialogueChoice(
                     title: String(localized: "dialogue.aether.choice1"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.aether.response1")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.aether.choice2"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.aether.response2")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.aether.choice3"),
+                    responseSpeaker: "Lyra",
                     response: String(localized: "dialogue.aether.response3")
                 )
             ]
@@ -100,14 +109,17 @@ enum PrototypeContent {
             options: [
                 DialogueChoice(
                     title: String(localized: "dialogue.shrine.choice1"),
+                    responseSpeaker: String(localized: "dialogue.shrine.voiceName"),
                     response: String(localized: "dialogue.shrine.response1")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.shrine.choice2"),
+                    responseSpeaker: String(localized: "dialogue.shrine.voiceName"),
                     response: String(localized: "dialogue.shrine.response2")
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.shrine.choice3"),
+                    responseSpeaker: String(localized: "dialogue.shrine.voiceName"),
                     response: String(localized: "dialogue.shrine.response3")
                 )
             ]

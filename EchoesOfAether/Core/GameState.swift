@@ -19,6 +19,7 @@ enum GamePhase: Int, CaseIterable {
     }
 }
 
+@MainActor
 struct InteractionTarget {
     let node: SKNode
     let radius: CGFloat

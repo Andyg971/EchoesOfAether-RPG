@@ -1,5 +1,6 @@
 import SpriteKit
 
+@MainActor
 enum WorldNode {
     static func kael() -> SKShapeNode {
         let node = SKShapeNode(rectOf: CGSize(width: 34, height: 44), cornerRadius: 8)

@@ -83,30 +83,12 @@
 			path = EchoesOfAether;
 			sourceTree = "<group>";
 		};
-		6D7E2010B8A741B0A0000001 /* UI */ = {
+		6D7E1014B8A741B0A0000001 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */,
+				6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */,
 			);
-			path = UI;
-			sourceTree = "<group>";
-		};
-		6D7E2011B8A741B0A0000001 /* Game */ = {
-			isa = PBXGroup;
-			children = (
-				6D7E2012B8A741B0A0000001 /* Scenes */,
-			);
-			path = Game;
-			sourceTree = "<group>";
-		};
-		6D7E2012B8A741B0A0000001 /* Scenes */ = {
-			isa = PBXGroup;
-			children = (
-				6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */,
-				6D7E2015B8A741B0A0000001 /* MovementController.swift */,
-				6D7E2017B8A741B0A0000001 /* TransitionManager.swift */,
-			);
-			path = Scenes;
+			name = Products;
 			sourceTree = "<group>";
 		};
 		6D7E2009B8A741B0A0000001 /* Core */ = {
@@ -135,12 +117,30 @@
 			path = Juice;
 			sourceTree = "<group>";
 		};
-		6D7E1014B8A741B0A0000001 /* Products */ = {
+		6D7E2010B8A741B0A0000001 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */,
+				6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */,
 			);
-			name = Products;
+			path = UI;
+			sourceTree = "<group>";
+		};
+		6D7E2011B8A741B0A0000001 /* Game */ = {
+			isa = PBXGroup;
+			children = (
+				6D7E2012B8A741B0A0000001 /* Scenes */,
+			);
+			path = Game;
+			sourceTree = "<group>";
+		};
+		6D7E2012B8A741B0A0000001 /* Scenes */ = {
+			isa = PBXGroup;
+			children = (
+				6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */,
+				6D7E2015B8A741B0A0000001 /* MovementController.swift */,
+				6D7E2017B8A741B0A0000001 /* TransitionManager.swift */,
+			);
+			path = Scenes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -407,20 +407,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6D7E101AB8A741B0A0000001 /* Build configuration list for PBXProject "EchoesOfAether" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				6D7E101BB8A741B0A0000001 /* Debug */,
-				6D7E101CB8A741B0A0000001 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		6D7E1016B8A741B0A0000001 /* Build configuration list for PBXNativeTarget "EchoesOfAether" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6D7E101DB8A741B0A0000001 /* Debug */,
 				6D7E101EB8A741B0A0000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6D7E101AB8A741B0A0000001 /* Build configuration list for PBXProject "EchoesOfAether" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6D7E101BB8A741B0A0000001 /* Debug */,
+				6D7E101CB8A741B0A0000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

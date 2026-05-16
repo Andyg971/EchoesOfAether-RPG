@@ -13,11 +13,16 @@ final class GameViewController: UIViewController {
         super.viewDidLayoutSubviews()
 
         guard let skView = view as? SKView else { return }
+        let bounds = skView.bounds
+        let portraitSize = CGSize(
+            width: min(bounds.width, bounds.height),
+            height: max(bounds.width, bounds.height)
+        )
 
         if !didPresentScene {
             didPresentScene = true
 
-            let scene = GameScene(size: skView.bounds.size)
+            let scene = GameScene(size: portraitSize)
             scene.scaleMode = .resizeFill
             scene.safeAreaTop = view.safeAreaInsets.top
 

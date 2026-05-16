@@ -45,11 +45,11 @@ final class GameManager {
     private func startWakeSequence() {
         transition(to: .dialogue)
         phase = .wake
-        hud.objectiveText = "Objectif: Lyra"
+        hud.objectiveText = String(localized: "hud.objective.lyra")
         dialogue.start(PrototypeContent.wakeDialogue) { [weak self] in
             guard let self else { return }
             phase = .village
-            hud.objectiveText = "Objectif: Dorin"
+            hud.objectiveText = String(localized: "hud.objective.dorin")
             transition(to: .exploration)
         }
     }
@@ -70,7 +70,7 @@ final class GameManager {
                     TransitionManager.fade(in: scene) { [weak self] in
                         guard let self else { return }
                         phase = .forest
-                        hud.objectiveText = "Objectif: lisière sombre"
+                        hud.objectiveText = String(localized: "hud.objective.forest")
                         scene.backgroundColor = SKColor(red: 0.05, green: 0.07, blue: 0.09, alpha: 1)
                     } completion: { [weak self] in
                         guard let self else { return }
@@ -112,8 +112,8 @@ final class GameManager {
     private func startForestCombat() {
         guard let scene else { return }
         transition(to: .combat)
-        hud.objectiveText = "Combat: charge l'ATB"
-        combat.attach(to: scene, enemyName: "Bête corrompue", enemyHP: 150) { [weak self] resonance in
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        combat.attach(to: scene, enemyName: String(localized: "combat.enemy.beast"), enemyHP: 150) { [weak self] resonance in
             guard let self else { return }
             resonanceTotal += resonance
             hud.resonanceValue = resonanceTotal
@@ -124,7 +124,7 @@ final class GameManager {
                 TransitionManager.fade(in: scene) { [weak self] in
                     guard let self else { return }
                     phase = .shrine
-                    hud.objectiveText = "Objectif: sanctuaire"
+                    hud.objectiveText = String(localized: "hud.objective.shrine")
                     scene.backgroundColor = SKColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 1)
                 } completion: { [weak self] in
                     self?.transition(to: .exploration)
@@ -136,8 +136,8 @@ final class GameManager {
     private func startShrineCombat() {
         guard let scene else { return }
         transition(to: .combat)
-        hud.objectiveText = "Mini-boss: pouvoir interdit"
-        combat.attach(to: scene, enemyName: "Gardien fêlé", enemyHP: 260) { [weak self] resonance in
+        hud.objectiveText = String(localized: "hud.objective.miniboss")
+        combat.attach(to: scene, enemyName: String(localized: "combat.enemy.guardian"), enemyHP: 260) { [weak self] resonance in
             guard let self else { return }
             resonanceTotal += resonance
             hud.resonanceValue = resonanceTotal
@@ -145,7 +145,7 @@ final class GameManager {
             dialogue.start(PrototypeContent.shrineEnding) { [weak self] in
                 guard let self, let scene = self.scene else { return }
                 phase = .complete
-                hud.objectiveText = "Fin V1: trahison amorcée"
+                hud.objectiveText = String(localized: "hud.objective.complete")
                 transition(to: .exploration)
                 TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal)
             }

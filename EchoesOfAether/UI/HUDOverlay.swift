@@ -11,7 +11,7 @@ final class HUDOverlay {
     }
 
     var resonanceValue: Int = 0 {
-        didSet { resonanceLabel.text = "Résonance noire: \(resonanceValue)" }
+        didSet { resonanceLabel.text = String(localized: "hud.resonance \(resonanceValue)") }
     }
 
     func attach(to scene: SKScene) {

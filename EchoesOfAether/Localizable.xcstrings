@@ -1,0 +1,312 @@
+{
+  "sourceLanguage" : "fr",
+  "strings" : {
+    "hud.objective.lyra" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: Lyra" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: Lyra" } }
+      }
+    },
+    "hud.objective.dorin" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: Dorin" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: Dorin" } }
+      }
+    },
+    "hud.objective.forest" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: lisière sombre" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: dark edge" } }
+      }
+    },
+    "hud.objective.shrine" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: sanctuaire" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: sanctuary" } }
+      }
+    },
+    "hud.objective.combat" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Combat: charge l'ATB" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Combat: charge ATB" } }
+      }
+    },
+    "hud.objective.miniboss" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mini-boss: pouvoir interdit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mini-boss: forbidden power" } }
+      }
+    },
+    "hud.objective.complete" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fin V1: trahison amorcée" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "End V1: betrayal begins" } }
+      }
+    },
+    "hud.resonance %lld" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résonance noire: %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dark Resonance: %lld" } }
+      }
+    },
+    "combat.enemy.beast" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bête corrompue" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Corrupted Beast" } }
+      }
+    },
+    "combat.enemy.guardian" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Gardien fêlé" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cracked Guardian" } }
+      }
+    },
+    "combat.button.attack" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Attaque" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Attack" } }
+      }
+    },
+    "combat.button.blackSlash" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entaille noire" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Black Slash" } }
+      }
+    },
+    "combat.status.enemyHit %@ %lld %lld" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ frappe Kael ! PV %lld/%lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ hits Kael! HP %lld/%lld" } }
+      }
+    },
+    "combat.status.attack %@" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael attaque ! %@ vacille." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael attacks! %@ staggers." } }
+      }
+    },
+    "combat.status.blackSlash %lld" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entaille noire ! Résonance %lld/3." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Black Slash! Resonance %lld/3." } }
+      }
+    },
+    "combat.status.defeated %@" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ vaincu !" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ defeated!" } }
+      }
+    },
+    "combat.status.charging" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "ATB charge..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "ATB charging..." } }
+      }
+    },
+    "dialogue.response" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réponse" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Response" } }
+      }
+    },
+    "dialogue.chooseResponse" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisis comment Kael répond." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how Kael responds." } }
+      }
+    },
+    "endscreen.title" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fin du Prototype" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "End of Prototype" } }
+      }
+    },
+    "endscreen.subtitle" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Echoes of Aether — V1" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Echoes of Aether — V1" } }
+      }
+    },
+    "endscreen.resonance %lld" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résonance noire: %lld" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dark Resonance: %lld" } }
+      }
+    },
+    "endscreen.betrayal" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La trahison de Kael est amorcée." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael's betrayal has begun." } }
+      }
+    },
+    "dialogue.wake.lyra1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu sais comment tu t'appelles au moins ?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Do you at least know your name?" } }
+      }
+    },
+    "dialogue.wake.prompt" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répondre en Kael" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reply as Kael" } }
+      }
+    },
+    "dialogue.wake.choice1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "..." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "..." } }
+      }
+    },
+    "dialogue.wake.response1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Alors on commencera par le silence." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Then we'll start with silence." } }
+      }
+    },
+    "dialogue.wake.choice2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Si je le savais, je ne serais pas ici." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "If I knew, I wouldn't be here." } }
+      }
+    },
+    "dialogue.wake.response2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Charmant. Tu es vivant, au moins." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Charming. At least you're alive." } }
+      }
+    },
+    "dialogue.wake.choice3" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael. C'est le seul nom qui revient." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael. It's the only name that comes back." } }
+      }
+    },
+    "dialogue.wake.response3" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Kael, alors." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Kael, then." } }
+      }
+    },
+    "dialogue.wake.kael1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Où suis-je ?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Where am I?" } }
+      }
+    },
+    "dialogue.wake.lyra2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Solis. Et tout le village sait déjà que ta main brille quand tu dors." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solis. And the whole village already knows your hand glows when you sleep." } }
+      }
+    },
+    "dialogue.dorin.dorin1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Des gens disparaissent au nord. Si ta marque touche cette corruption, tu peux peut-être les sauver." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "People are vanishing to the north. If your mark can touch this corruption, perhaps you can save them." } }
+      }
+    },
+    "dialogue.dorin.prompt" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répondre à Dorin" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reply to Dorin" } }
+      }
+    },
+    "dialogue.dorin.choice1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Regarder la marque sans répondre." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Look at the mark without answering." } }
+      }
+    },
+    "dialogue.dorin.response1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Je vois. Même ton silence a peur de toi." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: I see. Even your silence is afraid of you." } }
+      }
+    },
+    "dialogue.dorin.choice2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vos morts ne me regardent pas." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your dead are not my concern." } }
+      }
+    },
+    "dialogue.dorin.response2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: Non. Mais tes réponses sont au nord." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Lyra: No. But your answers are to the north." } }
+      }
+    },
+    "dialogue.dorin.choice3" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Si le nord a mes réponses, j'irai au nord." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "If the north has my answers, I'll go north." } }
+      }
+    },
+    "dialogue.dorin.response3" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Alors nos routes se croisent." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dorin: Then our paths cross." } }
+      }
+    },
+    "dialogue.dorin.lyra1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je viens avec toi. Pas pour te protéger. Pour t'empêcher de faire pire." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "I'm coming with you. Not to protect you. To stop you from doing worse." } }
+      }
+    },
+    "dialogue.aether.lyra1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael... qu'est-ce que tu viens de faire ?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael... what did you just do?" } }
+      }
+    },
+    "dialogue.aether.kael1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce qui marchait." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Whatever worked." } }
+      }
+    },
+    "dialogue.aether.lyra2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu aurais pu t'arrêter." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "You could have stopped." } }
+      }
+    },
+    "dialogue.aether.kael2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mais ce serait encore vivant." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "But it would still be alive." } }
+      }
+    },
+    "dialogue.shrine.voiceName" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Voix" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Voice" } }
+      }
+    },
+    "dialogue.shrine.voice1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ils te retiendront." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "They will hold you back." } }
+      }
+    },
+    "dialogue.shrine.voice2" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Moi, je peux te rendre ce qu'ils ne comprendront jamais." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "I can give you back what they will never understand." } }
+      }
+    },
+    "dialogue.shrine.lyra1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael ?" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael?" } }
+      }
+    },
+    "dialogue.shrine.kael1" : {
+      "localizations" : {
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "On rentre." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Let's go back." } }
+      }
+    }
+  },
+  "version" : "1.0"
+}

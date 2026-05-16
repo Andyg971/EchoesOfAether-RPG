@@ -2,44 +2,61 @@ import Foundation
 
 enum PrototypeContent {
     static let wakeDialogue: [DialogueStep] = [
-        .line(speaker: "Lyra", text: "Tu sais comment tu t'appelles au moins ?"),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra1")),
         .choice(
-            prompt: "Répondre en Kael",
+            prompt: String(localized: "dialogue.wake.prompt"),
             options: [
-                DialogueChoice(title: "...", response: "Lyra: Alors on commencera par le silence."),
-                DialogueChoice(title: "Si je le savais, je ne serais pas ici.", response: "Lyra: Charmant. Tu es vivant, au moins."),
-                DialogueChoice(title: "Kael. C'est le seul nom qui revient.", response: "Lyra: Kael, alors.")
+                DialogueChoice(
+                    title: String(localized: "dialogue.wake.choice1"),
+                    response: String(localized: "dialogue.wake.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.wake.choice2"),
+                    response: String(localized: "dialogue.wake.response2")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.wake.choice3"),
+                    response: String(localized: "dialogue.wake.response3")
+                )
             ]
         ),
-        .line(speaker: "Kael", text: "Où suis-je ?"),
-        .line(speaker: "Lyra", text: "Solis. Et tout le village sait déjà que ta main brille quand tu dors.")
+        .line(speaker: "Kael", text: String(localized: "dialogue.wake.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra2"))
     ]
 
     static let dorinDialogue: [DialogueStep] = [
-        .line(speaker: "Dorin", text: "Des gens disparaissent au nord. Si ta marque touche cette corruption, tu peux peut-être les sauver."),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.dorin1")),
         .choice(
-            prompt: "Répondre à Dorin",
+            prompt: String(localized: "dialogue.dorin.prompt"),
             options: [
-                DialogueChoice(title: "Regarder la marque sans répondre.", response: "Dorin: Je vois. Même ton silence a peur de toi."),
-                DialogueChoice(title: "Vos morts ne me regardent pas.", response: "Lyra: Non. Mais tes réponses sont au nord."),
-                DialogueChoice(title: "Si le nord a mes réponses, j'irai au nord.", response: "Dorin: Alors nos routes se croisent.")
+                DialogueChoice(
+                    title: String(localized: "dialogue.dorin.choice1"),
+                    response: String(localized: "dialogue.dorin.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.dorin.choice2"),
+                    response: String(localized: "dialogue.dorin.response2")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.dorin.choice3"),
+                    response: String(localized: "dialogue.dorin.response3")
+                )
             ]
         ),
-        .line(speaker: "Lyra", text: "Je viens avec toi. Pas pour te protéger. Pour t'empêcher de faire pire.")
+        .line(speaker: "Lyra", text: String(localized: "dialogue.dorin.lyra1"))
     ]
 
     static let blackAetherDialogue: [DialogueStep] = [
-        .line(speaker: "Lyra", text: "Kael... qu'est-ce que tu viens de faire ?"),
-        .line(speaker: "Kael", text: "Ce qui marchait."),
-        .line(speaker: "Lyra", text: "Tu aurais pu t'arrêter."),
-        .line(speaker: "Kael", text: "Mais ce serait encore vivant.")
+        .line(speaker: "Lyra", text: String(localized: "dialogue.aether.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.aether.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.aether.lyra2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.aether.kael2"))
     ]
 
     static let shrineEnding: [DialogueStep] = [
-        .line(speaker: "Voix", text: "Ils te retiendront."),
-        .line(speaker: "Voix", text: "Moi, je peux te rendre ce qu'ils ne comprendront jamais."),
-        .line(speaker: "Lyra", text: "Kael ?"),
-        .line(speaker: "Kael", text: "On rentre.")
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"), text: String(localized: "dialogue.shrine.voice1")),
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"), text: String(localized: "dialogue.shrine.voice2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.shrine.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.shrine.kael1"))
     ]
 }
-

@@ -86,7 +86,7 @@ final class CombatSystem {
             enemy.atb = 0
             let dmg = 18
             kael.hp = max(0, kael.hp - dmg)
-            statusLabel.text = "\(enemy.name) frappe Kael ! PV \(kael.hp)/\(kael.maxHP)"
+            statusLabel.text = String(localized: "combat.status.enemyHit \(enemy.name) \(kael.hp) \(kael.maxHP)")
             JuiceEngine.screenShake(root, intensity: 3, duration: 0.15)
             if let scene = parentScene {
                 root.addChild(ParticleFactory.impactSparks(
@@ -128,14 +128,14 @@ final class CombatSystem {
         switch action {
         case .attack:
             enemy.hp = max(0, enemy.hp - 42)
-            statusLabel.text = "Kael attaque ! \(enemy.name) vacille."
+            statusLabel.text = String(localized: "combat.status.attack \(enemy.name)")
             JuiceEngine.screenShake(root, intensity: 5, duration: 0.2)
             root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8))
 
         case .blackSlash:
             resonance += 1
             enemy.hp = max(0, enemy.hp - 92)
-            statusLabel.text = "Entaille noire ! Résonance \(resonance)/3."
+            statusLabel.text = String(localized: "combat.status.blackSlash \(resonance)")
 
             JuiceEngine.screenShake(root, intensity: 12, duration: 0.35)
             JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
@@ -155,7 +155,7 @@ final class CombatSystem {
     private func checkVictory() {
         guard !enemy.isAlive else { return }
         let finalResonance = resonance
-        statusLabel.text = "\(enemy.name) vaincu !"
+        statusLabel.text = String(localized: "combat.status.defeated \(enemy.name)")
         attackButton.alpha = 0.3
         blackSlashButton.alpha = 0.3
 
@@ -220,9 +220,9 @@ final class CombatSystem {
     }
 
     private func setupButtons(scene: SKScene) {
-        addButton(attackButton, title: "Attaque",
+        addButton(attackButton, title: String(localized: "combat.button.attack"),
                   at: CGPoint(x: scene.size.width / 2 - 90, y: 86))
-        addButton(blackSlashButton, title: "Entaille noire",
+        addButton(blackSlashButton, title: String(localized: "combat.button.blackSlash"),
                   at: CGPoint(x: scene.size.width / 2 + 95, y: 86))
 
         blackSlashButton.strokeColor = SKColor(red: 0.60, green: 0.20, blue: 0.80, alpha: 1)
@@ -303,7 +303,7 @@ final class CombatSystem {
         blackSlashButton.alpha = ready ? 1 : 0.4
 
         if statusLabel.text?.isEmpty ?? true {
-            statusLabel.text = "ATB charge..."
+            statusLabel.text = String(localized: "combat.status.charging")
         }
     }
 }

@@ -102,7 +102,7 @@ final class DialogueSystem {
             guard let response = node.userData?["response"] as? String else { continue }
             pendingResponse = response
             clearChoices()
-            speakerLabel.text = "Réponse"
+            speakerLabel.text = String(localized: "dialogue.response")
             bodyLabel.text = response
             continueIndicator.isHidden = false
             layout(in: scene.size, safeBottom: safeBottom)
@@ -145,7 +145,7 @@ final class DialogueSystem {
 
         case let .choice(prompt, options):
             speakerLabel.text = prompt
-            bodyLabel.text = "Choisis comment Kael répond."
+            bodyLabel.text = String(localized: "dialogue.chooseResponse")
             continueIndicator.isHidden = true
             createChoices(options)
         }

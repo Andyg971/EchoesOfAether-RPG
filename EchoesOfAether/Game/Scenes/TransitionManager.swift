@@ -33,21 +33,21 @@ enum TransitionManager {
         scene.addChild(overlay)
 
         let title = SKLabelNode(fontNamed: "AvenirNext-Bold")
-        title.text = "Fin du Prototype"
+        title.text = String(localized: "endscreen.title")
         title.fontSize = 28
         title.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
         title.position = CGPoint(x: 0, y: 80)
         overlay.addChild(title)
 
         let subtitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-        subtitle.text = "Echoes of Aether — V1"
+        subtitle.text = String(localized: "endscreen.subtitle")
         subtitle.fontSize = 16
         subtitle.fontColor = SKColor(white: 0.6, alpha: 1)
         subtitle.position = CGPoint(x: 0, y: 48)
         overlay.addChild(subtitle)
 
         let resonanceLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        resonanceLabel.text = "Résonance noire: \(resonance)"
+        resonanceLabel.text = String(localized: "endscreen.resonance \(resonance)")
         resonanceLabel.fontSize = 18
         resonanceLabel.fontColor = SKColor(red: 0.65, green: 0.45, blue: 0.90, alpha: 1)
         resonanceLabel.position = CGPoint(x: 0, y: 4)
@@ -60,7 +60,7 @@ enum TransitionManager {
         overlay.addChild(divider)
 
         let betrayal = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
-        betrayal.text = "La trahison de Kael est amorcée."
+        betrayal.text = String(localized: "endscreen.betrayal")
         betrayal.fontSize = 15
         betrayal.fontColor = SKColor(white: 0.75, alpha: 1)
         betrayal.position = CGPoint(x: 0, y: -52)

@@ -22,6 +22,7 @@
 		6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2013B8A741B0A0000001 /* GameManager.swift */; };
 		6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2015B8A741B0A0000001 /* MovementController.swift */; };
 		6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2017B8A741B0A0000001 /* TransitionManager.swift */; };
+		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		6D7E2013B8A741B0A0000001 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		6D7E2015B8A741B0A0000001 /* MovementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementController.swift; sourceTree = "<group>"; };
 		6D7E2017B8A741B0A0000001 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
+		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,6 +78,7 @@
 				6D7E1006B8A741B0A0000001 /* DialogueSystem.swift */,
 				6D7E1008B8A741B0A0000001 /* CombatSystem.swift */,
 				6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */,
+				6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */,
 			);
 			path = EchoesOfAether;
 			sourceTree = "<group>";
@@ -180,6 +183,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				fr,
 				Base,
 			);
 			mainGroup = 6D7E1012B8A741B0A0000001;
@@ -199,6 +203,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -4,6 +4,7 @@ enum GameState {
     case exploration
     case dialogue
     case combat
+    case shop
     case transition
 }
 
@@ -17,6 +18,10 @@ enum GamePhase: Int, CaseIterable {
     var next: GamePhase? {
         GamePhase(rawValue: rawValue + 1)
     }
+}
+
+enum QuestState {
+    case inactive, active, complete
 }
 
 @MainActor
@@ -34,4 +39,29 @@ extension CGPoint {
     func distance(to other: CGPoint) -> CGFloat {
         hypot(x - other.x, y - other.y)
     }
+}
+
+// MARK: - PlayerState
+
+@MainActor
+final class PlayerState {
+    var gold: Int = 20
+    var maxHP: Int = 280
+    var weaponLevel: Int = 0      // 0=poings, 1=lame fer, 2=lame runique
+    var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
+    var potions: Int = 0          // max 3
+    var aetherShards: Int = 0     // recharge ATB
+
+    var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
+    var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
+    var talkedToSage: Bool = false
+    var talkedToChild: Bool = false
+    var talkedToVillager: Bool = false
+    var innRested: Bool = false
+
+    var attackDamage: Int { 42 + weaponLevel * 22 }
+    var blackSlashDamage: Int { 92 + weaponLevel * 35 }
+    var currentMaxHP: Int { maxHP + armorLevel * 50 }
+
+    var potionsFull: Bool { potions >= 3 }
 }

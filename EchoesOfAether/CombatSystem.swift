@@ -41,8 +41,10 @@ final class CombatSystem {
     private var kael = Combatant(name: "Kael", maxHP: 280, hp: 280, speed: 0.35)
     private var enemy = Combatant(name: "Créature", maxHP: 160, hp: 160, speed: 0.18)
     private var resonance = 0
-    private var completion: ((Int) -> Void)?
+    private var goldReward = 0
+    private var completion: ((Int, Int) -> Void)?
     private weak var parentScene: SKScene?
+    private var _player: PlayerState?
 
     private let barWidth: CGFloat = 140
     private let barHeight: CGFloat = 14
@@ -50,14 +52,18 @@ final class CombatSystem {
 
     var isActive: Bool { root.parent != nil }
 
-    func attach(to scene: SKScene, enemyName: String, enemyHP: Int, completion: @escaping (Int) -> Void) {
+    func attach(to scene: SKScene, enemyName: String, enemyHP: Int,
+                goldReward: Int = 30, player: PlayerState,
+                completion: @escaping (Int, Int) -> Void) {
         parentScene = scene
+        self.goldReward = goldReward
         self.enemy = Combatant(name: enemyName, maxHP: enemyHP, hp: enemyHP, speed: enemyHP > 200 ? 0.22 : 0.18)
-        self.kael = Combatant(name: "Kael", maxHP: 280, hp: 280, speed: 0.35)
+        self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: player.currentMaxHP, speed: 0.35)
         self.kael.atb = 0
         self.enemy.atb = 0
         self.resonance = 0
         self.completion = completion
+        self._player = player
 
         root.removeFromParent()
         root.removeAllChildren()
@@ -125,16 +131,19 @@ final class CombatSystem {
 
         let enemyCenter = CGPoint(x: scene.size.width * 0.72, y: scene.size.height * 0.55)
 
+        let atkDmg = _player?.attackDamage ?? 42
+        let slashDmg = _player?.blackSlashDamage ?? 92
+
         switch action {
         case .attack:
-            enemy.hp = max(0, enemy.hp - 42)
+            enemy.hp = max(0, enemy.hp - atkDmg)
             statusLabel.text = String(localized: "combat.status.attack \(enemy.name)")
             JuiceEngine.screenShake(root, intensity: 5, duration: 0.2)
             root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8))
 
         case .blackSlash:
             resonance += 1
-            enemy.hp = max(0, enemy.hp - 92)
+            enemy.hp = max(0, enemy.hp - slashDmg)
             statusLabel.text = String(localized: "combat.status.blackSlash \(resonance)")
 
             JuiceEngine.screenShake(root, intensity: 12, duration: 0.35)
@@ -155,6 +164,7 @@ final class CombatSystem {
     private func checkVictory() {
         guard !enemy.isAlive else { return }
         let finalResonance = resonance
+        let finalGold = goldReward
         statusLabel.text = String(localized: "combat.status.defeated \(enemy.name)")
         attackButton.alpha = 0.3
         blackSlashButton.alpha = 0.3
@@ -163,7 +173,7 @@ final class CombatSystem {
             .wait(forDuration: 0.8),
             .run { [weak self] in
                 self?.root.removeFromParent()
-                self?.completion?(finalResonance)
+                self?.completion?(finalResonance, finalGold)
             }
         ]))
     }

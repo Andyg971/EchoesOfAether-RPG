@@ -65,40 +65,48 @@ final class GameManager {
             if point.distance(to: world.dorin.position) < 90 {
                 transition(to: .dialogue)
                 dialogue.start(PrototypeContent.dorinDialogue) { [weak self] in
-                    guard let self else { return }
-                    phase = .forest
-                    hud.objectiveText = "Objectif: lisière sombre"
-                    transition(to: .exploration)
-                    movement.move(world.kael, to: CGPoint(
-                        x: scene.size.width * 0.5,
-                        y: scene.size.height * 0.45
-                    ), in: scene.size)
+                    guard let self, let scene = self.scene else { return }
+                    transition(to: .transition)
+                    TransitionManager.fade(in: scene) { [weak self] in
+                        guard let self else { return }
+                        phase = .forest
+                        hud.objectiveText = "Objectif: lisière sombre"
+                        scene.backgroundColor = SKColor(red: 0.05, green: 0.07, blue: 0.09, alpha: 1)
+                    } completion: { [weak self] in
+                        guard let self else { return }
+                        transition(to: .exploration)
+                        movement.move(world.kael, to: CGPoint(
+                            x: scene.size.width * 0.5,
+                            y: scene.size.height * 0.45
+                        ), in: scene.size)
+                    }
                 }
             } else {
-                movement.move(world.kael, to: point, in: scene.size)
-                scene.addChild(ParticleFactory.tapMarker(at: point))
+                tapAndMove(point, in: scene)
             }
 
         case .forest:
             if point.x > scene.size.width * 0.68 {
                 startForestCombat()
             } else {
-                movement.move(world.kael, to: point, in: scene.size)
-                scene.addChild(ParticleFactory.tapMarker(at: point))
+                tapAndMove(point, in: scene)
             }
 
         case .shrine:
             if point.x > scene.size.width * 0.62 {
                 startShrineCombat()
             } else {
-                movement.move(world.kael, to: point, in: scene.size)
-                scene.addChild(ParticleFactory.tapMarker(at: point))
+                tapAndMove(point, in: scene)
             }
 
         case .complete:
-            movement.move(world.kael, to: point, in: scene.size)
-            scene.addChild(ParticleFactory.tapMarker(at: point))
+            tapAndMove(point, in: scene)
         }
+    }
+
+    private func tapAndMove(_ point: CGPoint, in scene: SKScene) {
+        movement.move(world.kael, to: point, in: scene.size)
+        scene.addChild(ParticleFactory.tapMarker(at: point))
     }
 
     private func startForestCombat() {
@@ -111,10 +119,16 @@ final class GameManager {
             hud.resonanceValue = resonanceTotal
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.blackAetherDialogue) { [weak self] in
-                guard let self else { return }
-                phase = .shrine
-                hud.objectiveText = "Objectif: sanctuaire"
-                transition(to: .exploration)
+                guard let self, let scene = self.scene else { return }
+                transition(to: .transition)
+                TransitionManager.fade(in: scene) { [weak self] in
+                    guard let self else { return }
+                    phase = .shrine
+                    hud.objectiveText = "Objectif: sanctuaire"
+                    scene.backgroundColor = SKColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 1)
+                } completion: { [weak self] in
+                    self?.transition(to: .exploration)
+                }
             }
         }
     }
@@ -129,10 +143,11 @@ final class GameManager {
             hud.resonanceValue = resonanceTotal
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.shrineEnding) { [weak self] in
-                guard let self else { return }
+                guard let self, let scene = self.scene else { return }
                 phase = .complete
                 hud.objectiveText = "Fin V1: trahison amorcée"
                 transition(to: .exploration)
+                TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal)
             }
         }
     }

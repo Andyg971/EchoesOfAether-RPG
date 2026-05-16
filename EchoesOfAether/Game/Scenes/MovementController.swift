@@ -6,7 +6,7 @@ final class MovementController {
 
     private(set) var isMoving = false
 
-    func move(_ node: SKShapeNode, to point: CGPoint, in sceneSize: CGSize) {
+    func move(_ node: SKNode, to point: CGPoint, in sceneSize: CGSize) {
         let clamped = CGPoint(
             x: min(max(point.x, 34), sceneSize.width - 34),
             y: min(max(point.y, 86), sceneSize.height - 44)
@@ -23,7 +23,7 @@ final class MovementController {
         node.run(moveAction, withKey: "move")
     }
 
-    func cancel(_ node: SKShapeNode) {
+    func cancel(_ node: SKNode) {
         node.removeAction(forKey: "move")
         isMoving = false
     }

@@ -86,6 +86,120 @@ enum ParticleFactory {
         return container
     }
 
+    // MARK: - Atmospheric
+
+    static func ambientDust(in size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 5
+
+        for _ in 0..<20 {
+            let dust = SKShapeNode(circleOfRadius: CGFloat.random(in: 1...2))
+            dust.fillColor = SKColor(white: 0.35, alpha: CGFloat.random(in: 0.1...0.25))
+            dust.strokeColor = .clear
+            dust.position = CGPoint(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: 0...size.height)
+            )
+
+            let drift = SKAction.moveBy(
+                x: CGFloat.random(in: -40...40),
+                y: CGFloat.random(in: 10...30),
+                duration: TimeInterval.random(in: 4...8)
+            )
+            let fade = SKAction.sequence([
+                .fadeAlpha(to: CGFloat.random(in: 0.05...0.15), duration: 3),
+                .fadeAlpha(to: CGFloat.random(in: 0.1...0.25), duration: 3)
+            ])
+            dust.run(.repeatForever(.group([drift, fade, .sequence([drift.reversed(), fade.reversed()])])))
+            container.addChild(dust)
+        }
+
+        return container
+    }
+
+    static func forestFog(in size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 5
+
+        for _ in 0..<15 {
+            let fog = SKShapeNode(circleOfRadius: CGFloat.random(in: 20...50))
+            fog.fillColor = SKColor(red: 0.15, green: 0.25, blue: 0.15, alpha: CGFloat.random(in: 0.03...0.08))
+            fog.strokeColor = .clear
+            fog.position = CGPoint(
+                x: CGFloat.random(in: -50...size.width + 50),
+                y: CGFloat.random(in: 0...size.height * 0.5)
+            )
+
+            let drift = SKAction.moveBy(
+                x: CGFloat.random(in: -60...60),
+                y: CGFloat.random(in: -10...10),
+                duration: TimeInterval.random(in: 6...12)
+            )
+            fog.run(.repeatForever(.sequence([drift, drift.reversed()])))
+            container.addChild(fog)
+        }
+
+        for _ in 0..<8 {
+            let wisp = SKShapeNode(circleOfRadius: CGFloat.random(in: 2...4))
+            wisp.fillColor = SKColor(red: 0.20, green: 0.55, blue: 0.30, alpha: 0.4)
+            wisp.strokeColor = .clear
+            wisp.glowWidth = 3
+            wisp.position = CGPoint(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: size.height * 0.3...size.height * 0.7)
+            )
+
+            let float = SKAction.moveBy(x: CGFloat.random(in: -30...30), y: CGFloat.random(in: -20...20), duration: 3)
+            let blink = SKAction.sequence([.fadeAlpha(to: 0.1, duration: 2), .fadeAlpha(to: 0.5, duration: 2)])
+            wisp.run(.repeatForever(.group([.sequence([float, float.reversed()]), blink])))
+            container.addChild(wisp)
+        }
+
+        return container
+    }
+
+    static func shrineAura(in size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 5
+
+        for _ in 0..<12 {
+            let rune = SKShapeNode(circleOfRadius: CGFloat.random(in: 2...5))
+            rune.fillColor = SKColor(red: 0.50, green: 0.20, blue: 0.85, alpha: CGFloat.random(in: 0.2...0.5))
+            rune.strokeColor = .clear
+            rune.glowWidth = 4
+            rune.position = CGPoint(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: 0...size.height)
+            )
+
+            let rise = SKAction.moveBy(x: CGFloat.random(in: -20...20), y: CGFloat.random(in: 20...60), duration: TimeInterval.random(in: 4...8))
+            let pulse = SKAction.sequence([
+                .fadeAlpha(to: 0.05, duration: 2),
+                .fadeAlpha(to: CGFloat.random(in: 0.3...0.6), duration: 2)
+            ])
+            rune.run(.repeatForever(.group([.sequence([rise, rise.reversed()]), pulse])))
+            container.addChild(rune)
+        }
+
+        for i in 0..<3 {
+            let vortex = SKShapeNode(circleOfRadius: CGFloat(8 + i * 12))
+            vortex.fillColor = .clear
+            vortex.strokeColor = SKColor(red: 0.40, green: 0.15, blue: 0.70, alpha: 0.08)
+            vortex.lineWidth = 1
+            vortex.position = CGPoint(x: size.width * 0.70, y: size.height * 0.55)
+            vortex.zPosition = 4
+            container.addChild(vortex)
+
+            let rotate = SKAction.rotate(byAngle: .pi * 2, duration: TimeInterval(8 + i * 4))
+            let scale = SKAction.sequence([.scale(to: 1.3, duration: 3), .scale(to: 0.8, duration: 3)])
+            vortex.run(.repeatForever(.group([rotate, scale])))
+        }
+
+        return container
+    }
+
+    // MARK: - Tap
+
     static func tapMarker(at position: CGPoint) -> SKNode {
         let ring = SKShapeNode(circleOfRadius: 14)
         ring.position = position

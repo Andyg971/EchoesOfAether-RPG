@@ -71,7 +71,7 @@ final class GameManager {
                         guard let self else { return }
                         phase = .forest
                         hud.objectiveText = String(localized: "hud.objective.forest")
-                        scene.backgroundColor = SKColor(red: 0.05, green: 0.07, blue: 0.09, alpha: 1)
+                        world.switchToForest(in: scene)
                     } completion: { [weak self] in
                         guard let self else { return }
                         transition(to: .exploration)
@@ -125,7 +125,7 @@ final class GameManager {
                     guard let self else { return }
                     phase = .shrine
                     hud.objectiveText = String(localized: "hud.objective.shrine")
-                    scene.backgroundColor = SKColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 1)
+                    world.switchToShrine(in: scene)
                 } completion: { [weak self] in
                     self?.transition(to: .exploration)
                 }

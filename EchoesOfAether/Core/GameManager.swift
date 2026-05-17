@@ -243,6 +243,7 @@ final class GameManager {
             player.gold += 15
             syncGold()
             hud.questText = ""
+            AudioEngine.shared.playQuestComplete()
             dialogue.start(PrototypeContent.garenDeliveryDialogue) { [weak self] in
                 self?.transition(to: .exploration)
             }
@@ -310,6 +311,7 @@ final class GameManager {
             resonanceTotal += resonance
             player.gold += gold
             syncGold()
+            AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.blackAetherDialogue) { [weak self] in
@@ -342,6 +344,7 @@ final class GameManager {
             resonanceTotal += resonance
             player.gold += gold
             syncGold()
+            AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.shrineEnding) { [weak self] in

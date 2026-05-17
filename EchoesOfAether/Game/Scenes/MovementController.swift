@@ -15,6 +15,7 @@ final class MovementController {
         let duration = max(0.12, TimeInterval(dist / speed))
 
         isMoving = true
+        AudioEngine.shared.playStep()
         node.removeAction(forKey: "move")
         let moveAction = SKAction.sequence([
             .move(to: clamped, duration: duration),

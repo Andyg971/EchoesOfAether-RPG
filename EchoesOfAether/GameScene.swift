@@ -7,6 +7,7 @@ final class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
+        AudioEngine.shared.start()
         manager.setup(scene: self)
 
         NotificationCenter.default.addObserver(

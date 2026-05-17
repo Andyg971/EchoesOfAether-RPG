@@ -110,6 +110,7 @@ final class DialogueSystem {
             speakerLabel.text = String(localized: "dialogue.kael")
             bodyLabel.text = title
             continueIndicator.isHidden = false
+            AudioEngine.shared.playSelect()
             layout(in: scene.size, safeBottom: safeBottom)
             return true
         }
@@ -120,12 +121,14 @@ final class DialogueSystem {
             speakerLabel.text = npc.speaker
             bodyLabel.text = npc.text
             continueIndicator.isHidden = false
+            AudioEngine.shared.playTap()
             layout(in: scene.size, safeBottom: safeBottom)
             index += 1
             return true
         }
 
         // Phase normale : avancer
+        AudioEngine.shared.playTap()
         index += 1
         showCurrentStep()
         if let sceneRef = root.scene {

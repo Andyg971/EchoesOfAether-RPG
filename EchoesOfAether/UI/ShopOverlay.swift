@@ -70,6 +70,7 @@ final class ShopOverlay {
         self.completion = completion
         titleLabel.text = title
         root.isHidden = false
+        AudioEngine.shared.playShopOpen()
         refresh()
     }
 
@@ -90,6 +91,7 @@ final class ShopOverlay {
             if item.canBuy(player) && player.gold >= item.price {
                 player.gold -= item.price
                 item.onBuy(player)
+                AudioEngine.shared.playPurchase()
                 refresh()
             }
             return true

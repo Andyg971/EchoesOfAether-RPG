@@ -93,6 +93,7 @@ final class CombatSystem {
             let dmg = 18
             kael.hp = max(0, kael.hp - dmg)
             statusLabel.text = String(localized: "combat.status.enemyHit \(enemy.name) \(kael.hp) \(kael.maxHP)")
+            AudioEngine.shared.playDamage()
             JuiceEngine.screenShake(root, intensity: 3, duration: 0.15)
             if let scene = parentScene {
                 root.addChild(ParticleFactory.impactSparks(
@@ -138,6 +139,7 @@ final class CombatSystem {
         case .attack:
             enemy.hp = max(0, enemy.hp - atkDmg)
             statusLabel.text = String(localized: "combat.status.attack \(enemy.name)")
+            AudioEngine.shared.playHit()
             JuiceEngine.screenShake(root, intensity: 5, duration: 0.2)
             root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8))
 
@@ -145,7 +147,7 @@ final class CombatSystem {
             resonance += 1
             enemy.hp = max(0, enemy.hp - slashDmg)
             statusLabel.text = String(localized: "combat.status.blackSlash \(resonance)")
-
+            AudioEngine.shared.playBlackSlash()
             JuiceEngine.screenShake(root, intensity: 12, duration: 0.35)
             JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
             JuiceEngine.flashOverlay(
@@ -166,6 +168,7 @@ final class CombatSystem {
         let finalResonance = resonance
         let finalGold = goldReward
         statusLabel.text = String(localized: "combat.status.defeated \(enemy.name)")
+        AudioEngine.shared.playVictory()
         attackButton.alpha = 0.3
         blackSlashButton.alpha = 0.3
 

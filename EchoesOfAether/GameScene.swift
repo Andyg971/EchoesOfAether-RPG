@@ -8,6 +8,13 @@ final class GameScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
         manager.setup(scene: self)
+
+        NotificationCenter.default.addObserver(
+            forName: UIApplication.willResignActiveNotification,
+            object: nil, queue: .main
+        ) { [weak self] _ in
+            self?.manager.saveGame()
+        }
     }
 
     override func didChangeSize(_ oldSize: CGSize) {

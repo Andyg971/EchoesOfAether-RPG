@@ -24,8 +24,13 @@ final class GameManager {
         hud.attach(to: scene)
         dialogue.attach(to: scene)
         shop.attach(to: scene)
-        hud.goldValue = player.gold
-        startWakeSequence()
+
+        if let save = SaveManager.load() {
+            restoreFrom(save: save, scene: scene)
+        } else {
+            hud.goldValue = player.gold
+            startWakeSequence()
+        }
     }
 
     func layout(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat = 0) {
@@ -427,9 +432,45 @@ final class GameManager {
 
     private func transition(to newState: GameState) {
         state = newState
+        if newState == .exploration { saveGame() }
     }
 
     private func syncGold() {
         hud.goldValue = player.gold
+    }
+
+    // MARK: - Save / Load
+
+    func saveGame() {
+        let data = player.toSaveData(phase: phase, resonance: resonanceTotal)
+        SaveManager.save(data)
+    }
+
+    private func restoreFrom(save: SaveData, scene: SKScene) {
+        player.load(from: save)
+        resonanceTotal = save.resonanceTotal
+        phase = save.phase
+
+        hud.goldValue = player.gold
+        hud.resonanceValue = resonanceTotal
+
+        switch phase {
+        case .wake:
+            startWakeSequence()
+        case .village:
+            hud.objectiveText = String(localized: "hud.objective.village")
+            transition(to: .exploration)
+        case .forest:
+            hud.objectiveText = String(localized: "hud.objective.forest")
+            world.switchToForest(in: scene)
+            transition(to: .exploration)
+        case .shrine:
+            hud.objectiveText = String(localized: "hud.objective.shrine")
+            world.switchToShrine(in: scene)
+            transition(to: .exploration)
+        case .complete:
+            hud.objectiveText = String(localized: "hud.objective.complete")
+            transition(to: .exploration)
+        }
     }
 }

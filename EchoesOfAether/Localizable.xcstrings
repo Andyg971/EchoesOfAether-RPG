@@ -1,950 +1,2522 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
-    "hud.objective.lyra" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: Lyra" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: Lyra" } }
-      }
-    },
-    "hud.objective.dorin" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: Dorin" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: Dorin" } }
-      }
-    },
-    "hud.objective.forest" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: lisière sombre" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: dark edge" } }
-      }
-    },
-    "hud.objective.shrine" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Objectif: sanctuaire" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Objective: sanctuary" } }
-      }
-    },
-    "hud.objective.combat" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Combat: charge l'ATB" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Combat: charge ATB" } }
-      }
-    },
-    "hud.objective.miniboss" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mini-boss: pouvoir interdit" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mini-boss: forbidden power" } }
-      }
-    },
-    "hud.objective.complete" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fin V1: trahison amorcée" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "End V1: betrayal begins" } }
-      }
-    },
-    "hud.resonance %lld" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résonance noire: %lld" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dark Resonance: %lld" } }
-      }
-    },
-    "combat.enemy.beast" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bête corrompue" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Corrupted Beast" } }
-      }
-    },
-    "combat.enemy.guardian" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Gardien fêlé" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Cracked Guardian" } }
-      }
-    },
     "combat.button.attack" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Attaque" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Attack" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attack"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Attaque"
+          }
+        }
       }
     },
     "combat.button.blackSlash" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entaille noire" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Black Slash" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Black Slash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entaille noire"
+          }
+        }
       }
     },
-    "combat.status.enemyHit %@ %lld %lld" : {
+    "combat.enemy.beast" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ frappe Kael ! PV %lld/%lld" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ hits Kael! HP %lld/%lld" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Corrupted Beast"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bête corrompue"
+          }
+        }
+      }
+    },
+    "combat.enemy.guardian" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cracked Guardian"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gardien fêlé"
+          }
+        }
       }
     },
     "combat.status.attack %@" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael attaque ! %@ vacille." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael attacks! %@ staggers." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael attacks! %@ staggers."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael attaque ! %@ vacille."
+          }
+        }
       }
     },
     "combat.status.blackSlash %lld" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entaille noire ! Résonance %lld/3." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Black Slash! Resonance %lld/3." } }
-      }
-    },
-    "combat.status.defeated %@" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "%@ vaincu !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ defeated!" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Black Slash! Resonance %lld/3."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entaille noire ! Résonance %lld/3."
+          }
+        }
       }
     },
     "combat.status.charging" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "ATB charge..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "ATB charging..." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATB charging..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATB charge..."
+          }
+        }
       }
     },
-    "dialogue.kael" : {
+    "combat.status.defeated %@" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ defeated!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ vaincu !"
+          }
+        }
       }
     },
-    "dialogue.response" : {
+    "combat.status.enemyHit %@ %lld %lld" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réponse" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Response" } }
-      }
-    },
-    "dialogue.chooseResponse" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Choisis comment Kael répond." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how Kael responds." } }
-      }
-    },
-    "endscreen.title" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Fin du Prototype" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "End of Prototype" } }
-      }
-    },
-    "endscreen.subtitle" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Echoes of Aether — V1" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Echoes of Aether — V1" } }
-      }
-    },
-    "endscreen.resonance %lld" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Résonance noire: %lld" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dark Resonance: %lld" } }
-      }
-    },
-    "endscreen.betrayal" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La trahison de Kael est amorcée." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael's betrayal has begun." } }
-      }
-    },
-
-    "dialogue.wake.lyra1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Hé. Tu m'entends ? Tu es resté inconscient trois jours." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hey. Can you hear me? You were out cold for three days." } }
-      }
-    },
-    "dialogue.wake.lyra2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ta main gauche... elle brillait pendant ton sommeil. Violette. Personne n'a osé te toucher." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your left hand... it was glowing while you slept. Purple. Nobody dared touch you." } }
-      }
-    },
-    "dialogue.wake.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répondre en Kael" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reply as Kael" } }
-      }
-    },
-    "dialogue.wake.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "..." } }
-      }
-    },
-    "dialogue.wake.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "...D'accord. On commencera par le silence alors. Au moins tu es vivant." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "...Fine. We'll start with silence then. At least you're alive." } }
-      }
-    },
-    "dialogue.wake.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Si je le savais, je ne serais pas allongé là." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "If I knew that, I wouldn't be lying here." } }
-      }
-    },
-    "dialogue.wake.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Charmant. L'amnésie avec de la répartie, c'est une première ici." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Charming. Amnesia with attitude — that's a first around here." } }
-      }
-    },
-    "dialogue.wake.choice3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael. C'est le seul mot qui revient quand je ferme les yeux." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael. It's the only word that comes back when I close my eyes." } }
-      }
-    },
-    "dialogue.wake.response3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael... Ce nom ne me dit rien. Mais ta marque, elle, dit beaucoup." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael... That name means nothing to me. But your mark says a lot." } }
-      }
-    },
-    "dialogue.wake.kael1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Où suis-je ? Qu'est-ce que c'est, cet endroit ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Where am I? What is this place?" } }
-      }
-    },
-    "dialogue.wake.lyra3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Solis. Un village au bord de la corruption. Et moi c'est Lyra — la seule personne ici qui a pas voulu te laisser mourir dans le fossé." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Solis. A village on the edge of the corruption. And I'm Lyra — the only one here who didn't want to leave you dying in a ditch." } }
-      }
-    },
-    "dialogue.wake.lyra4" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout le village parle de toi. De ta main. Des gens ont disparu au nord, et toi tu arrives avec une marque que personne ne reconnaît." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The whole village is talking about you. About your hand. People have vanished to the north, and you show up with a mark nobody recognizes." } }
-      }
-    },
-    "dialogue.wake.kael2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je ne me souviens de rien. Juste... du froid. Et d'une voix." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I don't remember anything. Just... cold. And a voice." } }
-      }
-    },
-    "dialogue.wake.lyra5" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Une voix ? On en reparlera. Pour l'instant, Dorin veut te voir. Le chef du village. Et il est beaucoup moins patient que moi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "A voice? We'll talk about that later. For now, Dorin wants to see you. The village chief. And he's far less patient than me." } }
-      }
-    },
-
-    "dialogue.dorin.dorin1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Alors c'est toi. Celui que Lyra a ramassé sur le chemin. Avec la marque qui inquiète mes gardes." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "So you're the one. The one Lyra picked up on the road. With the mark that worries my guards." } }
-      }
-    },
-    "dialogue.dorin.lyra1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin, il ne sait même pas d'où il vient. Laisse-lui une chance." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dorin, he doesn't even know where he's from. Give him a chance." } }
-      }
-    },
-    "dialogue.dorin.dorin2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Trois éclaireurs. Disparus. La forêt pue la corruption. Et toi, tu débarques avec une main qui brille comme les créatures qui les ont pris. Alors je vais être direct." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Three scouts. Gone. The forest reeks of corruption. And you show up with a hand that glows like the creatures that took them. So I'll be direct." } }
-      }
-    },
-    "dialogue.dorin.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Répondre à Dorin" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reply to Dorin" } }
-      }
-    },
-    "dialogue.dorin.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Regarder la marque en silence." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stare at the mark in silence." } }
-      }
-    },
-    "dialogue.dorin.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Même ton silence a quelque chose de menaçant. Mais les monstres, eux, ne se taisent pas." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Even your silence feels threatening. But the monsters out there don't stay quiet." } }
-      }
-    },
-    "dialogue.dorin.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Vos morts ne me regardent pas. Je cherche mes propres réponses." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your dead aren't my problem. I'm looking for my own answers." } }
-      }
-    },
-    "dialogue.dorin.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tes réponses sont au nord, Kael. Que tu le veuilles ou non, vos chemins mènent au même endroit." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Your answers are to the north, Kael. Whether you like it or not, your paths lead to the same place." } }
-      }
-    },
-    "dialogue.dorin.choice3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Si cette marque peut détruire ce qui les a pris... alors montrez-moi le chemin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "If this mark can destroy what took them... then show me the way." } }
-      }
-    },
-    "dialogue.dorin.response3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Du courage ou de l'inconscience. Dans les deux cas, ça m'arrange." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Courage or recklessness. Either way, it suits me." } }
-      }
-    },
-    "dialogue.dorin.dorin3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La lisière est au nord. Si tu reviens vivant, on reparlera de confiance. Si tu ne reviens pas... eh bien, problème réglé." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The forest edge is to the north. Come back alive and we'll talk about trust. Don't come back... well, problem solved." } }
-      }
-    },
-    "dialogue.dorin.lyra2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je viens avec toi. Pas pour te protéger — pour m'assurer que ta marque ne finisse pas par te consumer." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I'm coming with you. Not to protect you — to make sure your mark doesn't end up consuming you." } }
-      }
-    },
-
-    "dialogue.aether.lyra1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael... Qu'est-ce que c'était ? Quand tu as frappé, l'air est devenu noir. J'ai senti le froid jusque dans mes os." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael... What was that? When you struck, the air turned black. I felt the cold down to my bones." } }
-      }
-    },
-    "dialogue.aether.kael1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce qui marchait. La créature est morte." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Whatever worked. The creature is dead." } }
-      }
-    },
-    "dialogue.aether.lyra2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Morte, oui. Mais ta main tremble encore. Et tes veines... regarde. Elles sont noires, Kael." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dead, yes. But your hand is still shaking. And your veins... look. They're black, Kael." } }
-      }
-    },
-    "dialogue.aether.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Face à la peur de Lyra" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Facing Lyra's fear" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ hits Kael! HP %lld/%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ frappe Kael ! PV %lld/%lld"
+          }
+        }
       }
     },
     "dialogue.aether.choice1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "C'est temporaire. Ça passe toujours." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "It's temporary. It always fades." } }
-      }
-    },
-    "dialogue.aether.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "« Toujours » ? Depuis combien de temps tu fais ça, Kael ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"Always\"? How long have you been doing this, Kael?" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "It's temporary. It always fades."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "C'est temporaire. Ça passe toujours."
+          }
+        }
       }
     },
     "dialogue.aether.choice2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu aurais préféré que je la laisse te tuer ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Would you have preferred I let it kill you?" } }
-      }
-    },
-    "dialogue.aether.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Non. Mais il y a une différence entre se battre et... ce que tu as fait à la fin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No. But there's a difference between fighting and... what you did at the end." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Would you have preferred I let it kill you?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu aurais préféré que je la laisse te tuer ?"
+          }
+        }
       }
     },
     "dialogue.aether.choice3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je ne contrôle pas encore ce pouvoir. Mais il m'obéit. C'est suffisant." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I don't control this power yet. But it obeys me. That's enough." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I don't control this power yet. But it obeys me. That's enough."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne contrôle pas encore ce pouvoir. Mais il m'obéit. C'est suffisant."
+          }
+        }
       }
     },
-    "dialogue.aether.response3" : {
+    "dialogue.aether.kael1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "« Il m'obéit. » Tu t'entends ? On dirait que tu parles d'un animal sauvage, pas d'une partie de toi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "\"It obeys me.\" Do you hear yourself? You sound like you're talking about a wild animal, not a part of you." } }
-      }
-    },
-    "dialogue.aether.lyra3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le sanctuaire est plus loin. Si quelque chose peut expliquer ta marque, c'est là-bas. Mais Kael..." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The sanctuary is further ahead. If anything can explain your mark, it's there. But Kael..." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whatever worked. The creature is dead."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce qui marchait. La créature est morte."
+          }
+        }
       }
     },
     "dialogue.aether.kael2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je sais. Tu veux que je promette de ne pas m'en servir. Mais je ne fais pas de promesses que je ne peux pas tenir." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I know. You want me to promise not to use it. But I don't make promises I can't keep." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I know. You want me to promise not to use it. But I don't make promises I can't keep."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je sais. Tu veux que je promette de ne pas m'en servir. Mais je ne fais pas de promesses que je ne peux pas tenir."
+          }
+        }
       }
     },
-
-    "dialogue.shrine.voiceName" : {
+    "dialogue.aether.lyra1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Voix" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Voice" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... What was that? When you struck, the air turned black. I felt the cold down to my bones."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... Qu'est-ce que c'était ? Quand tu as frappé, l'air est devenu noir. J'ai senti le froid jusque dans mes os."
+          }
+        }
       }
     },
-    "dialogue.shrine.voice1" : {
+    "dialogue.aether.lyra2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu es revenu. Je savais que tu reviendrais. Le vide reconnaît les siens." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You came back. I knew you would. The void recognizes its own." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dead, yes. But your hand is still shaking. And your veins... look. They're black, Kael."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Morte, oui. Mais ta main tremble encore. Et tes veines... regarde. Elles sont noires, Kael."
+          }
+        }
       }
     },
-    "dialogue.shrine.voice2" : {
+    "dialogue.aether.lyra3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ils te retiendront. La fille avec son bâton. Le chef avec sa peur. Ils appellent ça de la prudence." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "They will hold you back. The girl with her staff. The chief with his fear. They call it caution." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The sanctuary is further ahead. If anything can explain your mark, it's there. But Kael..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sanctuaire est plus loin. Si quelque chose peut expliquer ta marque, c'est là-bas. Mais Kael..."
+          }
+        }
       }
     },
-    "dialogue.shrine.voice3" : {
+    "dialogue.aether.prompt" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Moi, je peux te rendre ce qu'ils t'ont pris. Ta mémoire. Ton nom. Tout ce que tu étais avant le fossé." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I can give you back what they took. Your memory. Your name. Everything you were before the ditch." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Facing Lyra's fear"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Face à la peur de Lyra"
+          }
+        }
       }
     },
-    "dialogue.shrine.lyra1" : {
+    "dialogue.aether.response1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael, ne l'écoute pas ! Cette voix... c'est la même énergie que ta marque. C'est un piège !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael, don't listen! That voice... it's the same energy as your mark. It's a trap!" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Always\"? How long have you been doing this, Kael?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "« Toujours » ? Depuis combien de temps tu fais ça, Kael ?"
+          }
+        }
       }
     },
-    "dialogue.shrine.prompt" : {
+    "dialogue.aether.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le choix de Kael" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael's choice" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No. But there's a difference between fighting and... what you did at the end."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Non. Mais il y a une différence entre se battre et... ce que tu as fait à la fin."
+          }
+        }
       }
     },
-    "dialogue.shrine.choice1" : {
+    "dialogue.aether.response3" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tourner le dos au sanctuaire. Sans un mot." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn away from the sanctuary. Without a word." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"It obeys me.\" Do you hear yourself? You sound like you're talking about a wild animal, not a part of you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "« Il m'obéit. » Tu t'entends ? On dirait que tu parles d'un animal sauvage, pas d'une partie de toi."
+          }
+        }
       }
     },
-    "dialogue.shrine.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu reviendras. Ils reviennent tous." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You'll come back. They all come back." } }
-      }
-    },
-    "dialogue.shrine.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ma mémoire est un prix que je suis prêt à payer." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "My memory is a price I'm willing to pay." } }
-      }
-    },
-    "dialogue.shrine.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Admirable. Mais le vide ne demande pas de permission. Il prend." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Admirable. But the void doesn't ask permission. It takes." } }
-      }
-    },
-    "dialogue.shrine.choice3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dis-moi qui je suis. Je déciderai ensuite." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tell me who I am. I'll decide after." } }
-      }
-    },
-    "dialogue.shrine.response3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu étais quelqu'un qui ne posait pas de questions. Quelqu'un qui prenait." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You were someone who didn't ask questions. Someone who took." } }
-      }
-    },
-    "dialogue.shrine.lyra2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael... tes yeux. Pendant un instant, ils étaient complètement noirs. Tu me fais peur." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael... your eyes. For a moment, they were completely black. You're scaring me." } }
-      }
-    },
-    "dialogue.shrine.kael1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "On rentre. Pour l'instant." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Let's go back. For now." } }
-      }
-    },
-
-    "hud.objective.village" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore le village de Solis" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the village of Solis" } }
-      }
-    },
-    "hud.quest.delivery" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Quête: livrer le colis à Garen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quest: deliver the package to Garen" } }
-      }
-    },
-
-    "shop.bram.title" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Forge de Bram" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Bram's Forge" } }
-      }
-    },
-    "shop.mara.title" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Herboristerie de Mara" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mara's Herbalist" } }
-      }
-    },
-    "shop.inn.title" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Auberge du Sage" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sage's Inn" } }
-      }
-    },
-
-    "shop.bram.ironBlade.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lame de Fer" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Iron Blade" } }
-      }
-    },
-    "shop.bram.ironBlade.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "+22 ATK / +35 Entaille" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "+22 ATK / +35 Slash" } }
-      }
-    },
-    "shop.bram.runicBlade.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Lame Runique" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runic Blade" } }
-      }
-    },
-    "shop.bram.runicBlade.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "+44 ATK / +70 Entaille" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "+44 ATK / +70 Slash" } }
-      }
-    },
-    "shop.bram.chainMail.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cotte de Mailles" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Chain Mail" } }
-      }
-    },
-    "shop.bram.chainMail.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "+50 HP max" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "+50 max HP" } }
-      }
-    },
-    "shop.bram.reinforced.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Armure Renforcée" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reinforced Armor" } }
-      }
-    },
-    "shop.bram.reinforced.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "+100 HP max" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "+100 max HP" } }
-      }
-    },
-    "shop.mara.potion.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Potion de Soin" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Healing Potion" } }
-      }
-    },
-    "shop.mara.potion.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Restaure des PV (max 3)" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restores HP (max 3)" } }
-      }
-    },
-    "shop.mara.aetherShard.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Éclat d'Aether" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Aether Shard" } }
-      }
-    },
-    "shop.mara.aetherShard.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Recharge ATB en combat" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Charges ATB in combat" } }
-      }
-    },
-    "shop.inn.rest.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nuit à l'Auberge" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Inn Rest" } }
-      }
-    },
-    "shop.inn.rest.desc" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Récupère tous tes PV" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fully restores your HP" } }
-      }
-    },
-
-    "dialogue.lyra.village1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Kael, je t'en supplie, sois prudent. Le village n'est pas aussi calme qu'il y paraît." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Kael, please be careful. The village isn't as calm as it seems." } }
-      }
-    },
-    "dialogue.lyra.village.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Que veux-tu dire ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "What do you mean?" } }
-      }
-    },
-    "dialogue.lyra.village.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Dorin t'a dit quelque chose ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Did Dorin say something?" } }
-      }
-    },
-    "dialogue.lyra.village.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Il pense que tu es une menace. Je ne suis pas d'accord... mais je comprends sa peur." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "He thinks you're a threat. I disagree... but I understand his fear." } }
-      }
-    },
-    "dialogue.lyra.village.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je gère. Arrête de t'inquiéter." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I can handle it. Stop worrying." } }
-      }
-    },
-    "dialogue.lyra.village.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je m'inquiète parce que j'ai vu cet Aether noir sortir de toi. Personne d'autre ne peut faire ça." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I worry because I saw that black Aether come out of you. Nobody else can do that." } }
-      }
-    },
-    "dialogue.lyra.village2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Explore le village. Parle aux habitants. Peut-être que quelqu'un sait quelque chose sur la forêt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Explore the village. Talk to people. Maybe someone knows something about the forest." } }
-      }
-    },
-
     "dialogue.bram.bram1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Hé, toi ! T'as une tête de combattant. J'ai exactement ce qu'il te faut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hey, you! You've got a fighter's look. I've got just what you need." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, you! You've got a fighter's look. I've got just what you need."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hé, toi ! T'as une tête de combattant. J'ai exactement ce qu'il te faut."
+          }
+        }
       }
     },
     "dialogue.bram.bram2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ma forge tourne depuis trente ans. Chaque lame que j'ai faite a survécu à son propriétaire. Ça dit tout." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "My forge has been running thirty years. Every blade I made outlasted its owner. That says it all." } }
-      }
-    },
-    "dialogue.bram.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Montre-moi ce que tu as." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show me what you've got." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My forge has been running thirty years. Every blade I made outlasted its owner. That says it all."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ma forge tourne depuis trente ans. Chaque lame que j'ai faite a survécu à son propriétaire. Ça dit tout."
+          }
+        }
       }
     },
     "dialogue.bram.choice1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je cherche une arme solide." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I need a solid weapon." } }
-      }
-    },
-    "dialogue.bram.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Alors t'es au bon endroit. Du fer, du runique — tout ce qu'il faut pour survivre là-dehors. Regarde." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Then you're in the right place. Iron, runic — everything you need to survive out there. Take a look." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I need a solid weapon."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je cherche une arme solide."
+          }
+        }
       }
     },
     "dialogue.bram.choice2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je veux juste regarder." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Just browsing." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Just browsing."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je veux juste regarder."
+          }
+        }
+      }
+    },
+    "dialogue.bram.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show me what you've got."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Montre-moi ce que tu as."
+          }
+        }
+      }
+    },
+    "dialogue.bram.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Then you're in the right place. Iron, runic — everything you need to survive out there. Take a look."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors t'es au bon endroit. Du fer, du runique — tout ce qu'il faut pour survivre là-dehors. Regarde."
+          }
+        }
       }
     },
     "dialogue.bram.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Pas de problème. Reviens quand t'as des pièces d'or. La qualité a un prix." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No problem. Come back when you've got gold. Quality has a price." } }
-      }
-    },
-
-    "dialogue.mara.first1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Oh ! Un nouveau visage ! Je suis Mara. Herbes, potions, remèdes — je vends tout ce qui guérit." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Oh! A new face! I'm Mara. Herbs, potions, remedies — I sell everything that heals." } }
-      }
-    },
-    "dialogue.mara.first2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ah, et j'ai un service à te demander. Garen, le garde de la porte nord, attend des herbes médicinales pour sa jambe. Tu pourrais les lui apporter ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Oh, and I have a favour to ask. Garen, the north gate guard, is waiting for medicinal herbs for his leg. Could you bring them to him?" } }
-      }
-    },
-    "dialogue.mara.first.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "C'est important pour lui ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Is it urgent for him?" } }
-      }
-    },
-    "dialogue.mara.first.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bien sûr, je le lui apporte." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sure, I'll bring it to him." } }
-      }
-    },
-    "dialogue.mara.first.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Merci ! Il y a 15 pièces d'or de récompense à la clé. Et en échange, j'ai des potions pour toi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Thank you! There's a 15 gold reward in it for you. And in return, I've got potions for you." } }
-      }
-    },
-    "dialogue.mara.first.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Et si je passe mon chemin ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "And if I don't?" } }
-      }
-    },
-    "dialogue.mara.first.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Alors Garen boitera encore une semaine. Mais c'est ton choix. Mes herbes sont quand même disponibles pour toi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Then Garen limps for another week. But that's your call. My herbs are still available for you." } }
-      }
-    },
-    "dialogue.mara.first3" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "En attendant, jette un œil à ma boutique !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "In the meantime, take a look at my shop!" } }
-      }
-    },
-    "dialogue.mara.quest1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu n'as pas encore livré à Garen ? Allez, il t'attend !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Haven't delivered to Garen yet? Go on, he's waiting!" } }
-      }
-    },
-    "dialogue.mara.quest2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entre-temps, mes potions sont là si t'en as besoin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "In the meantime, my potions are here if you need them." } }
-      }
-    },
-    "dialogue.mara.shop1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "De retour ! Qu'est-ce qu'il te faut aujourd'hui ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You're back! What do you need today?" } }
-      }
-    },
-
-    "dialogue.garen.first1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Halte. La porte nord est fermée sur ordre du chef du village." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop. The north gate is closed by order of the village elder." } }
-      }
-    },
-    "dialogue.garen.first2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La forêt est infestée depuis deux semaines. Personne ne passe. Dans aucun sens." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The forest has been infested for two weeks. Nobody gets through. Either way." } }
-      }
-    },
-    "dialogue.garen.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Il n'y a aucune exception ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No exceptions?" } }
-      }
-    },
-    "dialogue.garen.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je suis un combattant, je peux gérer." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I'm a fighter, I can handle it." } }
-      }
-    },
-    "dialogue.garen.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "J'en suis sûr. Mais les ordres sont les ordres. Pour partir par ici, parle à Dorin." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I'm sure you can. But orders are orders. If you want out this way, talk to Dorin." } }
-      }
-    },
-    "dialogue.garen.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je comprends. Je repasserai." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Understood. I'll come back." } }
-      }
-    },
-    "dialogue.garen.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Sage décision. Au fait — si tu croises Mara l'herboriste, elle a quelque chose pour moi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Wise choice. By the way — if you run into Mara the herbalist, she has something for me." } }
-      }
-    },
-    "dialogue.garen.delivery1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le colis de Mara ! Enfin. T'as fait ça vite." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mara's package! Finally. You were quick." } }
-      }
-    },
-    "dialogue.garen.delivery2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Prends ça, c'est mérité. Et dis-lui qu'elle peut envoyer un vrai messager la prochaine fois." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Take this, you earned it. And tell her to send a real messenger next time." } }
-      }
-    },
-    "dialogue.garen.done1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tout est en ordre. Si tu veux partir vers le nord, parle à Dorin — c'est lui qui décide." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "All sorted. If you want to head north, talk to Dorin — he's the one who decides." } }
-      }
-    },
-
-    "dialogue.sage.first1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bienvenue, voyageur. Cette auberge accueille les épuisés depuis avant ta naissance." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome, traveller. This inn has sheltered the weary since before you were born." } }
-      }
-    },
-    "dialogue.sage.first2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as l'air d'avoir traversé quelque chose de lourd. Le repos fait des miracles que les épées ne font pas." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You look like you've been through something heavy. Rest does miracles that swords cannot." } }
-      }
-    },
-    "dialogue.sage.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu sais quelque chose sur la forêt ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Do you know anything about the forest?" } }
-      }
-    },
-    "dialogue.sage.choice1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Parle-moi de l'Aether noir." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tell me about the black Aether." } }
-      }
-    },
-    "dialogue.sage.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "L'Aether noir existait avant ce village. Des légendes vieilles de mille ans. Mais ces derniers temps... c'est comme s'il se réveillait. En quelqu'un." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Black Aether predates this village. A thousand-year-old legend. But lately... it's as if it's awakening. Inside someone." } }
-      }
-    },
-    "dialogue.sage.choice2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je veux juste me reposer." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I just want to rest." } }
-      }
-    },
-    "dialogue.sage.response2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bien sûr. 10 pièces d'or pour la nuit. Tu repars en pleine forme — garanti." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Of course. 10 gold for the night. You'll leave in top shape — guaranteed." } }
-      }
-    },
-    "dialogue.sage.rest1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu t'es bien reposé ? L'auberge a bonne mémoire — elle garde les gens en vie plus longtemps que leurs épées." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Did you sleep well? The inn has a long memory — it keeps people alive longer than their swords do." } }
-      }
-    },
-    "dialogue.sage.rest2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Prudence dans la forêt. Ce qui dort là-dedans n'est pas ordinaire." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Be careful in the forest. What sleeps in there is not ordinary." } }
-      }
-    },
-
-    "dialogue.child.name" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Enfant" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Child" } }
-      }
-    },
-    "dialogue.child.line1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Hé ! T'as pas l'air d'être du village. T'es un aventurier ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hey! You don't look like you're from the village. Are you an adventurer?" } }
-      }
-    },
-    "dialogue.child.line2" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mon père dit de pas s'approcher de la forêt. Mais j'ai vu une lumière noire là-dedans hier soir !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "My dad says not to go near the forest. But I saw a black light in there last night!" } }
-      }
-    },
-    "dialogue.child.prompt" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu as peur ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Are you scared?" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No problem. Come back when you've got gold. Quality has a price."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas de problème. Reviens quand t'as des pièces d'or. La qualité a un prix."
+          }
+        }
       }
     },
     "dialogue.child.choice1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Un peu de curiosité, c'est bien." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "A little curiosity is good." } }
-      }
-    },
-    "dialogue.child.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ouais ! Je veux devenir comme toi — un vrai guerrier avec des pouvoirs !" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Yeah! I want to be like you — a real warrior with powers!" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A little curiosity is good."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un peu de curiosité, c'est bien."
+          }
+        }
       }
     },
     "dialogue.child.choice2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Tu dois rester à l'abri." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You need to stay safe." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You need to stay safe."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu dois rester à l'abri."
+          }
+        }
+      }
+    },
+    "dialogue.child.line1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey! You don't look like you're from the village. Are you an adventurer?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hé ! T'as pas l'air d'être du village. T'es un aventurier ?"
+          }
+        }
+      }
+    },
+    "dialogue.child.line2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My dad says not to go near the forest. But I saw a black light in there last night!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mon père dit de pas s'approcher de la forêt. Mais j'ai vu une lumière noire là-dedans hier soir !"
+          }
+        }
+      }
+    },
+    "dialogue.child.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Child"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enfant"
+          }
+        }
+      }
+    },
+    "dialogue.child.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Are you scared?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu as peur ?"
+          }
+        }
+      }
+    },
+    "dialogue.child.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yeah! I want to be like you — a real warrior with powers!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ouais ! Je veux devenir comme toi — un vrai guerrier avec des pouvoirs !"
+          }
+        }
       }
     },
     "dialogue.child.response2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je sais... mais c'est tellement ennuyeux ici. C'est vrai que t'as des pouvoirs magiques ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I know... but it's so boring here. Is it true you have magic powers?" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I know... but it's so boring here. Is it true you have magic powers?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je sais... mais c'est tellement ennuyeux ici. C'est vrai que t'as des pouvoirs magiques ?"
+          }
+        }
       }
     },
-
-    "dialogue.villager.name" : {
+    "dialogue.chooseResponse" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Villageois" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Villager" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose how Kael responds."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choisis comment Kael répond."
+          }
+        }
       }
     },
-    "dialogue.villager.line1" : {
+    "dialogue.dorin.choice1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Laisse-moi tranquille ! Ces créatures de la forêt arrivent jusque dans le village la nuit... J'ai pas dormi depuis trois jours." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Leave me alone! Those creatures from the forest come into the village at night... I haven't slept in three days." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stare at the mark in silence."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Regarder la marque en silence."
+          }
+        }
       }
     },
-    "dialogue.villager.prompt" : {
+    "dialogue.dorin.choice2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Qu'est-ce que tu as vu ?" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "What did you see?" } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your dead aren't my problem. I'm looking for my own answers."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vos morts ne me regardent pas. Je cherche mes propres réponses."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.choice3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If this mark can destroy what took them... then show me the way."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si cette marque peut détruire ce qui les a pris... alors montrez-moi le chemin."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.dorin1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So you're the one. The one Lyra picked up on the road. With the mark that worries my guards."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors c'est toi. Celui que Lyra a ramassé sur le chemin. Avec la marque qui inquiète mes gardes."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.dorin2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Three scouts. Gone. The forest reeks of corruption. And you show up with a hand that glows like the creatures that took them. So I'll be direct."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trois éclaireurs. Disparus. La forêt pue la corruption. Et toi, tu débarques avec une main qui brille comme les créatures qui les ont pris. Alors je vais être direct."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.dorin3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forest edge is to the north. Come back alive and we'll talk about trust. Don't come back... well, problem solved."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La lisière est au nord. Si tu reviens vivant, on reparlera de confiance. Si tu ne reviens pas... eh bien, problème réglé."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dorin, he doesn't even know where he's from. Give him a chance."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dorin, il ne sait même pas d'où il vient. Laisse-lui une chance."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.lyra2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'm coming with you. Not to protect you — to make sure your mark doesn't end up consuming you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je viens avec toi. Pas pour te protéger — pour m'assurer que ta marque ne finisse pas par te consumer."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply to Dorin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Répondre à Dorin"
+          }
+        }
+      }
+    },
+    "dialogue.dorin.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Even your silence feels threatening. But the monsters out there don't stay quiet."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Même ton silence a quelque chose de menaçant. Mais les monstres, eux, ne se taisent pas."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your answers are to the north, Kael. Whether you like it or not, your paths lead to the same place."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tes réponses sont au nord, Kael. Que tu le veuilles ou non, vos chemins mènent au même endroit."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.response3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Courage or recklessness. Either way, it suits me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Du courage ou de l'inconscience. Dans les deux cas, ça m'arrange."
+          }
+        }
+      }
+    },
+    "dialogue.garen.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'm a fighter, I can handle it."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je suis un combattant, je peux gérer."
+          }
+        }
+      }
+    },
+    "dialogue.garen.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Understood. I'll come back."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je comprends. Je repasserai."
+          }
+        }
+      }
+    },
+    "dialogue.garen.delivery1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mara's package! Finally. You were quick."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le colis de Mara ! Enfin. T'as fait ça vite."
+          }
+        }
+      }
+    },
+    "dialogue.garen.delivery2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take this, you earned it. And tell her to send a real messenger next time."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prends ça, c'est mérité. Et dis-lui qu'elle peut envoyer un vrai messager la prochaine fois."
+          }
+        }
+      }
+    },
+    "dialogue.garen.done1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All sorted. If you want to head north, talk to Dorin — he's the one who decides."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout est en ordre. Si tu veux partir vers le nord, parle à Dorin — c'est lui qui décide."
+          }
+        }
+      }
+    },
+    "dialogue.garen.first1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stop. The north gate is closed by order of the village elder."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Halte. La porte nord est fermée sur ordre du chef du village."
+          }
+        }
+      }
+    },
+    "dialogue.garen.first2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forest has been infested for two weeks. Nobody gets through. Either way."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La forêt est infestée depuis deux semaines. Personne ne passe. Dans aucun sens."
+          }
+        }
+      }
+    },
+    "dialogue.garen.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No exceptions?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il n'y a aucune exception ?"
+          }
+        }
+      }
+    },
+    "dialogue.garen.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'm sure you can. But orders are orders. If you want out this way, talk to Dorin."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J'en suis sûr. Mais les ordres sont les ordres. Pour partir par ici, parle à Dorin."
+          }
+        }
+      }
+    },
+    "dialogue.garen.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wise choice. By the way — if you run into Mara the herbalist, she has something for me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sage décision. Au fait — si tu croises Mara l'herboriste, elle a quelque chose pour moi."
+          }
+        }
+      }
+    },
+    "dialogue.kael" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Did Dorin say something?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dorin t'a dit quelque chose ?"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I can handle it. Stop worrying."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je gère. Arrête de t'inquiéter."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What do you mean?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Que veux-tu dire ?"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "He thinks you're a threat. I disagree... but I understand his fear."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il pense que tu es une menace. Je ne suis pas d'accord... mais je comprends sa peur."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I worry because I saw that black Aether come out of you. Nobody else can do that."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je m'inquiète parce que j'ai vu cet Aether noir sortir de toi. Personne d'autre ne peut faire ça."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael, please be careful. The village isn't as calm as it seems."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael, je t'en supplie, sois prudent. Le village n'est pas aussi calme qu'il y paraît."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.village2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore the village. Talk to people. Maybe someone knows something about the forest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore le village. Parle aux habitants. Peut-être que quelqu'un sait quelque chose sur la forêt."
+          }
+        }
+      }
+    },
+    "dialogue.mara.first.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sure, I'll bring it to him."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bien sûr, je le lui apporte."
+          }
+        }
+      }
+    },
+    "dialogue.mara.first.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "And if I don't?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et si je passe mon chemin ?"
+          }
+        }
+      }
+    },
+    "dialogue.mara.first.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Is it urgent for him?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "C'est important pour lui ?"
+          }
+        }
+      }
+    },
+    "dialogue.mara.first.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Thank you! There's a 15 gold reward in it for you. And in return, I've got potions for you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Merci ! Il y a 15 pièces d'or de récompense à la clé. Et en échange, j'ai des potions pour toi."
+          }
+        }
+      }
+    },
+    "dialogue.mara.first.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Then Garen limps for another week. But that's your call. My herbs are still available for you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors Garen boitera encore une semaine. Mais c'est ton choix. Mes herbes sont quand même disponibles pour toi."
+          }
+        }
+      }
+    },
+    "dialogue.mara.first1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oh! A new face! I'm Mara. Herbs, potions, remedies — I sell everything that heals."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oh ! Un nouveau visage ! Je suis Mara. Herbes, potions, remèdes — je vends tout ce qui guérit."
+          }
+        }
+      }
+    },
+    "dialogue.mara.first2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oh, and I have a favour to ask. Garen, the north gate guard, is waiting for medicinal herbs for his leg. Could you bring them to him?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ah, et j'ai un service à te demander. Garen, le garde de la porte nord, attend des herbes médicinales pour sa jambe. Tu pourrais les lui apporter ?"
+          }
+        }
+      }
+    },
+    "dialogue.mara.first3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the meantime, take a look at my shop!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "En attendant, jette un œil à ma boutique !"
+          }
+        }
+      }
+    },
+    "dialogue.mara.quest1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Haven't delivered to Garen yet? Go on, he's waiting!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu n'as pas encore livré à Garen ? Allez, il t'attend !"
+          }
+        }
+      }
+    },
+    "dialogue.mara.quest2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In the meantime, my potions are here if you need them."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entre-temps, mes potions sont là si t'en as besoin."
+          }
+        }
+      }
+    },
+    "dialogue.mara.shop1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You're back! What do you need today?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De retour ! Qu'est-ce qu'il te faut aujourd'hui ?"
+          }
+        }
+      }
+    },
+    "dialogue.response" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Response"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réponse"
+          }
+        }
+      }
+    },
+    "dialogue.sage.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tell me about the black Aether."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parle-moi de l'Aether noir."
+          }
+        }
+      }
+    },
+    "dialogue.sage.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I just want to rest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je veux juste me reposer."
+          }
+        }
+      }
+    },
+    "dialogue.sage.first1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Welcome, traveller. This inn has sheltered the weary since before you were born."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bienvenue, voyageur. Cette auberge accueille les épuisés depuis avant ta naissance."
+          }
+        }
+      }
+    },
+    "dialogue.sage.first2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You look like you've been through something heavy. Rest does miracles that swords cannot."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu as l'air d'avoir traversé quelque chose de lourd. Le repos fait des miracles que les épées ne font pas."
+          }
+        }
+      }
+    },
+    "dialogue.sage.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Do you know anything about the forest?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu sais quelque chose sur la forêt ?"
+          }
+        }
+      }
+    },
+    "dialogue.sage.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Black Aether predates this village. A thousand-year-old legend. But lately... it's as if it's awakening. Inside someone."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'Aether noir existait avant ce village. Des légendes vieilles de mille ans. Mais ces derniers temps... c'est comme s'il se réveillait. En quelqu'un."
+          }
+        }
+      }
+    },
+    "dialogue.sage.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Of course. 10 gold for the night. You'll leave in top shape — guaranteed."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bien sûr. 10 pièces d'or pour la nuit. Tu repars en pleine forme — garanti."
+          }
+        }
+      }
+    },
+    "dialogue.sage.rest1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Did you sleep well? The inn has a long memory — it keeps people alive longer than their swords do."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu t'es bien reposé ? L'auberge a bonne mémoire — elle garde les gens en vie plus longtemps que leurs épées."
+          }
+        }
+      }
+    },
+    "dialogue.sage.rest2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Be careful in the forest. What sleeps in there is not ordinary."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prudence dans la forêt. Ce qui dort là-dedans n'est pas ordinaire."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Turn away from the sanctuary. Without a word."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tourner le dos au sanctuaire. Sans un mot."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My memory is a price I'm willing to pay."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ma mémoire est un prix que je suis prêt à payer."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.choice3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tell me who I am. I'll decide after."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dis-moi qui je suis. Je déciderai ensuite."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Let's go back. For now."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "On rentre. Pour l'instant."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael, don't listen! That voice... it's the same energy as your mark. It's a trap!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael, ne l'écoute pas ! Cette voix... c'est la même énergie que ta marque. C'est un piège !"
+          }
+        }
+      }
+    },
+    "dialogue.shrine.lyra2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... your eyes. For a moment, they were completely black. You're scaring me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... tes yeux. Pendant un instant, ils étaient complètement noirs. Tu me fais peur."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael's choice"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le choix de Kael"
+          }
+        }
+      }
+    },
+    "dialogue.shrine.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You'll come back. They all come back."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu reviendras. Ils reviennent tous."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Admirable. But the void doesn't ask permission. It takes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Admirable. Mais le vide ne demande pas de permission. Il prend."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.response3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You were someone who didn't ask questions. Someone who took."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu étais quelqu'un qui ne posait pas de questions. Quelqu'un qui prenait."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.voice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You came back. I knew you would. The void recognizes its own."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu es revenu. Je savais que tu reviendrais. Le vide reconnaît les siens."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.voice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They will hold you back. The girl with her staff. The chief with his fear. They call it caution."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ils te retiendront. La fille avec son bâton. Le chef avec sa peur. Ils appellent ça de la prudence."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.voice3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I can give you back what they took. Your memory. Your name. Everything you were before the ditch."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moi, je peux te rendre ce qu'ils t'ont pris. Ta mémoire. Ton nom. Tout ce que tu étais avant le fossé."
+          }
+        }
+      }
+    },
+    "dialogue.shrine.voiceName" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voice"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Voix"
+          }
+        }
       }
     },
     "dialogue.villager.choice1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Calme-toi. Je peux aider." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Calm down. I can help." } }
-      }
-    },
-    "dialogue.villager.response1" : {
-      "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Toi ? Ces choses résistent aux lames normales. J'ai vu l'une d'elles absorber une flèche entière sans broncher." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "You? Those things resist normal blades. I saw one absorb an entire arrow without flinching." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calm down. I can help."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Calme-toi. Je peux aider."
+          }
+        }
       }
     },
     "dialogue.villager.choice2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Je suis désolé pour toi." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "I'm sorry you're going through this." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'm sorry you're going through this."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je suis désolé pour toi."
+          }
+        }
       }
     },
-    "dialogue.villager.response2" : {
+    "dialogue.villager.line1" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "La désolation aide pas. Mais... merci. Au moins toi, tu prétends pas que tout va bien." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sorry doesn't help. But... thank you. At least you're not pretending everything's fine." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave me alone! Those creatures from the forest come into the village at night... I haven't slept in three days."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Laisse-moi tranquille ! Ces créatures de la forêt arrivent jusque dans le village la nuit... J'ai pas dormi depuis trois jours."
+          }
+        }
       }
     },
     "dialogue.villager.line2" : {
       "localizations" : {
-        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Reste à l'écart de la lisière si tu tiens à ta vie." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stay away from the forest edge if you value your life." } }
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Stay away from the forest edge if you value your life."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reste à l'écart de la lisière si tu tiens à ta vie."
+          }
+        }
       }
+    },
+    "dialogue.villager.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Villager"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Villageois"
+          }
+        }
+      }
+    },
+    "dialogue.villager.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "What did you see?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Qu'est-ce que tu as vu ?"
+          }
+        }
+      }
+    },
+    "dialogue.villager.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You? Those things resist normal blades. I saw one absorb an entire arrow without flinching."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Toi ? Ces choses résistent aux lames normales. J'ai vu l'une d'elles absorber une flèche entière sans broncher."
+          }
+        }
+      }
+    },
+    "dialogue.villager.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sorry doesn't help. But... thank you. At least you're not pretending everything's fine."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La désolation aide pas. Mais... merci. Au moins toi, tu prétends pas que tout va bien."
+          }
+        }
+      }
+    },
+    "dialogue.wake.choice1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "..."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "..."
+          }
+        }
+      }
+    },
+    "dialogue.wake.choice2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "If I knew that, I wouldn't be lying here."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Si je le savais, je ne serais pas allongé là."
+          }
+        }
+      }
+    },
+    "dialogue.wake.choice3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael. It's the only word that comes back when I close my eyes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael. C'est le seul mot qui revient quand je ferme les yeux."
+          }
+        }
+      }
+    },
+    "dialogue.wake.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Where am I? What is this place?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Où suis-je ? Qu'est-ce que c'est, cet endroit ?"
+          }
+        }
+      }
+    },
+    "dialogue.wake.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I don't remember anything. Just... cold. And a voice."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne me souviens de rien. Juste... du froid. Et d'une voix."
+          }
+        }
+      }
+    },
+    "dialogue.wake.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey. Can you hear me? You were out cold for three days."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hé. Tu m'entends ? Tu es resté inconscient trois jours."
+          }
+        }
+      }
+    },
+    "dialogue.wake.lyra2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your left hand... it was glowing while you slept. Purple. Nobody dared touch you."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta main gauche... elle brillait pendant ton sommeil. Violette. Personne n'a osé te toucher."
+          }
+        }
+      }
+    },
+    "dialogue.wake.lyra3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solis. A village on the edge of the corruption. And I'm Lyra — the only one here who didn't want to leave you dying in a ditch."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solis. Un village au bord de la corruption. Et moi c'est Lyra — la seule personne ici qui a pas voulu te laisser mourir dans le fossé."
+          }
+        }
+      }
+    },
+    "dialogue.wake.lyra4" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The whole village is talking about you. About your hand. People have vanished to the north, and you show up with a mark nobody recognizes."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tout le village parle de toi. De ta main. Des gens ont disparu au nord, et toi tu arrives avec une marque que personne ne reconnaît."
+          }
+        }
+      }
+    },
+    "dialogue.wake.lyra5" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A voice? We'll talk about that later. For now, Dorin wants to see you. The village chief. And he's far less patient than me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une voix ? On en reparlera. Pour l'instant, Dorin veut te voir. Le chef du village. Et il est beaucoup moins patient que moi."
+          }
+        }
+      }
+    },
+    "dialogue.wake.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reply as Kael"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Répondre en Kael"
+          }
+        }
+      }
+    },
+    "dialogue.wake.response1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "...Fine. We'll start with silence then. At least you're alive."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "...D'accord. On commencera par le silence alors. Au moins tu es vivant."
+          }
+        }
+      }
+    },
+    "dialogue.wake.response2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charming. Amnesia with attitude — that's a first around here."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charmant. L'amnésie avec de la répartie, c'est une première ici."
+          }
+        }
+      }
+    },
+    "dialogue.wake.response3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... That name means nothing to me. But your mark says a lot."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael... Ce nom ne me dit rien. Mais ta marque, elle, dit beaucoup."
+          }
+        }
+      }
+    },
+    "endscreen.betrayal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael's betrayal has begun."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La trahison de Kael est amorcée."
+          }
+        }
+      }
+    },
+    "endscreen.resonance %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark Resonance: %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résonance noire: %lld"
+          }
+        }
+      }
+    },
+    "endscreen.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echoes of Aether — V1"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echoes of Aether — V1"
+          }
+        }
+      }
+    },
+    "endscreen.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End of Prototype"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fin du Prototype"
+          }
+        }
+      }
+    },
+    "hud.gold %lld" : {
+      "comment" : "A description of the amount of gold the player has. The argument is the amount of gold.",
+      "isCommentAutoGenerated" : true
+    },
+    "hud.objective.combat" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combat: charge ATB"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Combat: charge l'ATB"
+          }
+        }
+      }
+    },
+    "hud.objective.complete" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "End V1: betrayal begins"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fin V1: trahison amorcée"
+          }
+        }
+      }
+    },
+    "hud.objective.dorin" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objective: Dorin"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objectif: Dorin"
+          }
+        }
+      }
+    },
+    "hud.objective.forest" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objective: dark edge"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objectif: lisière sombre"
+          }
+        }
+      }
+    },
+    "hud.objective.lyra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objective: Lyra"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objectif: Lyra"
+          }
+        }
+      }
+    },
+    "hud.objective.miniboss" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mini-boss: forbidden power"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mini-boss: pouvoir interdit"
+          }
+        }
+      }
+    },
+    "hud.objective.shrine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objective: sanctuary"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Objectif: sanctuaire"
+          }
+        }
+      }
+    },
+    "hud.objective.village" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore the village of Solis"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Explore le village de Solis"
+          }
+        }
+      }
+    },
+    "hud.quest.delivery" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quest: deliver the package to Garen"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quête: livrer le colis à Garen"
+          }
+        }
+      }
+    },
+    "hud.resonance %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark Resonance: %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Résonance noire: %lld"
+          }
+        }
+      }
+    },
+    "shop.bram.chainMail.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+50 max HP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+50 HP max"
+          }
+        }
+      }
+    },
+    "shop.bram.chainMail.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chain Mail"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cotte de Mailles"
+          }
+        }
+      }
+    },
+    "shop.bram.ironBlade.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+22 ATK / +35 Slash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+22 ATK / +35 Entaille"
+          }
+        }
+      }
+    },
+    "shop.bram.ironBlade.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame de Fer"
+          }
+        }
+      }
+    },
+    "shop.bram.reinforced.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+100 max HP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+100 HP max"
+          }
+        }
+      }
+    },
+    "shop.bram.reinforced.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reinforced Armor"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armure Renforcée"
+          }
+        }
+      }
+    },
+    "shop.bram.runicBlade.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+44 ATK / +70 Slash"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+44 ATK / +70 Entaille"
+          }
+        }
+      }
+    },
+    "shop.bram.runicBlade.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame Runique"
+          }
+        }
+      }
+    },
+    "shop.bram.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bram's Forge"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forge de Bram"
+          }
+        }
+      }
+    },
+    "shop.close" : {
+      "comment" : "Text for the shop close button.",
+      "isCommentAutoGenerated" : true
+    },
+    "shop.gold %lld" : {
+      "comment" : "A label that shows the player's gold.",
+      "isCommentAutoGenerated" : true
+    },
+    "shop.inn.rest.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fully restores your HP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Récupère tous tes PV"
+          }
+        }
+      }
+    },
+    "shop.inn.rest.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inn Rest"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nuit à l'Auberge"
+          }
+        }
+      }
+    },
+    "shop.inn.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sage's Inn"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auberge du Sage"
+          }
+        }
+      }
+    },
+    "shop.mara.aetherShard.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Charges ATB in combat"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Recharge ATB en combat"
+          }
+        }
+      }
+    },
+    "shop.mara.aetherShard.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aether Shard"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Éclat d'Aether"
+          }
+        }
+      }
+    },
+    "shop.mara.potion.desc" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restores HP (max 3)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restaure des PV (max 3)"
+          }
+        }
+      }
+    },
+    "shop.mara.potion.name" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Healing Potion"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potion de Soin"
+          }
+        }
+      }
+    },
+    "shop.mara.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mara's Herbalist"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herboristerie de Mara"
+          }
+        }
+      }
+    },
+    "shop.price %lld" : {
+      "comment" : "A localized string that translates to \"Price: $\"",
+      "isCommentAutoGenerated" : true
+    },
+    "world.northGate" : {
+      "comment" : "Name of the north gate.",
+      "isCommentAutoGenerated" : true
     }
   },
-  "version" : "1.0"
+  "version" : "1.1"
 }

@@ -8,7 +8,7 @@ enum GameState {
     case transition
 }
 
-enum GamePhase: Int, CaseIterable {
+enum GamePhase: Int, CaseIterable, Codable {
     case wake
     case village
     case forest
@@ -20,7 +20,7 @@ enum GamePhase: Int, CaseIterable {
     }
 }
 
-enum QuestState {
+enum QuestState: String, Codable {
     case inactive, active, complete
 }
 
@@ -64,4 +64,52 @@ final class PlayerState {
     var currentMaxHP: Int { maxHP + armorLevel * 50 }
 
     var potionsFull: Bool { potions >= 3 }
+
+    // MARK: - Save / Load
+
+    func toSaveData(phase: GamePhase, resonance: Int) -> SaveData {
+        SaveData(
+            gold: gold, maxHP: maxHP,
+            weaponLevel: weaponLevel, armorLevel: armorLevel,
+            potions: potions, aetherShards: aetherShards,
+            questDelivery: questDelivery, questMushroom: questMushroom,
+            talkedToSage: talkedToSage, talkedToChild: talkedToChild,
+            talkedToVillager: talkedToVillager, innRested: innRested,
+            phase: phase, resonanceTotal: resonance
+        )
+    }
+
+    func load(from data: SaveData) {
+        gold = data.gold
+        maxHP = data.maxHP
+        weaponLevel = data.weaponLevel
+        armorLevel = data.armorLevel
+        potions = data.potions
+        aetherShards = data.aetherShards
+        questDelivery = data.questDelivery
+        questMushroom = data.questMushroom
+        talkedToSage = data.talkedToSage
+        talkedToChild = data.talkedToChild
+        talkedToVillager = data.talkedToVillager
+        innRested = data.innRested
+    }
+}
+
+// MARK: - SaveData
+
+struct SaveData: Codable {
+    let gold: Int
+    let maxHP: Int
+    let weaponLevel: Int
+    let armorLevel: Int
+    let potions: Int
+    let aetherShards: Int
+    let questDelivery: QuestState
+    let questMushroom: QuestState
+    let talkedToSage: Bool
+    let talkedToChild: Bool
+    let talkedToVillager: Bool
+    let innRested: Bool
+    let phase: GamePhase
+    let resonanceTotal: Int
 }

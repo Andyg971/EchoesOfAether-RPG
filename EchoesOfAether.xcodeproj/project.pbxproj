@@ -18,12 +18,13 @@
 		6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */; };
 		6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */; };
 		6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */; };
-		6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */; };
 		6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */; };
 		6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2013B8A741B0A0000001 /* GameManager.swift */; };
 		6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2015B8A741B0A0000001 /* MovementController.swift */; };
 		6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2017B8A741B0A0000001 /* TransitionManager.swift */; };
 		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
+		6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */; };
+		6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E4002B8A741B0A0000001 /* SaveManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,13 +39,14 @@
 		6D7E2003B8A741B0A0000001 /* WorldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldNode.swift; sourceTree = "<group>"; };
 		6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuiceEngine.swift; sourceTree = "<group>"; };
 		6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
-		6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopOverlay.swift; sourceTree = "<group>"; };
 		6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDOverlay.swift; sourceTree = "<group>"; };
 		6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldBuilder.swift; sourceTree = "<group>"; };
 		6D7E2013B8A741B0A0000001 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		6D7E2015B8A741B0A0000001 /* MovementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementController.swift; sourceTree = "<group>"; };
 		6D7E2017B8A741B0A0000001 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopOverlay.swift; sourceTree = "<group>"; };
+		6D7E4002B8A741B0A0000001 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -98,6 +100,7 @@
 			children = (
 				6D7E2001B8A741B0A0000001 /* GameState.swift */,
 				6D7E2013B8A741B0A0000001 /* GameManager.swift */,
+				6D7E4002B8A741B0A0000001 /* SaveManager.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -174,7 +177,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2600;
-				LastUpgradeCheck = 2600;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					6D7E1015B8A741B0A0000001 = {
 						CreatedOnToolsVersion = 26.0;
@@ -233,6 +236,7 @@
 				6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */,
 				6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */,
 				6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */,
+				6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +247,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -275,6 +281,7 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -290,7 +297,9 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -300,6 +309,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -332,6 +343,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -342,6 +354,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				VALIDATE_PRODUCT = YES;

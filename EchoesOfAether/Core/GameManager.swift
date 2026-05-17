@@ -82,8 +82,8 @@ final class GameManager {
             tapAndMove(point, in: scene)
 
         case .shrine:
-            if point.x > scene.size.width * 0.62 {
-                startShrineCombat()
+            if point.x > scene.size.width * 0.55 && !player.bossDefeated {
+                startBossFight()
             } else {
                 tapAndMove(point, in: scene)
             }
@@ -401,23 +401,10 @@ final class GameManager {
         }
     }
 
-    private func startShrineCombat() {
+    private func startBossFight() {
         guard let scene else { return }
-        transition(to: .combat)
-        hud.objectiveText = String(localized: "hud.objective.miniboss")
-        combat.attach(
-            to: scene,
-            enemyName: String(localized: "combat.enemy.guardian"),
-            enemyHP: 260,
-            goldReward: 80,
-            player: player
-        ) { [weak self] resonance, gold in
-            guard let self else { return }
-            resonanceTotal += resonance
-            player.gold += gold
-            syncGold()
-            AudioEngine.shared.playGoldGain()
-            hud.resonanceValue = resonanceTotal
+        guard !player.bossDefeated else {
+            // Boss already dead → go straight to shrine ending
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.shrineEnding) { [weak self] in
                 guard let self, let scene = self.scene else { return }
@@ -425,6 +412,65 @@ final class GameManager {
                 hud.objectiveText = String(localized: "hud.objective.complete")
                 transition(to: .exploration)
                 TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal)
+            }
+            return
+        }
+
+        // Pre-combat dialogue
+        transition(to: .dialogue)
+        hud.objectiveText = String(localized: "hud.objective.boss")
+        dialogue.start(PrototypeContent.bossPreDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            transition(to: .combat)
+
+            let bossConfig = BossConfig(
+                enrageThreshold: 0.40,
+                enrageSpeedMult: 1.6,
+                enrageDamageMult: 2,
+                specialAttackInterval: 3,
+                specialDamage: 38,
+                specialName: String(localized: "combat.boss.specialName")
+            )
+
+            combat.attach(
+                to: scene,
+                enemyName: String(localized: "combat.enemy.guardian"),
+                enemyHP: 380,
+                goldReward: 120,
+                player: player,
+                boss: bossConfig
+            ) { [weak self] resonance, gold in
+                guard let self else { return }
+
+                if resonance == 0 && gold == 0 {
+                    // Defeat — return to exploration, let player retry
+                    hud.objectiveText = String(localized: "hud.objective.boss")
+                    transition(to: .exploration)
+                    return
+                }
+
+                // Victory
+                resonanceTotal += resonance
+                player.gold += gold
+                player.bossDefeated = true
+                syncGold()
+                AudioEngine.shared.playGoldGain()
+                AudioEngine.shared.playQuestComplete()
+                hud.resonanceValue = resonanceTotal
+
+                // Post-combat dialogue → shrine ending
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.bossPostDialogue) { [weak self] in
+                    guard let self else { return }
+                    transition(to: .dialogue)
+                    dialogue.start(PrototypeContent.shrineEnding) { [weak self] in
+                        guard let self, let scene = self.scene else { return }
+                        phase = .complete
+                        hud.objectiveText = String(localized: "hud.objective.complete")
+                        transition(to: .exploration)
+                        TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal)
+                    }
+                }
             }
         }
     }

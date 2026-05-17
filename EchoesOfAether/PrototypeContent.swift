@@ -303,6 +303,40 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.aether.kael2"))
     ]
 
+    // MARK: - Boss — Gardien de l'Aether (pré-combat)
+
+    static let bossPreDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.boss.guardianName"),
+              text: String(localized: "dialogue.boss.pre1")),
+        .line(speaker: String(localized: "dialogue.boss.guardianName"),
+              text: String(localized: "dialogue.boss.pre2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.boss.kael1")),
+        .choice(
+            prompt: String(localized: "dialogue.boss.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.boss.choice1"),
+                    responseSpeaker: String(localized: "dialogue.boss.guardianName"),
+                    response: String(localized: "dialogue.boss.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.boss.choice2"),
+                    responseSpeaker: String(localized: "dialogue.boss.guardianName"),
+                    response: String(localized: "dialogue.boss.response2")
+                )
+            ]
+        )
+    ]
+
+    // MARK: - Boss — Post-combat (victoire)
+
+    static let bossPostDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.boss.post.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.boss.post.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.boss.post.lyra2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.boss.post.kael2"))
+    ]
+
     // MARK: - Sanctuaire (Voix de l'Aether noir + fin V1)
 
     static let shrineEnding: [DialogueStep] = [

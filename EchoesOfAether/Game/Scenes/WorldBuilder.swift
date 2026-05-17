@@ -445,7 +445,56 @@ final class WorldBuilder {
             JuiceEngine.pulse(orb, scale: 1.5)
         }
 
+        // Boss — Gardien de l'Aether
+        let boss = makeBossGuardian()
+        boss.position = CGPoint(x: w * 0.70, y: h * 0.45)
+        add(boss, to: scene)
+
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
+    }
+
+    private func makeBossGuardian() -> SKNode {
+        let guardian = SKNode()
+        guardian.zPosition = 2
+
+        // Body — large dark shape
+        let body = SKShapeNode(rectOf: CGSize(width: 32, height: 48), cornerRadius: 6)
+        body.fillColor = SKColor(red: 0.08, green: 0.04, blue: 0.14, alpha: 1)
+        body.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.6)
+        body.lineWidth = 2
+        guardian.addChild(body)
+
+        // Head
+        let head = SKShapeNode(circleOfRadius: 14)
+        head.fillColor = SKColor(red: 0.12, green: 0.06, blue: 0.20, alpha: 1)
+        head.strokeColor = SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.5)
+        head.lineWidth = 1.5
+        head.position = CGPoint(x: 0, y: 32)
+        guardian.addChild(head)
+
+        // Eyes — glowing red
+        for dx: CGFloat in [-5, 5] {
+            let eye = SKShapeNode(circleOfRadius: 2.5)
+            eye.fillColor = SKColor(red: 0.90, green: 0.15, blue: 0.10, alpha: 1)
+            eye.strokeColor = .clear
+            eye.glowWidth = 4
+            eye.position = CGPoint(x: dx, y: 34)
+            guardian.addChild(eye)
+            JuiceEngine.pulse(eye, scale: 1.4)
+        }
+
+        // Aether aura
+        let aura = SKShapeNode(circleOfRadius: 38)
+        aura.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.55, alpha: 0.06)
+        aura.strokeColor = SKColor(red: 0.45, green: 0.15, blue: 0.70, alpha: 0.12)
+        aura.lineWidth = 1
+        guardian.addChild(aura)
+        JuiceEngine.pulse(aura, scale: 1.4)
+
+        // Float animation
+        JuiceEngine.float(guardian, distance: 5)
+
+        return guardian
     }
 
     // MARK: - Building Blocks

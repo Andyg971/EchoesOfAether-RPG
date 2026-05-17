@@ -59,6 +59,7 @@ final class PlayerState {
     var talkedToVillager: Bool = false
     var innRested: Bool = false
     var forestProgress: Int = 0  // 0=fresh, 1=beast dead, 2=wolves dead
+    var bossDefeated: Bool = false
 
     var attackDamage: Int { 42 + weaponLevel * 22 }
     var blackSlashDamage: Int { 92 + weaponLevel * 35 }
@@ -76,7 +77,7 @@ final class PlayerState {
             questDelivery: questDelivery, questMushroom: questMushroom,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
-            forestProgress: forestProgress,
+            forestProgress: forestProgress, bossDefeated: bossDefeated,
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -95,6 +96,7 @@ final class PlayerState {
         talkedToVillager = data.talkedToVillager
         innRested = data.innRested
         forestProgress = data.forestProgress
+        bossDefeated = data.bossDefeated
     }
 }
 
@@ -114,6 +116,7 @@ struct SaveData: Codable {
     let talkedToVillager: Bool
     let innRested: Bool
     let forestProgress: Int
+    let bossDefeated: Bool
     let phase: GamePhase
     let resonanceTotal: Int
 }

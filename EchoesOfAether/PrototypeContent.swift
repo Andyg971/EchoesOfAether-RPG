@@ -198,7 +198,80 @@ enum PrototypeContent {
         .line(speaker: "Sage", text: String(localized: "dialogue.sage.rest2"))
     ]
 
-    // MARK: - Enfant
+    // MARK: - Lyra — quête Éclats d'Aether
+
+    static let lyraQuestGiveDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.give1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.give2")),
+        .choice(
+            prompt: String(localized: "dialogue.lyra.quest.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.lyra.quest.choice1"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.lyra.quest.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.lyra.quest.choice2"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.lyra.quest.response2")
+                )
+            ]
+        )
+    ]
+
+    static let lyraQuestActiveDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.active1"))
+    ]
+
+    static let lyraQuestCompleteDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.complete1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.complete2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.quest.kael1"))
+    ]
+
+    static let lyraQuestDoneDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.done1"))
+    ]
+
+    // MARK: - Enfant — quête jouet perdu
+
+    static let childQuestDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.quest1")),
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.quest2")),
+        .choice(
+            prompt: String(localized: "dialogue.child.quest.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.child.quest.choice1"),
+                    responseSpeaker: String(localized: "dialogue.child.name"),
+                    response: String(localized: "dialogue.child.quest.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.child.quest.choice2"),
+                    responseSpeaker: String(localized: "dialogue.child.name"),
+                    response: String(localized: "dialogue.child.quest.response2")
+                )
+            ]
+        )
+    ]
+
+    static let childQuestActiveDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.quest.active1"))
+    ]
+
+    static let childQuestDoneDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.quest.done1"))
+    ]
+
+    // MARK: - Forêt — jouet trouvé
+
+    static let toyFoundDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.forest.toy.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.toy.lyra1"))
+    ]
+
+    // MARK: - Enfant (dialogue original)
 
     static let childDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.line1")),

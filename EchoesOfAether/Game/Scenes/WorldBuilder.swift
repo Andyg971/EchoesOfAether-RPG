@@ -16,6 +16,7 @@ final class WorldBuilder {
 
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
+    private var toyMarker: SKNode?
 
     init() {
         kael    = WorldNode.kael()
@@ -296,6 +297,60 @@ final class WorldBuilder {
         }
 
         addAtmosphere(ParticleFactory.forestFog(in: scene.size), to: scene)
+    }
+
+    /// Place le jouet visible en forêt (si quête active)
+    func addToyMarker(in scene: SKScene) {
+        guard toyMarker == nil else { return }
+        let w = scene.size.width
+        let h = scene.size.height
+
+        let toy = SKNode()
+        toy.position = CGPoint(x: w * 0.80, y: h * 0.28)
+        toy.zPosition = 3
+
+        // Petit ours en bois (placeholder)
+        let body = SKShapeNode(rectOf: CGSize(width: 12, height: 14), cornerRadius: 3)
+        body.fillColor = SKColor(red: 0.55, green: 0.35, blue: 0.15, alpha: 1)
+        body.strokeColor = SKColor(red: 0.70, green: 0.45, blue: 0.20, alpha: 0.6)
+        body.lineWidth = 1
+        toy.addChild(body)
+
+        let head = SKShapeNode(circleOfRadius: 6)
+        head.fillColor = SKColor(red: 0.60, green: 0.40, blue: 0.18, alpha: 1)
+        head.strokeColor = .clear
+        head.position = CGPoint(x: 0, y: 12)
+        toy.addChild(head)
+
+        // Lueur dorée pour attirer l'œil
+        let glow = SKShapeNode(circleOfRadius: 18)
+        glow.fillColor = SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 0.08)
+        glow.strokeColor = SKColor(red: 1, green: 0.80, blue: 0.2, alpha: 0.20)
+        glow.lineWidth = 1
+        toy.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.5)
+
+        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        label.text = "✦"
+        label.fontSize = 14
+        label.position = CGPoint(x: 0, y: 24)
+        toy.addChild(label)
+        JuiceEngine.float(label, distance: 4)
+
+        scene.addChild(toy)
+        backdropNodes.append(toy)
+        toyMarker = toy
+    }
+
+    func removeToyMarker() {
+        toyMarker?.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+        if let t = toyMarker, let idx = backdropNodes.firstIndex(where: { $0 === t }) {
+            backdropNodes.remove(at: idx)
+        }
+        toyMarker = nil
     }
 
     // MARK: - Forest Building Blocks

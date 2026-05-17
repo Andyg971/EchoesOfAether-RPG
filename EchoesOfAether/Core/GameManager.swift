@@ -137,8 +137,42 @@ final class GameManager {
 
     private func openLyraDialogue() {
         transition(to: .dialogue)
-        dialogue.start(PrototypeContent.lyraVillageDialogue) { [weak self] in
-            self?.transition(to: .exploration)
+
+        switch player.questLyraShards {
+        case .inactive:
+            // First: normal village dialogue, then give quest
+            dialogue.start(PrototypeContent.lyraVillageDialogue) { [weak self] in
+                guard let self else { return }
+                dialogue.start(PrototypeContent.lyraQuestGiveDialogue) { [weak self] in
+                    guard let self else { return }
+                    player.questLyraShards = .active
+                    hud.questText = String(localized: "hud.quest.lyraShards")
+                    transition(to: .exploration)
+                }
+            }
+
+        case .active:
+            if player.aetherShards >= 5 {
+                // Turn in shards
+                player.aetherShards -= 5
+                player.gold += 50
+                player.questLyraShards = .complete
+                syncGold()
+                hud.questText = ""
+                AudioEngine.shared.playQuestComplete()
+                dialogue.start(PrototypeContent.lyraQuestCompleteDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            } else {
+                dialogue.start(PrototypeContent.lyraQuestActiveDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            }
+
+        case .complete:
+            dialogue.start(PrototypeContent.lyraQuestDoneDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
         }
     }
 
@@ -154,6 +188,9 @@ final class GameManager {
                 world.switchToForest(in: scene)
             } completion: { [weak self] in
                 guard let self else { return }
+                if player.questChildToy == .active {
+                    world.addToyMarker(in: scene)
+                }
                 transition(to: .exploration)
                 movement.move(world.kael, to: CGPoint(
                     x: scene.size.width * 0.5,
@@ -277,9 +314,30 @@ final class GameManager {
 
     private func openChildDialogue() {
         transition(to: .dialogue)
-        dialogue.start(PrototypeContent.childDialogue) { [weak self] in
-            self?.player.talkedToChild = true
-            self?.transition(to: .exploration)
+
+        switch player.questChildToy {
+        case .inactive:
+            // First talk: original dialogue + quest give
+            dialogue.start(PrototypeContent.childDialogue) { [weak self] in
+                guard let self else { return }
+                player.talkedToChild = true
+                dialogue.start(PrototypeContent.childQuestDialogue) { [weak self] in
+                    guard let self else { return }
+                    player.questChildToy = .active
+                    hud.questText = String(localized: "hud.quest.childToy")
+                    transition(to: .exploration)
+                }
+            }
+
+        case .active:
+            dialogue.start(PrototypeContent.childQuestActiveDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+
+        case .complete:
+            dialogue.start(PrototypeContent.childQuestDoneDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
         }
     }
 
@@ -324,7 +382,38 @@ final class GameManager {
             }
         }
 
+        // Jouet perdu (bas-droite de la forêt)
+        if player.questChildToy == .active {
+            let toySpot = CGPoint(x: w * 0.80, y: h * 0.28)
+            if point.distance(to: toySpot) < 60 {
+                pickupToy()
+                return true
+            }
+        }
+
         return false
+    }
+
+    /// Ramasser le jouet perdu de l'enfant
+    private func pickupToy() {
+        guard let scene else { return }
+        player.questChildToy = .complete
+        player.gold += 25
+        syncGold()
+        AudioEngine.shared.playQuestComplete()
+
+        // Remove toy visual from world
+        world.removeToyMarker()
+
+        // Sparkle pickup effect
+        let toySpot = CGPoint(x: scene.size.width * 0.80, y: scene.size.height * 0.28)
+        scene.addChild(ParticleFactory.impactSparks(at: toySpot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
+
+        transition(to: .dialogue)
+        hud.questText = ""
+        dialogue.start(PrototypeContent.toyFoundDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
     }
 
     // MARK: - Forest Combat
@@ -584,6 +673,9 @@ final class GameManager {
         case .forest:
             hud.objectiveText = String(localized: "hud.objective.forest")
             world.switchToForest(in: scene)
+            if player.questChildToy == .active {
+                world.addToyMarker(in: scene)
+            }
             transition(to: .exploration)
         case .shrine:
             hud.objectiveText = String(localized: "hud.objective.shrine")

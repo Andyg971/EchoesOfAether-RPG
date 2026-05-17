@@ -3044,6 +3044,406 @@
           }
         }
       }
+    },
+    "hud.quest.lyraShards": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☆ Trouver 5 Éclats d'Aether pour Lyra"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☆ Find 5 Aether Shards for Lyra"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.give1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael, j'ai besoin de ton aide. Mes recherches sur l'Aether noir avancent, mais il me manque des composants."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael, I need your help. My research on the Black Aether is progressing, but I'm missing components."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.give2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si tu pouvais me ramener 5 Éclats d'Aether, je pourrais comprendre ce qui corrompt ces terres."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you could bring me 5 Aether Shards, I could understand what's corrupting these lands."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.prompt": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accepter la quête de Lyra ?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Accept Lyra's quest?"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.choice1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compte sur moi."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Count on me."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.response1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci, Kael. Mara en vend à sa boutique, ou tu en trouveras peut-être dans la forêt."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you, Kael. Mara sells them at her shop, or you might find some in the forest."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.choice2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qu'est-ce qu'un Éclat d'Aether ?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What is an Aether Shard?"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.response2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des cristaux qui concentrent l'énergie de l'Aether. Mara en a dans sa boutique. Ramène-m'en 5, c'est important."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crystals that concentrate Aether energy. Mara has some in her shop. Bring me 5, it's important."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.active1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as trouvé les 5 Éclats ? Non ? Essaye chez Mara, elle devrait en avoir en stock."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did you find the 5 Shards? No? Try Mara's shop, she should have some in stock."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.complete1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu les as ! Laisse-moi voir… Extraordinaire. L'énergie qui en émane est fascinante."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You have them! Let me see… Extraordinary. The energy emanating from them is fascinating."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.complete2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tiens, prends ceci pour te remercier. Tu as bien mérité."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Here, take this as thanks. You've earned it."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.kael1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "… Ces éclats résonnent avec la marque sur mon bras. C'est étrange."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "… These shards resonate with the mark on my arm. It's strange."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.done1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mes analyses avancent grâce à tes éclats. Tu m'as rendu un immense service, Kael."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My analysis is progressing thanks to your shards. You've done me a great service, Kael."
+          }
+        }
+      }
+    },
+    "hud.quest.childToy": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☆ Retrouver le jouet de l'enfant dans la forêt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "☆ Find the child's toy in the forest"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monsieur… Monsieur ! Mon petit ours en bois… je l'ai perdu quand les ombres sont venues."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mister… Mister! My little wooden bear… I lost it when the shadows came."
+          }
+        }
+      }
+    },
+    "dialogue.child.quest2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je crois qu'il est tombé dans la forêt, près du gros arbre à droite. Tu pourrais le retrouver ?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I think it fell in the forest, near the big tree on the right. Could you find it?"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.prompt": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chercher le jouet ?"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Look for the toy?"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.choice1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je le retrouverai, promis."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'll find it, I promise."
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.response1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci merci merci ! C'est un ours en bois avec un ruban rouge !"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you thank you thank you! It's a wooden bear with a red ribbon!"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.choice2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La forêt est dangereuse…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The forest is dangerous…"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.response2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "S'il te plaît… C'est mon seul ami depuis que maman est partie…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Please… He's my only friend since mom left…"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.active1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu l'as trouvé ? Mon ours ? Il est dans la forêt, vers la droite…"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Did you find it? My bear? He's in the forest, to the right…"
+          }
+        }
+      }
+    },
+    "dialogue.child.quest.done1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as retrouvé mon ours ! Tu es le meilleur héros du monde entier !"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You found my bear! You're the best hero in the whole wide world!"
+          }
+        }
+      }
+    },
+    "dialogue.forest.toy.kael1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un petit ours en bois… C'est le jouet de l'enfant du village."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A small wooden bear… It's the village child's toy."
+          }
+        }
+      }
+    },
+    "dialogue.forest.toy.lyra1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pauvre petit. Au moins on pourra lui rendre quand on repassera au village."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Poor little one. At least we can return it when we pass through the village again."
+          }
+        }
+      }
     }
   },
   "version": "1.1"

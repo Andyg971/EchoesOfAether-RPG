@@ -54,6 +54,8 @@ final class PlayerState {
 
     var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
     var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
+    var questLyraShards: QuestState = .inactive // Lyra demande 5 Aether Shards
+    var questChildToy: QuestState = .inactive   // enfant a perdu jouet en forêt
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -75,6 +77,7 @@ final class PlayerState {
             weaponLevel: weaponLevel, armorLevel: armorLevel,
             potions: potions, aetherShards: aetherShards,
             questDelivery: questDelivery, questMushroom: questMushroom,
+            questLyraShards: questLyraShards, questChildToy: questChildToy,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -91,6 +94,8 @@ final class PlayerState {
         aetherShards = data.aetherShards
         questDelivery = data.questDelivery
         questMushroom = data.questMushroom
+        questLyraShards = data.questLyraShards
+        questChildToy = data.questChildToy
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -111,6 +116,8 @@ struct SaveData: Codable {
     let aetherShards: Int
     let questDelivery: QuestState
     let questMushroom: QuestState
+    let questLyraShards: QuestState
+    let questChildToy: QuestState
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

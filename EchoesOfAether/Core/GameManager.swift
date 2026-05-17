@@ -78,11 +78,8 @@ final class GameManager {
             tapAndMove(point, in: scene)
 
         case .forest:
-            if point.x > scene.size.width * 0.68 {
-                startForestCombat()
-            } else {
-                tapAndMove(point, in: scene)
-            }
+            if tryForestInteraction(point, in: scene) { return }
+            tapAndMove(point, in: scene)
 
         case .shrine:
             if point.x > scene.size.width * 0.62 {
@@ -294,9 +291,46 @@ final class GameManager {
         }
     }
 
-    // MARK: - Combat
+    // MARK: - Forest Interactions
 
-    private func startForestCombat() {
+    private func tryForestInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Zone 1 : Bosquet corrompu (gauche) — combat bête
+        if player.forestProgress < 1 {
+            let groveCenter = CGPoint(x: w * 0.30, y: h * 0.45)
+            if point.distance(to: groveCenter) < 80 {
+                startGroveCombat()
+                return true
+            }
+        }
+
+        // Zone 2 : Clairière sombre (droite) — combat loups
+        if player.forestProgress >= 1 && player.forestProgress < 2 {
+            let clearingCenter = CGPoint(x: w * 0.65, y: h * 0.55)
+            if point.distance(to: clearingCenter) < 80 {
+                startClearingCombat()
+                return true
+            }
+        }
+
+        // Zone 3 : Sentier profond (nord) → sanctuaire
+        if player.forestProgress >= 2 {
+            let deepPath = CGPoint(x: w * 0.60, y: h * 0.82)
+            if point.distance(to: deepPath) < 70 {
+                enterShrine()
+                return true
+            }
+        }
+
+        return false
+    }
+
+    // MARK: - Forest Combat
+
+    /// Combat 1 : Bête corrompue dans le bosquet
+    private func startGroveCombat() {
         guard let scene else { return }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
@@ -310,21 +344,59 @@ final class GameManager {
             guard let self else { return }
             resonanceTotal += resonance
             player.gold += gold
+            player.forestProgress = 1
             syncGold()
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.clearing")
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.forestGroveDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Combat 2 : Loups d'ombre dans la clairière
+    private func startClearingCombat() {
+        guard let scene else { return }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        combat.attach(
+            to: scene,
+            enemyName: String(localized: "combat.enemy.wolf"),
+            enemyHP: 200,
+            goldReward: 50,
+            player: player
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            resonanceTotal += resonance
+            player.gold += gold
+            player.forestProgress = 2
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.deepPath")
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.blackAetherDialogue) { [weak self] in
-                guard let self, let scene = self.scene else { return }
-                transition(to: .transition)
-                TransitionManager.fade(in: scene) { [weak self] in
-                    guard let self else { return }
-                    phase = .shrine
-                    hud.objectiveText = String(localized: "hud.objective.shrine")
-                    world.switchToShrine(in: scene)
-                } completion: { [weak self] in
-                    self?.transition(to: .exploration)
-                }
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Transition vers sanctuaire
+    private func enterShrine() {
+        guard let scene else { return }
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.forestExitDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            transition(to: .transition)
+            TransitionManager.fade(in: scene) { [weak self] in
+                guard let self else { return }
+                phase = .shrine
+                hud.objectiveText = String(localized: "hud.objective.shrine")
+                world.switchToShrine(in: scene)
+            } completion: { [weak self] in
+                self?.transition(to: .exploration)
             }
         }
     }

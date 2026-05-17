@@ -242,6 +242,37 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.villager.line2"))
     ]
 
+    // MARK: - Forêt — après combat bosquet
+
+    static let forestGroveDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.grove.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.forest.grove.kael1")),
+        .choice(
+            prompt: String(localized: "dialogue.forest.grove.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.forest.grove.choice1"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.forest.grove.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.forest.grove.choice2"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.forest.grove.response2")
+                )
+            ]
+        ),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.grove.lyra2"))
+    ]
+
+    // MARK: - Forêt — avant sanctuaire
+
+    static let forestExitDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.exit.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.forest.exit.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.exit.lyra2"))
+    ]
+
     // MARK: - Post-combat forêt (découverte de l'Aether noir)
 
     static let blackAetherDialogue: [DialogueStep] = [

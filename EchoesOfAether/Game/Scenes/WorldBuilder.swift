@@ -179,12 +179,13 @@ final class WorldBuilder {
         addAtmosphere(ParticleFactory.ambientDust(in: scene.size), to: scene)
     }
 
-    // MARK: - Forêt
+    // MARK: - Forêt d'Ébène
 
     private func buildForest(in scene: SKScene) {
         let w = scene.size.width
         let h = scene.size.height
 
+        // Sol sombre
         let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
         ground.fillColor = SKColor(red: 0.04, green: 0.07, blue: 0.05, alpha: 1)
         ground.strokeColor = .clear
@@ -192,31 +193,207 @@ final class WorldBuilder {
         ground.zPosition = -10
         add(ground, to: scene)
 
-        for i in 0..<8 {
-            let tree = makeTree(height: CGFloat.random(in: 80...140))
-            tree.position = CGPoint(x: CGFloat(30 + i * 85 + Int.random(in: -15...15)),
-                                    y: h * 0.68 + CGFloat.random(in: -30...30))
-            add(tree, to: scene)
+        // Sentier sinueux (pierres sombres du sud au nord)
+        let pathPoints: [(CGFloat, CGFloat)] = [
+            (0.48, 0.18), (0.45, 0.28), (0.42, 0.38),
+            (0.38, 0.48), (0.35, 0.55), (0.40, 0.62),
+            (0.50, 0.68), (0.58, 0.74), (0.62, 0.80)
+        ]
+        for (px, py) in pathPoints {
+            let stone = SKShapeNode(rectOf: CGSize(width: CGFloat.random(in: 22...36),
+                                                    height: CGFloat.random(in: 12...20)),
+                                    cornerRadius: 3)
+            stone.fillColor = SKColor(red: 0.07, green: 0.09, blue: 0.06, alpha: 1)
+            stone.strokeColor = SKColor(white: 0.12, alpha: 0.3)
+            stone.lineWidth = 1
+            stone.position = CGPoint(x: w * px, y: h * py)
+            stone.zPosition = -8
+            add(stone, to: scene)
         }
-        for i in 0..<5 {
-            let tree = makeTree(height: CGFloat.random(in: 60...100))
-            tree.position = CGPoint(x: CGFloat(60 + i * 120), y: h * 0.30 + CGFloat.random(in: -20...20))
-            tree.alpha = 0.4
-            tree.zPosition = -3
+
+        // --- Arbres normaux (bordures) ---
+        for i in 0..<10 {
+            let tree = makeTree(height: CGFloat.random(in: 90...150))
+            let side: CGFloat = i < 5 ? 0.08 + CGFloat(i) * 0.04 : 0.75 + CGFloat(i - 5) * 0.05
+            tree.position = CGPoint(x: w * side + CGFloat.random(in: -10...10),
+                                    y: h * CGFloat.random(in: 0.25...0.80))
             add(tree, to: scene)
         }
 
-        // Indication "ennemi" à droite
-        let dangerZone = SKShapeNode(circleOfRadius: 30)
-        dangerZone.fillColor = SKColor(red: 0.40, green: 0.05, blue: 0.05, alpha: 0.08)
-        dangerZone.strokeColor = SKColor(red: 0.70, green: 0.10, blue: 0.10, alpha: 0.20)
-        dangerZone.lineWidth = 1
-        dangerZone.position = CGPoint(x: w * 0.75, y: h * 0.50)
-        dangerZone.zPosition = -2
-        add(dangerZone, to: scene)
-        JuiceEngine.pulse(dangerZone, scale: 1.2)
+        // --- Arbres corrompus (violet/noir, au centre) ---
+        for i in 0..<6 {
+            let tree = makeCorruptedTree(height: CGFloat.random(in: 70...120))
+            let tx = w * (0.30 + CGFloat(i % 3) * 0.15) + CGFloat.random(in: -15...15)
+            let ty = h * (0.45 + CGFloat(i / 3) * 0.18) + CGFloat.random(in: -10...10)
+            tree.position = CGPoint(x: tx, y: ty)
+            add(tree, to: scene)
+        }
+
+        // --- Zone 1 : Bosquet corrompu (centre-gauche) ---
+        let groveZone = makeDangerZone(
+            at: CGPoint(x: w * 0.30, y: h * 0.45),
+            radius: 35,
+            color: SKColor(red: 0.50, green: 0.10, blue: 0.10, alpha: 1)
+        )
+        add(groveZone, to: scene)
+
+        // --- Zone 2 : Clairière sombre (centre-droite) ---
+        let clearingZone = makeDangerZone(
+            at: CGPoint(x: w * 0.65, y: h * 0.55),
+            radius: 40,
+            color: SKColor(red: 0.40, green: 0.08, blue: 0.45, alpha: 1)
+        )
+        add(clearingZone, to: scene)
+
+        // --- Zone 3 : Sentier profond (nord) → vers sanctuaire ---
+        let deepPath = SKShapeNode(rectOf: CGSize(width: 60, height: 30), cornerRadius: 8)
+        deepPath.fillColor = SKColor(red: 0.12, green: 0.05, blue: 0.18, alpha: 0.15)
+        deepPath.strokeColor = SKColor(red: 0.50, green: 0.25, blue: 0.75, alpha: 0.30)
+        deepPath.lineWidth = 1.5
+        deepPath.position = CGPoint(x: w * 0.60, y: h * 0.82)
+        deepPath.zPosition = -2
+        add(deepPath, to: scene)
+        JuiceEngine.pulse(deepPath, scale: 1.15)
+
+        let pathLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        pathLabel.text = String(localized: "world.deepPath")
+        pathLabel.fontSize = 10
+        pathLabel.fontColor = SKColor(red: 0.55, green: 0.35, blue: 0.80, alpha: 0.7)
+        pathLabel.position = CGPoint(x: w * 0.60, y: h * 0.87)
+        pathLabel.zPosition = -1
+        add(pathLabel, to: scene)
+
+        // --- Mares d'Aether noir ---
+        let poolPositions: [CGPoint] = [
+            CGPoint(x: w * 0.22, y: h * 0.60),
+            CGPoint(x: w * 0.55, y: h * 0.38),
+            CGPoint(x: w * 0.75, y: h * 0.70)
+        ]
+        for pos in poolPositions {
+            let pool = makeAetherPool(at: pos)
+            add(pool, to: scene)
+        }
+
+        // --- Champignons lumineux (ambiance) ---
+        let mushPositions: [CGPoint] = [
+            CGPoint(x: w * 0.15, y: h * 0.35),
+            CGPoint(x: w * 0.70, y: h * 0.30),
+            CGPoint(x: w * 0.85, y: h * 0.50),
+            CGPoint(x: w * 0.25, y: h * 0.75)
+        ]
+        for pos in mushPositions {
+            let m = makeGlowMushroom(at: pos)
+            add(m, to: scene)
+        }
+
+        // Arbres fond (foreground parallax feel)
+        for i in 0..<4 {
+            let tree = makeTree(height: CGFloat.random(in: 50...80))
+            tree.position = CGPoint(x: CGFloat(50 + i * 140), y: h * 0.15 + CGFloat.random(in: -10...10))
+            tree.alpha = 0.3
+            tree.zPosition = 5
+            add(tree, to: scene)
+        }
 
         addAtmosphere(ParticleFactory.forestFog(in: scene.size), to: scene)
+    }
+
+    // MARK: - Forest Building Blocks
+
+    private func makeCorruptedTree(height: CGFloat) -> SKNode {
+        let tree = SKNode()
+        tree.zPosition = -4
+
+        let trunk = SKShapeNode(rectOf: CGSize(width: 10, height: height * 0.45), cornerRadius: 2)
+        trunk.fillColor = SKColor(red: 0.10, green: 0.06, blue: 0.12, alpha: 1)
+        trunk.strokeColor = .clear
+        tree.addChild(trunk)
+
+        let colors: [SKColor] = [
+            SKColor(red: 0.12, green: 0.06, blue: 0.18, alpha: 1),
+            SKColor(red: 0.08, green: 0.04, blue: 0.14, alpha: 1),
+            SKColor(red: 0.14, green: 0.08, blue: 0.22, alpha: 0.8)
+        ]
+        for i in 0..<3 {
+            let leaf = SKShapeNode(circleOfRadius: CGFloat(16 - i * 3))
+            leaf.fillColor = colors[i]
+            leaf.strokeColor = .clear
+            leaf.position = CGPoint(x: 0, y: height * 0.22 + CGFloat(i) * 12)
+            tree.addChild(leaf)
+        }
+
+        // Lueur violette subtile
+        let glow = SKShapeNode(circleOfRadius: 22)
+        glow.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.50, alpha: 0.06)
+        glow.strokeColor = .clear
+        glow.position = CGPoint(x: 0, y: height * 0.30)
+        tree.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.3)
+
+        return tree
+    }
+
+    private func makeDangerZone(at pos: CGPoint, radius: CGFloat, color: SKColor) -> SKNode {
+        let zone = SKNode()
+        zone.position = pos
+        zone.zPosition = -2
+
+        let circle = SKShapeNode(circleOfRadius: radius)
+        circle.fillColor = color.withAlphaComponent(0.06)
+        circle.strokeColor = color.withAlphaComponent(0.18)
+        circle.lineWidth = 1.5
+        zone.addChild(circle)
+        JuiceEngine.pulse(circle, scale: 1.2)
+
+        // Icône crâne (placeholder)
+        let icon = SKLabelNode(text: "☠")
+        icon.fontSize = 18
+        icon.position = CGPoint(x: 0, y: -6)
+        zone.addChild(icon)
+        JuiceEngine.float(icon, distance: 4)
+
+        return zone
+    }
+
+    private func makeAetherPool(at pos: CGPoint) -> SKNode {
+        let pool = SKNode()
+        pool.position = pos
+        pool.zPosition = -6
+
+        let water = SKShapeNode(circleOfRadius: 12)
+        water.fillColor = SKColor(red: 0.08, green: 0.02, blue: 0.15, alpha: 0.8)
+        water.strokeColor = SKColor(red: 0.40, green: 0.15, blue: 0.65, alpha: 0.3)
+        water.lineWidth = 1
+        pool.addChild(water)
+
+        let glow = SKShapeNode(circleOfRadius: 18)
+        glow.fillColor = SKColor(red: 0.30, green: 0.08, blue: 0.50, alpha: 0.05)
+        glow.strokeColor = .clear
+        pool.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.5)
+
+        return pool
+    }
+
+    private func makeGlowMushroom(at pos: CGPoint) -> SKNode {
+        let mush = SKNode()
+        mush.position = pos
+        mush.zPosition = -3
+
+        let stem = SKShapeNode(rectOf: CGSize(width: 3, height: 8), cornerRadius: 1)
+        stem.fillColor = SKColor(white: 0.15, alpha: 1)
+        stem.strokeColor = .clear
+        mush.addChild(stem)
+
+        let cap = SKShapeNode(circleOfRadius: 5)
+        cap.fillColor = SKColor(red: 0.20, green: 0.55, blue: 0.30, alpha: 0.9)
+        cap.strokeColor = .clear
+        cap.glowWidth = 3
+        cap.position = CGPoint(x: 0, y: 7)
+        mush.addChild(cap)
+        JuiceEngine.pulse(cap, scale: 1.3)
+
+        return mush
     }
 
     // MARK: - Sanctuaire

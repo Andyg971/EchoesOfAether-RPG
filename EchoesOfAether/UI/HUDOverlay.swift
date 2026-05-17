@@ -7,6 +7,9 @@ final class HUDOverlay {
     private let resonanceLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let goldLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let questLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+    let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
+
+    var onInventoryTap: (() -> Void)?
 
     var objectiveText: String = "" {
         didSet { objectiveLabel.text = objectiveText }
@@ -51,8 +54,19 @@ final class HUDOverlay {
         questLabel.isHidden = true
         root.addChild(questLabel)
 
+        setupInventoryButton()
+
         scene.addChild(root)
         layout(in: scene.size)
+    }
+
+    func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
+        let local = root.convert(point, from: scene)
+        if inventoryButton.contains(local) {
+            onInventoryTap?()
+            return true
+        }
+        return false
     }
 
     func layout(in size: CGSize, safeTop: CGFloat = 0) {
@@ -61,5 +75,21 @@ final class HUDOverlay {
         resonanceLabel.position = CGPoint(x: size.width - 20, y: topY)
         goldLabel.position = CGPoint(x: size.width - 20, y: topY - 20)
         questLabel.position = CGPoint(x: 20, y: topY - 20)
+        inventoryButton.position = CGPoint(x: size.width - 36, y: topY - 52)
+    }
+
+    // MARK: - Private
+
+    private func setupInventoryButton() {
+        inventoryButton.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 0.85)
+        inventoryButton.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.80, alpha: 0.7)
+        inventoryButton.lineWidth = 1.5
+
+        let icon = SKLabelNode(text: "🎒")
+        icon.fontSize = 20
+        icon.verticalAlignmentMode = .center
+        icon.horizontalAlignmentMode = .center
+        inventoryButton.addChild(icon)
+        root.addChild(inventoryButton)
     }
 }

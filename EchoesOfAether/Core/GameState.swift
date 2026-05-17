@@ -5,6 +5,7 @@ enum GameState {
     case dialogue
     case combat
     case shop
+    case inventory
     case transition
 }
 

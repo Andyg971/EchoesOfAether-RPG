@@ -5,13 +5,14 @@ final class GameManager {
     private(set) var state: GameState = .exploration
     private(set) var phase: GamePhase = .wake
 
-    let world    = WorldBuilder()
-    let hud      = HUDOverlay()
-    let dialogue = DialogueSystem()
-    let combat   = CombatSystem()
-    let movement = MovementController()
-    let shop     = ShopOverlay()
-    let player   = PlayerState()
+    let world     = WorldBuilder()
+    let hud       = HUDOverlay()
+    let dialogue  = DialogueSystem()
+    let combat    = CombatSystem()
+    let movement  = MovementController()
+    let shop      = ShopOverlay()
+    let inventory = InventoryOverlay()
+    let player    = PlayerState()
 
     private weak var scene: SKScene?
     private var resonanceTotal = 0
@@ -24,6 +25,9 @@ final class GameManager {
         hud.attach(to: scene)
         dialogue.attach(to: scene)
         shop.attach(to: scene)
+        inventory.attach(to: scene)
+
+        hud.onInventoryTap = { [weak self] in self?.openInventory() }
 
         if let save = SaveManager.load() {
             restoreFrom(save: save, scene: scene)
@@ -38,6 +42,7 @@ final class GameManager {
         hud.layout(in: size, safeTop: safeTop)
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
+        inventory.layout(in: size, safeBottom: safeBottom)
     }
 
     func update(deltaTime: TimeInterval) {
@@ -45,10 +50,12 @@ final class GameManager {
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {
-        if state == .shop,    shop.handleTap(at: point, in: scene) { syncGold(); return }
-        if state == .dialogue, dialogue.handleTap(at: point, in: scene) { return }
-        if state == .combat,   combat.handleTap(at: point, in: scene) { return }
+        if state == .inventory, inventory.handleTap(at: point, in: scene) { return }
+        if state == .shop,      shop.handleTap(at: point, in: scene) { syncGold(); return }
+        if state == .dialogue,   dialogue.handleTap(at: point, in: scene) { return }
+        if state == .combat,     combat.handleTap(at: point, in: scene) { return }
         guard state == .exploration else { return }
+        if hud.handleTap(at: point, in: scene) { return }
         handleExplorationTap(point, in: scene)
     }
 
@@ -474,7 +481,7 @@ final class GameManager {
 
     /// Transition vers sanctuaire
     private func enterShrine() {
-        guard let scene else { return }
+        guard scene != nil else { return }
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.forestExitDialogue) { [weak self] in
             guard let self, let scene = self.scene else { return }
@@ -491,7 +498,7 @@ final class GameManager {
     }
 
     private func startBossFight() {
-        guard let scene else { return }
+        guard scene != nil else { return }
         guard !player.bossDefeated else {
             // Boss already dead → go straight to shrine ending
             transition(to: .dialogue)
@@ -631,6 +638,16 @@ final class GameManager {
                 onBuy: { [weak self] _ in self?.player.innRested = true }
             )
         ]
+    }
+
+    // MARK: - Inventory
+
+    func openInventory() {
+        guard state == .exploration else { return }
+        transition(to: .inventory)
+        inventory.open(player: player) { [weak self] in
+            self?.transition(to: .exploration)
+        }
     }
 
     // MARK: - Helpers

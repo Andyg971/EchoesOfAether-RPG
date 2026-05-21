@@ -4096,6 +4096,288 @@
         "fr": { "stringUnit": { "state": "translated", "value": "✦ Inscription ancienne" } },
         "en": { "stringUnit": { "state": "translated", "value": "✦ Ancient inscription" } }
       }
+    },
+    "world.ruins.eranInscription": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Inscription griffonnée" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Scratched inscription" } }
+      }
+    },
+    "combat.enemy.archivist": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Archiviste" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Archivist" } }
+      }
+    },
+    "combat.archivist.specialName": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Drain de Mémoire" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Memory Drain" } }
+      }
+    },
+    "dialogue.act2.archivist.name": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Archiviste" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Archivist" } }
+      }
+    },
+    "dialogue.act2.dorin.block1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Non. Je ne te laisserai pas l'emmener là-bas." } },
+        "en": { "stringUnit": { "state": "translated", "value": "No. I won't let you take her there." } }
+      }
+    },
+    "dialogue.act2.dorin.block2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ces ruines ont brûlé des âmes bien plus pures que la tienne, Kael." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Those ruins have consumed souls far purer than yours, Kael." } }
+      }
+    },
+    "dialogue.act2.dorin.block.prompt": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Que répondre à Dorin ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "What do you say to Dorin?" } }
+      }
+    },
+    "dialogue.act2.dorin.block.choice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Pousse-toi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Move aside." } }
+      }
+    },
+    "dialogue.act2.dorin.block.choice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je comprends ta méfiance." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I understand your distrust." } }
+      }
+    },
+    "dialogue.act2.dorin.block.response1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Non. Pas avant que je sache que tu ne lui feras pas de mal." } },
+        "en": { "stringUnit": { "state": "translated", "value": "No. Not until I know you won't hurt her." } }
+      }
+    },
+    "dialogue.act2.dorin.block.response2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Méfiance... Oui. Parce que j'ai vu ce que tu deviens." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Distrust... Yes. Because I've seen what you're becoming." } }
+      }
+    },
+    "dialogue.act2.dorin.block3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Protège-la. C'est tout ce que je te demande." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Protect her. That's all I ask of you." } }
+      }
+    },
+    "dialogue.act2.nightmare.voice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Solis. Cinq nuits. Sept âmes." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Solis. Five nights. Seven souls." } }
+      }
+    },
+    "dialogue.act2.nightmare.voice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu te souviens des noms. Tu te souviens de chaque geste." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You remember the names. You remember every gesture." } }
+      }
+    },
+    "dialogue.act2.nightmare.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tais-toi. Tais-toi—" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Shut up. Shut up—" } }
+      }
+    },
+    "dialogue.act2.nightmare.voice3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "La Source te réclame. C'est ton sang. C'est ton nom." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Source claims you. It is your blood. It is your name." } }
+      }
+    },
+    "dialogue.act2.nightmare.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je n'appartiens à personne." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I belong to no one." } }
+      }
+    },
+    "dialogue.act2.nightmare.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael. Kael, réveille-toi. Tu criais." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael. Kael, wake up. You were screaming." } }
+      }
+    },
+    "dialogue.act2.nightmare.kael3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "...C'était rien. Rendors-toi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "...It was nothing. Go back to sleep." } }
+      }
+    },
+    "dialogue.act2.vision1.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Cette lumière... je l'ai déjà vue." } },
+        "en": { "stringUnit": { "state": "translated", "value": "This light... I've seen it before." } }
+      }
+    },
+    "dialogue.act2.vision1.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael ? Tu trembles." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael? You're shaking." } }
+      }
+    },
+    "dialogue.act2.vision1.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "J'ai vu une silhouette tomber. Des mains d'Aether noir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I saw a silhouette fall. Hands of black Aether." } }
+      }
+    },
+    "dialogue.act2.vision1.kael3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Mes mains." } },
+        "en": { "stringUnit": { "state": "translated", "value": "My hands." } }
+      }
+    },
+    "dialogue.act2.eran.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Attends... ces runes ne ressemblent pas aux autres." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Wait... these runes don't look like the others." } }
+      }
+    },
+    "dialogue.act2.eran.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "«Il n'est pas trop tard. Cherche le Seuil. — E.»" } },
+        "en": { "stringUnit": { "state": "translated", "value": "«It's not too late. Seek the Threshold. — E.»" } }
+      }
+    },
+    "dialogue.act2.eran.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "E... Eran. Elle a été ici." } },
+        "en": { "stringUnit": { "state": "translated", "value": "E... Eran. She was here." } }
+      }
+    },
+    "dialogue.act2.eran.lyra3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Eran Solace ? La chercheuse disparue ? Mais... c'est impossible." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Eran Solace? The missing researcher? But... that's impossible." } }
+      }
+    },
+    "dialogue.act2.eran.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ou elle savait ce qui allait arriver." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Or she knew what was going to happen." } }
+      }
+    },
+    "dialogue.act2.archivist.pre1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Collecteur. Tu es enfin revenu chercher ton nom." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Collector. You've finally come back to claim your name." } }
+      }
+    },
+    "dialogue.act2.archivist.pre2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Chaque âme que tu as prise... je les ai cataloguées." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Every soul you've taken... I've catalogued them all." } }
+      }
+    },
+    "dialogue.act2.archivist.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je ne te connais pas." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I don't know you." } }
+      }
+    },
+    "dialogue.act2.archivist.pre3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Mais elles te connaissent. Elles m'ont tout raconté." } },
+        "en": { "stringUnit": { "state": "translated", "value": "But they know you. They told me everything." } }
+      }
+    },
+    "dialogue.act2.archivist.post1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ces... voix. Toutes en même temps." } },
+        "en": { "stringUnit": { "state": "translated", "value": "These... voices. All at once." } }
+      }
+    },
+    "dialogue.act2.archivist.post2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael. Il y a quelque chose sur le mur, près de l'inscription principale." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael. There's something on the wall, near the main inscription." } }
+      }
+    },
+    "dialogue.act2.archivist.post.vision": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Vision — La Source pulse. Mon sang... pas ma volonté." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Vision — The Source pulses. My blood... not my will." } }
+      }
+    },
+    "dialogue.act2.archivist.post3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Viens. L'inscription... elle répond à quelque chose en toi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Come. The inscription... it responds to something in you." } }
+      }
+    },
+    "dialogue.act2.gift.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Attends." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Wait." } }
+      }
+    },
+    "dialogue.act2.gift.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Prends ça. Un cristal de résonance. Il absorbe l'Aether noir... un peu." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Take this. A resonance crystal. It absorbs black Aether... a little." } }
+      }
+    },
+    "dialogue.act2.gift.prompt": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Que faire du cristal ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "What to do with the crystal?" } }
+      }
+    },
+    "dialogue.act2.gift.choice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je le garde." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I'll keep it." } }
+      }
+    },
+    "dialogue.act2.gift.choice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je n'en ai pas besoin." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I don't need it." } }
+      }
+    },
+    "dialogue.act2.gift.response1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Bien. Ne le perds pas." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Good. Don't lose it." } }
+      }
+    },
+    "dialogue.act2.gift.response2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Si. Tu en as besoin. Plus que tu ne le crois." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Yes you do. More than you think." } }
+      }
+    },
+    "dialogue.act2.gift.lyra3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Garde-le. Promis ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Keep it. Promise?" } }
+      }
+    },
+    "dialogue.act2.gift.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "... Promis." } },
+        "en": { "stringUnit": { "state": "translated", "value": "... I promise." } }
+      }
+    },
+    "dialogue.act2.death.eran.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Eran avait raison... Le Seuil peut encore—" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Eran was right... The Threshold can still—" } }
+      }
+    },
+    "dialogue.act2.death.eran.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil n'y changera rien." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold won't change anything." } }
+      }
     }
   },
   "version": "1.1"

@@ -664,6 +664,7 @@ final class GameManager {
             phase = .act2
             hud.objectiveText = String(localized: "hud.objective.act2")
             world.switchToVillage(in: scene)
+            world.repositionDorinToGate(in: scene)
         } completion: { [weak self] in
             guard let self else { return }
             // Retour au village + révélation du Sage (auto)
@@ -692,28 +693,42 @@ final class GameManager {
             }
             return true
         }
+        // Dorin près de la porte : bloque si pas encore passé
         if point.distance(to: world.dorin.position) < radius {
-            transition(to: .dialogue)
-            dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
-                self?.transition(to: .exploration)
+            if !player.act2DorinPassed {
+                openDorinBlock(scene: scene)
+            } else {
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
             }
             return true
         }
+        // Sage / auberge : cauchemar d'abord si pas encore vu
         if point.distance(to: world.sage.position) < radius {
-            transition(to: .dialogue)
-            let content = player.act2SageConsulted
-                ? PrototypeContent.act2SageRevelationDialogue
-                : PrototypeContent.act2SageRevelationDialogue
-            dialogue.start(content) { [weak self] in
-                guard let self else { return }
-                player.act2SageConsulted = true
-                transition(to: .exploration)
+            if !player.act2NightmareSeen {
+                openNightmareSequence(scene: scene)
+            } else {
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
+                    guard let self else { return }
+                    player.act2SageConsulted = true
+                    transition(to: .exploration)
+                }
             }
             return true
         }
-        // Porte nord / Garen → partir vers les ruines
-        if point.distance(to: world.garen.position) < radius && player.act2SageConsulted {
-            enterRuins()
+        // Porte nord / Garen → partir vers les ruines (nécessite sage + dorin)
+        if point.distance(to: world.garen.position) < radius {
+            if player.act2SageConsulted && player.act2DorinPassed {
+                enterRuins()
+            } else {
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            }
             return true
         }
         if point.distance(to: world.bram.position) < radius {
@@ -725,6 +740,43 @@ final class GameManager {
             return true
         }
         return false
+    }
+
+    private func openNightmareSequence(scene: SKScene) {
+        transition(to: .dialogue)
+        // Flash sombre pour simuler le rêve
+        JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                 color: SKColor(red: 0.05, green: 0.02, blue: 0.10, alpha: 1),
+                                 duration: 0.5)
+        dialogue.start(PrototypeContent.act2NightmareDialogue) { [weak self] in
+            guard let self else { return }
+            player.act2NightmareSeen = true
+            // Après le cauchemar : révélation du Sage
+            transition(to: .shop)
+            shop.open(
+                title: String(localized: "shop.inn.title"),
+                items: innItems(),
+                player: player
+            ) { [weak self] in
+                guard let self else { return }
+                syncGold()
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
+                    guard let self else { return }
+                    player.act2SageConsulted = true
+                    transition(to: .exploration)
+                }
+            }
+        }
+    }
+
+    private func openDorinBlock(scene: SKScene) {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act2DorinBlockDialogue) { [weak self] in
+            guard let self else { return }
+            player.act2DorinPassed = true
+            transition(to: .exploration)
+        }
     }
 
     private func enterRuins() {
@@ -739,7 +791,22 @@ final class GameManager {
             guard let self else { return }
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.act2RuinsEnterDialogue) { [weak self] in
-                self?.transition(to: .exploration)
+                guard let self, let scene = self.scene else { return }
+                // Vision 1 automatique — flash rouge + corruption niveau 1
+                if !player.act2Vision1Seen {
+                    player.act2Vision1Seen = true
+                    player.kaelCorruptionLevel = max(player.kaelCorruptionLevel, 1)
+                    world.applyKaelCorruption(level: player.kaelCorruptionLevel)
+                    JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                             color: SKColor(red: 0.65, green: 0.08, blue: 0.05, alpha: 1),
+                                             duration: 0.45)
+                    JuiceEngine.screenShake(scene, intensity: 3)
+                    dialogue.start(PrototypeContent.act2Vision1Dialogue) { [weak self] in
+                        self?.transition(to: .exploration)
+                    }
+                } else {
+                    transition(to: .exploration)
+                }
             }
         }
     }
@@ -758,7 +825,7 @@ final class GameManager {
             }
         }
 
-        // Zone 2 : Âmes piégées (centre-droite)
+        // Zone 2 : Archiviste mini-boss (centre-droite)
         if player.ruinsProgress == 1 {
             if point.distance(to: CGPoint(x: w * 0.62, y: h * 0.60)) < 75 {
                 startRuinsCombat2()
@@ -766,7 +833,15 @@ final class GameManager {
             }
         }
 
-        // Inscription (discovery) — débloquée après les 2 combats
+        // Inscription d'Eran (bas-gauche) — accessible dès l'entrée
+        if !player.act2EranFound {
+            if point.distance(to: CGPoint(x: w * 0.15, y: h * 0.65)) < 60 {
+                openEranInscription()
+                return true
+            }
+        }
+
+        // Inscription principale (discovery) — débloquée après les 2 combats
         if player.ruinsProgress >= 2 {
             if point.distance(to: CGPoint(x: w * 0.70, y: h * 0.65)) < 70 {
                 openDiscovery()
@@ -775,6 +850,19 @@ final class GameManager {
         }
 
         return false
+    }
+
+    private func openEranInscription() {
+        guard let scene else { return }
+        transition(to: .dialogue)
+        JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                 color: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
+                                 duration: 0.3)
+        dialogue.start(PrototypeContent.act2EranInscriptionDialogue) { [weak self] in
+            guard let self else { return }
+            player.act2EranFound = true
+            transition(to: .exploration)
+        }
     }
 
     private func startRuinsCombat1() {
@@ -808,31 +896,56 @@ final class GameManager {
     }
 
     private func startRuinsCombat2() {
-        guard let scene else { return }
-        transition(to: .combat)
-        hud.objectiveText = String(localized: "hud.objective.combat")
-        combat.attach(
-            to: scene,
-            enemyName: String(localized: "combat.enemy.trappedSoul"),
-            enemyHP: 260,
-            goldReward: 40,
-            player: player
-        ) { [weak self] resonance, gold in
-            guard let self else { return }
-            if resonance == 0 && gold == 0 {
-                hud.objectiveText = String(localized: "hud.objective.ruins")
-                transition(to: .exploration)
-                return
-            }
-            resonanceTotal += resonance
-            player.gold += gold
-            player.ruinsProgress = 2
-            syncGold()
-            hud.resonanceValue = resonanceTotal
-            hud.objectiveText = String(localized: "hud.objective.discovery")
-            transition(to: .dialogue)
-            dialogue.start(PrototypeContent.act2RuinsCombat2Dialogue) { [weak self] in
-                self?.transition(to: .exploration)
+        guard scene != nil else { return }
+        // Dialogue pré-combat Archiviste
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act2ArchivistPreDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            transition(to: .combat)
+            hud.objectiveText = String(localized: "hud.objective.combat")
+
+            let bossConfig = BossConfig(
+                enrageThreshold: 0.35,
+                enrageSpeedMult: 1.5,
+                enrageDamageMult: 2,
+                specialAttackInterval: 3,
+                specialDamage: 40,
+                specialName: String(localized: "combat.archivist.specialName")
+            )
+
+            combat.attach(
+                to: scene,
+                enemyName: String(localized: "combat.enemy.archivist"),
+                enemyHP: 320,
+                goldReward: 55,
+                player: player,
+                boss: bossConfig
+            ) { [weak self] resonance, gold in
+                guard let self, let scene = self.scene else { return }
+                if resonance == 0 && gold == 0 {
+                    hud.objectiveText = String(localized: "hud.objective.ruins")
+                    transition(to: .exploration)
+                    return
+                }
+                resonanceTotal += resonance
+                player.gold += gold
+                player.ruinsProgress = 2
+                player.kaelCorruptionLevel = max(player.kaelCorruptionLevel, 2)
+                syncGold()
+                hud.resonanceValue = resonanceTotal
+                hud.objectiveText = String(localized: "hud.objective.discovery")
+
+                // Vision 2 : flash rouge + corruption niveau 2
+                JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                         color: SKColor(red: 0.70, green: 0.08, blue: 0.05, alpha: 1),
+                                         duration: 0.5)
+                JuiceEngine.screenShake(scene, intensity: 5)
+                world.applyKaelCorruption(level: player.kaelCorruptionLevel)
+
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act2ArchivistPostDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
             }
         }
     }
@@ -840,14 +953,22 @@ final class GameManager {
     // MARK: - Discovery → Lyra Death → Act 2 End
 
     private func openDiscovery() {
-        guard let scene else { return }
+        guard scene != nil else { return }
         transition(to: .dialogue)
-        // Flash rouge sur la découverte
-        JuiceEngine.flashOverlay(in: scene, size: scene.size,
-                                 color: SKColor(red: 0.7, green: 0.08, blue: 0.05, alpha: 1),
-                                 duration: 0.4)
-        dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
-            self?.triggerLyraDeath()
+        // Lyra offre le cristal — moment calme avant la tempête
+        dialogue.start(PrototypeContent.act2LyraGiftDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            // Corruption maximale — niveau 3
+            player.kaelCorruptionLevel = 3
+            world.applyKaelCorruption(level: 3)
+            JuiceEngine.screenShake(scene, intensity: 4)
+            // Flash rouge sur la découverte de l'inscription
+            JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                     color: SKColor(red: 0.7, green: 0.08, blue: 0.05, alpha: 1),
+                                     duration: 0.4)
+            dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
+                self?.triggerLyraDeath()
+            }
         }
     }
 
@@ -867,18 +988,26 @@ final class GameManager {
         blackOut.run(.sequence([.wait(forDuration: 0.4)])) { [weak self] in
             guard let self else { return }
             transition(to: .dialogue)
-            dialogue.start(PrototypeContent.act2LyraDeathDialogue) { [weak self] in
+            // Si Eran trouvé : Lyra prononce ses derniers mots en écho
+            let startDeath: () -> Void = { [weak self] in
                 guard let self else { return }
-                player.lyraDeceased = true
-                world.lyra.isHidden = true
-                // Kael seul + voix
-                dialogue.start(PrototypeContent.act2KaelAloneDialogue) { [weak self] in
-                    guard let self, let scene = self.scene else { return }
-                    blackOut.removeFromParent()
-                    phase = .fallen
-                    transition(to: .exploration)  // sauvegarde
-                    TransitionManager.showAct2EndScreen(in: scene)
+                dialogue.start(PrototypeContent.act2LyraDeathDialogue) { [weak self] in
+                    guard let self else { return }
+                    player.lyraDeceased = true
+                    world.lyra.isHidden = true
+                    dialogue.start(PrototypeContent.act2KaelAloneDialogue) { [weak self] in
+                        guard let self, let scene = self.scene else { return }
+                        blackOut.removeFromParent()
+                        phase = .fallen
+                        transition(to: .exploration)
+                        TransitionManager.showAct2EndScreen(in: scene)
+                    }
                 }
+            }
+            if player.act2EranFound {
+                dialogue.start(PrototypeContent.act2LyraEranLastWordDialogue) { startDeath() }
+            } else {
+                startDeath()
             }
         }
     }
@@ -946,8 +1075,10 @@ final class GameManager {
             transition(to: .exploration)
 
         case .act2:
-            hud.objectiveText = String(localized: "hud.objective.ruins")
+            hud.objectiveText = String(localized: "hud.objective.act2")
             world.switchToVillage(in: scene)
+            world.repositionDorinToGate(in: scene)
+            world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
 
         case .ruins:
@@ -955,11 +1086,13 @@ final class GameManager {
                 ? String(localized: "hud.objective.discovery")
                 : String(localized: "hud.objective.ruins")
             world.switchToRuins(in: scene)
+            world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
 
         case .fallen:
             hud.objectiveText = String(localized: "hud.objective.fallen")
             world.switchToRuins(in: scene)
+            world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
             TransitionManager.showAct2EndScreen(in: scene)
         }

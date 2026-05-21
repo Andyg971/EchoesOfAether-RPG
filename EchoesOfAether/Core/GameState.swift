@@ -68,7 +68,12 @@ final class PlayerState {
     var bossDefeated: Bool = false
     var lyraDeceased: Bool = false
     var act2SageConsulted: Bool = false
-    var ruinsProgress: Int = 0   // 0=fresh, 1=combat1 done, 2=combat2 done
+    var ruinsProgress: Int = 0     // 0=fresh, 1=combat1 done, 2=archivist done
+    var act2DorinPassed: Bool = false
+    var act2NightmareSeen: Bool = false
+    var act2Vision1Seen: Bool = false
+    var act2EranFound: Bool = false
+    var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
 
     var attackDamage: Int { 42 + weaponLevel * 22 }
     var blackSlashDamage: Int { 92 + weaponLevel * 35 }
@@ -91,6 +96,11 @@ final class PlayerState {
             lyraDeceased: lyraDeceased,
             act2SageConsulted: act2SageConsulted,
             ruinsProgress: ruinsProgress,
+            act2DorinPassed: act2DorinPassed,
+            act2NightmareSeen: act2NightmareSeen,
+            act2Vision1Seen: act2Vision1Seen,
+            act2EranFound: act2EranFound,
+            kaelCorruptionLevel: kaelCorruptionLevel,
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -115,6 +125,11 @@ final class PlayerState {
         lyraDeceased = data.lyraDeceased
         act2SageConsulted = data.act2SageConsulted
         ruinsProgress = data.ruinsProgress
+        act2DorinPassed = data.act2DorinPassed
+        act2NightmareSeen = data.act2NightmareSeen
+        act2Vision1Seen = data.act2Vision1Seen
+        act2EranFound = data.act2EranFound
+        kaelCorruptionLevel = data.kaelCorruptionLevel
     }
 }
 
@@ -140,6 +155,11 @@ struct SaveData: Codable {
     let lyraDeceased: Bool
     let act2SageConsulted: Bool
     let ruinsProgress: Int
+    let act2DorinPassed: Bool
+    let act2NightmareSeen: Bool
+    let act2Vision1Seen: Bool
+    let act2EranFound: Bool
+    let kaelCorruptionLevel: Int
     let phase: GamePhase
     let resonanceTotal: Int
 }

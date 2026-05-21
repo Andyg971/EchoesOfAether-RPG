@@ -15,6 +15,9 @@ enum GamePhase: Int, CaseIterable, Codable {
     case forest
     case shrine
     case complete
+    case act2    = 5   // Retour à Solis après le sanctuaire
+    case ruins   = 6   // Ruines de la Source
+    case fallen  = 7   // Kael seul après la mort de Lyra
 
     var next: GamePhase? {
         GamePhase(rawValue: rawValue + 1)
@@ -63,6 +66,9 @@ final class PlayerState {
     var innRested: Bool = false
     var forestProgress: Int = 0  // 0=fresh, 1=beast dead, 2=wolves dead
     var bossDefeated: Bool = false
+    var lyraDeceased: Bool = false
+    var act2SageConsulted: Bool = false
+    var ruinsProgress: Int = 0   // 0=fresh, 1=combat1 done, 2=combat2 done
 
     var attackDamage: Int { 42 + weaponLevel * 22 }
     var blackSlashDamage: Int { 92 + weaponLevel * 35 }
@@ -82,6 +88,9 @@ final class PlayerState {
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
+            lyraDeceased: lyraDeceased,
+            act2SageConsulted: act2SageConsulted,
+            ruinsProgress: ruinsProgress,
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -103,6 +112,9 @@ final class PlayerState {
         innRested = data.innRested
         forestProgress = data.forestProgress
         bossDefeated = data.bossDefeated
+        lyraDeceased = data.lyraDeceased
+        act2SageConsulted = data.act2SageConsulted
+        ruinsProgress = data.ruinsProgress
     }
 }
 
@@ -125,6 +137,9 @@ struct SaveData: Codable {
     let innRested: Bool
     let forestProgress: Int
     let bossDefeated: Bool
+    let lyraDeceased: Bool
+    let act2SageConsulted: Bool
+    let ruinsProgress: Int
     let phase: GamePhase
     let resonanceTotal: Int
 }

@@ -410,6 +410,111 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.boss.post.kael2"))
     ]
 
+    // MARK: - Acte II — Retour à Solis
+
+    static let act2ReturnVillageDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.return.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.return.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.return.lyra2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.return.kael2"))
+    ]
+
+    static let act2LyraAnalysisDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.lyra.analysis1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.lyra.analysis2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.lyra.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.lyra.analysis3"))
+    ]
+
+    static let act2SageRevelationDialogue: [DialogueStep] = [
+        .line(speaker: "Sage", text: String(localized: "dialogue.act2.sage.reveal1")),
+        .line(speaker: "Sage", text: String(localized: "dialogue.act2.sage.reveal2")),
+        .choice(
+            prompt: String(localized: "dialogue.act2.sage.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.sage.choice1"),
+                    responseSpeaker: "Sage",
+                    response: String(localized: "dialogue.act2.sage.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.sage.choice2"),
+                    responseSpeaker: "Sage",
+                    response: String(localized: "dialogue.act2.sage.response2")
+                )
+            ]
+        ),
+        .line(speaker: "Sage", text: String(localized: "dialogue.act2.sage.reveal3"))
+    ]
+
+    static let act2DorinDoubtDialogue: [DialogueStep] = [
+        .line(speaker: "Dorin", text: String(localized: "dialogue.act2.dorin.doubt1")),
+        .line(speaker: "Kael",  text: String(localized: "dialogue.act2.dorin.kael1")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.act2.dorin.doubt2"))
+    ]
+
+    // MARK: - Acte II — Ruines de la Source
+
+    static let act2RuinsEnterDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.enter.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.enter.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.enter.lyra2"))
+    ]
+
+    static let act2RuinsCombat1Dialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.combat1.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.combat1.kael1"))
+    ]
+
+    static let act2RuinsCombat2Dialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.combat2.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.combat2.lyra1"))
+    ]
+
+    // MARK: - Acte II — Découverte & Confrontation
+
+    static let act2DiscoveryDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.discovery.lyra1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.discovery.lyra2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.discovery.lyra3")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.discovery.kael1")),
+        .choice(
+            prompt: String(localized: "dialogue.act2.discovery.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.discovery.choice1"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.act2.discovery.response1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.discovery.choice2"),
+                    responseSpeaker: "Lyra",
+                    response: String(localized: "dialogue.act2.discovery.response2")
+                )
+            ]
+        ),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.discovery.lyra4")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.discovery.kael2"))
+    ]
+
+    // MARK: - Acte II — Mort de Lyra
+
+    static let act2LyraDeathDialogue: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.death.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.death.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.death.lyra2"))
+    ]
+
+    // MARK: - Acte II — Kael seul (La Voix)
+
+    static let act2KaelAloneDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.kael2")),
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+              text: String(localized: "dialogue.act2.fallen.voice1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.kael3"))
+    ]
+
     // MARK: - Sanctuaire (Voix de l'Aether noir + fin V1)
 
     static let shrineEnding: [DialogueStep] = [

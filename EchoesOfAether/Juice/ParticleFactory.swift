@@ -198,6 +198,58 @@ enum ParticleFactory {
         return container
     }
 
+    static func ruinsAsh(in size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 5
+
+        for _ in 0..<18 {
+            let ash = SKShapeNode(rectOf: CGSize(
+                width: CGFloat.random(in: 1.5...3.5),
+                height: CGFloat.random(in: 1.5...3.5)
+            ), cornerRadius: 0.5)
+            ash.fillColor = SKColor(
+                red: CGFloat.random(in: 0.25...0.45),
+                green: 0.05,
+                blue: CGFloat.random(in: 0.04...0.10),
+                alpha: CGFloat.random(in: 0.15...0.40)
+            )
+            ash.strokeColor = .clear
+            ash.position = CGPoint(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: 0...size.height)
+            )
+
+            let drift = SKAction.moveBy(
+                x: CGFloat.random(in: -25...25),
+                y: CGFloat.random(in: -30...(-5)),
+                duration: TimeInterval.random(in: 3...7)
+            )
+            let blink = SKAction.sequence([
+                .fadeAlpha(to: CGFloat.random(in: 0.05...0.15), duration: 2),
+                .fadeAlpha(to: CGFloat.random(in: 0.2...0.4),  duration: 2)
+            ])
+            ash.run(.repeatForever(.group([.sequence([drift, drift.reversed()]), blink])))
+            container.addChild(ash)
+        }
+
+        for _ in 0..<6 {
+            let ember = SKShapeNode(circleOfRadius: CGFloat.random(in: 1.5...3))
+            ember.fillColor = SKColor(red: 0.75, green: 0.20, blue: 0.10, alpha: 0.5)
+            ember.strokeColor = .clear
+            ember.glowWidth = 3
+            ember.position = CGPoint(
+                x: CGFloat.random(in: 0...size.width),
+                y: CGFloat.random(in: 0...size.height * 0.6)
+            )
+            let float = SKAction.moveBy(x: CGFloat.random(in: -15...15), y: CGFloat.random(in: 15...45), duration: TimeInterval.random(in: 3...6))
+            let pulse = SKAction.sequence([.fadeAlpha(to: 0.1, duration: 1.5), .fadeAlpha(to: 0.6, duration: 1.5)])
+            ember.run(.repeatForever(.group([.sequence([float, float.reversed()]), pulse])))
+            container.addChild(ember)
+        }
+
+        return container
+    }
+
     // MARK: - Tap
 
     static func tapMarker(at position: CGPoint) -> SKNode {

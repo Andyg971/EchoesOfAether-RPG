@@ -3748,6 +3748,354 @@
           }
         }
       }
+    },
+    "combat.enemy.ruinsGuardian": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Gardien des Ruines" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Ruins Guardian" } }
+      }
+    },
+    "combat.enemy.trappedSoul": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Âme Piégée" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Trapped Soul" } }
+      }
+    },
+    "dialogue.act2.return.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Nous sommes vivants. Je n'arrive toujours pas à y croire." } },
+        "en": { "stringUnit": { "state": "translated", "value": "We're alive. I still can't believe it." } }
+      }
+    },
+    "dialogue.act2.return.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ce Noyau d'Aether... cette énergie noire. Elle résonne encore en moi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "That Aether Core... that dark energy. It still resonates inside me." } }
+      }
+    },
+    "dialogue.act2.return.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "J'ai enregistré des données au sanctuaire. J'ai besoin de temps pour analyser ça." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I recorded data at the shrine. I need time to analyze it." } }
+      }
+    },
+    "dialogue.act2.return.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Prends le temps qu'il te faut." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Take all the time you need." } }
+      }
+    },
+    "dialogue.act2.lyra.analysis1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ces données... les éclats d'Aether que tu m'as aidé à collecter. Ils portaient des empreintes." } },
+        "en": { "stringUnit": { "state": "translated", "value": "This data... the Aether shards you helped me collect. They carried imprints." } }
+      }
+    },
+    "dialogue.act2.lyra.analysis2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Des empreintes de quelqu'un qui est passé avant toi. Avant nous." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Imprints of someone who passed through before you. Before us." } }
+      }
+    },
+    "dialogue.act2.lyra.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Que veux-tu dire ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "What do you mean?" } }
+      }
+    },
+    "dialogue.act2.lyra.analysis3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je ne suis pas encore sûre. Mais il y a quelque chose dans les vieux textes du Sage." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I'm not sure yet. But there's something in the Sage's old texts." } }
+      }
+    },
+    "dialogue.act2.sage.reveal1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael. Je dois te dire quelque chose d'important." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael. I need to tell you something important." } }
+      }
+    },
+    "dialogue.act2.sage.reveal2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Au nord-est du village se trouvent les Ruines de la Source. La Source originelle de l'Aether." } },
+        "en": { "stringUnit": { "state": "translated", "value": "To the northeast lie the Ruins of the Source. The original Source of Aether." } }
+      }
+    },
+    "dialogue.act2.sage.prompt": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Répondre au Sage" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Reply to the Sage" } }
+      }
+    },
+    "dialogue.act2.sage.choice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Pourquoi me parles-tu de ça maintenant ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Why are you telling me this now?" } }
+      }
+    },
+    "dialogue.act2.sage.choice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je t'écoute." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I'm listening." } }
+      }
+    },
+    "dialogue.act2.sage.response1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Parce que tu es revenu du sanctuaire. Et les ruines ont... réagi à ton arrivée." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Because you returned from the shrine. And the ruins... reacted to your arrival." } }
+      }
+    },
+    "dialogue.act2.sage.response2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Les inscriptions là-bas pourraient expliquer ce que tu ressens depuis ton réveil." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The inscriptions there might explain what you've been feeling since you woke up." } }
+      }
+    },
+    "dialogue.act2.sage.reveal3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Sois prudent. Et emmène Lyra. Elle saura lire les symboles." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Be careful. And take Lyra. She can read the symbols." } }
+      }
+    },
+    "dialogue.act2.dorin.doubt1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu reviens du sanctuaire changé. Je le vois dans tes yeux." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You came back from the shrine changed. I see it in your eyes." } }
+      }
+    },
+    "dialogue.act2.dorin.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu te trompes, Dorin." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You're wrong, Dorin." } }
+      }
+    },
+    "dialogue.act2.dorin.doubt2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "J'espère. Pour tous, j'espère vraiment me tromper." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I hope so. For everyone's sake, I really hope I'm wrong." } }
+      }
+    },
+    "dialogue.act2.ruins.enter.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Les Ruines de la Source... elles ont des siècles. Regarde ces inscriptions." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Ruins of the Source... centuries old. Look at these inscriptions." } }
+      }
+    },
+    "dialogue.act2.ruins.enter.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je me sens... chez moi ici. C'est étrange." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I feel... at home here. Strange." } }
+      }
+    },
+    "dialogue.act2.ruins.enter.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael, ça m'inquiète quand tu dis ça." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael, it worries me when you say that." } }
+      }
+    },
+    "dialogue.act2.ruins.combat1.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Des Gardiens corrompus. L'Aether noir les contrôle encore." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Corrupted Guardians. The black Aether still controls them." } }
+      }
+    },
+    "dialogue.act2.ruins.combat1.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ils protègent quelque chose. Continue à avancer." } },
+        "en": { "stringUnit": { "state": "translated", "value": "They're protecting something. Keep moving." } }
+      }
+    },
+    "dialogue.act2.ruins.combat2.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ces âmes étaient des voyageurs. L'Aether les a piégés." } },
+        "en": { "stringUnit": { "state": "translated", "value": "These souls were travelers. The Aether trapped them." } }
+      }
+    },
+    "dialogue.act2.ruins.combat2.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Il y a quelque chose de plus profond ici. Une inscription au fond..." } },
+        "en": { "stringUnit": { "state": "translated", "value": "There's something deeper here. An inscription at the back..." } }
+      }
+    },
+    "dialogue.act2.discovery.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Attends. Cette inscription... elle est différente des autres." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Wait. This inscription... it's different from the others." } }
+      }
+    },
+    "dialogue.act2.discovery.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "'Kael, Lame du Vide, Collecteur d'Âmes, Exécuteur de la Source Corrompue.'" } },
+        "en": { "stringUnit": { "state": "translated", "value": "'Kael, Blade of the Void, Soul Collector, Executor of the Corrupted Source.'" } }
+      }
+    },
+    "dialogue.act2.discovery.lyra3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael... tu savais ? Ces disparitions à Solis... c'était toi ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael... did you know? Those disappearances in Solis... was that you?" } }
+      }
+    },
+    "dialogue.act2.discovery.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "..." } },
+        "en": { "stringUnit": { "state": "translated", "value": "..." } }
+      }
+    },
+    "dialogue.act2.discovery.prompt": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Répondre à Lyra" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Reply to Lyra" } }
+      }
+    },
+    "dialogue.act2.discovery.choice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ce n'est pas moi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "That's not me." } }
+      }
+    },
+    "dialogue.act2.discovery.choice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu ne comprends pas ce que tu lis." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You don't understand what you're reading." } }
+      }
+    },
+    "dialogue.act2.discovery.response1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'inscription porte ta marque d'Aether. Kael, je t'en supplie, dis-moi que je me trompe." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The inscription bears your Aether mark. Kael, please, tell me I'm wrong." } }
+      }
+    },
+    "dialogue.act2.discovery.response2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je lis très bien. Ça correspond à tout. Les nuits où tu disparaissais. Les gens qui se volatilisaient." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I can read just fine. And it matches everything. The nights you disappeared. The people who vanished." } }
+      }
+    },
+    "dialogue.act2.discovery.lyra4": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je ne peux pas me taire. Les gens de Solis ont besoin de savoir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I can't stay silent. The people of Solis need to know." } }
+      }
+    },
+    "dialogue.act2.discovery.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Non. Tu ne diras rien." } },
+        "en": { "stringUnit": { "state": "translated", "value": "No. You won't say anything." } }
+      }
+    },
+    "dialogue.act2.death.lyra1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael, je t'aime comme un frère. Mais ça ne changera pas ce que j'ai à faire." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael, I love you like a brother. But that won't change what I have to do." } }
+      }
+    },
+    "dialogue.act2.death.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je sais." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I know." } }
+      }
+    },
+    "dialogue.act2.death.lyra2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "... Kael..." } },
+        "en": { "stringUnit": { "state": "translated", "value": "... Kael..." } }
+      }
+    },
+    "dialogue.act2.fallen.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Elle avait raison. Sur tout." } },
+        "en": { "stringUnit": { "state": "translated", "value": "She was right. About everything." } }
+      }
+    },
+    "dialogue.act2.fallen.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Mais les morts ne parlent pas." } },
+        "en": { "stringUnit": { "state": "translated", "value": "But the dead don't speak." } }
+      }
+    },
+    "dialogue.act2.fallen.voice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu es libre. Viens." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You are free. Come." } }
+      }
+    },
+    "dialogue.act2.fallen.kael3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Oui." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Yes." } }
+      }
+    },
+    "endscreen.act1.continue": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Continuer → Acte II" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Continue → Act II" } }
+      }
+    },
+    "endscreen.act2.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "La Chute de Kael" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Fall of Kael" } }
+      }
+    },
+    "endscreen.act2.subtitle": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Acte II — Terminé" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Act II — Complete" } }
+      }
+    },
+    "endscreen.act2.lyra": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Lyra — Lumière de Solis" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Lyra — Light of Solis" } }
+      }
+    },
+    "endscreen.act2.eranHint": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael, si tu lis ça, c'est que tu t'en souviens encore." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael, if you read this, it means you still remember." } }
+      }
+    },
+    "endscreen.act2.eranSig": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ne laisse pas le Vide gagner.  — Eran" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Don't let the Void win.  — Eran" } }
+      }
+    },
+    "hud.objective.act2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Rentrer à Solis" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Return to Solis" } }
+      }
+    },
+    "hud.objective.ruins": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Explorer les Ruines de la Source" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Explore the Ruins of the Source" } }
+      }
+    },
+    "hud.objective.discovery": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Enquêter sur l'inscription" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Investigate the inscription" } }
+      }
+    },
+    "hud.objective.fallen": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "..." } },
+        "en": { "stringUnit": { "state": "translated", "value": "..." } }
+      }
+    },
+    "world.ruins.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Ruines de la Source" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Ruins of the Source" } }
+      }
+    },
+    "world.ruins.inscription": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Inscription ancienne" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Ancient inscription" } }
+      }
     }
   },
   "version": "1.1"

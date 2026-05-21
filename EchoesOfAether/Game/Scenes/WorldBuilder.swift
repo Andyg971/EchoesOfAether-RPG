@@ -71,6 +71,20 @@ final class WorldBuilder {
         buildShrine(in: scene)
     }
 
+    func switchToVillage(in scene: SKScene) {
+        clearBackdrop()
+        scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
+        buildVillage(in: scene)
+    }
+
+    func switchToRuins(in scene: SKScene) {
+        clearBackdrop()
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.04, green: 0.02, blue: 0.03, alpha: 1)
+        buildRuins(in: scene)
+    }
+
     // MARK: - Village Solis
 
     private func buildVillage(in scene: SKScene) {
@@ -449,6 +463,209 @@ final class WorldBuilder {
         JuiceEngine.pulse(cap, scale: 1.3)
 
         return mush
+    }
+
+    // MARK: - Ruines de la Source (Acte II)
+
+    private func buildRuins(in scene: SKScene) {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sol : dalle craquelée noire-rouge
+        let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+        ground.fillColor = SKColor(red: 0.06, green: 0.03, blue: 0.04, alpha: 1)
+        ground.strokeColor = .clear
+        ground.position = CGPoint(x: 500, y: 500)
+        ground.zPosition = -10
+        add(ground, to: scene)
+
+        // Fissures d'Aether rouge dans le sol
+        let crackPositions: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [
+            (0.20, 0.25, 0.38, 0.32), (0.45, 0.18, 0.58, 0.30),
+            (0.62, 0.42, 0.78, 0.50), (0.15, 0.55, 0.32, 0.63),
+            (0.50, 0.65, 0.68, 0.72)
+        ]
+        for (x1, y1, x2, y2) in crackPositions {
+            let crack = makeCrack(from: CGPoint(x: w * x1, y: h * y1),
+                                  to:   CGPoint(x: w * x2, y: h * y2))
+            add(crack, to: scene)
+        }
+
+        // Piliers brisés (certains debout, certains tombés)
+        let pillarData: [(CGFloat, CGFloat, Bool)] = [
+            (0.18, 0.65, false), (0.28, 0.72, true),
+            (0.48, 0.78, false), (0.62, 0.75, true),
+            (0.80, 0.68, false), (0.85, 0.52, true)
+        ]
+        for (px, py, fallen) in pillarData {
+            let pillar = makeBrokenPillar(fallen: fallen)
+            pillar.position = CGPoint(x: w * px, y: h * py)
+            add(pillar, to: scene)
+        }
+
+        // Titre de zone
+        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        zoneLabel.text = String(localized: "world.ruins.title")
+        zoneLabel.fontSize = 11
+        zoneLabel.fontColor = SKColor(red: 0.70, green: 0.25, blue: 0.25, alpha: 0.60)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        zoneLabel.zPosition = -1
+        add(zoneLabel, to: scene)
+
+        // Zone combat 1 : Gardiens (centre-gauche)
+        let zone1 = makeDangerZone(
+            at: CGPoint(x: w * 0.28, y: h * 0.50),
+            radius: 38,
+            color: SKColor(red: 0.70, green: 0.15, blue: 0.10, alpha: 1)
+        )
+        add(zone1, to: scene)
+
+        // Zone combat 2 : Âmes piégées (centre-droite)
+        let zone2 = makeDangerZone(
+            at: CGPoint(x: w * 0.62, y: h * 0.60),
+            radius: 38,
+            color: SKColor(red: 0.55, green: 0.10, blue: 0.35, alpha: 1)
+        )
+        add(zone2, to: scene)
+
+        // Mur d'inscription (discovery) — haut-droite
+        let inscriptionWall = makeInscriptionWall(
+            at: CGPoint(x: w * 0.70, y: h * 0.65)
+        )
+        add(inscriptionWall, to: scene)
+
+        // Mares d'Aether rouge (ambiance)
+        for (px, py) in [(0.15, 0.38), (0.55, 0.35), (0.82, 0.42)] {
+            let pool = makeRedAetherPool(at: CGPoint(x: w * px, y: h * py))
+            add(pool, to: scene)
+        }
+
+        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+    }
+
+    private func makeCrack(from start: CGPoint, to end: CGPoint) -> SKNode {
+        let crack = SKNode()
+        crack.zPosition = -8
+
+        let path = CGMutablePath()
+        path.move(to: start)
+        let midX = (start.x + end.x) / 2 + CGFloat.random(in: -10...10)
+        let midY = (start.y + end.y) / 2 + CGFloat.random(in: -8...8)
+        path.addLine(to: CGPoint(x: midX, y: midY))
+        path.addLine(to: end)
+
+        let line = SKShapeNode(path: path)
+        line.strokeColor = SKColor(red: 0.70, green: 0.15, blue: 0.10, alpha: 0.45)
+        line.lineWidth = 1.5
+        line.glowWidth = 2
+        crack.addChild(line)
+
+        let glowLine = SKShapeNode(path: path)
+        glowLine.strokeColor = SKColor(red: 0.90, green: 0.25, blue: 0.15, alpha: 0.08)
+        glowLine.lineWidth = 5
+        crack.addChild(glowLine)
+
+        return crack
+    }
+
+    private func makeBrokenPillar(fallen: Bool) -> SKNode {
+        let pillar = SKNode()
+        pillar.zPosition = -4
+
+        if fallen {
+            let body = SKShapeNode(rectOf: CGSize(width: 55, height: 12), cornerRadius: 3)
+            body.fillColor = SKColor(red: 0.20, green: 0.14, blue: 0.16, alpha: 1)
+            body.strokeColor = SKColor(red: 0.40, green: 0.20, blue: 0.22, alpha: 0.6)
+            body.lineWidth = 1.5
+            body.zRotation = CGFloat.random(in: -0.2...0.3)
+            pillar.addChild(body)
+
+            let crack = SKShapeNode(rectOf: CGSize(width: 3, height: 12), cornerRadius: 1)
+            crack.fillColor = SKColor(red: 0.70, green: 0.15, blue: 0.12, alpha: 0.5)
+            crack.strokeColor = .clear
+            crack.position = CGPoint(x: CGFloat.random(in: -15...15), y: 0)
+            pillar.addChild(crack)
+        } else {
+            let body = SKShapeNode(rectOf: CGSize(width: 14, height: 60), cornerRadius: 3)
+            body.fillColor = SKColor(red: 0.18, green: 0.12, blue: 0.14, alpha: 1)
+            body.strokeColor = SKColor(red: 0.40, green: 0.20, blue: 0.25, alpha: 0.5)
+            body.lineWidth = 1.5
+            pillar.addChild(body)
+
+            let top = SKShapeNode(rectOf: CGSize(width: 22, height: 8), cornerRadius: 2)
+            top.fillColor = SKColor(red: 0.25, green: 0.15, blue: 0.18, alpha: 1)
+            top.strokeColor = .clear
+            top.position = CGPoint(x: 0, y: 34)
+            pillar.addChild(top)
+
+            let redGlow = SKShapeNode(circleOfRadius: 4)
+            redGlow.fillColor = SKColor(red: 0.80, green: 0.20, blue: 0.10, alpha: 0.6)
+            redGlow.strokeColor = .clear
+            redGlow.glowWidth = 5
+            redGlow.position = CGPoint(x: 0, y: 38)
+            pillar.addChild(redGlow)
+            JuiceEngine.pulse(redGlow, scale: 1.5)
+        }
+
+        return pillar
+    }
+
+    private func makeInscriptionWall(at pos: CGPoint) -> SKNode {
+        let wall = SKNode()
+        wall.position = pos
+        wall.zPosition = 1
+
+        let stone = SKShapeNode(rectOf: CGSize(width: 72, height: 55), cornerRadius: 5)
+        stone.fillColor = SKColor(red: 0.14, green: 0.08, blue: 0.10, alpha: 1)
+        stone.strokeColor = SKColor(red: 0.60, green: 0.20, blue: 0.18, alpha: 0.7)
+        stone.lineWidth = 2
+        wall.addChild(stone)
+
+        let glow = SKShapeNode(rectOf: CGSize(width: 80, height: 63), cornerRadius: 8)
+        glow.fillColor = .clear
+        glow.strokeColor = SKColor(red: 0.80, green: 0.25, blue: 0.15, alpha: 0.12)
+        glow.lineWidth = 4
+        wall.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.08)
+
+        let runeLines: [(CGFloat, CGFloat, CGFloat)] = [(-16, 14, 32), (0, 2, 40), (0, -10, 28), (0, -22, 36)]
+        for (x, y, width) in runeLines {
+            let rune = SKShapeNode(rectOf: CGSize(width: width, height: 2), cornerRadius: 1)
+            rune.fillColor = SKColor(red: 0.70, green: 0.20, blue: 0.15, alpha: 0.6)
+            rune.strokeColor = .clear
+            rune.position = CGPoint(x: x, y: y)
+            wall.addChild(rune)
+        }
+
+        let labelNode = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        labelNode.text = String(localized: "world.ruins.inscription")
+        labelNode.fontSize = 9
+        labelNode.fontColor = SKColor(red: 0.70, green: 0.30, blue: 0.25, alpha: 0.70)
+        labelNode.position = CGPoint(x: 0, y: -38)
+        wall.addChild(labelNode)
+        JuiceEngine.float(labelNode, distance: 3)
+
+        return wall
+    }
+
+    private func makeRedAetherPool(at pos: CGPoint) -> SKNode {
+        let pool = SKNode()
+        pool.position = pos
+        pool.zPosition = -6
+
+        let water = SKShapeNode(circleOfRadius: 10)
+        water.fillColor = SKColor(red: 0.15, green: 0.02, blue: 0.05, alpha: 0.9)
+        water.strokeColor = SKColor(red: 0.60, green: 0.15, blue: 0.10, alpha: 0.4)
+        water.lineWidth = 1
+        pool.addChild(water)
+
+        let glow = SKShapeNode(circleOfRadius: 16)
+        glow.fillColor = SKColor(red: 0.50, green: 0.08, blue: 0.05, alpha: 0.06)
+        glow.strokeColor = .clear
+        pool.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.5)
+
+        return pool
     }
 
     // MARK: - Sanctuaire

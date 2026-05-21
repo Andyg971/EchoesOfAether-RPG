@@ -65,6 +65,9 @@ final class GameManager {
             self?.closeOptions()
             self?.onReturnToMenu?()
         }
+        options.onVolumeChange = { volume in
+            AudioEngine.shared.masterVolume = volume
+        }
 
         death.onRetry           = { [weak self] in self?.retryLastCombat() }
         death.onReturnToCrystal = { [weak self] in
@@ -282,6 +285,7 @@ final class GameManager {
                 syncGold()
                 hud.questText = ""
                 AudioEngine.shared.playQuestComplete()
+                GameCenterManager.shared.report(.lyraQuest)
                 dialogue.start(PrototypeContent.lyraQuestCompleteDialogue) { [weak self] in
                     self?.transition(to: .exploration)
                 }
@@ -400,6 +404,7 @@ final class GameManager {
             syncGold()
             hud.questText = ""
             AudioEngine.shared.playQuestComplete()
+            GameCenterManager.shared.report(.deliveryQuest)
             dialogue.start(PrototypeContent.garenDeliveryDialogue) { [weak self] in
                 self?.transition(to: .exploration)
             }
@@ -562,6 +567,7 @@ final class GameManager {
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
             hud.objectiveText = String(localized: "hud.objective.clearing")
+            GameCenterManager.shared.report(.firstBlood)
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.forestGroveDialogue) { [weak self] in
                 self?.transition(to: .exploration)
@@ -671,6 +677,7 @@ final class GameManager {
                 AudioEngine.shared.playGoldGain()
                 AudioEngine.shared.playQuestComplete()
                 hud.resonanceValue = resonanceTotal
+                GameCenterManager.shared.report(.bossDefeated)
 
                 // Post-combat dialogue → shrine ending → Acte II
                 transition(to: .dialogue)
@@ -764,6 +771,7 @@ final class GameManager {
 
     private func beginAct2() {
         guard let scene else { return }
+        GameCenterManager.shared.report(.act2Reached)
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -1063,6 +1071,7 @@ final class GameManager {
             player.kaelCorruptionLevel = 3
             player.loreDiscovered.insert("void")
             world.applyKaelCorruption(level: 3)
+            GameCenterManager.shared.report(.corruptedSoul)
             JuiceEngine.screenShake(scene, intensity: 4)
 
             // Cinématique de corruption si pas encore vue
@@ -1273,6 +1282,11 @@ final class GameManager {
 
     private func beginAct3() {
         guard let scene else { return }
+        GameCenterManager.shared.report(.act3Reached)
+        // Lore collector — 4/4 entries
+        if player.loreDiscovered.count >= 4 {
+            GameCenterManager.shared.report(.loreCollector)
+        }
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }

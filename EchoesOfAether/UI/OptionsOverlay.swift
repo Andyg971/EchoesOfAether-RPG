@@ -8,6 +8,7 @@ final class OptionsOverlay {
 
     var onClose: (() -> Void)?
     var onDeleteSave: (() -> Void)?
+    var onVolumeChange: ((Float) -> Void)?
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -116,12 +117,14 @@ final class OptionsOverlay {
             sfxVolume = max(0, sfxVolume - 0.25)
             refreshVolumeDisplay()
             HapticsEngine.light()
+            onVolumeChange?(sfxVolume)
             return true
         }
         if let btn = root.childNode(withName: "sfxUp") as? SKShapeNode, btn.contains(local) {
             sfxVolume = min(1, sfxVolume + 0.25)
             refreshVolumeDisplay()
             HapticsEngine.light()
+            onVolumeChange?(sfxVolume)
             return true
         }
         if let btn = root.childNode(withName: "optionsReset") as? SKShapeNode, btn.contains(local) {

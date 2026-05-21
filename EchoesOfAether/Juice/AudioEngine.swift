@@ -16,6 +16,12 @@ final class AudioEngine {
         engine.connect(mixer, to: engine.mainMixerNode, format: nil)
     }
 
+    /// Volume maître 0.0–1.0, contrôle le nœud mixer principal.
+    var masterVolume: Float {
+        get { mixer.volume }
+        set { mixer.volume = max(0, min(1, newValue)) }
+    }
+
     func start() {
         guard !isRunning else { return }
         do {

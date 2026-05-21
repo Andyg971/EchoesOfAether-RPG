@@ -102,14 +102,26 @@ final class HUDOverlay {
     }
 
     func layout(in size: CGSize, safeTop: CGFloat = 0) {
-        let topY = size.height - 48 - safeTop
-        objectiveLabel.position = CGPoint(x: 20, y: topY)
-        resonanceLabel.position = CGPoint(x: size.width - 20, y: topY)
-        goldLabel.position = CGPoint(x: size.width - 20, y: topY - 20)
-        questLabel.position = CGPoint(x: 20, y: topY - 20)
-        hpLabel.position = CGPoint(x: 20, y: topY - 38)
-        inventoryButton.position = CGPoint(x: size.width - 36, y: topY - 52)
-        pauseButton.position = CGPoint(x: 36, y: topY - 52)
+        // iPad : width > 500 → scale factor proportionnel
+        let s: CGFloat = size.width > 500 ? min(size.width, size.height) / 390 : 1.0
+
+        objectiveLabel.fontSize = 13 * s
+        resonanceLabel.fontSize = 12 * s
+        goldLabel.fontSize = 13 * s
+        questLabel.fontSize = 11 * s
+        interactionHintLabel.fontSize = 13 * s
+        hpLabel.fontSize = 12 * s
+
+        let margin: CGFloat = 20 * s
+        let topY = size.height - 48 * s - safeTop
+
+        objectiveLabel.position = CGPoint(x: margin, y: topY)
+        resonanceLabel.position = CGPoint(x: size.width - margin, y: topY)
+        goldLabel.position = CGPoint(x: size.width - margin, y: topY - 20 * s)
+        questLabel.position = CGPoint(x: margin, y: topY - 20 * s)
+        hpLabel.position = CGPoint(x: margin, y: topY - 38 * s)
+        inventoryButton.position = CGPoint(x: size.width - 36 * s, y: topY - 52 * s)
+        pauseButton.position = CGPoint(x: 36 * s, y: topY - 52 * s)
         interactionHintLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
     }
 

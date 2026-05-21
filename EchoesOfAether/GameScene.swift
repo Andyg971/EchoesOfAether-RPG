@@ -8,7 +8,13 @@ final class GameScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
         AudioEngine.shared.start()
+        HapticsEngine.prepare()
         manager.setup(scene: self)
+
+        // GameCenter auth via root view controller
+        if let vc = view.window?.rootViewController {
+            GameCenterManager.shared.authenticate(from: vc)
+        }
 
         // Retour menu principal (depuis pause ou mort)
         manager.onReturnToMenu = { [weak self, weak view] in

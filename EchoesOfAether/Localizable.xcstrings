@@ -4396,6 +4396,162 @@
         "fr": { "stringUnit": { "state": "translated", "value": "Progression sauvegardée." } },
         "en": { "stringUnit": { "state": "translated", "value": "Progress saved." } }
       }
+    },
+    "menu.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Echoes of Aether" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Echoes of Aether" } }
+      }
+    },
+    "menu.subtitle": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "\"Elle avait raison. Sur tout.\"" } },
+        "en": { "stringUnit": { "state": "translated", "value": "\"She was right. About everything.\"" } }
+      }
+    },
+    "menu.newGame": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Nouvelle Partie" } },
+        "en": { "stringUnit": { "state": "translated", "value": "New Game" } }
+      }
+    },
+    "menu.continue": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Continuer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Continue" } }
+      }
+    },
+    "menu.version": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "v0.2 — Acte I & II" } },
+        "en": { "stringUnit": { "state": "translated", "value": "v0.2 — Act I & II" } }
+      }
+    },
+    "death.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "— TOMBÉ —" } },
+        "en": { "stringUnit": { "state": "translated", "value": "— FALLEN —" } }
+      }
+    },
+    "death.subtitle": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Aether s'est tu." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Aether fell silent." } }
+      }
+    },
+    "death.retry": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Réessayer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Retry" } }
+      }
+    },
+    "death.returnCrystal": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Revenir au cristal" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Return to Crystal" } }
+      }
+    },
+    "pause.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Pause" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Pause" } }
+      }
+    },
+    "pause.resume": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Reprendre" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Resume" } }
+      }
+    },
+    "pause.save": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Sauvegarder" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Save Game" } }
+      }
+    },
+    "pause.mainMenu": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Menu Principal" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Main Menu" } }
+      }
+    },
+    "hint.talk": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Toucher pour parler" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Tap to talk" } }
+      }
+    },
+    "hint.shop": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Toucher pour ouvrir la boutique" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Tap to open shop" } }
+      }
+    },
+    "hint.fight": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Toucher pour combattre" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Tap to fight" } }
+      }
+    },
+    "hint.examine": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Toucher pour examiner" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Tap to examine" } }
+      }
+    },
+    "hint.enter": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Toucher pour continuer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Tap to proceed" } }
+      }
+    },
+    "hint.saveCrystal": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Cristal de sauvegarde" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Save Crystal" } }
+      }
+    },
+    "inventory.section.quests": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Quêtes" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Quests" } }
+      }
+    },
+    "quest.delivery.name": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Colis pour Garen" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Parcel for Garen" } }
+      }
+    },
+    "quest.childToy.name": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Jouet perdu" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Lost Toy" } }
+      }
+    },
+    "quest.lyraShards.name": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Éclats d'Aether (Lyra)" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Aether Shards (Lyra)" } }
+      }
+    },
+    "quest.state.inactive": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Non démarrée" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Not started" } }
+      }
+    },
+    "quest.state.active": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "En cours" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Active" } }
+      }
+    },
+    "quest.state.complete": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Terminée" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Completed" } }
+      }
     }
   },
   "version": "1.1"

@@ -27,6 +27,9 @@
 		6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E4002B8A741B0A0000001 /* SaveManager.swift */; };
 		6D7E5001B8A741B0A0000001 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E5002B8A741B0A0000001 /* AudioEngine.swift */; };
 		6D7E6001B8A741B0A0000001 /* InventoryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */; };
+		6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */; };
+		6D7EAA04B8A741B0A0000001 /* DeathOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */; };
+		6D7EAA06B8A741B0A0000001 /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +54,9 @@
 		6D7E4002B8A741B0A0000001 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
 		6D7E5002B8A741B0A0000001 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
 		6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryOverlay.swift; sourceTree = "<group>"; };
+		6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuScene.swift; sourceTree = "<group>"; };
+		6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeathOverlay.swift; sourceTree = "<group>"; };
+		6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +139,8 @@
 				6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */,
 				6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */,
 				6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */,
+				6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */,
+				6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -151,6 +159,7 @@
 				6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */,
 				6D7E2015B8A741B0A0000001 /* MovementController.swift */,
 				6D7E2017B8A741B0A0000001 /* TransitionManager.swift */,
+				6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */,
 			);
 			path = Scenes;
 			sourceTree = "<group>";
@@ -245,6 +254,9 @@
 				6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */,
 				6D7E5001B8A741B0A0000001 /* AudioEngine.swift in Sources */,
 				6D7E6001B8A741B0A0000001 /* InventoryOverlay.swift in Sources */,
+				6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */,
+				6D7EAA04B8A741B0A0000001 /* DeathOverlay.swift in Sources */,
+				6D7EAA06B8A741B0A0000001 /* PauseOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

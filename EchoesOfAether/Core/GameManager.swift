@@ -12,10 +12,16 @@ final class GameManager {
     let movement  = MovementController()
     let shop      = ShopOverlay()
     let inventory = InventoryOverlay()
+    let pause     = PauseOverlay()
+    let death     = DeathOverlay()
     let player    = PlayerState()
+
+    var onReturnToMenu: (() -> Void)?
 
     private weak var scene: SKScene?
     private var resonanceTotal = 0
+    private var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
+    private var hintUpdateTimer: TimeInterval = 0
 
     // MARK: - Setup
 
@@ -26,8 +32,30 @@ final class GameManager {
         dialogue.attach(to: scene)
         shop.attach(to: scene)
         inventory.attach(to: scene)
+        pause.attach(to: scene)
+        death.attach(to: scene)
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
+        hud.onPauseTap     = { [weak self] in self?.openPause() }
+
+        pause.onResume    = { [weak self] in self?.closePause() }
+        pause.onSave      = { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            self.saveGame()
+            JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                color: SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 1), duration: 0.2)
+        }
+        pause.onMainMenu  = { [weak self] in
+            self?.pause.hide()
+            self?.onReturnToMenu?()
+        }
+
+        death.onRetry           = { [weak self] in self?.retryLastCombat() }
+        death.onReturnToCrystal = { [weak self] in
+            self?.death.hide()
+            self?.player.currentHP = self?.player.currentMaxHP ?? 280
+            self?.onReturnToMenu?()
+        }
 
         if let save = SaveManager.load() {
             restoreFrom(save: save, scene: scene)
@@ -47,9 +75,21 @@ final class GameManager {
 
     func update(deltaTime: TimeInterval) {
         combat.update(deltaTime: deltaTime)
+
+        // HP display
+        hud.hpValue = "\u{2665} \(player.currentHP)/\(player.currentMaxHP)"
+
+        // Interaction hint — check every 0.15s
+        hintUpdateTimer += deltaTime
+        if hintUpdateTimer >= 0.15, state == .exploration {
+            hintUpdateTimer = 0
+            updateInteractionHint()
+        }
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {
+        if death.handleTap(at: point, in: scene) { return }
+        if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
         if state == .inventory, inventory.handleTap(at: point, in: scene) { return }
         if state == .shop,      shop.handleTap(at: point, in: scene) { syncGold(); return }
@@ -123,6 +163,7 @@ final class GameManager {
     }
 
     private func triggerManualSave(crystalPosition: CGPoint, in scene: SKScene) {
+        player.currentHP = player.currentMaxHP   // Restauration complète au cristal
         saveGame()
         // Flash bleu sur le cristal
         JuiceEngine.flashOverlay(in: scene, size: scene.size,
@@ -470,6 +511,7 @@ final class GameManager {
     /// Combat 1 : Bête corrompue dans le bosquet
     private func startGroveCombat() {
         guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startGroveCombat() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
         combat.attach(
@@ -480,6 +522,7 @@ final class GameManager {
             player: player
         ) { [weak self] resonance, gold in
             guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
             resonanceTotal += resonance
             player.gold += gold
             player.forestProgress = 1
@@ -497,6 +540,7 @@ final class GameManager {
     /// Combat 2 : Loups d'ombre dans la clairière
     private func startClearingCombat() {
         guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startClearingCombat() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
         combat.attach(
@@ -507,6 +551,7 @@ final class GameManager {
             player: player
         ) { [weak self] resonance, gold in
             guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
             resonanceTotal += resonance
             player.gold += gold
             player.forestProgress = 2
@@ -555,6 +600,7 @@ final class GameManager {
         }
 
         // Pre-combat dialogue
+        lastCombatStarter = { [weak self] in self?.startBossFight() }
         transition(to: .dialogue)
         hud.objectiveText = String(localized: "hud.objective.boss")
         dialogue.start(PrototypeContent.bossPreDialogue) { [weak self] in
@@ -580,10 +626,8 @@ final class GameManager {
             ) { [weak self] resonance, gold in
                 guard let self else { return }
 
-                if resonance == 0 && gold == 0 {
-                    // Defeat — return to exploration, let player retry
-                    hud.objectiveText = String(localized: "hud.objective.boss")
-                    transition(to: .exploration)
+                if resonance < 0 {
+                    showDeathScreen()
                     return
                 }
 
@@ -897,6 +941,7 @@ final class GameManager {
 
     private func startRuinsCombat1() {
         guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startRuinsCombat1() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
         combat.attach(
@@ -907,11 +952,7 @@ final class GameManager {
             player: player
         ) { [weak self] resonance, gold in
             guard let self else { return }
-            if resonance == 0 && gold == 0 {
-                hud.objectiveText = String(localized: "hud.objective.ruins")
-                transition(to: .exploration)
-                return
-            }
+            if resonance < 0 { showDeathScreen(); return }
             resonanceTotal += resonance
             player.gold += gold
             player.ruinsProgress = 1
@@ -952,11 +993,7 @@ final class GameManager {
                 boss: bossConfig
             ) { [weak self] resonance, gold in
                 guard let self, let scene = self.scene else { return }
-                if resonance == 0 && gold == 0 {
-                    hud.objectiveText = String(localized: "hud.objective.ruins")
-                    transition(to: .exploration)
-                    return
-                }
+                if resonance < 0 { showDeathScreen(); return }
                 resonanceTotal += resonance
                 player.gold += gold
                 player.ruinsProgress = 2
@@ -1040,6 +1077,96 @@ final class GameManager {
                 startDeath()
             }
         }
+    }
+
+    // MARK: - Pause
+
+    private func openPause() {
+        guard state == .exploration || state == .dialogue else { return }
+        guard let scene else { return }
+        pause.show(in: scene)
+    }
+
+    private func closePause() {
+        pause.hide()
+    }
+
+    // MARK: - Death / Retry
+
+    private func showDeathScreen() {
+        guard let scene else { return }
+        death.show(in: scene)
+    }
+
+    private func retryLastCombat() {
+        death.hide()
+        player.currentHP = player.currentMaxHP   // full HP on retry
+        lastCombatStarter?()
+    }
+
+    // MARK: - Interaction Hint
+
+    private func updateInteractionHint() {
+        guard let scene else {
+            hud.interactionHint = ""
+            return
+        }
+        let kaelPos = world.kael.position
+        let radius: CGFloat = 90
+        var hint = ""
+
+        switch phase {
+        case .village, .act2:
+            let npcs: [(SKNode, String)] = [
+                (world.lyra,     "hint.talk"),
+                (world.dorin,    "hint.talk"),
+                (world.bram,     "hint.shop"),
+                (world.mara,     "hint.shop"),
+                (world.garen,    "hint.talk"),
+                (world.sage,     "hint.talk"),
+                (world.child,    "hint.talk"),
+                (world.villager, "hint.talk")
+            ]
+            for (npc, key) in npcs where !npc.isHidden {
+                if kaelPos.distance(to: npc.position) < radius {
+                    hint = String(localized: String.LocalizationValue(key))
+                    break
+                }
+            }
+        case .ruins:
+            let w = scene.size.width, h = scene.size.height
+            let checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.28, y: h*0.50), "hint.fight"),
+                (CGPoint(x: w*0.62, y: h*0.60), "hint.fight"),
+                (CGPoint(x: w*0.15, y: h*0.65), "hint.examine"),
+                (CGPoint(x: w*0.70, y: h*0.65), "hint.examine")
+            ]
+            for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
+                hint = String(localized: String.LocalizationValue(key))
+                break
+            }
+        case .forest:
+            let w = scene.size.width, h = scene.size.height
+            let checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.30, y: h*0.45), "hint.fight"),
+                (CGPoint(x: w*0.65, y: h*0.55), "hint.fight"),
+                (CGPoint(x: w*0.60, y: h*0.82), "hint.enter")
+            ]
+            for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
+                hint = String(localized: String.LocalizationValue(key))
+                break
+            }
+        default:
+            break
+        }
+
+        // Save crystal
+        if hint.isEmpty, let crystal = scene.childNode(withName: "saveCrystal"),
+           kaelPos.distance(to: crystal.position) < radius {
+            hint = String(localized: "hint.saveCrystal")
+        }
+
+        hud.interactionHint = hint
     }
 
     // MARK: - Inventory

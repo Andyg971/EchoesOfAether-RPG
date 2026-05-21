@@ -10,11 +10,24 @@ final class GameScene: SKScene {
         AudioEngine.shared.start()
         manager.setup(scene: self)
 
+        // Retour menu principal (depuis pause ou mort)
+        manager.onReturnToMenu = { [weak self, weak view] in
+            guard let self, let view else { return }
+            let portraitSize = CGSize(
+                width: min(view.bounds.width, view.bounds.height),
+                height: max(view.bounds.width, view.bounds.height)
+            )
+            let menu = MainMenuScene(size: portraitSize)
+            menu.scaleMode = .resizeFill
+            menu.safeAreaTop = self.safeAreaTop
+            view.presentScene(menu, transition: .fade(with: .black, duration: 0.5))
+        }
+
         NotificationCenter.default.addObserver(
             forName: UIApplication.willResignActiveNotification,
             object: nil, queue: .main
         ) { [weak self] _ in
-            self?.manager.saveGame()
+            Task { @MainActor [weak self] in self?.manager.saveGame() }
         }
     }
 

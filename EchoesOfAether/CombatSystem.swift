@@ -82,7 +82,8 @@ final class CombatSystem {
         let baseDmg = boss != nil ? 24 : 18
         self.enemy = Combatant(name: enemyName, maxHP: enemyHP, hp: enemyHP,
                                speed: baseSpeed, baseDamage: baseDmg)
-        self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: player.currentMaxHP, speed: 0.35)
+        let startHP = min(player.currentHP, player.currentMaxHP)
+        self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP, speed: 0.35)
         self.kael.atb = 0
         self.enemy.atb = 0
         self.resonance = 0
@@ -218,12 +219,12 @@ final class CombatSystem {
         statusLabel.text = String(localized: "combat.status.defeat")
         attackButton.alpha = 0.3
         blackSlashButton.alpha = 0.3
-        // Reset to exploration after delay — player keeps progress
+        _player?.currentHP = 0
         root.run(.sequence([
             .wait(forDuration: 1.5),
             .run { [weak self] in
                 self?.root.removeFromParent()
-                self?.completion?(0, 0)
+                self?.completion?(-1, 0)   // -1 resonance = signal défaite
             }
         ]))
     }
@@ -315,6 +316,12 @@ final class CombatSystem {
             JuiceEngine.flashOverlay(in: root, size: scene.size,
                 color: SKColor(red: 0.50, green: 0.25, blue: 0.80, alpha: 1),
                 duration: 0.35)
+        }
+
+        // Restore 25% HP on victory
+        if let p = _player {
+            let healed = max(1, p.currentMaxHP / 4)
+            p.currentHP = min(p.currentMaxHP, kael.hp + healed)
         }
 
         let delay: TimeInterval = isBoss ? 1.8 : 0.8

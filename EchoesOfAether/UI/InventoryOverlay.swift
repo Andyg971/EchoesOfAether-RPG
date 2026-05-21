@@ -12,7 +12,7 @@ final class InventoryOverlay {
     private var completion: (() -> Void)?
 
     private let panelWidth: CGFloat = 320
-    private let panelHeight: CGFloat = 500
+    private let panelHeight: CGFloat = 580
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -112,6 +112,20 @@ final class InventoryOverlay {
                    detail: "\(player.gold)", y: y, lineH: lineH,
                    color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
 
+        y -= 10
+
+        // Section : Quêtes
+        y = addSection(String(localized: "inventory.section.quests"), y: y)
+        y = addQuestRow(icon: questIcon(player.questDelivery),
+                        label: String(localized: "quest.delivery.name"),
+                        state: player.questDelivery, y: y, lineH: lineH)
+        y = addQuestRow(icon: questIcon(player.questChildToy),
+                        label: String(localized: "quest.childToy.name"),
+                        state: player.questChildToy, y: y, lineH: lineH)
+        y = addQuestRow(icon: questIcon(player.questLyraShards),
+                        label: String(localized: "quest.lyraShards.name"),
+                        state: player.questLyraShards, y: y, lineH: lineH)
+
         // Animate
         for (i, label) in statLabels.enumerated() {
             JuiceEngine.popIn(label, delay: Double(i) * 0.03)
@@ -180,6 +194,27 @@ final class InventoryOverlay {
         statLabels.append(detailLabel)
 
         return y - lineH
+    }
+
+    private func questIcon(_ state: QuestState) -> String {
+        switch state {
+        case .inactive: return "○"
+        case .active:   return "◉"
+        case .complete: return "✓"
+        }
+    }
+
+    private func addQuestRow(icon: String, label: String,
+                             state: QuestState, y: CGFloat, lineH: CGFloat) -> CGFloat {
+        let color: SKColor
+        switch state {
+        case .inactive: color = SKColor(white: 0.40, alpha: 1)
+        case .active:   color = SKColor(red: 0.90, green: 0.80, blue: 0.35, alpha: 1)
+        case .complete: color = SKColor(red: 0.40, green: 0.80, blue: 0.45, alpha: 1)
+        }
+        return addRow(icon: icon, label: label,
+                      detail: String(localized: "quest.state.\(state.rawValue)"),
+                      y: y, lineH: lineH, color: color)
     }
 
     // MARK: - Equipment Names

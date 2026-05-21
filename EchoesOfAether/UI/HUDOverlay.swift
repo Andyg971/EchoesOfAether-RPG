@@ -7,9 +7,13 @@ final class HUDOverlay {
     private let resonanceLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let goldLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let questLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+    private let interactionHintLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let hpLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
+    let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
 
     var onInventoryTap: (() -> Void)?
+    var onPauseTap: (() -> Void)?
 
     var objectiveText: String = "" {
         didSet { objectiveLabel.text = objectiveText }
@@ -28,6 +32,17 @@ final class HUDOverlay {
             questLabel.text = questText
             questLabel.isHidden = questText.isEmpty
         }
+    }
+
+    var interactionHint: String = "" {
+        didSet {
+            interactionHintLabel.text = interactionHint
+            interactionHintLabel.isHidden = interactionHint.isEmpty
+        }
+    }
+
+    var hpValue: String = "" {
+        didSet { hpLabel.text = hpValue }
     }
 
     func attach(to scene: SKScene) {
@@ -54,7 +69,20 @@ final class HUDOverlay {
         questLabel.isHidden = true
         root.addChild(questLabel)
 
+        interactionHintLabel.fontSize = 13
+        interactionHintLabel.fontColor = SKColor(red: 0.90, green: 0.85, blue: 0.55, alpha: 0.9)
+        interactionHintLabel.horizontalAlignmentMode = .center
+        interactionHintLabel.isHidden = true
+        root.addChild(interactionHintLabel)
+        JuiceEngine.pulse(interactionHintLabel, scale: 1.05)
+
+        hpLabel.fontSize = 12
+        hpLabel.fontColor = SKColor(red: 0.50, green: 0.90, blue: 0.60, alpha: 1)
+        hpLabel.horizontalAlignmentMode = .left
+        root.addChild(hpLabel)
+
         setupInventoryButton()
+        setupPauseButton()
 
         scene.addChild(root)
         layout(in: scene.size)
@@ -66,6 +94,10 @@ final class HUDOverlay {
             onInventoryTap?()
             return true
         }
+        if pauseButton.contains(local) {
+            onPauseTap?()
+            return true
+        }
         return false
     }
 
@@ -75,10 +107,26 @@ final class HUDOverlay {
         resonanceLabel.position = CGPoint(x: size.width - 20, y: topY)
         goldLabel.position = CGPoint(x: size.width - 20, y: topY - 20)
         questLabel.position = CGPoint(x: 20, y: topY - 20)
+        hpLabel.position = CGPoint(x: 20, y: topY - 38)
         inventoryButton.position = CGPoint(x: size.width - 36, y: topY - 52)
+        pauseButton.position = CGPoint(x: 36, y: topY - 52)
+        interactionHintLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
     }
 
     // MARK: - Private
+
+    private func setupPauseButton() {
+        pauseButton.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 0.85)
+        pauseButton.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.80, alpha: 0.7)
+        pauseButton.lineWidth = 1.5
+
+        let icon = SKLabelNode(text: "⏸")
+        icon.fontSize = 18
+        icon.verticalAlignmentMode = .center
+        icon.horizontalAlignmentMode = .center
+        pauseButton.addChild(icon)
+        root.addChild(pauseButton)
+    }
 
     private func setupInventoryButton() {
         inventoryButton.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 0.85)

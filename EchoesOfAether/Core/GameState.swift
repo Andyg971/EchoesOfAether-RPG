@@ -51,6 +51,7 @@ extension CGPoint {
 final class PlayerState {
     var gold: Int = 20
     var maxHP: Int = 280
+    var currentHP: Int = 280      // PV actuels — non sauvegardé, reset sur load
     var weaponLevel: Int = 0      // 0=poings, 1=lame fer, 2=lame runique
     var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
     var potions: Int = 0          // max 3
@@ -130,6 +131,7 @@ final class PlayerState {
         act2Vision1Seen = data.act2Vision1Seen
         act2EranFound = data.act2EranFound
         kaelCorruptionLevel = data.kaelCorruptionLevel
+        currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
 

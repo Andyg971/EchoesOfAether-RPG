@@ -1093,7 +1093,7 @@ final class WorldBuilder {
 
     /// Déplace Dorin près de la porte nord (garde la porte Acte II).
     func repositionDorinToGate(in scene: SKScene) {
-        dorin.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.74)
+        dorin.position = CGPoint(x: scene.size.width * 0.42, y: scene.size.height * 0.74)
     }
 
     // MARK: - Helpers

@@ -22,14 +22,13 @@ final class GameViewController: UIViewController {
         if !didPresentScene {
             didPresentScene = true
 
-            let scene = GameScene(size: portraitSize)
-            scene.scaleMode = .resizeFill
-            scene.safeAreaTop = view.safeAreaInsets.top
+            let menu = MainMenuScene(size: portraitSize)
+            menu.scaleMode = .resizeFill
+            menu.safeAreaTop = view.safeAreaInsets.top
 
             skView.ignoresSiblingOrder = true
             skView.preferredFramesPerSecond = 60
-            skView.presentScene(scene)
-            gameScene = scene
+            skView.presentScene(menu)
         } else {
             gameScene?.safeAreaTop = view.safeAreaInsets.top
         }

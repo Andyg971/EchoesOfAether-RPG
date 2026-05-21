@@ -36,6 +36,7 @@
 		6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */; };
 		6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */; };
 		6D7ECC04B8A741B0A0000001 /* EchoesOfAether.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */; };
+		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -69,6 +70,7 @@
 		6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EchoesOfAether.entitlements; sourceTree = "<group>"; };
+		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 				6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */,
 				6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */,
 				6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */,
+				6D7EDD01B8A741B0A0000001 /* Assets.xcassets */,
 			);
 			path = EchoesOfAether;
 			sourceTree = "<group>";
@@ -243,6 +246,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */,
+				6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

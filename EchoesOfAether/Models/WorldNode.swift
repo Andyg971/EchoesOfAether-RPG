@@ -3,45 +3,47 @@ import SpriteKit
 @MainActor
 enum WorldNode {
 
-    // MARK: - Kael (protagoniste, sombre, marque noire)
+    // MARK: - Kael (protagoniste — sprite pixel art animé)
 
     static func kael() -> SKNode {
         let root = SKNode()
         root.name = "kael"
 
-        let cloak = SKShapeNode(rectOf: CGSize(width: 38, height: 52), cornerRadius: 6)
-        cloak.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.14, alpha: 1)
-        cloak.strokeColor = SKColor(red: 0.30, green: 0.20, blue: 0.48, alpha: 0.7)
-        cloak.lineWidth = 1.5
-        root.addChild(cloak)
+        // Sprite animé 6 frames idle
+        let textures: [SKTexture] = (1...6).map { i in
+            let t = SKTexture(imageNamed: "kael_idle_\(i)")
+            t.filteringMode = .nearest   // pixel-crisp sans blur
+            return t
+        }
+        let sprite = SKSpriteNode(texture: textures[0])
+        sprite.name = "kaelSprite"
+        // Frames 108×60px @1x → 108×60pt dans SpriteKit.
+        // Scale 0.55 → ~59×33pt (cadre), personnage visible ~30×32pt.
+        sprite.setScale(0.55)
+        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)   // ancre aux pieds
+        sprite.position = CGPoint(x: 0, y: -16)        // centre vertical du node
+        sprite.zPosition = 1
+        sprite.run(.repeatForever(.animate(with: textures, timePerFrame: 0.11,
+                                           resize: false, restore: true)))
+        root.addChild(sprite)
 
-        let head = SKShapeNode(circleOfRadius: 12)
-        head.fillColor = SKColor(red: 0.22, green: 0.20, blue: 0.28, alpha: 1)
-        head.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.55, alpha: 0.8)
-        head.lineWidth = 1
-        head.position = CGPoint(x: 0, y: 34)
-        root.addChild(head)
-
-        let eyes = SKShapeNode(rectOf: CGSize(width: 10, height: 2), cornerRadius: 1)
-        eyes.fillColor = SKColor(red: 0.72, green: 0.55, blue: 1.0, alpha: 1)
-        eyes.strokeColor = .clear
-        eyes.glowWidth = 2
-        eyes.position = CGPoint(x: 0, y: 35)
-        root.addChild(eyes)
-
+        // Marque Aether — conservée au-dessus du sprite
         let mark = SKShapeNode(circleOfRadius: 3)
         mark.fillColor = SKColor(red: 0.58, green: 0.20, blue: 0.90, alpha: 1)
         mark.strokeColor = .clear
         mark.glowWidth = 5
-        mark.position = CGPoint(x: 14, y: -8)
+        mark.position = CGPoint(x: 10, y: 2)
+        mark.zPosition = 2
         root.addChild(mark)
         JuiceEngine.pulse(mark, scale: 1.6)
 
-        let aura = SKShapeNode(circleOfRadius: 30)
+        // Aura Aether (zPosition=-1 pour passer derrière le sprite)
+        let aura = SKShapeNode(circleOfRadius: 28)
         aura.fillColor = SKColor(red: 0.20, green: 0.05, blue: 0.35, alpha: 0.12)
         aura.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.15)
         aura.lineWidth = 1
         aura.zPosition = -1
+        aura.position = CGPoint(x: 0, y: 10)
         root.addChild(aura)
         JuiceEngine.pulse(aura, scale: 1.2)
 

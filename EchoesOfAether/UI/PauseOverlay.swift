@@ -7,6 +7,7 @@ final class PauseOverlay {
 
     var onResume: (() -> Void)?
     var onSave: (() -> Void)?
+    var onOptions: (() -> Void)?
     var onMainMenu: (() -> Void)?
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
@@ -31,7 +32,7 @@ final class PauseOverlay {
 
         // Panel central
         let panelW: CGFloat = 280
-        let panelH: CGFloat = 300
+        let panelH: CGFloat = 360
         let panel = SKShapeNode(
             path: CGPath(roundedRect: CGRect(x: -panelW/2, y: -panelH/2,
                                             width: panelW, height: panelH),
@@ -76,11 +77,19 @@ final class PauseOverlay {
         saveBtn.alpha = 0
         root.addChild(saveBtn)
 
+        let optionsBtn = makeButton(String(localized: "pause.options"),
+            fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
+            stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
+            name: "pauseOptions")
+        optionsBtn.position = CGPoint(x: centerX, y: centerY - 58)
+        optionsBtn.alpha = 0
+        root.addChild(optionsBtn)
+
         let menuBtn = makeButton(String(localized: "pause.mainMenu"),
             fill: SKColor(red: 0.12, green: 0.06, blue: 0.06, alpha: 1),
             stroke: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
             name: "pauseMenu")
-        menuBtn.position = CGPoint(x: centerX, y: centerY - 65)
+        menuBtn.position = CGPoint(x: centerX, y: centerY - 118)
         menuBtn.alpha = 0
         root.addChild(menuBtn)
 
@@ -90,7 +99,8 @@ final class PauseOverlay {
         title.run(fadeIn)
         resumeBtn.run(.sequence([.wait(forDuration: 0.08), fadeIn]))
         saveBtn.run(.sequence([.wait(forDuration: 0.14), fadeIn]))
-        menuBtn.run(.sequence([.wait(forDuration: 0.20), fadeIn, .run { [weak self] in self?.buttonsReady = true }]))
+        optionsBtn.run(.sequence([.wait(forDuration: 0.18), fadeIn]))
+        menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn, .run { [weak self] in self?.buttonsReady = true }]))
     }
 
     func hide() {
@@ -111,6 +121,11 @@ final class PauseOverlay {
         if let btn = root.childNode(withName: "pauseSave") as? SKShapeNode,
            btn.contains(local) {
             onSave?()
+            return true
+        }
+        if let btn = root.childNode(withName: "pauseOptions") as? SKShapeNode,
+           btn.contains(local) {
+            onOptions?()
             return true
         }
         if let btn = root.childNode(withName: "pauseMenu") as? SKShapeNode,

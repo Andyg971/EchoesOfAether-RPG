@@ -7,6 +7,9 @@ struct Combatant {
     let speed: CGFloat
     var atb: CGFloat = 0
     var baseDamage: Int = 18
+    var statusEffect: StatusEffect? = nil
+    var statusTicks: Int = 0
+    var stunned: Bool = false
 
     var isAlive: Bool { hp > 0 }
 }
@@ -14,6 +17,11 @@ struct Combatant {
 enum CombatAction {
     case attack
     case blackSlash
+}
+
+enum StatusEffect {
+    case poison        // dégâts par tick
+    case aetherBurn    // poison + ralentit ATB ennemi
 }
 
 struct BossConfig {
@@ -56,6 +64,13 @@ final class CombatSystem {
     private weak var parentScene: SKScene?
     private var _player: PlayerState?
 
+    // Combo
+    private var comboCount = 0
+    private let comboLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+
+    // Status effect label
+    private let statusEffectLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+
     // Boss
     private var bossConfig: BossConfig?
     private var isEnraged = false
@@ -87,6 +102,7 @@ final class CombatSystem {
         self.kael.atb = 0
         self.enemy.atb = 0
         self.resonance = 0
+        self.comboCount = 0
         self.completion = completion
         self._player = player
 
@@ -109,6 +125,7 @@ final class CombatSystem {
         setupATBBars(scene: scene)
         setupButtons(scene: scene)
         if boss != nil { setupBossUI(scene: scene) }
+        setupComboAndStatusUI(scene: scene)
         updateVisuals()
     }
 
@@ -128,6 +145,28 @@ final class CombatSystem {
         if enemy.atb >= 1 {
             enemy.atb = 0
             enemyTurnCount += 1
+
+            // Appliquer poison/aetherBurn à l'ennemi
+            if let status = enemy.statusEffect, enemy.statusTicks > 0 {
+                let tickDmg: Int
+                switch status {
+                case .poison:     tickDmg = 12
+                case .aetherBurn: tickDmg = 18
+                }
+                enemy.hp = max(0, enemy.hp - tickDmg)
+                enemy.statusTicks -= 1
+                if enemy.statusTicks <= 0 { enemy.statusEffect = nil }
+                statusEffectLabel.text = "🟢 \(String(localized: "combat.status.poison")) -\(tickDmg)"
+                if !enemy.isAlive { updateVisuals(); checkVictory(); return }
+            }
+
+            // Stun : l'ennemi perd son tour
+            if enemy.stunned {
+                enemy.stunned = false
+                statusLabel.text = String(localized: "combat.status.stunned")
+                updateVisuals()
+                return
+            }
 
             let isSpecial = bossConfig.map { enemyTurnCount % $0.specialAttackInterval == 0 } ?? false
             let dmgMult = isEnraged ? (bossConfig?.enrageDamageMult ?? 1) : 1
@@ -270,17 +309,33 @@ final class CombatSystem {
 
         switch action {
         case .attack:
-            enemy.hp = max(0, enemy.hp - atkDmg)
+            comboCount += 1
+            let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
+            let finalDmg = atkDmg * comboMult / 10
+            enemy.hp = max(0, enemy.hp - finalDmg)
             statusLabel.text = String(localized: "combat.status.attack \(enemy.name)")
             AudioEngine.shared.playHit()
+            HapticsEngine.medium()
             JuiceEngine.screenShake(root, intensity: 5, duration: 0.2)
             root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8))
+            showComboIfNeeded()
 
         case .blackSlash:
+            comboCount = 0   // reset combo sur Entaille Noire
             resonance += 1
+            // Stun à résonance 3 ; AetherBurn à résonance 6+
+            if resonance == 3 {
+                enemy.stunned = true
+                statusEffectLabel.text = "🔵 \(String(localized: "combat.status.stun"))"
+            } else if resonance >= 6 && enemy.statusEffect == nil {
+                enemy.statusEffect = .aetherBurn
+                enemy.statusTicks = 3
+                statusEffectLabel.text = "🔥 \(String(localized: "combat.status.aetherBurn"))"
+            }
             enemy.hp = max(0, enemy.hp - slashDmg)
             statusLabel.text = String(localized: "combat.status.blackSlash \(resonance)")
             AudioEngine.shared.playBlackSlash()
+            HapticsEngine.heavy()
             JuiceEngine.screenShake(root, intensity: 12, duration: 0.35)
             JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
             JuiceEngine.flashOverlay(
@@ -294,6 +349,23 @@ final class CombatSystem {
 
         updateVisuals()
         checkVictory()
+    }
+
+    private func showComboIfNeeded() {
+        guard comboCount >= 3 else { return }
+        let text = comboCount >= 5
+            ? String(localized: "combat.combo.mega \(comboCount)")
+            : String(localized: "combat.combo.hit \(comboCount)")
+        comboLabel.text = text
+        comboLabel.setScale(0.5)
+        comboLabel.alpha = 1
+        comboLabel.run(.sequence([
+            .group([.scale(to: 1.3, duration: 0.15), .fadeIn(withDuration: 0.1)]),
+            .scale(to: 1.0, duration: 0.1),
+            .wait(forDuration: 0.6),
+            .fadeOut(withDuration: 0.3)
+        ]))
+        HapticsEngine.combo()
     }
 
     private func checkVictory() {
@@ -332,6 +404,24 @@ final class CombatSystem {
                 self?.completion?(finalResonance, finalGold)
             }
         ]))
+    }
+
+    private func setupComboAndStatusUI(scene: SKScene) {
+        // Combo label (centre-haut)
+        comboLabel.fontSize = 22
+        comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
+        comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.75)
+        comboLabel.zPosition = 920
+        comboLabel.alpha = 0
+        root.addChild(comboLabel)
+
+        // Status effect label (bas du scrim)
+        statusEffectLabel.fontSize = 13
+        statusEffectLabel.fontColor = SKColor(red: 0.55, green: 0.90, blue: 0.55, alpha: 1)
+        statusEffectLabel.position = CGPoint(x: scene.size.width * 0.72, y: scene.size.height * 0.42)
+        statusEffectLabel.zPosition = 910
+        statusEffectLabel.alpha = 0
+        root.addChild(statusEffectLabel)
     }
 
     // MARK: - Setup

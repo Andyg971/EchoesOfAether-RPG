@@ -3,7 +3,6 @@ import UIKit
 
 final class GameViewController: UIViewController {
     private var didPresentScene = false
-    private weak var gameScene: GameScene?
 
     override func loadView() {
         view = SKView(frame: UIScreen.main.bounds)
@@ -29,8 +28,8 @@ final class GameViewController: UIViewController {
             skView.ignoresSiblingOrder = true
             skView.preferredFramesPerSecond = 60
             skView.presentScene(menu)
-        } else {
-            gameScene?.safeAreaTop = view.safeAreaInsets.top
+        } else if let gameScene = skView.scene as? GameScene {
+            gameScene.safeAreaTop = view.safeAreaInsets.top
         }
     }
 

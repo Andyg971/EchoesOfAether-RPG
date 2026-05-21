@@ -4552,6 +4552,282 @@
         "fr": { "stringUnit": { "state": "translated", "value": "Terminée" } },
         "en": { "stringUnit": { "state": "translated", "value": "Completed" } }
       }
+    },
+    "options.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Options" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Options" } }
+      }
+    },
+    "options.sfx": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Volume effets sonores" } },
+        "en": { "stringUnit": { "state": "translated", "value": "SFX Volume" } }
+      }
+    },
+    "options.language.info": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Langue : modifiable dans Réglages → Général" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Language: change in Settings → General" } }
+      }
+    },
+    "options.resetSave": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Réinitialiser la sauvegarde" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Reset Save" } }
+      }
+    },
+    "options.resetSave.confirm": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Confirmer — tout sera perdu !" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Confirm — all progress lost!" } }
+      }
+    },
+    "options.close": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Fermer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Close" } }
+      }
+    },
+    "lore.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Journal de l'Éther" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Aether Journal" } }
+      }
+    },
+    "lore.empty": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Aucune entrée découverte." } },
+        "en": { "stringUnit": { "state": "translated", "value": "No entries discovered yet." } }
+      }
+    },
+    "lore.close": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Fermer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Close" } }
+      }
+    },
+    "lore.eran.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Inscription d'Eran" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Eran's Inscription" } }
+      }
+    },
+    "lore.eran.body": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Aether ne choisit pas — il révèle ce qui était déjà là." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Aether does not choose — it reveals what was already there." } }
+      }
+    },
+    "lore.archivist.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Notes de l'Archiviste" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Archivist's Notes" } }
+      }
+    },
+    "lore.archivist.body": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "La Source est un miroir. Elle amplifie. Elle ne corrompt pas — elle montre." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Source is a mirror. It amplifies. It does not corrupt — it shows." } }
+      }
+    },
+    "lore.threshold.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold" } }
+      }
+    },
+    "lore.threshold.body": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Franchir le Seuil sans ancrage, c'est devenir ce qu'on craint le plus." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Crossing the Threshold without an anchor is to become what one fears most." } }
+      }
+    },
+    "lore.void.title": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Fragment du Vide" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Fragment of the Void" } }
+      }
+    },
+    "lore.void.body": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Elle avait raison. Sur tout. Et Kael ne peut plus l'entendre." } },
+        "en": { "stringUnit": { "state": "translated", "value": "She was right. About everything. And Kael can no longer hear her." } }
+      }
+    },
+    "corruption.cinematic.line1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Aether te consume." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Aether consumes you." } }
+      }
+    },
+    "corruption.cinematic.line2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Il n'y a plus de retour." } },
+        "en": { "stringUnit": { "state": "translated", "value": "There is no turning back." } }
+      }
+    },
+    "hud.objective.act3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil — affronter sa propre ombre" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold — face your own shadow" } }
+      }
+    },
+    "dialogue.act3.voiceName": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "La Voix" } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Voice" } }
+      }
+    },
+    "dialogue.act3.voice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu pensais que c'était fini. Ce n'était que le début." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You thought it was over. It was only the beginning." } }
+      }
+    },
+    "dialogue.act3.voice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Lyra est partie. L'Aether reste. Et toi, que reste-t-il ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Lyra is gone. The Aether remains. And you — what remains of you?" } }
+      }
+    },
+    "dialogue.act3.kael1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Qui parle ? Montre-toi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Who speaks? Show yourself." } }
+      }
+    },
+    "dialogue.act3.voice3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu me connais déjà, Kael. Je suis ce que tu refuses de voir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "You already know me, Kael. I am what you refuse to see." } }
+      }
+    },
+    "dialogue.act3.kael2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil. Lyra avait raison — cet endroit est vivant." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold. Lyra was right — this place is alive." } }
+      }
+    },
+    "dialogue.act3.eran1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael. Je savais que tu viendrais." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael. I knew you would come." } }
+      }
+    },
+    "dialogue.act3.kael3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Eran ? Tu es encore en vie." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Eran? You're still alive." } }
+      }
+    },
+    "dialogue.act3.eran2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "À peine. Le Seuil m'a changé. Comme il te change, toi." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Barely. The Threshold changed me. As it changes you." } }
+      }
+    },
+    "dialogue.act3.eranChoicePrompt": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Que réponds-tu à Eran ?" } },
+        "en": { "stringUnit": { "state": "translated", "value": "How do you answer Eran?" } }
+      }
+    },
+    "dialogue.act3.eranChoice1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Je contrôle l'Aether." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I control the Aether." } }
+      }
+    },
+    "dialogue.act3.eranResponse1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "C'est ce que disait mon maître, aussi. Avant la fin." } },
+        "en": { "stringUnit": { "state": "translated", "value": "That is what my master said too. Before the end." } }
+      }
+    },
+    "dialogue.act3.eranChoice2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "L'Aether me contrôle." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Aether controls me." } }
+      }
+    },
+    "dialogue.act3.eranResponse2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Alors tu es peut-être le premier à comprendre ce que tu es devenu." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Then you may be the first to understand what you have become." } }
+      }
+    },
+    "dialogue.act3.eran3": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil attend. Tu dois choisir : disparaître ou devenir." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold waits. You must choose: disappear, or become." } }
+      }
+    },
+    "dialogue.act3.end1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil s'est tu." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold fell silent." } }
+      }
+    },
+    "dialogue.act3.end2": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "La suite de l'histoire d'Echoes of Aether arrive bientôt." } },
+        "en": { "stringUnit": { "state": "translated", "value": "The rest of Kael's story is coming soon." } }
+      }
+    },
+    "credits.game": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Jeu" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Game" } }
+      }
+    },
+    "credits.design": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Design" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Design" } }
+      }
+    },
+    "credits.code": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Code" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Code" } }
+      }
+    },
+    "credits.music": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Musique" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Music" } }
+      }
+    },
+    "credits.procedural": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Procédurale" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Procedural" } }
+      }
+    },
+    "credits.tools": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Outils" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Tools" } }
+      }
+    },
+    "credits.thanks": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Merci" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Thanks" } }
+      }
+    },
+    "credits.thanksText": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "À vous, joueurs, d'avoir cru à cette histoire." } },
+        "en": { "stringUnit": { "state": "translated", "value": "To you, players, for believing in this story." } }
+      }
+    },
+    "credits.close": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Continuer" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Continue" } }
+      }
     }
   },
   "version": "1.1"

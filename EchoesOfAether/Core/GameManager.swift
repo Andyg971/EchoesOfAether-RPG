@@ -14,6 +14,9 @@ final class GameManager {
     let inventory = InventoryOverlay()
     let pause     = PauseOverlay()
     let death     = DeathOverlay()
+    let options   = OptionsOverlay()
+    let lore      = LoreOverlay()
+    let minimap   = MinimapOverlay()
     let player    = PlayerState()
 
     var onReturnToMenu: (() -> Void)?
@@ -22,6 +25,8 @@ final class GameManager {
     private var resonanceTotal = 0
     private var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
     private var hintUpdateTimer: TimeInterval = 0
+    private var minimapTimer: TimeInterval = 0
+    private var corruptionCinematicShown = false
 
     // MARK: - Setup
 
@@ -34,6 +39,9 @@ final class GameManager {
         inventory.attach(to: scene)
         pause.attach(to: scene)
         death.attach(to: scene)
+        options.attach(to: scene)
+        lore.attach(to: scene)
+        minimap.attach(to: scene)
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
         hud.onPauseTap     = { [weak self] in self?.openPause() }
@@ -45,8 +53,16 @@ final class GameManager {
             JuiceEngine.flashOverlay(in: scene, size: scene.size,
                 color: SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 1), duration: 0.2)
         }
+        pause.onOptions   = { [weak self] in self?.openOptions() }
         pause.onMainMenu  = { [weak self] in
             self?.pause.hide()
+            self?.onReturnToMenu?()
+        }
+
+        options.onClose       = { [weak self] in self?.closeOptions() }
+        options.onDeleteSave  = { [weak self] in
+            SaveManager.deleteSave()
+            self?.closeOptions()
             self?.onReturnToMenu?()
         }
 
@@ -71,6 +87,8 @@ final class GameManager {
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
         inventory.layout(in: size, safeBottom: safeBottom)
+        lore.layout(in: size)
+        minimap.layout(in: size, safeBottom: safeBottom)
     }
 
     func update(deltaTime: TimeInterval) {
@@ -85,12 +103,22 @@ final class GameManager {
             hintUpdateTimer = 0
             updateInteractionHint()
         }
+
+        // Minimap update every 0.1s during exploration
+        minimapTimer += deltaTime
+        if minimapTimer >= 0.10, state == .exploration {
+            minimapTimer = 0
+            updateMinimap()
+        }
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {
         if death.handleTap(at: point, in: scene) { return }
+        if options.handleTap(at: point, in: scene) { return }
+        if lore.handleTap(at: point, in: scene) { return }
         if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
+        if TransitionManager.handleCreditsTap(at: point, in: scene) { return }
         if state == .inventory, inventory.handleTap(at: point, in: scene) { return }
         if state == .shop,      shop.handleTap(at: point, in: scene) { syncGold(); return }
         if state == .dialogue,   dialogue.handleTap(at: point, in: scene) { return }
@@ -152,6 +180,10 @@ final class GameManager {
 
         case .fallen:
             break  // Pas d'interaction — écran de fin Act 2
+
+        case .act3:
+            if tryAct3Interaction(point, in: scene) { return }
+            tapAndMove(point, in: scene)
         }
     }
 
@@ -935,6 +967,7 @@ final class GameManager {
         dialogue.start(PrototypeContent.act2EranInscriptionDialogue) { [weak self] in
             guard let self else { return }
             player.act2EranFound = true
+            player.loreDiscovered.insert("eran")
             transition(to: .exploration)
         }
     }
@@ -998,6 +1031,7 @@ final class GameManager {
                 player.gold += gold
                 player.ruinsProgress = 2
                 player.kaelCorruptionLevel = max(player.kaelCorruptionLevel, 2)
+                player.loreDiscovered.insert("archivist")
                 syncGold()
                 hud.resonanceValue = resonanceTotal
                 hud.objectiveText = String(localized: "hud.objective.discovery")
@@ -1027,14 +1061,27 @@ final class GameManager {
             guard let self, let scene = self.scene else { return }
             // Corruption maximale — niveau 3
             player.kaelCorruptionLevel = 3
+            player.loreDiscovered.insert("void")
             world.applyKaelCorruption(level: 3)
             JuiceEngine.screenShake(scene, intensity: 4)
-            // Flash rouge sur la découverte de l'inscription
-            JuiceEngine.flashOverlay(in: scene, size: scene.size,
-                                     color: SKColor(red: 0.7, green: 0.08, blue: 0.05, alpha: 1),
-                                     duration: 0.4)
-            dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
-                self?.triggerLyraDeath()
+
+            // Cinématique de corruption si pas encore vue
+            if !corruptionCinematicShown {
+                corruptionCinematicShown = true
+                TransitionManager.showCorruptionCinematic(in: scene) { [weak self] in
+                    guard let self else { return }
+                    dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
+                        self?.triggerLyraDeath()
+                    }
+                }
+            } else {
+                // Flash rouge si déjà vue
+                JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                         color: SKColor(red: 0.7, green: 0.08, blue: 0.05, alpha: 1),
+                                         duration: 0.4)
+                dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
+                    self?.triggerLyraDeath()
+                }
             }
         }
     }
@@ -1068,6 +1115,13 @@ final class GameManager {
                         phase = .fallen
                         transition(to: .exploration)
                         TransitionManager.showAct2EndScreen(in: scene)
+                        // Propose credits then Act III prologue
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                            guard let self, let sc = self.scene else { return }
+                            TransitionManager.showCredits(in: sc) { [weak self] in
+                                self?.beginAct3()
+                            }
+                        }
                     }
                 }
             }
@@ -1079,7 +1133,7 @@ final class GameManager {
         }
     }
 
-    // MARK: - Pause
+    // MARK: - Pause / Options / Lore
 
     private func openPause() {
         guard state == .exploration || state == .dialogue else { return }
@@ -1089,6 +1143,25 @@ final class GameManager {
 
     private func closePause() {
         pause.hide()
+    }
+
+    private func openOptions() {
+        guard let scene else { return }
+        pause.hide()
+        options.show(in: scene)
+    }
+
+    private func closeOptions() {
+        options.hide()
+    }
+
+    func openLore() {
+        guard state == .exploration else { return }
+        let entries = PrototypeContent.buildLoreEntries(for: player)
+        lore.open(entries: entries) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+        state = .inventory  // reuse inventory state to block exploration taps
     }
 
     // MARK: - Death / Retry
@@ -1167,6 +1240,66 @@ final class GameManager {
         }
 
         hud.interactionHint = hint
+    }
+
+    // MARK: - Minimap
+
+    private func updateMinimap() {
+        guard let scene else { return }
+        let npcs: [(position: CGPoint, color: SKColor)] = [
+            (world.lyra.position,    SKColor(red: 0.85, green: 0.65, blue: 1.0, alpha: 1)),
+            (world.dorin.position,   SKColor(red: 0.55, green: 0.85, blue: 0.55, alpha: 1)),
+            (world.bram.position,    SKColor(red: 1.0,  green: 0.75, blue: 0.3,  alpha: 1)),
+            (world.mara.position,    SKColor(red: 1.0,  green: 0.75, blue: 0.3,  alpha: 1)),
+            (world.garen.position,   SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1)),
+            (world.sage.position,    SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1))
+        ].filter { !$0.position.equalTo(.zero) }
+        minimap.update(kaelPosition: world.kael.position,
+                       sceneSize: scene.size,
+                       npcs: npcs)
+    }
+
+    // MARK: - Act III
+
+    private func tryAct3Interaction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let w = scene.size.width, h = scene.size.height
+        // Eran encounter in act3 (placeholder position)
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.65)) < 80 {
+            openAct3EranMeet()
+            return true
+        }
+        return false
+    }
+
+    private func beginAct3() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            phase = .act3
+            hud.objectiveText = String(localized: "hud.objective.act3")
+            world.switchToRuins(in: scene)  // Reuse ruins backdrop for threshold
+            world.applyKaelCorruption(level: 3)
+        } completion: { [weak self] in
+            guard let self else { return }
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.act3PrologueDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    private func openAct3EranMeet() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act3EranMeetDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            player.loreDiscovered.insert("threshold")
+            transition(to: .exploration)
+            // Act 3 ends in placeholder screen for now
+            TransitionManager.showCredits(in: scene) { [weak self] in
+                self?.onReturnToMenu?()
+            }
+        }
     }
 
     // MARK: - Inventory
@@ -1252,6 +1385,13 @@ final class GameManager {
             world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
             TransitionManager.showAct2EndScreen(in: scene)
+
+        case .act3:
+            hud.objectiveText = String(localized: "hud.objective.act3")
+            world.switchToRuins(in: scene)
+            world.applyKaelCorruption(level: 3)
+            corruptionCinematicShown = true
+            transition(to: .exploration)
         }
     }
 }

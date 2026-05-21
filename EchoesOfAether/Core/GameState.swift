@@ -18,6 +18,7 @@ enum GamePhase: Int, CaseIterable, Codable {
     case act2    = 5   // Retour à Solis après le sanctuaire
     case ruins   = 6   // Ruines de la Source
     case fallen  = 7   // Kael seul après la mort de Lyra
+    case act3    = 8   // Le Seuil — Kael comme antagoniste
 
     var next: GamePhase? {
         GamePhase(rawValue: rawValue + 1)
@@ -75,6 +76,7 @@ final class PlayerState {
     var act2Vision1Seen: Bool = false
     var act2EranFound: Bool = false
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
+    var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
 
     var attackDamage: Int { 42 + weaponLevel * 22 }
     var blackSlashDamage: Int { 92 + weaponLevel * 35 }
@@ -102,6 +104,7 @@ final class PlayerState {
             act2Vision1Seen: act2Vision1Seen,
             act2EranFound: act2EranFound,
             kaelCorruptionLevel: kaelCorruptionLevel,
+            loreDiscovered: Array(loreDiscovered),
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -131,6 +134,7 @@ final class PlayerState {
         act2Vision1Seen = data.act2Vision1Seen
         act2EranFound = data.act2EranFound
         kaelCorruptionLevel = data.kaelCorruptionLevel
+        loreDiscovered = Set(data.loreDiscovered)
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -162,6 +166,7 @@ struct SaveData: Codable {
     let act2Vision1Seen: Bool
     let act2EranFound: Bool
     let kaelCorruptionLevel: Int
+    let loreDiscovered: [String]
     let phase: GamePhase
     let resonanceTotal: Int
 }

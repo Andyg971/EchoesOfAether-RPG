@@ -664,4 +664,91 @@ enum PrototypeContent {
         .line(speaker: "Lyra", text: String(localized: "dialogue.shrine.lyra2")),
         .line(speaker: "Kael", text: String(localized: "dialogue.shrine.kael1"))
     ]
+
+    // MARK: - Acte III — Le Seuil (Squelette)
+
+    /// Prologue : Kael entre dans le Seuil. La Voix parle.
+    static let act3PrologueDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.voice1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.voice2")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.kael1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.voice3")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.kael2"))
+    ]
+
+    /// Eran Solace — première rencontre au Seuil
+    static let act3EranMeetDialogue: [DialogueStep] = [
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.eran1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.kael3")),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.eran2")),
+        .choice(
+            prompt: String(localized: "dialogue.act3.eranChoicePrompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act3.eranChoice1"),
+                    responseSpeaker: "Eran",
+                    response: String(localized: "dialogue.act3.eranResponse1")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act3.eranChoice2"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act3.eranResponse2")
+                )
+            ]
+        ),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.eran3"))
+    ]
+
+    /// Ecran de fin Acte III (placeholder)
+    static let act3EndPlaceholder: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.end1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.end2"))
+    ]
+
+    // MARK: - Lore entries (noms de clés xcstrings)
+
+    @MainActor
+    static func buildLoreEntries(for player: PlayerState) -> [LoreEntry] {
+        var entries: [LoreEntry] = []
+        if player.loreDiscovered.contains("eran") {
+            entries.append(LoreEntry(
+                icon: "✦",
+                title: String(localized: "lore.eran.title"),
+                body: String(localized: "lore.eran.body")
+            ))
+        }
+        if player.loreDiscovered.contains("archivist") {
+            entries.append(LoreEntry(
+                icon: "📜",
+                title: String(localized: "lore.archivist.title"),
+                body: String(localized: "lore.archivist.body")
+            ))
+        }
+        if player.loreDiscovered.contains("threshold") {
+            entries.append(LoreEntry(
+                icon: "🌀",
+                title: String(localized: "lore.threshold.title"),
+                body: String(localized: "lore.threshold.body")
+            ))
+        }
+        if player.loreDiscovered.contains("void") {
+            entries.append(LoreEntry(
+                icon: "🌑",
+                title: String(localized: "lore.void.title"),
+                body: String(localized: "lore.void.body")
+            ))
+        }
+        return entries
+    }
 }

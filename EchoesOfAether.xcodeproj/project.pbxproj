@@ -30,6 +30,10 @@
 		6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */; };
 		6D7EAA04B8A741B0A0000001 /* DeathOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */; };
 		6D7EAA06B8A741B0A0000001 /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */; };
+		6D7EBB02B8A741B0A0000001 /* HapticsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */; };
+		6D7EBB04B8A741B0A0000001 /* OptionsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */; };
+		6D7EBB06B8A741B0A0000001 /* LoreOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */; };
+		6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +61,10 @@
 		6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuScene.swift; sourceTree = "<group>"; };
 		6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeathOverlay.swift; sourceTree = "<group>"; };
 		6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseOverlay.swift; sourceTree = "<group>"; };
+		6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsEngine.swift; sourceTree = "<group>"; };
+		6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsOverlay.swift; sourceTree = "<group>"; };
+		6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoreOverlay.swift; sourceTree = "<group>"; };
+		6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapOverlay.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +137,7 @@
 				6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */,
 				6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */,
 				6D7E5002B8A741B0A0000001 /* AudioEngine.swift */,
+				6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */,
 			);
 			path = Juice;
 			sourceTree = "<group>";
@@ -141,6 +150,9 @@
 				6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */,
 				6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */,
 				6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */,
+				6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */,
+				6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */,
+				6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -257,6 +269,10 @@
 				6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */,
 				6D7EAA04B8A741B0A0000001 /* DeathOverlay.swift in Sources */,
 				6D7EAA06B8A741B0A0000001 /* PauseOverlay.swift in Sources */,
+				6D7EBB02B8A741B0A0000001 /* HapticsEngine.swift in Sources */,
+				6D7EBB04B8A741B0A0000001 /* OptionsOverlay.swift in Sources */,
+				6D7EBB06B8A741B0A0000001 /* LoreOverlay.swift in Sources */,
+				6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

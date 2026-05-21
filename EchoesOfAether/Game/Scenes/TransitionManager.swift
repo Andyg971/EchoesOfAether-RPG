@@ -111,6 +111,144 @@ enum TransitionManager {
         }
     }
 
+    // MARK: - Corruption Cinematic (niv. 3)
+
+    /// Flash séquence quand corruption atteint niveau 3 — appelé depuis GameManager.
+    static func showCorruptionCinematic(in scene: SKScene, completion: @escaping () -> Void) {
+        let overlay = SKShapeNode(rectOf: scene.size)
+        overlay.fillColor = .black
+        overlay.strokeColor = .clear
+        overlay.alpha = 0
+        overlay.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        overlay.zPosition = 3_000
+        scene.addChild(overlay)
+
+        // Message centré
+        let msg = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        msg.text = String(localized: "corruption.cinematic.line1")
+        msg.fontSize = 22
+        msg.fontColor = SKColor(red: 0.80, green: 0.12, blue: 0.10, alpha: 1)
+        msg.horizontalAlignmentMode = .center
+        msg.alpha = 0
+        msg.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2 + 20)
+        msg.zPosition = 3_001
+        scene.addChild(msg)
+
+        let msg2 = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+        msg2.text = String(localized: "corruption.cinematic.line2")
+        msg2.fontSize = 15
+        msg2.fontColor = SKColor(white: 0.55, alpha: 1)
+        msg2.horizontalAlignmentMode = .center
+        msg2.alpha = 0
+        msg2.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2 - 16)
+        msg2.zPosition = 3_001
+        scene.addChild(msg2)
+
+        HapticsEngine.heavy()
+        overlay.run(.sequence([
+            .fadeAlpha(to: 0.95, duration: 0.4),
+            .run { msg.run(.fadeIn(withDuration: 0.3)); msg2.run(.fadeIn(withDuration: 0.5)) },
+            .wait(forDuration: 1.6),
+            .fadeOut(withDuration: 0.5),
+            .run {
+                msg.removeFromParent()
+                msg2.removeFromParent()
+                overlay.removeFromParent()
+                completion()
+            }
+        ]))
+    }
+
+    // MARK: - Crédits
+
+    static func showCredits(in scene: SKScene, onClose: @escaping () -> Void) {
+        let overlay = SKShapeNode(rectOf: scene.size)
+        overlay.fillColor = SKColor(red: 0.02, green: 0.02, blue: 0.04, alpha: 0.98)
+        overlay.strokeColor = .clear
+        overlay.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        overlay.zPosition = 4_000
+        overlay.alpha = 0
+        overlay.name = "creditsOverlay"
+        scene.addChild(overlay)
+
+        let credits: [(String, String)] = [
+            (String(localized: "credits.game"),    "Echoes of Aether"),
+            (String(localized: "credits.design"),  "AppMaker Studio"),
+            (String(localized: "credits.code"),    "Swift 6 + SpriteKit"),
+            (String(localized: "credits.music"),   String(localized: "credits.procedural")),
+            (String(localized: "credits.tools"),   "Xcode 16 + Claude Code"),
+            (String(localized: "credits.thanks"),  String(localized: "credits.thanksText"))
+        ]
+
+        var y: CGFloat = CGFloat(credits.count) * 28
+        for (role, name) in credits {
+            let roleL = SKLabelNode(fontNamed: "AvenirNext-Regular")
+            roleL.text = role
+            roleL.fontSize = 11
+            roleL.fontColor = SKColor(white: 0.40, alpha: 1)
+            roleL.position = CGPoint(x: 0, y: y)
+            overlay.addChild(roleL)
+
+            let nameL = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+            nameL.text = name
+            nameL.fontSize = 14
+            nameL.fontColor = SKColor(white: 0.85, alpha: 1)
+            nameL.position = CGPoint(x: 0, y: y - 18)
+            overlay.addChild(nameL)
+            y -= 52
+        }
+
+        // Quote finale
+        let quote = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+        quote.text = "\"Elle avait raison. Sur tout.\""
+        quote.fontSize = 13
+        quote.fontColor = SKColor(red: 0.65, green: 0.50, blue: 0.90, alpha: 0.85)
+        quote.position = CGPoint(x: 0, y: -CGFloat(credits.count) * 26 - 20)
+        overlay.addChild(quote)
+
+        // Bouton fermer
+        let closeBtn = SKShapeNode(rectOf: CGSize(width: 140, height: 40), cornerRadius: 10)
+        closeBtn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
+        closeBtn.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8)
+        closeBtn.lineWidth = 1.5
+        closeBtn.name = "creditsClose"
+        closeBtn.position = CGPoint(x: 0, y: -CGFloat(credits.count) * 26 - 65)
+        let closeLbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        closeLbl.text = String(localized: "credits.close")
+        closeLbl.fontSize = 13
+        closeLbl.fontColor = .white
+        closeLbl.verticalAlignmentMode = .center
+        closeLbl.isUserInteractionEnabled = false
+        closeBtn.addChild(closeLbl)
+        overlay.addChild(closeBtn)
+        JuiceEngine.pulse(closeBtn, scale: 1.04)
+
+        overlay.run(.fadeIn(withDuration: 0.6))
+        for (i, child) in overlay.children.enumerated() {
+            JuiceEngine.popIn(child, delay: Double(i) * 0.06)
+        }
+
+        // Store closure for tap
+        creditsClosureClosure = onClose
+        creditsOverlayRef = overlay
+    }
+
+    private static var creditsClosureClosure: (() -> Void)?
+    private static var creditsOverlayRef: SKShapeNode?
+
+    static func handleCreditsTap(at point: CGPoint, in scene: SKScene) -> Bool {
+        guard let overlay = creditsOverlayRef else { return false }
+        let local = overlay.convert(point, from: scene)
+        guard let btn = overlay.childNode(withName: "creditsClose") as? SKShapeNode,
+              btn.contains(local) else { return false }
+        let closure = creditsClosureClosure
+        creditsClosureClosure = nil
+        creditsOverlayRef = nil
+        overlay.run(.sequence([.fadeOut(withDuration: 0.3), .removeFromParent()]))
+        closure?()
+        return true
+    }
+
     // MARK: - Acte II End Screen
 
     static func showAct2EndScreen(in scene: SKScene) {

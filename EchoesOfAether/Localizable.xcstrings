@@ -3973,26 +3973,26 @@
     },
     "dialogue.act2.discovery.lyra4": {
       "localizations": {
-        "fr": { "stringUnit": { "state": "translated", "value": "Je ne peux pas me taire. Les gens de Solis ont besoin de savoir." } },
-        "en": { "stringUnit": { "state": "translated", "value": "I can't stay silent. The people of Solis need to know." } }
+        "fr": { "stringUnit": { "state": "translated", "value": "Je ne peux pas me taire. Solis doit savoir la vérité. Je dois y aller." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I can't stay silent. Solis needs to know the truth. I have to go." } }
       }
     },
     "dialogue.act2.discovery.kael2": {
       "localizations": {
-        "fr": { "stringUnit": { "state": "translated", "value": "Non. Tu ne diras rien." } },
-        "en": { "stringUnit": { "state": "translated", "value": "No. You won't say anything." } }
+        "fr": { "stringUnit": { "state": "translated", "value": "Lyra... je t'en supplie." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Lyra... please." } }
       }
     },
     "dialogue.act2.death.lyra1": {
       "localizations": {
-        "fr": { "stringUnit": { "state": "translated", "value": "Kael, je t'aime comme un frère. Mais ça ne changera pas ce que j'ai à faire." } },
-        "en": { "stringUnit": { "state": "translated", "value": "Kael, I love you like a brother. But that won't change what I have to do." } }
+        "fr": { "stringUnit": { "state": "translated", "value": "Kael— tu me fais mal. Lâche-moi—" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Kael— you're hurting me. Let go—" } }
       }
     },
     "dialogue.act2.death.kael1": {
       "localizations": {
-        "fr": { "stringUnit": { "state": "translated", "value": "Je sais." } },
-        "en": { "stringUnit": { "state": "translated", "value": "I know." } }
+        "fr": { "stringUnit": { "state": "translated", "value": "Je ne t'entends plus, Lyra." } },
+        "en": { "stringUnit": { "state": "translated", "value": "I can't hear you anymore, Lyra." } }
       }
     },
     "dialogue.act2.death.lyra2": {
@@ -4375,8 +4375,8 @@
     },
     "dialogue.act2.death.eran.kael1": {
       "localizations": {
-        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil n'y changera rien." } },
-        "en": { "stringUnit": { "state": "translated", "value": "The Threshold won't change anything." } }
+        "fr": { "stringUnit": { "state": "translated", "value": "Trop tard, Lyra." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Too late, Lyra." } }
       }
     }
   },

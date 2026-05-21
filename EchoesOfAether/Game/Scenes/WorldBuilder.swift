@@ -191,6 +191,9 @@ final class WorldBuilder {
         // Puit au centre
         buildWell(at: CGPoint(x: w * 0.50, y: h * 0.42), in: scene)
 
+        // Cristal de sauvegarde (bas gauche, facile d'accès)
+        addSaveCrystal(at: CGPoint(x: w * 0.12, y: h * 0.22), in: scene)
+
         addAtmosphere(ParticleFactory.ambientDust(in: scene.size), to: scene)
     }
 
@@ -309,6 +312,9 @@ final class WorldBuilder {
             tree.zPosition = 5
             add(tree, to: scene)
         }
+
+        // Cristal de sauvegarde (bas centre)
+        addSaveCrystal(at: CGPoint(x: w * 0.50, y: h * 0.15), in: scene)
 
         addAtmosphere(ParticleFactory.forestFog(in: scene.size), to: scene)
     }
@@ -544,6 +550,9 @@ final class WorldBuilder {
             add(pool, to: scene)
         }
 
+        // Cristal de sauvegarde (entrée des ruines, bas droite)
+        addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.22), in: scene)
+
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
     }
 
@@ -766,6 +775,9 @@ final class WorldBuilder {
         boss.position = CGPoint(x: w * 0.70, y: h * 0.45)
         add(boss, to: scene)
 
+        // Cristal de sauvegarde (bas gauche du sanctuaire)
+        addSaveCrystal(at: CGPoint(x: w * 0.18, y: h * 0.20), in: scene)
+
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
     }
 
@@ -965,6 +977,55 @@ final class WorldBuilder {
         }
 
         return tree
+    }
+
+    // MARK: - Save Crystal
+
+    /// Ajoute un cristal de sauvegarde dans la scène courante.
+    /// Retourne la position du cristal pour que GameManager puisse détecter le tap.
+    @discardableResult
+    func addSaveCrystal(at position: CGPoint, in scene: SKScene) -> CGPoint {
+        let crystal = SKNode()
+        crystal.position = position
+        crystal.zPosition = 2
+        crystal.name = "saveCrystal"
+
+        // Corps du cristal (losange)
+        let gem = SKShapeNode()
+        let path = CGMutablePath()
+        path.move(to: CGPoint(x: 0, y: 18))
+        path.addLine(to: CGPoint(x: 10, y: 0))
+        path.addLine(to: CGPoint(x: 0, y: -10))
+        path.addLine(to: CGPoint(x: -10, y: 0))
+        path.closeSubpath()
+        gem.path = path
+        gem.fillColor = SKColor(red: 0.50, green: 0.80, blue: 1.0, alpha: 0.85)
+        gem.strokeColor = SKColor(red: 0.70, green: 0.90, blue: 1.0, alpha: 1.0)
+        gem.lineWidth = 1.5
+        gem.glowWidth = 6
+        crystal.addChild(gem)
+        JuiceEngine.pulse(gem, scale: 1.12)
+
+        // Aura externe
+        let aura = SKShapeNode(circleOfRadius: 22)
+        aura.fillColor = SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 0.06)
+        aura.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.18)
+        aura.lineWidth = 1.5
+        crystal.addChild(aura)
+        JuiceEngine.pulse(aura, scale: 1.25)
+
+        // Label
+        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        label.text = String(localized: "world.saveCrystal.label")
+        label.fontSize = 9
+        label.fontColor = SKColor(red: 0.65, green: 0.88, blue: 1.0, alpha: 0.80)
+        label.position = CGPoint(x: 0, y: -26)
+        crystal.addChild(label)
+        JuiceEngine.float(label, distance: 3)
+
+        scene.addChild(crystal)
+        backdropNodes.append(crystal)
+        return position
     }
 
     // MARK: - Kael Corruption (Acte II)

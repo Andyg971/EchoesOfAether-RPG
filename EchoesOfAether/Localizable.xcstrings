@@ -4378,6 +4378,24 @@
         "fr": { "stringUnit": { "state": "translated", "value": "Trop tard, Lyra." } },
         "en": { "stringUnit": { "state": "translated", "value": "Too late, Lyra." } }
       }
+    },
+    "world.saveCrystal.label": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "✦ Cristal d'Aether" } },
+        "en": { "stringUnit": { "state": "translated", "value": "✦ Aether Crystal" } }
+      }
+    },
+    "dialogue.save.speakerName": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Cristal" } },
+        "en": { "stringUnit": { "state": "translated", "value": "Crystal" } }
+      }
+    },
+    "dialogue.save.line1": {
+      "localizations": {
+        "fr": { "stringUnit": { "state": "translated", "value": "Progression sauvegardée." } },
+        "en": { "stringUnit": { "state": "translated", "value": "Progress saved." } }
+      }
     }
   },
   "version": "1.1"

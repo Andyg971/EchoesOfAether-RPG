@@ -624,6 +624,13 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.death.eran.kael1"))
     ]
 
+    // MARK: - Cristal de Sauvegarde
+
+    static let saveCrystalDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.save.speakerName"),
+              text: String(localized: "dialogue.save.line1"))
+    ]
+
     // MARK: - Sanctuaire (Voix de l'Aether noir + fin V1)
 
     static let shrineEnding: [DialogueStep] = [

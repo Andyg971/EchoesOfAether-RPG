@@ -77,6 +77,9 @@ final class GameManager {
     // MARK: - Exploration Tap Routing
 
     private func handleExplorationTap(_ point: CGPoint, in scene: SKScene) {
+        // Cristal de sauvegarde — disponible dans toutes les zones jouables
+        if trySaveCrystalTap(point, in: scene) { return }
+
         switch phase {
         case .wake:
             return
@@ -109,6 +112,33 @@ final class GameManager {
 
         case .fallen:
             break  // Pas d'interaction — écran de fin Act 2
+        }
+    }
+
+    private func trySaveCrystalTap(_ point: CGPoint, in scene: SKScene) -> Bool {
+        guard let crystal = scene.childNode(withName: "saveCrystal") else { return false }
+        guard point.distance(to: crystal.position) < 55 else { return false }
+        triggerManualSave(crystalPosition: crystal.position, in: scene)
+        return true
+    }
+
+    private func triggerManualSave(crystalPosition: CGPoint, in scene: SKScene) {
+        saveGame()
+        // Flash bleu sur le cristal
+        JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                 color: SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 1),
+                                 duration: 0.25)
+        JuiceEngine.screenShake(scene, intensity: 2)
+        // Particules de save
+        scene.addChild(ParticleFactory.impactSparks(
+            at: crystalPosition,
+            color: SKColor(red: 0.60, green: 0.85, blue: 1.0, alpha: 1),
+            count: 14
+        ))
+        // Dialogue de confirmation
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.saveCrystalDialogue) { [weak self] in
+            self?.transition(to: .exploration)
         }
     }
 

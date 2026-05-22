@@ -7,28 +7,32 @@ final class AudioEngine {
 
     static let shared = AudioEngine()
 
-    private let engine = AVAudioEngine()
-    private let mixer = AVAudioMixerNode()
-    private var isRunning = false
+    private let engine   = AVAudioEngine()
+    private let mixer    = AVAudioMixerNode()
+
+    // Source of truth = engine.isRunning (no custom flag that can drift)
+    var isRunning: Bool { engine.isRunning }
+
+    /// Volume maître 0.0–1.0
+    var masterVolume: Float {
+        get { mixer.volume }
+        set { mixer.volume = max(0, min(1, newValue)) }
+    }
 
     private init() {
         engine.attach(mixer)
         engine.connect(mixer, to: engine.mainMixerNode, format: nil)
     }
 
-    /// Volume maître 0.0–1.0, contrôle le nœud mixer principal.
-    var masterVolume: Float {
-        get { mixer.volume }
-        set { mixer.volume = max(0, min(1, newValue)) }
-    }
+    // MARK: - Lifecycle
 
     func start() {
-        guard !isRunning else { return }
+        guard !engine.isRunning else { return }
         do {
-            try AVAudioSession.sharedInstance().setCategory(.ambient, options: .mixWithOthers)
-            try AVAudioSession.sharedInstance().setActive(true)
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.ambient, options: .mixWithOthers)
+            try session.setActive(true)
             try engine.start()
-            isRunning = true
         } catch {
             #if DEBUG
             print("[AudioEngine] start failed: \(error)")
@@ -36,86 +40,76 @@ final class AudioEngine {
         }
     }
 
+    /// Arrêt propre avant une transition de scène.
+    /// Toutes les asyncAfter en attente vérifieront isRunning et ne joueront pas.
+    func stop() {
+        guard engine.isRunning else { return }
+        engine.stop()
+    }
+
     // MARK: - Game Sounds
 
-    /// Short rising beep — dialogue advance, menu tap
     func playTap() {
         playTone(frequency: 880, duration: 0.06, volume: 0.15, type: .sine)
     }
 
-    /// Two-note rising — dialogue choice selected
     func playSelect() {
         playTone(frequency: 660, duration: 0.05, volume: 0.18, type: .sine)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.06) { [weak self] in
-            self?.playTone(frequency: 990, duration: 0.07, volume: 0.18, type: .sine)
-        }
+        scheduleAfter(0.06) { self.playTone(frequency: 990, duration: 0.07, volume: 0.18, type: .sine) }
     }
 
-    /// Thud — attack hit
     func playHit() {
         playTone(frequency: 120, duration: 0.12, volume: 0.35, type: .square, decay: true)
     }
 
-    /// Dark rumble + high whine — black slash
     func playBlackSlash() {
-        playTone(frequency: 55, duration: 0.25, volume: 0.40, type: .square, decay: true)
-        playTone(frequency: 440, duration: 0.15, volume: 0.12, type: .sine, decay: true)
+        playTone(frequency: 55,  duration: 0.25, volume: 0.40, type: .square, decay: true)
+        playTone(frequency: 440, duration: 0.15, volume: 0.12, type: .sine,   decay: true)
     }
 
-    /// Damage taken — short noise burst
     func playDamage() {
         playNoise(duration: 0.08, volume: 0.25)
     }
 
-    /// Ascending arpeggio — gold/loot gained
     func playGoldGain() {
-        let notes: [Float] = [523, 659, 784] // C5 E5 G5
+        let notes: [Float] = [523, 659, 784]
         for (i, freq) in notes.enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.07) { [weak self] in
-                self?.playTone(frequency: freq, duration: 0.10, volume: 0.18, type: .sine)
+            scheduleAfter(Double(i) * 0.07) {
+                self.playTone(frequency: freq, duration: 0.10, volume: 0.18, type: .sine)
             }
         }
     }
 
-    /// Purchase confirmation — satisfying ding
     func playPurchase() {
         playTone(frequency: 1047, duration: 0.08, volume: 0.20, type: .sine)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
-            self?.playTone(frequency: 1319, duration: 0.12, volume: 0.15, type: .sine)
-        }
+        scheduleAfter(0.1) { self.playTone(frequency: 1319, duration: 0.12, volume: 0.15, type: .sine) }
     }
 
-    /// Quest complete — triumphant three-note
     func playQuestComplete() {
-        let notes: [Float] = [523, 659, 1047] // C5 E5 C6
+        let notes: [Float] = [523, 659, 1047]
         for (i, freq) in notes.enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.12) { [weak self] in
-                self?.playTone(frequency: freq, duration: 0.18, volume: 0.22, type: .sine)
+            scheduleAfter(Double(i) * 0.12) {
+                self.playTone(frequency: freq, duration: 0.18, volume: 0.22, type: .sine)
             }
         }
     }
 
-    /// Enemy defeated — descending resolve
     func playVictory() {
-        let notes: [Float] = [784, 988, 1175, 1568] // G5 B5 D6 G6
+        let notes: [Float] = [784, 988, 1175, 1568]
         for (i, freq) in notes.enumerated() {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i) * 0.1) { [weak self] in
-                self?.playTone(frequency: freq, duration: 0.15, volume: 0.20, type: .sine)
+            scheduleAfter(Double(i) * 0.1) {
+                self.playTone(frequency: freq, duration: 0.15, volume: 0.20, type: .sine)
             }
         }
     }
 
-    /// Soft footstep tick
     func playStep() {
         playNoise(duration: 0.03, volume: 0.08)
     }
 
-    /// Shop open — warm chime
     func playShopOpen() {
         playTone(frequency: 587, duration: 0.12, volume: 0.15, type: .sine)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
-            self?.playTone(frequency: 784, duration: 0.15, volume: 0.12, type: .sine)
-        }
+        scheduleAfter(0.08) { self.playTone(frequency: 784, duration: 0.15, volume: 0.12, type: .sine) }
     }
 
     // MARK: - Core Generators
@@ -124,45 +118,41 @@ final class AudioEngine {
 
     private func playTone(frequency: Float, duration: TimeInterval,
                           volume: Float, type: WaveType, decay: Bool = false) {
-        guard isRunning else { return }
+        guard engine.isRunning else { return }
 
-        let sampleRate = Float(engine.mainMixerNode.outputFormat(forBus: 0).sampleRate)
+        // Capture format & sampleRate BEFORE entering the render callback
+        let format      = engine.mainMixerNode.outputFormat(forBus: 0)
+        let sampleRate  = Float(format.sampleRate)
+        guard sampleRate > 0 else { return }
+
         let totalSamples = Int(sampleRate * Float(duration))
-        var phase: Float = 0
-        let phaseIncrement = frequency / sampleRate
-        var sampleIndex = 0
+        var phase:       Float = 0
+        let phaseInc           = frequency / sampleRate
+        var sampleIdx          = 0
 
-        let format = engine.mainMixerNode.outputFormat(forBus: 0)
         let sourceNode = AVAudioSourceNode(format: format) { _, _, frameCount, audioBufferList -> OSStatus in
             let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
             for frame in 0..<Int(frameCount) {
-                guard sampleIndex < totalSamples else {
-                    for buf in buffers {
-                        (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = 0
+                let s: Float
+                if sampleIdx < totalSamples {
+                    let env: Float = decay
+                        ? max(0, 1.0 - Float(sampleIdx) / Float(totalSamples))
+                        : (sampleIdx < 200 ? Float(sampleIdx) / 200.0 : 1.0)
+                            * (sampleIdx > totalSamples - 200
+                               ? Float(totalSamples - sampleIdx) / 200.0 : 1.0)
+                    switch type {
+                    case .sine:   s = sinf(phase * 2.0 * .pi) * volume * env
+                    case .square: s = (sinf(phase * 2.0 * .pi) > 0 ? 1.0 : -1.0) * volume * env * 0.5
                     }
-                    continue
+                    phase += phaseInc
+                    if phase > 1.0 { phase -= 1.0 }
+                    sampleIdx += 1
+                } else {
+                    s = 0
                 }
-
-                let envelope: Float = decay
-                    ? max(0, 1.0 - Float(sampleIndex) / Float(totalSamples))
-                    : (sampleIndex < 200 ? Float(sampleIndex) / 200.0 : 1.0)
-                        * (sampleIndex > totalSamples - 200 ? Float(totalSamples - sampleIndex) / 200.0 : 1.0)
-
-                let sample: Float
-                switch type {
-                case .sine:
-                    sample = sinf(phase * 2.0 * .pi) * volume * envelope
-                case .square:
-                    sample = (sinf(phase * 2.0 * .pi) > 0 ? 1.0 : -1.0) * volume * envelope * 0.5
-                }
-
                 for buf in buffers {
-                    (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = sample
+                    (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = s
                 }
-
-                phase += phaseIncrement
-                if phase > 1.0 { phase -= 1.0 }
-                sampleIndex += 1
             }
             return noErr
         }
@@ -170,36 +160,41 @@ final class AudioEngine {
         engine.attach(sourceNode)
         engine.connect(sourceNode, to: mixer, format: format)
 
-        let detachDelay = duration + 0.1
-        DispatchQueue.main.asyncAfter(deadline: .now() + detachDelay) { [weak self] in
-            self?.engine.disconnectNodeOutput(sourceNode)
-            self?.engine.detach(sourceNode)
+        // Detach bien après la fin du render (duration + 0.6s) pour éviter
+        // _dispatch_assert_queue_fail si le callback IO tourne encore
+        let detachDelay = duration + 0.6
+        scheduleAfter(detachDelay) { [weak self] in
+            guard let self else { return }
+            self.engine.disconnectNodeOutput(sourceNode)
+            self.engine.detach(sourceNode)
         }
     }
 
     private func playNoise(duration: TimeInterval, volume: Float) {
-        guard isRunning else { return }
+        guard engine.isRunning else { return }
 
-        let sampleRate = Float(engine.mainMixerNode.outputFormat(forBus: 0).sampleRate)
+        let format      = engine.mainMixerNode.outputFormat(forBus: 0)
+        let sampleRate  = Float(format.sampleRate)
+        guard sampleRate > 0 else { return }
+
         let totalSamples = Int(sampleRate * Float(duration))
-        var sampleIndex = 0
+        var sampleIdx    = 0
 
-        let format = engine.mainMixerNode.outputFormat(forBus: 0)
         let sourceNode = AVAudioSourceNode(format: format) { _, _, frameCount, audioBufferList -> OSStatus in
             let buffers = UnsafeMutableAudioBufferListPointer(audioBufferList)
             for frame in 0..<Int(frameCount) {
-                guard sampleIndex < totalSamples else {
-                    for buf in buffers {
-                        (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = 0
-                    }
-                    continue
+                let s: Float
+                if sampleIdx < totalSamples {
+                    let env = max(0, 1.0 - Float(sampleIdx) / Float(totalSamples))
+                    // LCG pseudo-random: lock-free, safe sur le thread audio
+                    s = (Float(arc4random()) / Float(UInt32.max) * 2.0 - 1.0) * volume * env
+                    sampleIdx += 1
+                } else {
+                    s = 0
                 }
-                let envelope = max(0, 1.0 - Float(sampleIndex) / Float(totalSamples))
-                let noise = Float.random(in: -1...1) * volume * envelope
                 for buf in buffers {
-                    (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = noise
+                    (buf.mData?.assumingMemoryBound(to: Float.self))?.advanced(by: frame).pointee = s
                 }
-                sampleIndex += 1
             }
             return noErr
         }
@@ -207,9 +202,20 @@ final class AudioEngine {
         engine.attach(sourceNode)
         engine.connect(sourceNode, to: mixer, format: format)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + duration + 0.1) { [weak self] in
-            self?.engine.disconnectNodeOutput(sourceNode)
-            self?.engine.detach(sourceNode)
+        scheduleAfter(duration + 0.6) { [weak self] in
+            guard let self else { return }
+            self.engine.disconnectNodeOutput(sourceNode)
+            self.engine.detach(sourceNode)
+        }
+    }
+
+    // MARK: - Helper
+
+    /// Schedule sur le main thread en vérifiant isRunning au moment d'exécution.
+    private func scheduleAfter(_ delay: TimeInterval, action: @escaping @MainActor () -> Void) {
+        Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
+            action()
         }
     }
 }

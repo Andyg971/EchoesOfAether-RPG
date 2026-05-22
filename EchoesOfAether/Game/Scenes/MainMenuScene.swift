@@ -100,13 +100,20 @@ final class MainMenuScene: SKScene {
             let btnName = node.name ?? node.parent?.name ?? ""
             switch btnName {
             case "menuNewGame":
-                AudioEngine.shared.playQuestComplete()
+                AudioEngine.shared.playTap()
                 SaveManager.deleteSave()
-                transitionToGame(newGame: true)
+                // Arrêt propre avant transition — évite le crash AURemoteIO::IOThread
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                    AudioEngine.shared.stop()
+                    self.transitionToGame(newGame: true)
+                }
                 return
             case "menuContinue":
-                AudioEngine.shared.playQuestComplete()
-                transitionToGame(newGame: false)
+                AudioEngine.shared.playTap()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
+                    AudioEngine.shared.stop()
+                    self.transitionToGame(newGame: false)
+                }
                 return
             default:
                 break

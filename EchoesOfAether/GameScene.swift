@@ -7,9 +7,14 @@ final class GameScene: SKScene {
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
-        AudioEngine.shared.start()
         HapticsEngine.prepare()
         manager.setup(scene: self)
+
+        // Audio démarré après transition complète (fade 0.5s + marge)
+        // évite crash AURemoteIO::IOThread pendant changement de scène
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            AudioEngine.shared.start()
+        }
 
         // GameCenter auth via root view controller
         if let vc = view.window?.rootViewController {

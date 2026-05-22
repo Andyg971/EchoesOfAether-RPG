@@ -9,7 +9,7 @@ final class MainMenuScene: SKScene {
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.05, green: 0.04, blue: 0.09, alpha: 1)
-        AudioEngine.shared.start()
+        // Pas d'audio dans menu — démarrage dans GameScene seulement
         buildUI()
     }
 
@@ -100,20 +100,11 @@ final class MainMenuScene: SKScene {
             let btnName = node.name ?? node.parent?.name ?? ""
             switch btnName {
             case "menuNewGame":
-                AudioEngine.shared.playTap()
                 SaveManager.deleteSave()
-                // Arrêt propre avant transition — évite le crash AURemoteIO::IOThread
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                    AudioEngine.shared.stop()
-                    self.transitionToGame(newGame: true)
-                }
+                transitionToGame(newGame: true)
                 return
             case "menuContinue":
-                AudioEngine.shared.playTap()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) {
-                    AudioEngine.shared.stop()
-                    self.transitionToGame(newGame: false)
-                }
+                transitionToGame(newGame: false)
                 return
             default:
                 break

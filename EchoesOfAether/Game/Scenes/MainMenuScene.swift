@@ -119,28 +119,16 @@ final class MainMenuScene: SKScene {
     private func transitionToGame(newGame: Bool) {
         guard let view = self.view else { return }
 
-        let overlay = SKShapeNode(rectOf: size)
-        overlay.fillColor = .black
-        overlay.strokeColor = .clear
-        overlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        overlay.alpha = 0
-        overlay.zPosition = 5_000
-        addChild(overlay)
-
-        overlay.run(.sequence([
-            .fadeIn(withDuration: 0.5),
-            .run {
-                let portraitSize = CGSize(
-                    width: min(view.bounds.width, view.bounds.height),
-                    height: max(view.bounds.width, view.bounds.height)
-                )
-                let gameScene = GameScene(size: portraitSize)
-                gameScene.scaleMode = .resizeFill
-                gameScene.safeAreaTop = self.safeAreaTop
-                view.presentScene(gameScene, transition:
-                    .fade(with: .black, duration: 0.4))
-            }
-        ]))
+        // Capture avant la closure pour éviter les problèmes Swift 6
+        let safeTop = safeAreaTop
+        let portraitSize = CGSize(
+            width: min(view.bounds.width, view.bounds.height),
+            height: max(view.bounds.width, view.bounds.height)
+        )
+        let gameScene = GameScene(size: portraitSize)
+        gameScene.scaleMode = .resizeFill
+        gameScene.safeAreaTop = safeTop
+        view.presentScene(gameScene, transition: .fade(with: .black, duration: 0.5))
     }
 
     // MARK: - Helpers

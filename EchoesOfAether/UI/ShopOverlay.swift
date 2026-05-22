@@ -1,8 +1,8 @@
 import SpriteKit
 
 struct ShopItem {
-    let nameKey: String
-    let descKey: String
+    let nameKey: LocalizedStringResource
+    let descKey: LocalizedStringResource
     let price: Int
     let canBuy: (PlayerState) -> Bool
     let onBuy: (PlayerState) -> Void
@@ -151,7 +151,7 @@ final class ShopOverlay {
         row.userData = ["index": index]
 
         let nameLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-        nameLabel.text = String(localized: String.LocalizationValue(item.nameKey))
+        nameLabel.text = String(localized: item.nameKey)
         nameLabel.fontSize = 14
         nameLabel.fontColor = affordable ? .white : SKColor(white: 0.4, alpha: 1)
         nameLabel.horizontalAlignmentMode = .left
@@ -159,7 +159,7 @@ final class ShopOverlay {
         row.addChild(nameLabel)
 
         let descLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
-        descLabel.text = String(localized: String.LocalizationValue(item.descKey))
+        descLabel.text = String(localized: item.descKey)
         descLabel.fontSize = 11
         descLabel.fontColor = SKColor(white: 0.55, alpha: 1)
         descLabel.horizontalAlignmentMode = .left

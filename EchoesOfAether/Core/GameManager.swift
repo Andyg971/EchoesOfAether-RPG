@@ -1211,7 +1211,7 @@ final class GameManager {
             ]
             for (npc, key) in npcs where !npc.isHidden {
                 if kaelPos.distance(to: npc.position) < radius {
-                    hint = String(localized: String.LocalizationValue(key))
+                    hint = localizedHint(key)
                     break
                 }
             }
@@ -1224,7 +1224,7 @@ final class GameManager {
                 (CGPoint(x: w*0.70, y: h*0.65), "hint.examine")
             ]
             for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
-                hint = String(localized: String.LocalizationValue(key))
+                hint = localizedHint(key)
                 break
             }
         case .forest:
@@ -1235,7 +1235,7 @@ final class GameManager {
                 (CGPoint(x: w*0.60, y: h*0.82), "hint.enter")
             ]
             for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
-                hint = String(localized: String.LocalizationValue(key))
+                hint = localizedHint(key)
                 break
             }
         default:
@@ -1406,6 +1406,21 @@ final class GameManager {
             world.applyKaelCorruption(level: 3)
             corruptionCinematicShown = true
             transition(to: .exploration)
+        }
+    }
+
+    // MARK: - Localization helpers
+
+    /// Résout les clés de hint via un switch statique
+    /// pour que Xcode puisse les trouver dans le code source.
+    private func localizedHint(_ key: String) -> String {
+        switch key {
+        case "hint.talk":    return String(localized: "hint.talk")
+        case "hint.shop":    return String(localized: "hint.shop")
+        case "hint.fight":   return String(localized: "hint.fight")
+        case "hint.examine": return String(localized: "hint.examine")
+        case "hint.enter":   return String(localized: "hint.enter")
+        default:             return key
         }
     }
 }

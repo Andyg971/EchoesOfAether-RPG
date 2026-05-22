@@ -11,6 +11,15 @@ final class MainMenuScene: SKScene {
         backgroundColor = SKColor(red: 0.05, green: 0.04, blue: 0.09, alpha: 1)
         // Pas d'audio dans menu — démarrage dans GameScene seulement
         buildUI()
+
+        // Auto-tap pour test E2E si lancé avec --auto-tap
+        if CommandLine.arguments.contains("--auto-tap") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                NSLog("[E2E] Auto-tap newGame")
+                SaveManager.deleteSave()
+                self?.transitionToGame(newGame: true)
+            }
+        }
     }
 
     override func didChangeSize(_ oldSize: CGSize) {

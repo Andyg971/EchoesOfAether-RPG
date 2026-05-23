@@ -120,27 +120,38 @@ enum PixelArtSprites {
         return root
     }
 
-    /// Recouvre une zone rectangulaire avec un tile pixel art répété.
-    /// Utilise SKSpriteNode en grille (suffisant <2000 tiles), filtering
-    /// nearest pour rester crisp. Retourne le node parent (à ajouter
-    /// par l'appelant). `tint` optionnel pour assombrir/teinter le sol.
-    static func tiledFloor(tileName: String, in size: CGSize,
+    /// Recouvre une zone rectangulaire avec des tiles pixel art répétés.
+    /// Si plusieurs `tileNames` sont fournis, chaque cellule reçoit un
+    /// tile pseudo-aléatoire pour casser l'effet "grille monotone".
+    /// Retourne nil si aucun des tiles n'existe.
+    /// - tint: assombrir/teinter pour ambiance par zone (color blend 45%)
+    static func tiledFloor(tileNames: [String], in size: CGSize,
                             tileScale: CGFloat = 2.0,
                             tint: SKColor? = nil) -> SKNode? {
-        guard UIImage(named: tileName) != nil else { return nil }
-        let baseTex = SKTexture(imageNamed: tileName)
-        baseTex.filteringMode = .nearest
+        let textures: [SKTexture] = tileNames.compactMap { name in
+            guard UIImage(named: name) != nil else { return nil }
+            let t = SKTexture(imageNamed: name)
+            t.filteringMode = .nearest
+            return t
+        }
+        guard !textures.isEmpty else { return nil }
 
-        let tilePtSize = CGSize(width: baseTex.size().width * tileScale,
-                                 height: baseTex.size().height * tileScale)
+        let firstSize = textures[0].size()
+        let tilePtSize = CGSize(width: firstSize.width * tileScale,
+                                 height: firstSize.height * tileScale)
         let cols = Int(ceil(size.width / tilePtSize.width)) + 1
         let rows = Int(ceil(size.height / tilePtSize.height)) + 1
 
         let root = SKNode()
-        root.name = "tiledFloor_\(tileName)"
+        root.name = "tiledFloor"
+
+        // Random seedé (positions cellule) pour stable inter-frames
+        // mais varié spatialement.
+        var rng = SystemRandomNumberGenerator()
         for r in 0..<rows {
             for c in 0..<cols {
-                let sprite = SKSpriteNode(texture: baseTex)
+                let idx = Int.random(in: 0..<textures.count, using: &rng)
+                let sprite = SKSpriteNode(texture: textures[idx])
                 sprite.anchorPoint = .zero
                 sprite.setScale(tileScale)
                 sprite.position = CGPoint(x: CGFloat(c) * tilePtSize.width,
@@ -153,5 +164,13 @@ enum PixelArtSprites {
             }
         }
         return root
+    }
+
+    /// Surcharge mono-tile pour compatibilité avec les call sites existants.
+    static func tiledFloor(tileName: String, in size: CGSize,
+                            tileScale: CGFloat = 2.0,
+                            tint: SKColor? = nil) -> SKNode? {
+        tiledFloor(tileNames: [tileName], in: size,
+                    tileScale: tileScale, tint: tint)
     }
 }

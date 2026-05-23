@@ -70,6 +70,8 @@ final class WorldBuilder {
 
     func switchToShrine(in scene: SKScene) {
         clearBackdrop()
+        // PNJ village retirés visuellement quand on quitte le village.
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.07, alpha: 1)
         buildShrine(in: scene)
     }
@@ -231,12 +233,13 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : tilemap herbe sombre Forêt d'Ébène (variante darker).
+        // Sol : tilemap herbe sombre Forêt d'Ébène (mix 2 tiles pour
+        // casser la grille monotone).
         if let grass = PixelArtSprites.tiledFloor(
-            tileName: "tile_grass_dark",
+            tileNames: ["tile_grass_dark", "tile_grass"],
             in: CGSize(width: w + 32, height: h + 32),
             tileScale: 2.0,
-            tint: SKColor(red: 0.05, green: 0.10, blue: 0.06, alpha: 1)) {
+            tint: SKColor(red: 0.04, green: 0.08, blue: 0.05, alpha: 1)) {
             grass.position = CGPoint(x: -16, y: -16)
             grass.zPosition = -10
             add(grass, to: scene)
@@ -268,38 +271,65 @@ final class WorldBuilder {
         }
 
         // --- Arbres normaux (bordures) ---
-        // Arbres verts pixel art (Camping pack). Fallback shape si manquant.
+        // Forêt dense : 2 rangées d'arbres (bordures + intérieur), scale
+        // contenu pour rester lisible. Cible ~70-90 pt par arbre.
+        let treeScale = forestTreeScale(for: w)
         let greenAssets = ["tree_green_1", "tree_green_12", "tree_green_24",
                             "tree_green_36", "tree_green_48", "tree_green_60",
-                            "tree_green_72", "tree_green_84"]
-        for i in 0..<10 {
-            let side: CGFloat = i < 5 ? 0.08 + CGFloat(i) * 0.04 : 0.75 + CGFloat(i - 5) * 0.05
-            let pos = CGPoint(x: w * side + CGFloat.random(in: -10...10),
-                              y: h * CGFloat.random(in: 0.25...0.80))
-            let assetName = greenAssets[i % greenAssets.count]
-            let tree = PixelArtSprites.still(name: assetName, scale: 3.5,
+                            "tree_green_72", "tree_green_84", "tree_green_15",
+                            "tree_green_30", "tree_green_50", "tree_green_100"]
+        // Bordure gauche (x ~0.08) : 5 arbres
+        for (i, y) in [CGFloat(0.18), 0.36, 0.52, 0.68, 0.84].enumerated() {
+            let name = greenAssets[i]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: CGFloat.random(in: 90...150))
-            tree.position = pos
+                ?? makeTree(height: 100)
+            tree.position = CGPoint(x: w * 0.08, y: h * y)
             tree.zPosition = -3
             add(tree, to: scene)
         }
-
-        // Décor nature pixel art (rocks + mushrooms + stumps)
-        let propAssets: [(name: String, scale: CGFloat)] = [
-            ("rock_1", 2.5), ("rock_3", 2.5), ("rock_5", 2.5),
-            ("rock_7", 2.0), ("rock_9", 2.2),
-            ("mushroom_1", 2.0), ("mushroom_3", 2.0), ("mushroom_5", 2.0),
-            ("stump_1", 2.5), ("stump_2", 2.5)
+        // Bordure droite (x ~0.92) : 5 arbres
+        for (i, y) in [CGFloat(0.18), 0.36, 0.52, 0.68, 0.84].enumerated() {
+            let name = greenAssets[i + 5]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale,
+                                              anchor: CGPoint(x: 0.5, y: 0.0))
+                ?? makeTree(height: 100)
+            tree.position = CGPoint(x: w * 0.92, y: h * y)
+            tree.zPosition = -3
+            add(tree, to: scene)
+        }
+        // Quelques arbres dans la zone jouable (entre les bordures),
+        // espacés pour ne pas bloquer la circulation.
+        let scatterAssets = ["tree_green_24", "tree_green_60", "tree_green_100"]
+        let scatterPositions: [(x: CGFloat, y: CGFloat)] = [
+            (0.22, 0.78), (0.72, 0.74), (0.78, 0.28)
         ]
-        for (i, p) in propAssets.enumerated() {
+        for (i, p) in scatterPositions.enumerated() {
+            let tree = PixelArtSprites.still(name: scatterAssets[i],
+                                              scale: treeScale * 0.85,
+                                              anchor: CGPoint(x: 0.5, y: 0.0))
+                ?? makeTree(height: 80)
+            tree.position = CGPoint(x: w * p.x, y: h * p.y)
+            tree.zPosition = -3
+            tree.alpha = 0.95
+            add(tree, to: scene)
+        }
+
+        // Sol forêt : rochers + champignons + souches discrets, hors
+        // bordures déjà couvertes par les arbres.
+        let propLayout: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
+            ("rock_3",     0.16, 0.45, 1.6),
+            ("rock_7",     0.84, 0.50, 1.6),
+            ("rock_5",     0.50, 0.20, 1.5),
+            ("mushroom_1", 0.30, 0.32, 1.4),
+            ("mushroom_5", 0.65, 0.62, 1.4),
+            ("stump_1",    0.45, 0.55, 1.8),
+            ("stump_2",    0.55, 0.35, 1.8)
+        ]
+        for p in propLayout {
             guard let prop = PixelArtSprites.still(name: p.name, scale: p.scale,
                                                     anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            let angle = CGFloat(i) * 0.45 + 0.3
-            prop.position = CGPoint(
-                x: w * (0.20 + CGFloat(i % 5) * 0.15) + CGFloat(sin(angle)) * 20,
-                y: h * (0.20 + CGFloat(i / 5) * 0.25) + CGFloat(cos(angle)) * 15
-            )
+            prop.position = CGPoint(x: w * p.x, y: h * p.y)
             prop.zPosition = -2
             add(prop, to: scene)
         }
@@ -383,6 +413,13 @@ final class WorldBuilder {
         addSaveCrystal(at: CGPoint(x: w * 0.50, y: h * 0.15), in: scene)
 
         addAtmosphere(ParticleFactory.forestFog(in: scene.size), to: scene)
+    }
+
+    /// Scale dynamique des arbres pixel art de la forêt selon la largeur.
+    /// Cible ~70 pt iPhone, ~110 pt iPad pour les arbres de bordure.
+    private func forestTreeScale(for sceneWidth: CGFloat) -> CGFloat {
+        let s = sceneWidth / 700  // 0.57 iPhone 402 → 1.17 iPad 820
+        return max(0.6, min(1.5, s))
     }
 
     /// Place le jouet visible en forêt (si quête active)
@@ -543,12 +580,13 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : dalle craquelée pixel art teintée rouge sombre
+        // Sol : dalle craquelée pixel art mix 3 dirts teintée rouge
+        // sombre (ruines = pierre fragmentée corrompue par l'Aether).
         if let stone = PixelArtSprites.tiledFloor(
-            tileName: "tile_dirt_2",
+            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
             in: CGSize(width: w + 32, height: h + 32),
             tileScale: 2.0,
-            tint: SKColor(red: 0.25, green: 0.08, blue: 0.05, alpha: 1)) {
+            tint: SKColor(red: 0.28, green: 0.10, blue: 0.06, alpha: 1)) {
             stone.position = CGPoint(x: -16, y: -16)
             stone.zPosition = -10
             add(stone, to: scene)
@@ -573,16 +611,43 @@ final class WorldBuilder {
             add(crack, to: scene)
         }
 
-        // Piliers brisés (certains debout, certains tombés)
+        // Piliers brisés : sprite pixel art (column natif 16×32 →
+        // scale dédié pour atteindre ~50pt iPhone, ~80pt iPad).
+        // Bordures gauche/droite + 1 au centre pour cadrer l'arène.
+        let columnScale = max(2.5, w / 200)   // 2.5 iPhone, 4.1 iPad
+        let bonesScale = max(1.8, w / 280)
         let pillarData: [(CGFloat, CGFloat, Bool)] = [
-            (0.18, 0.65, false), (0.28, 0.72, true),
-            (0.48, 0.78, false), (0.62, 0.75, true),
-            (0.80, 0.68, false), (0.85, 0.52, true)
+            (0.10, 0.75, false), (0.22, 0.55, true),
+            (0.78, 0.55, true),  (0.90, 0.75, false),
+            (0.50, 0.85, false)
         ]
         for (px, py, fallen) in pillarData {
-            let pillar = makeBrokenPillar(fallen: fallen)
-            pillar.position = CGPoint(x: w * px, y: h * py)
-            add(pillar, to: scene)
+            let pos = CGPoint(x: w * px, y: h * py)
+            if !fallen, let column = PixelArtSprites.still(
+                name: "column_broken_1", scale: columnScale,
+                anchor: CGPoint(x: 0.5, y: 0.0)) {
+                column.position = pos
+                column.zPosition = -3
+                add(column, to: scene)
+            } else {
+                let pillar = makeBrokenPillar(fallen: fallen)
+                pillar.position = pos
+                add(pillar, to: scene)
+            }
+        }
+
+        // Ossements éparpillés (ambiance "ruines mortes")
+        let bonesLayout: [(x: CGFloat, y: CGFloat)] = [
+            (0.30, 0.42), (0.65, 0.38), (0.45, 0.62), (0.55, 0.25)
+        ]
+        for p in bonesLayout {
+            guard let bones = PixelArtSprites.still(
+                name: "bones_1", scale: bonesScale,
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            bones.position = CGPoint(x: w * p.x, y: h * p.y)
+            bones.zPosition = -2
+            bones.alpha = 0.9
+            add(bones, to: scene)
         }
 
         // Titre de zone
@@ -803,12 +868,13 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : pierres sombres (tile dirt teinté violet)
+        // Sol : pierres sombres mix 3 dirts teintés violet pour casser
+        // la grille monotone (sanctuaire = pierre ancienne mystique).
         if let stone = PixelArtSprites.tiledFloor(
-            tileName: "tile_dirt_1",
+            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
             in: CGSize(width: w + 32, height: h + 32),
             tileScale: 2.0,
-            tint: SKColor(red: 0.18, green: 0.10, blue: 0.32, alpha: 1)) {
+            tint: SKColor(red: 0.22, green: 0.12, blue: 0.38, alpha: 1)) {
             stone.position = CGPoint(x: -16, y: -16)
             stone.zPosition = -10
             add(stone, to: scene)
@@ -857,11 +923,13 @@ final class WorldBuilder {
             JuiceEngine.pulse(orb, scale: 1.5)
         }
 
-        // Statues anges pixel art encadrant l'autel (Modern Exteriors / Garden)
+        // Statues anges pixel art encadrant l'autel — scale modéré pour
+        // ne pas écraser la composition (~80 pt de haut).
+        let statueScale = forestTreeScale(for: w) * 0.85
         for (i, asset) in ["angel_statue_1", "angel_statue_2"].enumerated() {
-            if let statue = PixelArtSprites.still(name: asset, scale: 3.0,
+            if let statue = PixelArtSprites.still(name: asset, scale: statueScale,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) {
-                let dx: CGFloat = i == 0 ? -90 : 90
+                let dx: CGFloat = i == 0 ? -70 : 70
                 statue.position = CGPoint(x: altar.position.x + dx, y: altar.position.y - 30)
                 statue.zPosition = -3
                 statue.alpha = 0.95

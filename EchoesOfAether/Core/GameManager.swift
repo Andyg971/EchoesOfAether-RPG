@@ -101,6 +101,28 @@ final class GameManager {
             }
             return
         }
+        // Visualisation pure d'une zone (sans combat), pour audit UI.
+        if CommandLine.arguments.contains("--zone-forest") {
+            hud.goldValue = player.gold
+            phase = .forest
+            world.switchToForest(in: scene)
+            transition(to: .exploration)
+            return
+        }
+        if CommandLine.arguments.contains("--zone-shrine") {
+            hud.goldValue = player.gold
+            phase = .shrine
+            world.switchToShrine(in: scene)
+            transition(to: .exploration)
+            return
+        }
+        if CommandLine.arguments.contains("--zone-ruins") {
+            hud.goldValue = player.gold
+            phase = .ruins
+            world.switchToRuins(in: scene)
+            transition(to: .exploration)
+            return
+        }
 
         if let save = SaveManager.load() {
             restoreFrom(save: save, scene: scene)

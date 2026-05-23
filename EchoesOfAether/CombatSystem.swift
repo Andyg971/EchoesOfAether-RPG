@@ -561,7 +561,9 @@ final class CombatSystem {
         }
     }
 
-    /// Silhouettes d'arrière-plan adaptées à la zone (arbres / piliers / colonnes brisées).
+    /// Silhouettes d'arrière-plan adaptées à la zone. Tente d'abord les
+    /// sprites pixel art importés depuis `Assets.xcassets` (Modern Exteriors) ;
+    /// fallback automatique sur les shapes programmatiques si l'asset manque.
     private func addBackgroundDecor(to floor: SKNode, size: CGSize,
                                      kind: CombatSpriteKind, palette: ArenaPalette) {
         let baseY = size.height * 0.48
@@ -570,36 +572,68 @@ final class CombatSystem {
 
         switch kind {
         case .beast, .wolf:
-            // 6 arbres en arrière-plan, profondeurs variées
+            // Forêt : 6 arbres répartis en profondeur (mix tree_medium_1/2/3/big)
+            let treeAssets = ["tree_medium_1", "tree_medium_2", "tree_medium_3",
+                               "tree_big", "tree_medium_1", "tree_medium_2"]
             let positions: [(x: CGFloat, h: CGFloat, scale: CGFloat)] = [
                 (0.08, 130, 0.9), (0.22, 95, 0.7), (0.40, 150, 1.0),
                 (0.60, 105, 0.8), (0.78, 140, 0.95), (0.92, 100, 0.75)
             ]
-            for p in positions {
-                let tree = makeTreeSilhouette(height: p.h, color: decorColor, edge: edgeColor)
-                tree.position = CGPoint(x: size.width * p.x, y: baseY)
-                tree.setScale(p.scale)
-                tree.alpha = 0.85
-                floor.addChild(tree)
+            for (i, p) in positions.enumerated() {
+                let pos = CGPoint(x: size.width * p.x, y: baseY)
+                let node = decorSprite(name: treeAssets[i], pixelScale: p.scale * 3.5)
+                    ?? makeTreeSilhouette(height: p.h, color: decorColor, edge: edgeColor)
+                node.position = pos
+                if PixelArtSprites.exists(treeAssets[i]) == false {
+                    node.setScale(p.scale)
+                }
+                node.alpha = 0.85
+                floor.addChild(node)
+            }
+            // Buissons au premier plan (sprite-only, pas de shape équivalent)
+            for (x, asset) in [(CGFloat(0.18), "bush_1"), (0.55, "bush_2"), (0.85, "bush_1")] {
+                if let bush = decorSprite(name: asset, pixelScale: 2.5) {
+                    bush.position = CGPoint(x: size.width * x, y: baseY - 60)
+                    bush.alpha = 0.9
+                    floor.addChild(bush)
+                }
             }
         case .guardian:
-            // 4 piliers du sanctuaire
-            for x in [CGFloat(0.12), 0.32, 0.68, 0.88] {
-                let pillar = makePillarSilhouette(height: 200, color: decorColor, edge: edgeColor)
-                pillar.position = CGPoint(x: size.width * x, y: baseY - 30)
-                pillar.alpha = 0.9
-                floor.addChild(pillar)
+            // Sanctuaire : 4 piliers (marble tombstone → pilier pierre)
+            let assets = ["pillar_grey_1", "pillar_grey_2", "pillar_grey_1", "pillar_grey_2"]
+            for (i, x) in [CGFloat(0.12), 0.32, 0.68, 0.88].enumerated() {
+                let pos = CGPoint(x: size.width * x, y: baseY - 30)
+                let node = decorSprite(name: assets[i], pixelScale: 4.0)
+                    ?? makePillarSilhouette(height: 200, color: decorColor, edge: edgeColor)
+                node.position = pos
+                node.alpha = 0.9
+                floor.addChild(node)
             }
         case .ruinsGuardian, .archivist:
-            // 3 colonnes brisées
+            // Ruines : colonnes brisées + ossements épars
             let columnSpecs: [(x: CGFloat, h: CGFloat)] = [(0.12, 130), (0.50, 90), (0.86, 160)]
             for c in columnSpecs {
-                let column = makeBrokenColumn(height: c.h, color: decorColor, edge: edgeColor)
-                column.position = CGPoint(x: size.width * c.x, y: baseY - 20)
-                column.alpha = 0.9
-                floor.addChild(column)
+                let pos = CGPoint(x: size.width * c.x, y: baseY - 20)
+                let node = decorSprite(name: "column_broken_1", pixelScale: 4.0)
+                    ?? makeBrokenColumn(height: c.h, color: decorColor, edge: edgeColor)
+                node.position = pos
+                node.alpha = 0.9
+                floor.addChild(node)
+            }
+            if let bones = decorSprite(name: "bones_1", pixelScale: 2.5) {
+                bones.position = CGPoint(x: size.width * 0.30, y: baseY - 70)
+                bones.alpha = 0.85
+                floor.addChild(bones)
             }
         }
+    }
+
+    /// Charge un sprite pixel art comme décor avec ancre centrée bas.
+    /// Le facteur `pixelScale` upscale les pixels 16×16 vers une taille
+    /// lisible à l'écran (×3.5 = ~56pt, équivalent silhouette précédente).
+    private func decorSprite(name: String, pixelScale: CGFloat) -> SKNode? {
+        PixelArtSprites.still(name: name, scale: pixelScale,
+                              anchor: CGPoint(x: 0.5, y: 0))
     }
 
     private func makeTreeSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {

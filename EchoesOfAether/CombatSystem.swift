@@ -128,7 +128,7 @@ final class CombatSystem {
         scrim.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         root.addChild(scrim)
 
-        setupArenaFloor(scene: scene, isBoss: boss != nil)
+        setupArenaFloor(scene: scene, enemyKind: enemyKind, isBoss: boss != nil)
         setupCombatants(scene: scene, enemyKind: enemyKind)
         setupStatus(scene: scene)
         setupHPBars(scene: scene, enemyName: enemyName)
@@ -442,54 +442,258 @@ final class CombatSystem {
         root.addChild(statusEffectLabel)
     }
 
-    // MARK: - Arena visuals
+    // MARK: - Arena visuals (style Octopath/FF7 — décor contextuel + perspective)
 
-    private func setupArenaFloor(scene: SKScene, isBoss: Bool) {
+    private func setupArenaFloor(scene: SKScene, enemyKind: CombatSpriteKind, isBoss: Bool) {
         let floor = SKNode()
         floor.zPosition = -5
 
-        // Sol perspectif : ellipse sombre sous les combattants
-        let floorY = scene.size.height * 0.40
-        let groundEllipse = SKShapeNode(ellipseOf: CGSize(width: scene.size.width * 1.1, height: 140))
-        groundEllipse.fillColor = isBoss
-            ? SKColor(red: 0.10, green: 0.04, blue: 0.14, alpha: 1)
-            : SKColor(red: 0.09, green: 0.10, blue: 0.13, alpha: 1)
-        groundEllipse.strokeColor = isBoss
-            ? SKColor(red: 0.45, green: 0.15, blue: 0.70, alpha: 0.4)
-            : SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 0.3)
-        groundEllipse.lineWidth = 2
-        groundEllipse.position = CGPoint(x: scene.size.width / 2, y: floorY - 30)
-        floor.addChild(groundEllipse)
+        let size = scene.size
+        let palette = arenaPalette(for: enemyKind, isBoss: isBoss)
+        let floorY = size.height * 0.40
 
-        // Trait d'horizon subtil (sépare arène / fond)
-        let horizon = SKShapeNode(rectOf: CGSize(width: scene.size.width, height: 1))
-        horizon.fillColor = isBoss
-            ? SKColor(red: 0.55, green: 0.20, blue: 0.80, alpha: 0.25)
-            : SKColor(white: 0.35, alpha: 0.2)
+        // Ciel/voûte : bande pleine en haut, teinte de zone
+        let sky = SKShapeNode(rectOf: CGSize(width: size.width, height: size.height * 0.55))
+        sky.fillColor = palette.skyColor
+        sky.strokeColor = .clear
+        sky.position = CGPoint(x: size.width / 2, y: size.height * 0.72)
+        floor.addChild(sky)
+
+        // Halo central — concentre le regard sur les combattants
+        let halo = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.4, height: 360))
+        halo.fillColor = palette.haloColor
+        halo.strokeColor = .clear
+        halo.position = CGPoint(x: size.width / 2, y: floorY + 20)
+        halo.alpha = 0.55
+        floor.addChild(halo)
+
+        // Décor d'arrière-plan : silhouettes selon la zone
+        addBackgroundDecor(to: floor, size: size, kind: enemyKind, palette: palette)
+
+        // Ligne d'horizon : trait fin lumineux
+        let horizon = SKShapeNode(rectOf: CGSize(width: size.width, height: 1))
+        horizon.fillColor = palette.horizonColor
         horizon.strokeColor = .clear
-        horizon.position = CGPoint(x: scene.size.width / 2, y: floorY + 24)
+        horizon.position = CGPoint(x: size.width / 2, y: floorY + 30)
         floor.addChild(horizon)
+
+        // Plateforme circulaire : ombre principale + bord lumineux
+        let stageOuter = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.15, height: 150))
+        stageOuter.fillColor = palette.stageEdgeColor
+        stageOuter.strokeColor = .clear
+        stageOuter.position = CGPoint(x: size.width / 2, y: floorY - 32)
+        floor.addChild(stageOuter)
+
+        let stage = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.05, height: 130))
+        stage.fillColor = palette.stageColor
+        stage.strokeColor = palette.stageStrokeColor
+        stage.lineWidth = 2
+        stage.position = CGPoint(x: size.width / 2, y: floorY - 28)
+        floor.addChild(stage)
+
+        // Runes subtiles au sol (boss only)
+        if isBoss {
+            for dx: CGFloat in [-90, 0, 90] {
+                let rune = SKShapeNode(circleOfRadius: 3)
+                rune.fillColor = SKColor(red: 0.85, green: 0.50, blue: 1, alpha: 0.7)
+                rune.strokeColor = .clear
+                rune.glowWidth = 4
+                rune.position = CGPoint(x: size.width / 2 + dx, y: floorY - 48)
+                floor.addChild(rune)
+                JuiceEngine.pulse(rune, scale: 1.4)
+            }
+        }
 
         root.addChild(floor)
         arenaFloor = floor
     }
 
+    private struct ArenaPalette {
+        let skyColor: SKColor
+        let haloColor: SKColor
+        let horizonColor: SKColor
+        let stageColor: SKColor
+        let stageEdgeColor: SKColor
+        let stageStrokeColor: SKColor
+        let decorColor: SKColor
+    }
+
+    private func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
+        switch kind {
+        case .beast, .wolf:
+            // Forêt d'Ébène : verts très sombres
+            return ArenaPalette(
+                skyColor: SKColor(red: 0.05, green: 0.09, blue: 0.07, alpha: 1),
+                haloColor: SKColor(red: 0.18, green: 0.30, blue: 0.22, alpha: 0.35),
+                horizonColor: SKColor(red: 0.30, green: 0.55, blue: 0.38, alpha: 0.4),
+                stageColor: SKColor(red: 0.07, green: 0.10, blue: 0.08, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.03, green: 0.05, blue: 0.04, alpha: 1),
+                stageStrokeColor: SKColor(red: 0.25, green: 0.45, blue: 0.30, alpha: 0.5),
+                decorColor: SKColor(red: 0.04, green: 0.08, blue: 0.05, alpha: 1)
+            )
+        case .guardian:
+            // Sanctuaire de l'Aether : violets profonds
+            return ArenaPalette(
+                skyColor: SKColor(red: 0.06, green: 0.04, blue: 0.12, alpha: 1),
+                haloColor: SKColor(red: 0.40, green: 0.18, blue: 0.65, alpha: 0.45),
+                horizonColor: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.55),
+                stageColor: SKColor(red: 0.10, green: 0.06, blue: 0.16, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.04, green: 0.02, blue: 0.07, alpha: 1),
+                stageStrokeColor: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.6),
+                decorColor: SKColor(red: 0.08, green: 0.05, blue: 0.14, alpha: 1)
+            )
+        case .ruinsGuardian, .archivist:
+            // Ruines de la Source : marron-rouge délavé
+            let bossBoost: CGFloat = isBoss ? 1.2 : 1.0
+            return ArenaPalette(
+                skyColor: SKColor(red: 0.08 * bossBoost, green: 0.04, blue: 0.05, alpha: 1),
+                haloColor: SKColor(red: 0.45, green: 0.18, blue: 0.15, alpha: 0.4),
+                horizonColor: SKColor(red: 0.80, green: 0.35, blue: 0.20, alpha: 0.45),
+                stageColor: SKColor(red: 0.10, green: 0.06, blue: 0.05, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.04, green: 0.02, blue: 0.02, alpha: 1),
+                stageStrokeColor: SKColor(red: 0.60, green: 0.28, blue: 0.18, alpha: 0.55),
+                decorColor: SKColor(red: 0.10, green: 0.06, blue: 0.05, alpha: 1)
+            )
+        }
+    }
+
+    /// Silhouettes d'arrière-plan adaptées à la zone (arbres / piliers / colonnes brisées).
+    private func addBackgroundDecor(to floor: SKNode, size: CGSize,
+                                     kind: CombatSpriteKind, palette: ArenaPalette) {
+        let baseY = size.height * 0.48
+        let decorColor = palette.decorColor
+        let edgeColor = palette.stageStrokeColor.withAlphaComponent(0.25)
+
+        switch kind {
+        case .beast, .wolf:
+            // 6 arbres en arrière-plan, profondeurs variées
+            let positions: [(x: CGFloat, h: CGFloat, scale: CGFloat)] = [
+                (0.08, 130, 0.9), (0.22, 95, 0.7), (0.40, 150, 1.0),
+                (0.60, 105, 0.8), (0.78, 140, 0.95), (0.92, 100, 0.75)
+            ]
+            for p in positions {
+                let tree = makeTreeSilhouette(height: p.h, color: decorColor, edge: edgeColor)
+                tree.position = CGPoint(x: size.width * p.x, y: baseY)
+                tree.setScale(p.scale)
+                tree.alpha = 0.85
+                floor.addChild(tree)
+            }
+        case .guardian:
+            // 4 piliers du sanctuaire
+            for x in [CGFloat(0.12), 0.32, 0.68, 0.88] {
+                let pillar = makePillarSilhouette(height: 200, color: decorColor, edge: edgeColor)
+                pillar.position = CGPoint(x: size.width * x, y: baseY - 30)
+                pillar.alpha = 0.9
+                floor.addChild(pillar)
+            }
+        case .ruinsGuardian, .archivist:
+            // 3 colonnes brisées
+            let columnSpecs: [(x: CGFloat, h: CGFloat)] = [(0.12, 130), (0.50, 90), (0.86, 160)]
+            for c in columnSpecs {
+                let column = makeBrokenColumn(height: c.h, color: decorColor, edge: edgeColor)
+                column.position = CGPoint(x: size.width * c.x, y: baseY - 20)
+                column.alpha = 0.9
+                floor.addChild(column)
+            }
+        }
+    }
+
+    private func makeTreeSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+        let node = SKNode()
+        // Tronc
+        let trunk = SKShapeNode(rectOf: CGSize(width: 8, height: height * 0.4), cornerRadius: 2)
+        trunk.fillColor = color
+        trunk.strokeColor = edge
+        trunk.lineWidth = 1
+        trunk.position = CGPoint(x: 0, y: height * 0.2)
+        node.addChild(trunk)
+        // Couronne triangulaire
+        let crown = SKShapeNode()
+        let p = CGMutablePath()
+        p.move(to: CGPoint(x: -28, y: 0))
+        p.addLine(to: CGPoint(x: 28, y: 0))
+        p.addLine(to: CGPoint(x: 0, y: height * 0.85))
+        p.closeSubpath()
+        crown.path = p
+        crown.fillColor = color
+        crown.strokeColor = edge
+        crown.lineWidth = 1
+        crown.position = CGPoint(x: 0, y: height * 0.25)
+        node.addChild(crown)
+        return node
+    }
+
+    private func makePillarSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+        let node = SKNode()
+        let shaft = SKShapeNode(rectOf: CGSize(width: 22, height: height), cornerRadius: 2)
+        shaft.fillColor = color
+        shaft.strokeColor = edge
+        shaft.lineWidth = 1
+        node.addChild(shaft)
+        // Chapiteau
+        let cap = SKShapeNode(rectOf: CGSize(width: 32, height: 10), cornerRadius: 1)
+        cap.fillColor = color
+        cap.strokeColor = edge
+        cap.position = CGPoint(x: 0, y: height / 2 + 4)
+        node.addChild(cap)
+        // Base
+        let base = SKShapeNode(rectOf: CGSize(width: 30, height: 8), cornerRadius: 1)
+        base.fillColor = color
+        base.strokeColor = edge
+        base.position = CGPoint(x: 0, y: -height / 2 - 2)
+        node.addChild(base)
+        return node
+    }
+
+    private func makeBrokenColumn(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+        let node = SKNode()
+        let shaft = SKShapeNode(rectOf: CGSize(width: 26, height: height), cornerRadius: 1)
+        shaft.fillColor = color
+        shaft.strokeColor = edge
+        shaft.lineWidth = 1
+        node.addChild(shaft)
+        // Sommet brisé : triangle inversé
+        let top = SKShapeNode()
+        let p = CGMutablePath()
+        p.move(to: CGPoint(x: -13, y: height / 2))
+        p.addLine(to: CGPoint(x: 13, y: height / 2))
+        p.addLine(to: CGPoint(x: -5, y: height / 2 + 12))
+        p.closeSubpath()
+        top.path = p
+        top.fillColor = color
+        top.strokeColor = edge
+        node.addChild(top)
+        // Base trapézoïdale
+        let base = SKShapeNode(rectOf: CGSize(width: 34, height: 10), cornerRadius: 1)
+        base.fillColor = color
+        base.strokeColor = edge
+        base.position = CGPoint(x: 0, y: -height / 2 - 4)
+        node.addChild(base)
+        return node
+    }
+
     private func setupCombatants(scene: SKScene, enemyKind: CombatSpriteKind) {
-        let spriteY = scene.size.height * 0.42
-        let kaelX = scene.size.width * 0.30
-        let enemyX = scene.size.width * 0.70
+        // Perspective 3/4 à la Octopath : Kael au premier plan (bas-gauche, plus grand),
+        // ennemi au plan moyen (haut-droite, sensation de distance).
+        let kaelX = scene.size.width * 0.25
+        let kaelY = scene.size.height * 0.36
+        let enemyX = scene.size.width * 0.74
+        let enemyY = scene.size.height * 0.46
 
         let k = CombatSprites.kael()
-        k.position = CGPoint(x: kaelX, y: spriteY)
-        k.zPosition = 5
+        k.position = CGPoint(x: kaelX, y: kaelY)
+        k.setScale(1.10)   // Kael au premier plan : légèrement plus grand
+        k.zPosition = 6
         root.addChild(k)
         kaelSprite = k
         kaelHomePosition = k.position
 
         let e = CombatSprites.enemy(kind: enemyKind)
-        // Inverser horizontalement pour qu'il regarde Kael
-        e.xScale = -1
-        e.position = CGPoint(x: enemyX, y: spriteY)
+        // Inverser horizontalement pour qu'il regarde Kael (xScale négatif).
+        // Garder yScale=1 pour ne pas inverser verticalement.
+        e.xScale = -0.90  // légèrement plus petit pour suggérer la profondeur
+        e.yScale = 0.90
+        e.position = CGPoint(x: enemyX, y: enemyY)
         e.zPosition = 5
         root.addChild(e)
         enemySprite = e
@@ -657,12 +861,48 @@ final class CombatSystem {
     }
 
     private func setupButtons(scene: SKScene) {
-        addButton(attackButton, title: String(localized: "combat.button.attack"),
-                  at: CGPoint(x: scene.size.width / 2 - 90, y: 86))
-        addButton(blackSlashButton, title: String(localized: "combat.button.blackSlash"),
-                  at: CGPoint(x: scene.size.width / 2 + 95, y: 86))
+        // Panneau commandes encadré (style FF7) — contient les actions du joueur.
+        let panelWidth = min(scene.size.width - 24, 380)
+        let panelHeight: CGFloat = 92
+        let panelY: CGFloat = 96
 
-        blackSlashButton.strokeColor = SKColor(red: 0.60, green: 0.20, blue: 0.80, alpha: 1)
+        let panel = SKShapeNode(rectOf: CGSize(width: panelWidth, height: panelHeight),
+                                 cornerRadius: 14)
+        panel.fillColor = SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.95)
+        panel.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.85, alpha: 0.9)
+        panel.lineWidth = 2
+        panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
+        panel.zPosition = 850
+        root.addChild(panel)
+
+        // Bandeau gauche : pictogramme combat (étoile) — repère visuel
+        let badge = SKShapeNode(circleOfRadius: 16)
+        badge.fillColor = SKColor(red: 0.40, green: 0.20, blue: 0.75, alpha: 1)
+        badge.strokeColor = SKColor(red: 0.75, green: 0.50, blue: 1, alpha: 0.9)
+        badge.lineWidth = 1.5
+        badge.position = CGPoint(x: -panelWidth / 2 + 24, y: 0)
+        panel.addChild(badge)
+
+        let badgeIcon = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        badgeIcon.text = "⚔"
+        badgeIcon.fontSize = 16
+        badgeIcon.fontColor = .white
+        badgeIcon.verticalAlignmentMode = .center
+        badgeIcon.horizontalAlignmentMode = .center
+        badge.addChild(badgeIcon)
+
+        // Boutons d'action positionnés à l'intérieur du panneau
+        let buttonsAreaWidth = panelWidth - 70
+        let attackX = scene.size.width / 2 - buttonsAreaWidth / 4 + 8
+        let slashX = scene.size.width / 2 + buttonsAreaWidth / 4 + 8
+
+        addButton(attackButton, title: String(localized: "combat.button.attack"),
+                  at: CGPoint(x: attackX, y: panelY))
+        addButton(blackSlashButton, title: String(localized: "combat.button.blackSlash"),
+                  at: CGPoint(x: slashX, y: panelY))
+
+        blackSlashButton.strokeColor = SKColor(red: 0.75, green: 0.30, blue: 0.95, alpha: 1)
+        blackSlashButton.fillColor = SKColor(red: 0.16, green: 0.10, blue: 0.24, alpha: 1)
     }
 
     // MARK: - Helpers

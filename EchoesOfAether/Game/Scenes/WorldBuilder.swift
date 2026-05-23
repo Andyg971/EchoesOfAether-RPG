@@ -17,6 +17,7 @@ final class WorldBuilder {
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
+    private var activeInterior: HouseInteriorKind?
 
     init() {
         kael    = WorldNode.kael()
@@ -47,16 +48,20 @@ final class WorldBuilder {
         let w = size.width
         let h = size.height
 
-        lyra.position    = CGPoint(x: w * 0.20, y: h * 0.58)  // devant Country
-        dorin.position   = CGPoint(x: w * 0.80, y: h * 0.58)  // devant Haunted
-        bram.position    = CGPoint(x: w * 0.50, y: h * 0.44)  // devant armurerie
-        mara.position    = CGPoint(x: w * 0.22, y: h * 0.30)  // devant Japanese
-        sage.position    = CGPoint(x: w * 0.78, y: h * 0.30)  // devant auberge
+        lyra.position    = CGPoint(x: w * 0.22, y: h * 0.57)  // devant Country
+        dorin.position   = CGPoint(x: w * 0.78, y: h * 0.56)  // devant Haunted
+        bram.position    = CGPoint(x: w * 0.50, y: h * 0.41)  // devant armurerie
+        mara.position    = CGPoint(x: w * 0.22, y: h * 0.25)  // devant Japanese
+        sage.position    = CGPoint(x: w * 0.78, y: h * 0.25)  // devant auberge
         garen.position   = CGPoint(x: w * 0.50, y: h * 0.85)  // porte nord
         // PNJ ambiants en bas
         child.position   = CGPoint(x: w * 0.38, y: h * 0.18)
         villager.position = CGPoint(x: w * 0.62, y: h * 0.18)
         kael.position    = CGPoint(x: w * 0.50, y: h * 0.10)  // spawn centre bas
+
+        [lyra, dorin, bram, mara, sage, garen, child, villager, kael].forEach {
+            $0.zPosition = actorLayer(for: $0.position.y)
+        }
     }
 
     // MARK: - Zone Backgrounds
@@ -120,7 +125,11 @@ final class WorldBuilder {
         // jusqu'à la porte nord. Largeur ~2 tiles, ~28 tiles de long.
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
                      to: CGPoint(x: w * 0.50, y: h * 0.86),
-                     width: 64)
+                     width: 78)
+
+        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.39),
+                     size: CGSize(width: w * 0.34, height: h * 0.09),
+                     in: scene)
 
         // --- Bâtiments ---
         // Layout grille 3 colonnes pour iPhone ET iPad portrait.
@@ -128,38 +137,39 @@ final class WorldBuilder {
         // largeur d'écran par maison, peu importe le device.
         let bScale = buildingScale(for: w)
 
-        // Ligne haute (h*0.70) : 2 maisons aux extrémités, sous le HUD
+        // Ligne haute : 2 maisons aux extrémités, assez grandes pour lire
+        // comme de vrais bâtiments RPG, mais sous la zone HUD.
         addVillageBuilding(asset: "house_country", scale: bScale,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.20, y: h * 0.70), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.66), in: scene)
 
         addVillageBuilding(asset: "house_haunted", scale: bScale * 1.05,
                             fallbackW: 90, fallbackH: 65,
                             wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.68), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.64), in: scene)
 
-        // Ligne médiane (h*0.54) : 1 maison centrale (armurerie ⚔)
+        // Ligne médiane : 1 maison centrale (armurerie)
         addVillageBuilding(asset: "house_one_story", scale: bScale,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: "⚔", at: CGPoint(x: w * 0.50, y: h * 0.54), in: scene)
+                            label: "⚔", at: CGPoint(x: w * 0.50, y: h * 0.49), in: scene)
 
-        // Ligne basse (h*0.40) : 2 maisons aux extrémités (herboriste + auberge)
+        // Ligne basse : herboriste + auberge.
         addVillageBuilding(asset: "house_japanese", scale: bScale,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: "🌿", at: CGPoint(x: w * 0.22, y: h * 0.40), in: scene)
+                            label: "🌿", at: CGPoint(x: w * 0.22, y: h * 0.33), in: scene)
 
         addVillageBuilding(asset: "house_country", scale: bScale,
                             fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: "🏠", at: CGPoint(x: w * 0.78, y: h * 0.40), in: scene)
+                            label: "🏠", at: CGPoint(x: w * 0.78, y: h * 0.33), in: scene)
 
         // Porte nord — placée au-dessus des maisons hautes, centre écran
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
@@ -169,15 +179,15 @@ final class WorldBuilder {
         // pour ne pas chevaucher les maisons ni le chemin central.
         let villageDecor: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
             // Bordure gauche : 4 arbres verts espacés verticalement
-            ("tree_green_15",  0.04, 0.18, 3.0),
-            ("tree_green_30",  0.04, 0.40, 3.0),
-            ("tree_green_50",  0.04, 0.62, 2.8),
-            ("tree_green_72",  0.04, 0.84, 2.8),
+            ("tree_green_15",  0.04, 0.18, 1.45),
+            ("tree_green_30",  0.04, 0.40, 1.55),
+            ("tree_green_50",  0.04, 0.62, 1.40),
+            ("tree_green_72",  0.04, 0.84, 1.35),
             // Bordure droite : 4 arbres verts en symétrie
-            ("tree_green_100", 0.96, 0.18, 3.0),
-            ("tree_green_24",  0.96, 0.40, 2.8),
-            ("tree_green_84",  0.96, 0.62, 3.0),
-            ("tree_green_48",  0.96, 0.84, 2.8),
+            ("tree_green_100", 0.96, 0.18, 1.50),
+            ("tree_green_24",  0.96, 0.40, 1.40),
+            ("tree_green_84",  0.96, 0.62, 1.50),
+            ("tree_green_48",  0.96, 0.84, 1.35),
             // Rochers près des arbres (continuité naturelle)
             ("rock_3",         0.09, 0.30, 1.8),
             ("rock_7",         0.91, 0.30, 1.8)
@@ -187,10 +197,13 @@ final class WorldBuilder {
                 name: d.name, scale: d.scale,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             sprite.position = CGPoint(x: w * d.x, y: h * d.y)
-            sprite.zPosition = -3
+            sprite.zPosition = propLayer(for: sprite.position.y, in: h)
             sprite.alpha = 0.92
+            addGroundShadow(under: sprite, width: 30 * d.scale, height: 10 * d.scale)
             add(sprite, to: scene)
         }
+
+        addVillageMicroProps(in: scene, width: w, height: h)
 
         // Torches
         let torchPositions: [CGPoint] = [
@@ -204,12 +217,13 @@ final class WorldBuilder {
         for pos in torchPositions {
             let t = makeTorch()
             t.position = pos
+            t.zPosition = propLayer(for: pos.y, in: h)
             add(t, to: scene)
         }
 
         // Pierres décoratives
         for i in 0..<10 {
-            let radius = CGFloat(12 + (i % 4) * 5)
+            let radius = CGFloat(5 + (i % 4) * 3)
             let stone = SKShapeNode(circleOfRadius: radius)
             stone.fillColor = SKColor(white: 0.10 + CGFloat(i % 3) * 0.02, alpha: 1)
             stone.strokeColor = .clear
@@ -285,7 +299,8 @@ final class WorldBuilder {
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 100)
             tree.position = CGPoint(x: w * 0.08, y: h * y)
-            tree.zPosition = -3
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
             add(tree, to: scene)
         }
         // Bordure droite (x ~0.92) : 5 arbres
@@ -295,7 +310,8 @@ final class WorldBuilder {
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 100)
             tree.position = CGPoint(x: w * 0.92, y: h * y)
-            tree.zPosition = -3
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
             add(tree, to: scene)
         }
         // Quelques arbres dans la zone jouable (entre les bordures),
@@ -310,8 +326,9 @@ final class WorldBuilder {
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 80)
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
-            tree.zPosition = -3
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
             tree.alpha = 0.95
+            addGroundShadow(under: tree, width: 34 * treeScale, height: 11 * treeScale)
             add(tree, to: scene)
         }
 
@@ -330,7 +347,8 @@ final class WorldBuilder {
             guard let prop = PixelArtSprites.still(name: p.name, scale: p.scale,
                                                     anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             prop.position = CGPoint(x: w * p.x, y: h * p.y)
-            prop.zPosition = -2
+            prop.zPosition = propLayer(for: prop.position.y, in: h)
+            addGroundShadow(under: prop, width: 16 * p.scale, height: 6 * p.scale)
             add(prop, to: scene)
         }
 
@@ -1041,7 +1059,8 @@ final class WorldBuilder {
     private func buildNorthGate(at pos: CGPoint, width: CGFloat, in scene: SKScene) {
         let gate = SKNode()
         gate.position = pos
-        gate.zPosition = -3
+        gate.zPosition = propLayer(for: pos.y, in: scene.size.height)
+        addGroundShadow(under: gate, width: width + 32, height: 14)
 
         let pillarL = SKShapeNode(rectOf: CGSize(width: 14, height: 50), cornerRadius: 3)
         pillarL.fillColor = SKColor(red: 0.28, green: 0.22, blue: 0.14, alpha: 1)
@@ -1072,7 +1091,8 @@ final class WorldBuilder {
     private func buildWell(at pos: CGPoint, in scene: SKScene) {
         let well = SKNode()
         well.position = pos
-        well.zPosition = -3
+        well.zPosition = propLayer(for: pos.y, in: scene.size.height)
+        addGroundShadow(under: well, width: 42, height: 16)
 
         let base = SKShapeNode(circleOfRadius: 14)
         base.fillColor = SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1)
@@ -1144,6 +1164,335 @@ final class WorldBuilder {
         }
 
         return tree
+    }
+
+    private func addGroundShadow(under node: SKNode, width: CGFloat, height: CGFloat) {
+        let shadow = SKShapeNode(ellipseOf: CGSize(width: width, height: height))
+        shadow.fillColor = SKColor.black.withAlphaComponent(0.22)
+        shadow.strokeColor = .clear
+        shadow.position = CGPoint(x: 0, y: 3)
+        shadow.zPosition = -0.5
+        node.addChild(shadow)
+    }
+
+    private func actorLayer(for y: CGFloat) -> CGFloat {
+        40 - y / 20
+    }
+
+    private func propLayer(for y: CGFloat, in sceneHeight: CGFloat) -> CGFloat {
+        -2 - (y / max(sceneHeight, 1)) * 6
+    }
+
+    // MARK: - House Interiors
+
+    func houseDoorPosition(for kind: HouseInteriorKind, in size: CGSize) -> CGPoint {
+        switch kind {
+        case .armory:
+            return CGPoint(x: size.width * 0.50, y: size.height * 0.49 + 12)
+        case .apothecary:
+            return CGPoint(x: size.width * 0.22, y: size.height * 0.33 + 12)
+        case .inn:
+            return CGPoint(x: size.width * 0.78, y: size.height * 0.33 + 12)
+        }
+    }
+
+    func interiorExitPosition(in size: CGSize) -> CGPoint {
+        CGPoint(x: size.width * 0.50, y: size.height * 0.16)
+    }
+
+    func switchToInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
+        activeInterior = kind
+        clearBackdrop()
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.035, green: 0.027, blue: 0.025, alpha: 1)
+        buildInterior(kind, in: scene)
+        kael.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.23)
+        kael.zPosition = 20
+    }
+
+    func returnToVillageFromInterior(in scene: SKScene) {
+        let previous = activeInterior
+        activeInterior = nil
+        clearBackdrop()
+        scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
+        buildVillage(in: scene)
+        layout(in: scene.size)
+        if let previous {
+            let door = houseDoorPosition(for: previous, in: scene.size)
+            kael.position = CGPoint(x: door.x, y: max(58, door.y - 58))
+            kael.zPosition = actorLayer(for: kael.position.y)
+        }
+    }
+
+    private func buildInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
+        let w = scene.size.width
+        let h = scene.size.height
+        let room = CGRect(x: w * 0.08, y: h * 0.14, width: w * 0.84, height: h * 0.70)
+
+        let outerShadow = SKShapeNode(rectOf: CGSize(width: room.width + 18, height: room.height + 18), cornerRadius: 10)
+        outerShadow.position = CGPoint(x: room.midX, y: room.midY - 5)
+        outerShadow.fillColor = SKColor(white: 0, alpha: 0.32)
+        outerShadow.strokeColor = .clear
+        outerShadow.zPosition = -10
+        add(outerShadow, to: scene)
+
+        let floor = SKShapeNode(rectOf: room.size, cornerRadius: 8)
+        floor.position = CGPoint(x: room.midX, y: room.midY)
+        floor.fillColor = interiorFloorColor(for: kind)
+        floor.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.20, alpha: 0.75)
+        floor.lineWidth = 3
+        floor.zPosition = -9
+        add(floor, to: scene)
+
+        addInteriorFloorBoards(in: scene, room: room)
+        addInteriorWallBand(in: scene, room: room, kind: kind)
+        addInteriorExitDoor(in: scene, room: room)
+        addInteriorTitle(kind, in: scene, room: room)
+
+        switch kind {
+        case .armory:
+            buildArmoryInterior(in: scene, room: room)
+        case .apothecary:
+            buildApothecaryInterior(in: scene, room: room)
+        case .inn:
+            buildInnInterior(in: scene, room: room)
+        }
+    }
+
+    private func interiorFloorColor(for kind: HouseInteriorKind) -> SKColor {
+        switch kind {
+        case .armory:
+            return SKColor(red: 0.18, green: 0.13, blue: 0.10, alpha: 1)
+        case .apothecary:
+            return SKColor(red: 0.12, green: 0.16, blue: 0.11, alpha: 1)
+        case .inn:
+            return SKColor(red: 0.19, green: 0.12, blue: 0.08, alpha: 1)
+        }
+    }
+
+    private func addInteriorFloorBoards(in scene: SKScene, room: CGRect) {
+        for i in 0..<9 {
+            let y = room.minY + CGFloat(i + 1) * room.height / 10
+            let line = SKShapeNode(rectOf: CGSize(width: room.width - 20, height: 2), cornerRadius: 1)
+            line.position = CGPoint(x: room.midX, y: y)
+            line.fillColor = SKColor(white: 0, alpha: 0.10)
+            line.strokeColor = .clear
+            line.zPosition = -8
+            add(line, to: scene)
+        }
+        for i in 0..<5 {
+            let x = room.minX + CGFloat(i + 1) * room.width / 6
+            let line = SKShapeNode(rectOf: CGSize(width: 2, height: room.height - 96), cornerRadius: 1)
+            line.position = CGPoint(x: x, y: room.midY - 30)
+            line.fillColor = SKColor(white: 1, alpha: 0.035)
+            line.strokeColor = .clear
+            line.zPosition = -8
+            add(line, to: scene)
+        }
+    }
+
+    private func addInteriorWallBand(in scene: SKScene, room: CGRect, kind: HouseInteriorKind) {
+        let wallColor: SKColor
+        switch kind {
+        case .armory:
+            wallColor = SKColor(red: 0.23, green: 0.18, blue: 0.15, alpha: 1)
+        case .apothecary:
+            wallColor = SKColor(red: 0.13, green: 0.22, blue: 0.15, alpha: 1)
+        case .inn:
+            wallColor = SKColor(red: 0.25, green: 0.16, blue: 0.10, alpha: 1)
+        }
+        let backWall = SKShapeNode(rectOf: CGSize(width: room.width, height: room.height * 0.22), cornerRadius: 8)
+        backWall.position = CGPoint(x: room.midX, y: room.maxY - room.height * 0.11)
+        backWall.fillColor = wallColor
+        backWall.strokeColor = SKColor(white: 0.55, alpha: 0.14)
+        backWall.lineWidth = 1
+        backWall.zPosition = -7
+        add(backWall, to: scene)
+    }
+
+    private func addInteriorExitDoor(in scene: SKScene, room: CGRect) {
+        let exit = SKNode()
+        exit.position = interiorExitPosition(in: scene.size)
+        exit.name = "interiorExit"
+        exit.zPosition = -1
+
+        let mat = SKShapeNode(ellipseOf: CGSize(width: 92, height: 26))
+        mat.fillColor = SKColor(red: 0.11, green: 0.075, blue: 0.045, alpha: 0.85)
+        mat.strokeColor = SKColor(red: 0.55, green: 0.42, blue: 0.25, alpha: 0.5)
+        mat.lineWidth = 1
+        exit.addChild(mat)
+
+        let icon = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        icon.text = "SORTIE"
+        icon.fontSize = 11
+        icon.fontColor = SKColor(red: 0.92, green: 0.78, blue: 0.48, alpha: 0.9)
+        icon.verticalAlignmentMode = .center
+        icon.horizontalAlignmentMode = .center
+        icon.position = CGPoint(x: 0, y: -1)
+        exit.addChild(icon)
+        JuiceEngine.pulse(mat, scale: 1.06)
+
+        add(exit, to: scene)
+    }
+
+    private func addInteriorTitle(_ kind: HouseInteriorKind, in scene: SKScene, room: CGRect) {
+        let title = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        switch kind {
+        case .armory: title.text = "Armurerie de Bram"
+        case .apothecary: title.text = "Herboristerie de Mara"
+        case .inn: title.text = "Auberge de Solis"
+        }
+        title.fontSize = 14
+        title.fontColor = SKColor(red: 0.88, green: 0.78, blue: 0.58, alpha: 0.95)
+        title.horizontalAlignmentMode = .center
+        title.position = CGPoint(x: room.midX, y: room.maxY - 36)
+        title.zPosition = 4
+        add(title, to: scene)
+    }
+
+    private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
+        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.58)
+        addWeaponRack(in: scene, at: CGPoint(x: room.minX + 62, y: room.maxY - 116))
+        addWeaponRack(in: scene, at: CGPoint(x: room.maxX - 62, y: room.maxY - 116))
+        addForge(in: scene, at: CGPoint(x: room.midX, y: room.midY - 8))
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Forger")
+    }
+
+    private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
+        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.56)
+        for i in 0..<5 {
+            addPotionBottle(in: scene, at: CGPoint(x: room.minX + 50 + CGFloat(i) * 34, y: room.maxY - 102), hue: i)
+        }
+        addHerbTable(in: scene, at: CGPoint(x: room.midX, y: room.midY - 6))
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Potions")
+    }
+
+    private func buildInnInterior(in scene: SKScene, room: CGRect) {
+        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.52)
+        addBed(in: scene, at: CGPoint(x: room.minX + 70, y: room.midY + 6))
+        addBed(in: scene, at: CGPoint(x: room.maxX - 70, y: room.midY + 6))
+        addTable(in: scene, at: CGPoint(x: room.midX, y: room.midY - 42))
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Repos")
+    }
+
+    private func addCounter(in scene: SKScene, at position: CGPoint, width: CGFloat) {
+        let counter = SKShapeNode(rectOf: CGSize(width: width, height: 34), cornerRadius: 4)
+        counter.position = position
+        counter.fillColor = SKColor(red: 0.24, green: 0.15, blue: 0.08, alpha: 1)
+        counter.strokeColor = SKColor(red: 0.54, green: 0.34, blue: 0.16, alpha: 0.7)
+        counter.lineWidth = 2
+        counter.zPosition = 0
+        add(counter, to: scene)
+    }
+
+    private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {
+        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        label.text = text
+        label.fontSize = 11
+        label.fontColor = SKColor(red: 0.96, green: 0.84, blue: 0.52, alpha: 0.9)
+        label.horizontalAlignmentMode = .center
+        label.position = position
+        label.zPosition = 3
+        add(label, to: scene)
+        JuiceEngine.float(label, distance: 3)
+    }
+
+    private func addWeaponRack(in scene: SKScene, at position: CGPoint) {
+        let rack = SKNode()
+        rack.position = position
+        rack.zPosition = 1
+        let back = SKShapeNode(rectOf: CGSize(width: 34, height: 58), cornerRadius: 3)
+        back.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.05, alpha: 1)
+        back.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.18, alpha: 0.7)
+        rack.addChild(back)
+        for x in [-9, 0, 9] as [CGFloat] {
+            let blade = SKShapeNode(rectOf: CGSize(width: 3, height: 48), cornerRadius: 1)
+            blade.fillColor = SKColor(red: 0.68, green: 0.70, blue: 0.74, alpha: 1)
+            blade.strokeColor = .clear
+            blade.position = CGPoint(x: x, y: 0)
+            rack.addChild(blade)
+        }
+        add(rack, to: scene)
+    }
+
+    private func addForge(in scene: SKScene, at position: CGPoint) {
+        let forge = SKNode()
+        forge.position = position
+        forge.zPosition = 1
+        let base = SKShapeNode(rectOf: CGSize(width: 84, height: 46), cornerRadius: 6)
+        base.fillColor = SKColor(red: 0.10, green: 0.09, blue: 0.09, alpha: 1)
+        base.strokeColor = SKColor(red: 0.46, green: 0.31, blue: 0.20, alpha: 0.7)
+        base.lineWidth = 2
+        forge.addChild(base)
+        let fire = SKShapeNode(circleOfRadius: 13)
+        fire.fillColor = SKColor(red: 0.94, green: 0.36, blue: 0.10, alpha: 0.88)
+        fire.strokeColor = .clear
+        fire.glowWidth = 7
+        forge.addChild(fire)
+        JuiceEngine.pulse(fire, scale: 1.25)
+        add(forge, to: scene)
+    }
+
+    private func addPotionBottle(in scene: SKScene, at position: CGPoint, hue: Int) {
+        let bottle = SKShapeNode(rectOf: CGSize(width: 12, height: 20), cornerRadius: 3)
+        bottle.position = position
+        let colors = [
+            SKColor(red: 0.35, green: 0.90, blue: 0.40, alpha: 0.95),
+            SKColor(red: 0.32, green: 0.70, blue: 1.0, alpha: 0.95),
+            SKColor(red: 0.90, green: 0.35, blue: 0.75, alpha: 0.95),
+            SKColor(red: 0.90, green: 0.72, blue: 0.25, alpha: 0.95),
+            SKColor(red: 0.58, green: 0.35, blue: 1.0, alpha: 0.95)
+        ]
+        bottle.fillColor = colors[hue % colors.count]
+        bottle.strokeColor = SKColor(white: 1, alpha: 0.45)
+        bottle.glowWidth = 2
+        bottle.zPosition = 2
+        add(bottle, to: scene)
+    }
+
+    private func addHerbTable(in scene: SKScene, at position: CGPoint) {
+        let table = SKShapeNode(rectOf: CGSize(width: 104, height: 44), cornerRadius: 6)
+        table.position = position
+        table.fillColor = SKColor(red: 0.18, green: 0.11, blue: 0.06, alpha: 1)
+        table.strokeColor = SKColor(red: 0.45, green: 0.30, blue: 0.14, alpha: 0.7)
+        table.lineWidth = 2
+        table.zPosition = 1
+        add(table, to: scene)
+        for dx in [-28, -8, 15, 34] as [CGFloat] {
+            let leaf = SKShapeNode(ellipseOf: CGSize(width: 15, height: 8))
+            leaf.position = CGPoint(x: position.x + dx, y: position.y + CGFloat.random(in: -6...8))
+            leaf.fillColor = SKColor(red: 0.20, green: 0.58, blue: 0.22, alpha: 1)
+            leaf.strokeColor = .clear
+            leaf.zPosition = 2
+            add(leaf, to: scene)
+        }
+    }
+
+    private func addBed(in scene: SKScene, at position: CGPoint) {
+        let bed = SKShapeNode(rectOf: CGSize(width: 70, height: 44), cornerRadius: 6)
+        bed.position = position
+        bed.fillColor = SKColor(red: 0.30, green: 0.10, blue: 0.12, alpha: 1)
+        bed.strokeColor = SKColor(red: 0.62, green: 0.38, blue: 0.22, alpha: 0.7)
+        bed.lineWidth = 2
+        bed.zPosition = 1
+        add(bed, to: scene)
+        let pillow = SKShapeNode(rectOf: CGSize(width: 50, height: 12), cornerRadius: 4)
+        pillow.position = CGPoint(x: position.x, y: position.y + 13)
+        pillow.fillColor = SKColor(red: 0.76, green: 0.70, blue: 0.60, alpha: 1)
+        pillow.strokeColor = .clear
+        pillow.zPosition = 2
+        add(pillow, to: scene)
+    }
+
+    private func addTable(in scene: SKScene, at position: CGPoint) {
+        let table = SKShapeNode(circleOfRadius: 26)
+        table.position = position
+        table.fillColor = SKColor(red: 0.22, green: 0.13, blue: 0.06, alpha: 1)
+        table.strokeColor = SKColor(red: 0.58, green: 0.36, blue: 0.16, alpha: 0.7)
+        table.lineWidth = 2
+        table.zPosition = 1
+        add(table, to: scene)
     }
 
     // MARK: - Save Crystal
@@ -1303,15 +1652,14 @@ final class WorldBuilder {
         }
     }
 
-    /// Scale dynamique pour les sprites de maisons en fonction de la
-    /// largeur de l'écran. Cible ~16% de la largeur par maison pour
-    /// rester lisible sur iPhone portrait étroit ET iPad portrait large.
-    /// Clamp 0.22…0.38 pour éviter les extrêmes (trop petit / trop grand).
+    /// Scale dynamique pour les sprites de maisons. Les assets Modern
+    /// Exteriors font 288 px de large: en dessous de ~115 pt sur iPhone,
+    /// la maison devient un accessoire. On cible donc une vraie masse de
+    /// bâtiment tout en gardant 3 colonnes lisibles en portrait.
     private func buildingScale(for sceneWidth: CGFloat) -> CGFloat {
-        // Native PNG ~288px largeur (Country/Haunted Modern Exteriors)
-        let targetWidth = sceneWidth * 0.16
+        let targetWidth = sceneWidth * 0.31
         let s = targetWidth / 288
-        return max(0.22, min(0.38, s))
+        return max(0.40, min(0.58, s))
     }
 
     /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
@@ -1326,22 +1674,86 @@ final class WorldBuilder {
         if let sprite = PixelArtSprites.still(name: asset, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
             node = sprite
+            addGroundShadow(to: node, width: 230 * scale, height: 34 * scale, y: 8 * scale)
             // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {
                 let sign = SKLabelNode(text: label)
-                sign.fontSize = 14
+                sign.fontSize = max(13, 28 * scale)
                 sign.verticalAlignmentMode = .center
-                sign.position = CGPoint(x: 0, y: 280 * scale)
+                sign.position = CGPoint(x: 0, y: 252 * scale)
+                sign.zPosition = 3
                 node.addChild(sign)
             }
         } else {
             node = makeBuilding(w: fallbackW, h: fallbackH,
                                  wallColor: wallColor, roofColor: roofColor,
                                  label: label)
+            addGroundShadow(to: node, width: fallbackW * 1.15, height: 16, y: -fallbackH / 2)
         }
         node.position = position
-        node.zPosition = -4
+        node.zPosition = propLayer(for: position.y, in: scene.size.height)
         add(node, to: scene)
+    }
+
+    private func addGroundShadow(to node: SKNode, width: CGFloat, height: CGFloat, y: CGFloat) {
+        let shadow = SKShapeNode(ellipseOf: CGSize(width: width, height: height))
+        shadow.fillColor = SKColor(white: 0.0, alpha: 0.24)
+        shadow.strokeColor = .clear
+        shadow.position = CGPoint(x: 0, y: y)
+        shadow.zPosition = -2
+        node.addChild(shadow)
+    }
+
+    private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
+        let patch = SKShapeNode(ellipseOf: size)
+        patch.position = center
+        patch.fillColor = SKColor(red: 0.16, green: 0.10, blue: 0.06, alpha: 0.42)
+        patch.strokeColor = SKColor(red: 0.22, green: 0.16, blue: 0.09, alpha: 0.35)
+        patch.lineWidth = 1
+        patch.zPosition = -9
+        add(patch, to: scene)
+    }
+
+    private func addVillageMicroProps(in scene: SKScene, width w: CGFloat, height h: CGFloat) {
+        let props: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
+            ("rock_1", 0.34, 0.23, 1.15), ("rock_9", 0.66, 0.23, 1.15),
+            ("stump_1", 0.11, 0.13, 1.10), ("stump_2", 0.89, 0.13, 1.10)
+        ]
+        for prop in props {
+            guard let node = PixelArtSprites.still(
+                name: prop.name,
+                scale: prop.scale,
+                anchor: CGPoint(x: 0.5, y: 0.0)
+            ) else { continue }
+            node.position = CGPoint(x: w * prop.x, y: h * prop.y)
+            node.zPosition = -2
+            add(node, to: scene)
+        }
+
+        addFenceSegment(at: CGPoint(x: w * 0.28, y: h * 0.52), posts: 2, in: scene)
+        addFenceSegment(at: CGPoint(x: w * 0.72, y: h * 0.51), posts: 2, in: scene)
+    }
+
+    private func addFenceSegment(at position: CGPoint, posts: Int, in scene: SKScene) {
+        let fence = SKNode()
+        fence.position = position
+        fence.zPosition = -3
+        let railTop = SKShapeNode(rectOf: CGSize(width: CGFloat(posts - 1) * 22 + 10, height: 4), cornerRadius: 1)
+        railTop.fillColor = SKColor(red: 0.24, green: 0.16, blue: 0.09, alpha: 1)
+        railTop.strokeColor = SKColor(red: 0.40, green: 0.28, blue: 0.15, alpha: 0.5)
+        railTop.position = CGPoint(x: 0, y: 10)
+        fence.addChild(railTop)
+        let railBottom = railTop.copy() as! SKShapeNode
+        railBottom.position = CGPoint(x: 0, y: 0)
+        fence.addChild(railBottom)
+        for i in 0..<posts {
+            let post = SKShapeNode(rectOf: CGSize(width: 6, height: 22), cornerRadius: 1)
+            post.fillColor = SKColor(red: 0.30, green: 0.20, blue: 0.10, alpha: 1)
+            post.strokeColor = .clear
+            post.position = CGPoint(x: CGFloat(i - posts / 2) * 22, y: 4)
+            fence.addChild(post)
+        }
+        add(fence, to: scene)
     }
 
     private func clearBackdrop() {

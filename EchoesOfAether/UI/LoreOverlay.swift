@@ -4,8 +4,8 @@ import SpriteKit
 final class LoreOverlay {
     private let root = SKNode()
     private var entryLabels: [SKNode] = []
-    private let panelWidth: CGFloat = 300
-    private let panelHeight: CGFloat = 480
+    private var panelWidth: CGFloat = 300
+    private var panelHeight: CGFloat = 480
 
     var onClose: (() -> Void)?
     var isActive: Bool { root.parent != nil && !root.isHidden }
@@ -17,6 +17,8 @@ final class LoreOverlay {
     }
 
     func layout(in size: CGSize) {
+        panelWidth = min(330, max(280, size.width - 36))
+        panelHeight = min(500, max(420, size.height - 104))
         root.position = CGPoint(x: size.width / 2, y: size.height / 2)
     }
 

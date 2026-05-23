@@ -4,6 +4,7 @@ final class GameScene: SKScene {
     private let manager = GameManager()
     private var lastUpdate: TimeInterval = 0
     var safeAreaTop: CGFloat = 0
+    var safeAreaBottom: CGFloat = 0
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
@@ -31,6 +32,7 @@ final class GameScene: SKScene {
             let menu = MainMenuScene(size: portraitSize)
             menu.scaleMode = .resizeFill
             menu.safeAreaTop = self.safeAreaTop
+            menu.safeAreaBottom = self.safeAreaBottom
             view.presentScene(menu, transition: .fade(with: .black, duration: 0.5))
         }
 
@@ -44,7 +46,7 @@ final class GameScene: SKScene {
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-        manager.layout(size: size, safeTop: safeAreaTop)
+        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom)
     }
 
     override func update(_ currentTime: TimeInterval) {

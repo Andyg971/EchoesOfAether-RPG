@@ -3,6 +3,10 @@ import SpriteKit
 @MainActor
 final class HUDOverlay {
     private let root = SKNode()
+    private let objectivePlate = SKShapeNode()
+    private let resourcePlate = SKShapeNode()
+    private let statsPlate = SKShapeNode()
+    private let interactionPlate = SKShapeNode()
     private let objectiveLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
     private let resonanceLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let goldLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
@@ -43,7 +47,9 @@ final class HUDOverlay {
     var interactionHint: String = "" {
         didSet {
             interactionHintLabel.text = interactionHint
-            interactionHintLabel.isHidden = interactionHint.isEmpty
+            let hidden = interactionHint.isEmpty
+            interactionHintLabel.isHidden = hidden
+            interactionPlate.isHidden = hidden
         }
     }
 
@@ -69,30 +75,41 @@ final class HUDOverlay {
     func attach(to scene: SKScene) {
         root.zPosition = 100
 
+        [objectivePlate, resourcePlate, statsPlate, interactionPlate].forEach {
+            configurePlate($0)
+            root.addChild($0)
+        }
+        interactionPlate.isHidden = true
+
         objectiveLabel.fontSize = 13
         objectiveLabel.fontColor = .white
         objectiveLabel.horizontalAlignmentMode = .left
+        objectiveLabel.verticalAlignmentMode = .center
         root.addChild(objectiveLabel)
 
         resonanceLabel.fontSize = 12
         resonanceLabel.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
         resonanceLabel.horizontalAlignmentMode = .right
+        resonanceLabel.verticalAlignmentMode = .center
         root.addChild(resonanceLabel)
 
         goldLabel.fontSize = 13
         goldLabel.fontColor = SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1)
         goldLabel.horizontalAlignmentMode = .right
+        goldLabel.verticalAlignmentMode = .center
         root.addChild(goldLabel)
 
         questLabel.fontSize = 11
         questLabel.fontColor = SKColor(red: 0.65, green: 0.80, blue: 0.65, alpha: 1)
         questLabel.horizontalAlignmentMode = .left
+        questLabel.verticalAlignmentMode = .center
         questLabel.isHidden = true
         root.addChild(questLabel)
 
         interactionHintLabel.fontSize = 13
-        interactionHintLabel.fontColor = SKColor(red: 0.90, green: 0.85, blue: 0.55, alpha: 0.9)
+        interactionHintLabel.fontColor = SKColor(red: 0.96, green: 0.88, blue: 0.54, alpha: 0.95)
         interactionHintLabel.horizontalAlignmentMode = .center
+        interactionHintLabel.verticalAlignmentMode = .center
         interactionHintLabel.isHidden = true
         root.addChild(interactionHintLabel)
         JuiceEngine.pulse(interactionHintLabel, scale: 1.05)
@@ -100,17 +117,19 @@ final class HUDOverlay {
         hpLabel.fontSize = 12
         hpLabel.fontColor = SKColor(red: 0.50, green: 0.90, blue: 0.60, alpha: 1)
         hpLabel.horizontalAlignmentMode = .left
+        hpLabel.verticalAlignmentMode = .center
         root.addChild(hpLabel)
 
-        // Niveau + barre XP
         levelLabel.fontSize = 13
         levelLabel.fontColor = SKColor(red: 0.85, green: 0.70, blue: 1, alpha: 1)
         levelLabel.horizontalAlignmentMode = .left
+        levelLabel.verticalAlignmentMode = .center
         root.addChild(levelLabel)
 
         xpLabel.fontSize = 10
-        xpLabel.fontColor = SKColor(white: 0.65, alpha: 1)
+        xpLabel.fontColor = SKColor(white: 0.68, alpha: 1)
         xpLabel.horizontalAlignmentMode = .left
+        xpLabel.verticalAlignmentMode = .center
         root.addChild(xpLabel)
 
         let xpRect = CGRect(x: -xpBarWidth / 2, y: -xpBarHeight / 2,
@@ -119,8 +138,8 @@ final class HUDOverlay {
                              cornerWidth: xpBarHeight / 2,
                              cornerHeight: xpBarHeight / 2, transform: nil)
         xpBarBack.path = xpPath
-        xpBarBack.fillColor = SKColor(white: 0.15, alpha: 1)
-        xpBarBack.strokeColor = SKColor(white: 0.30, alpha: 0.6)
+        xpBarBack.fillColor = SKColor(white: 0.10, alpha: 1)
+        xpBarBack.strokeColor = SKColor(white: 0.45, alpha: 0.45)
         xpBarBack.lineWidth = 1
         root.addChild(xpBarBack)
 
@@ -151,8 +170,9 @@ final class HUDOverlay {
     }
 
     func layout(in size: CGSize, safeTop: CGFloat = 0) {
-        // iPad : width > 500 → scale factor proportionnel
         let s: CGFloat = size.width > 500 ? min(size.width, size.height) / 390 : 1.0
+        let margin: CGFloat = 16 * s
+        let topY = size.height - safeTop - 26 * s
 
         objectiveLabel.fontSize = 13 * s
         resonanceLabel.fontSize = 12 * s
@@ -160,59 +180,105 @@ final class HUDOverlay {
         questLabel.fontSize = 11 * s
         interactionHintLabel.fontSize = 13 * s
         hpLabel.fontSize = 12 * s
-
-        let margin: CGFloat = 20 * s
-        let topY = size.height - 48 * s - safeTop
-
-        objectiveLabel.position = CGPoint(x: margin, y: topY)
-        resonanceLabel.position = CGPoint(x: size.width - margin, y: topY)
-        goldLabel.position = CGPoint(x: size.width - margin, y: topY - 20 * s)
-        questLabel.position = CGPoint(x: margin, y: topY - 20 * s)
-        // Stats joueur décalées à droite des boutons (pause à x=36)
-        // pour éviter la collision visuelle.
-        let statsX = margin + 50 * s
-        hpLabel.position = CGPoint(x: statsX, y: topY - 38 * s)
-
-        // Niveau + barre XP sur une ligne compacte sous le HP
         levelLabel.fontSize = 12 * s
         xpLabel.fontSize = 9 * s
-        let levelY = topY - 56 * s
-        levelLabel.position = CGPoint(x: statsX, y: levelY)
-        let barX = statsX + 42 * s + xpBarWidth / 2
-        xpBarBack.position = CGPoint(x: barX, y: levelY + 4)
-        xpBarFill.position = xpBarBack.position
-        xpLabel.position = CGPoint(x: statsX + 42 * s, y: levelY - 11)
 
-        inventoryButton.position = CGPoint(x: size.width - 36 * s, y: topY - 52 * s)
-        pauseButton.position = CGPoint(x: 36 * s, y: topY - 38 * s)
-        interactionHintLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
+        let objectiveWidth = min(size.width * 0.58, 250 * s)
+        setPlate(objectivePlate, size: CGSize(width: objectiveWidth, height: 42 * s), radius: 8 * s)
+        objectivePlate.position = CGPoint(x: margin + objectiveWidth / 2, y: topY - 10 * s)
+        objectiveLabel.position = CGPoint(x: margin + 13 * s, y: topY - 5 * s)
+        questLabel.position = CGPoint(x: margin + 13 * s, y: topY - 24 * s)
+
+        let resourceWidth = min(132 * s, size.width * 0.32)
+        setPlate(resourcePlate, size: CGSize(width: resourceWidth, height: 44 * s), radius: 8 * s)
+        resourcePlate.position = CGPoint(x: size.width - margin - resourceWidth / 2, y: topY - 10 * s)
+        resonanceLabel.position = CGPoint(x: size.width - margin - 12 * s, y: topY - 2 * s)
+        goldLabel.position = CGPoint(x: size.width - margin - 12 * s, y: topY - 21 * s)
+
+        let statsWidth = min(178 * s, size.width * 0.48)
+        setPlate(statsPlate, size: CGSize(width: statsWidth, height: 50 * s), radius: 8 * s)
+        statsPlate.position = CGPoint(x: margin + statsWidth / 2, y: topY - 68 * s)
+        let statsX = margin + 14 * s
+        hpLabel.position = CGPoint(x: statsX, y: topY - 52 * s)
+        levelLabel.position = CGPoint(x: statsX, y: topY - 70 * s)
+        let barX = statsX + 44 * s + xpBarWidth / 2
+        xpBarBack.position = CGPoint(x: barX, y: topY - 69 * s)
+        xpBarFill.position = xpBarBack.position
+        xpLabel.position = CGPoint(x: statsX + 44 * s, y: topY - 84 * s)
+
+        let buttonSize = 46 * s
+        setButton(pauseButton, size: buttonSize)
+        pauseButton.position = CGPoint(x: margin + buttonSize / 2, y: topY - 122 * s)
+        setButton(inventoryButton, size: buttonSize)
+        inventoryButton.position = CGPoint(x: size.width - margin - buttonSize / 2, y: topY - 68 * s)
+
+        let promptWidth = min(size.width - 48 * s, 300 * s)
+        setPlate(interactionPlate, size: CGSize(width: promptWidth, height: 34 * s), radius: 8 * s)
+        interactionPlate.position = CGPoint(x: size.width / 2, y: size.height * 0.19)
+        interactionHintLabel.position = interactionPlate.position
     }
 
     // MARK: - Private
 
-    private func setupPauseButton() {
-        pauseButton.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 0.85)
-        pauseButton.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.80, alpha: 0.7)
-        pauseButton.lineWidth = 1.5
+    private func configurePlate(_ node: SKShapeNode) {
+        node.fillColor = SKColor(red: 0.055, green: 0.045, blue: 0.07, alpha: 0.78)
+        node.strokeColor = SKColor(red: 0.55, green: 0.43, blue: 0.75, alpha: 0.42)
+        node.lineWidth = 1.2
+        node.glowWidth = 1.2
+        node.zPosition = -1
+    }
 
-        let icon = SKLabelNode(text: "⏸")
-        icon.fontSize = 18
-        icon.verticalAlignmentMode = .center
-        icon.horizontalAlignmentMode = .center
-        pauseButton.addChild(icon)
+    private func setPlate(_ node: SKShapeNode, size: CGSize, radius: CGFloat) {
+        let rect = CGRect(x: -size.width / 2, y: -size.height / 2,
+                          width: size.width, height: size.height)
+        node.path = CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil)
+    }
+
+    private func setButton(_ node: SKShapeNode, size: CGFloat) {
+        let rect = CGRect(x: -size / 2, y: -size / 2, width: size, height: size)
+        node.path = CGPath(roundedRect: rect, cornerWidth: 10, cornerHeight: 10, transform: nil)
+    }
+
+    private func setupPauseButton() {
+        styleButton(pauseButton)
+        for x in [-5.0, 5.0] {
+            let bar = SKShapeNode(rectOf: CGSize(width: 4, height: 18), cornerRadius: 1)
+            bar.fillColor = SKColor(red: 0.92, green: 0.86, blue: 1, alpha: 1)
+            bar.strokeColor = .clear
+            bar.position = CGPoint(x: x, y: 0)
+            pauseButton.addChild(bar)
+        }
         root.addChild(pauseButton)
     }
 
     private func setupInventoryButton() {
-        inventoryButton.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 0.85)
-        inventoryButton.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.80, alpha: 0.7)
-        inventoryButton.lineWidth = 1.5
+        styleButton(inventoryButton)
+        let pack = SKShapeNode(rectOf: CGSize(width: 20, height: 20), cornerRadius: 5)
+        pack.fillColor = SKColor(red: 0.42, green: 0.28, blue: 0.14, alpha: 1)
+        pack.strokeColor = SKColor(red: 0.90, green: 0.72, blue: 0.38, alpha: 0.9)
+        pack.lineWidth = 1.4
+        inventoryButton.addChild(pack)
 
-        let icon = SKLabelNode(text: "🎒")
-        icon.fontSize = 20
-        icon.verticalAlignmentMode = .center
-        icon.horizontalAlignmentMode = .center
-        inventoryButton.addChild(icon)
+        let flap = SKShapeNode(rectOf: CGSize(width: 14, height: 5), cornerRadius: 2)
+        flap.fillColor = SKColor(red: 0.25, green: 0.16, blue: 0.08, alpha: 1)
+        flap.strokeColor = .clear
+        flap.position = CGPoint(x: 0, y: 3)
+        inventoryButton.addChild(flap)
+
+        let handle = SKShapeNode(ellipseOf: CGSize(width: 12, height: 7))
+        handle.fillColor = .clear
+        handle.strokeColor = SKColor(red: 0.90, green: 0.72, blue: 0.38, alpha: 0.85)
+        handle.lineWidth = 1.3
+        handle.position = CGPoint(x: 0, y: 12)
+        inventoryButton.addChild(handle)
+
         root.addChild(inventoryButton)
+    }
+
+    private func styleButton(_ button: SKShapeNode) {
+        button.fillColor = SKColor(red: 0.08, green: 0.06, blue: 0.11, alpha: 0.88)
+        button.strokeColor = SKColor(red: 0.62, green: 0.50, blue: 0.85, alpha: 0.75)
+        button.lineWidth = 1.5
+        button.glowWidth = 1
     }
 }

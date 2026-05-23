@@ -9,6 +9,13 @@ enum GameState {
     case transition
 }
 
+
+enum HouseInteriorKind: String {
+    case armory
+    case apothecary
+    case inn
+}
+
 enum GamePhase: Int, CaseIterable, Codable {
     case wake
     case village

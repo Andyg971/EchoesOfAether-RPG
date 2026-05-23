@@ -11,8 +11,8 @@ final class InventoryOverlay {
     private var playerState: PlayerState?
     private var completion: (() -> Void)?
 
-    private let panelWidth: CGFloat = 320
-    private let panelHeight: CGFloat = 580
+    private var panelWidth: CGFloat = 320
+    private var panelHeight: CGFloat = 580
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -35,7 +35,9 @@ final class InventoryOverlay {
     }
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        root.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        panelWidth = min(340, max(280, size.width - 32))
+        panelHeight = min(580, max(440, size.height - safeBottom - 80))
+        root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
         panel.path = CGPath(
             roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2,
@@ -44,7 +46,7 @@ final class InventoryOverlay {
         )
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 36)
-        closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 32)
+        closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 34)
     }
 
     func open(player: PlayerState, completion: @escaping () -> Void) {

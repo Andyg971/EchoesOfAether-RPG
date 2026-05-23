@@ -29,6 +29,7 @@ final class GameManager {
     private var hintUpdateTimer: TimeInterval = 0
     private var minimapTimer: TimeInterval = 0
     private var corruptionCinematicShown = false
+    private var activeInterior: HouseInteriorKind?
 
     // MARK: - Setup
 
@@ -150,7 +151,9 @@ final class GameManager {
     }
 
     func layout(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat = 0) {
-        world.layout(in: size)
+        if activeInterior == nil {
+            world.layout(in: size)
+        }
         hud.layout(in: size, safeTop: safeTop)
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
@@ -238,6 +241,12 @@ final class GameManager {
     // MARK: - Exploration Tap Routing
 
     private func handleExplorationTap(_ point: CGPoint, in scene: SKScene) {
+        if activeInterior != nil {
+            if tryInteriorInteraction(point, in: scene) { return }
+            tapAndMove(point, in: scene)
+            return
+        }
+
         // Cristal de sauvegarde — disponible dans toutes les zones jouables
         if trySaveCrystalTap(point, in: scene) { return }
 
@@ -311,6 +320,8 @@ final class GameManager {
     // MARK: - Village NPC interactions
 
     private func tryVillageInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        if tryHouseDoorInteraction(point, in: scene) { return true }
+
         let radius: CGFloat = 90
 
         if point.distance(to: world.dorin.position) < radius {
@@ -348,7 +359,81 @@ final class GameManager {
         return false
     }
 
+    private func tryHouseDoorInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let doors: [(HouseInteriorKind, CGFloat)] = [
+            (.armory, 48), (.apothecary, 44), (.inn, 44)
+        ]
+        for (kind, radius) in doors {
+            let door = world.houseDoorPosition(for: kind, in: scene.size)
+            if point.distance(to: door) < radius {
+                enterHouse(kind, in: scene)
+                return true
+            }
+        }
+        return false
+    }
+
+    private func enterHouse(_ kind: HouseInteriorKind, in scene: SKScene) {
+        activeInterior = kind
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            world.switchToInterior(kind, in: scene)
+            hud.objectiveText = interiorObjective(for: kind)
+        } completion: { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    private func leaveHouse(in scene: SKScene) {
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            world.returnToVillageFromInterior(in: scene)
+            hud.objectiveText = phase == .act2
+                ? String(localized: "hud.objective.act2")
+                : String(localized: "hud.objective.village")
+            activeInterior = nil
+        } completion: { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    private func tryInteriorInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        guard let activeInterior else { return false }
+        if point.distance(to: world.interiorExitPosition(in: scene.size)) < 72 {
+            leaveHouse(in: scene)
+            return true
+        }
+
+        let servicePoint = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.62)
+        if point.distance(to: servicePoint) < 105 {
+            switch activeInterior {
+            case .armory:
+                openBramShop()
+            case .apothecary:
+                openMaraInteraction(scene: scene)
+            case .inn:
+                openSageDialogue()
+            }
+            return true
+        }
+        return false
+    }
+
+    private func interiorObjective(for kind: HouseInteriorKind) -> String {
+        switch kind {
+        case .armory:
+            return "Armurerie — équipe-toi ou ressors par la porte."
+        case .apothecary:
+            return "Herboristerie — prépare potions et remèdes."
+        case .inn:
+            return "Auberge — repose-toi avant la forêt."
+        }
+    }
+
     // MARK: - NPC Dialogue / Shop Openers
+
 
     private func openLyraDialogue() {
         transition(to: .dialogue)
@@ -1298,8 +1383,27 @@ final class GameManager {
         var bubbleAnchor: CGPoint? = nil
         var bubbleAction: InteractionBubble.Action? = nil
 
-        switch phase {
-        case .village, .act2:
+        if let activeInterior {
+            let exit = world.interiorExitPosition(in: scene.size)
+            if kaelPos.distance(to: exit) < radius {
+                hint = "Sortir"
+                bubbleAction = .enter
+                bubbleAnchor = CGPoint(x: exit.x, y: exit.y + 34)
+            } else {
+                let servicePoint = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.62)
+                if kaelPos.distance(to: servicePoint) < radius {
+                    switch activeInterior {
+                    case .armory: hint = "Forger / Acheter"
+                    case .apothecary: hint = "Potions / Herbes"
+                    case .inn: hint = "Se reposer"
+                    }
+                    bubbleAction = activeInterior == .inn ? .talk : .shop
+                    bubbleAnchor = CGPoint(x: servicePoint.x, y: servicePoint.y + 42)
+                }
+            }
+        } else {
+            switch phase {
+            case .village, .act2:
             let npcs: [(SKNode, String)] = [
                 (world.lyra,     "hint.talk"),
                 (world.dorin,    "hint.talk"),
@@ -1342,8 +1446,9 @@ final class GameManager {
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
             }
-        default:
-            break
+            default:
+                break
+            }
         }
 
         // Save crystal — affichage texte uniquement (icône cristal déjà visible)

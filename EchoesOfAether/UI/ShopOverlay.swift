@@ -21,8 +21,8 @@ final class ShopOverlay {
     private var playerState: PlayerState?
     private var completion: (() -> Void)?
 
-    private let panelWidth: CGFloat = 320
-    private let panelHeight: CGFloat = 480
+    private var panelWidth: CGFloat = 320
+    private var panelHeight: CGFloat = 480
     private var safeBottom: CGFloat = 0
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
@@ -52,7 +52,9 @@ final class ShopOverlay {
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
         self.safeBottom = safeBottom
-        root.position = CGPoint(x: size.width / 2, y: size.height / 2)
+        panelWidth = min(340, max(280, size.width - 32))
+        panelHeight = min(500, max(400, size.height - safeBottom - 112))
+        root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
         panel.path = CGPath(
             roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2, width: panelWidth, height: panelHeight),

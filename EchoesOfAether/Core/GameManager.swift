@@ -807,10 +807,15 @@ final class GameManager {
             }
             return true
         }
-        // Dorin près de la porte : bloque si pas encore passé
+        // Dorin garde la porte nord (Garen retiré Acte II) :
+        // 1) bloque si !act2DorinPassed
+        // 2) ouvre les ruines si Sage consulté
+        // 3) sinon doute (Dorin attend que Kael consulte le Sage)
         if point.distance(to: world.dorin.position) < radius {
             if !player.act2DorinPassed {
                 openDorinBlock(scene: scene)
+            } else if player.act2SageConsulted {
+                enterRuins()
             } else {
                 transition(to: .dialogue)
                 dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
@@ -829,18 +834,6 @@ final class GameManager {
                     guard let self else { return }
                     player.act2SageConsulted = true
                     transition(to: .exploration)
-                }
-            }
-            return true
-        }
-        // Porte nord / Garen → partir vers les ruines (nécessite sage + dorin)
-        if point.distance(to: world.garen.position) < radius {
-            if player.act2SageConsulted && player.act2DorinPassed {
-                enterRuins()
-            } else {
-                transition(to: .dialogue)
-                dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
-                    self?.transition(to: .exploration)
                 }
             }
             return true

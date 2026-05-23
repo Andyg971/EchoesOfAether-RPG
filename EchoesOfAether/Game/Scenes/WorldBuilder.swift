@@ -1091,9 +1091,11 @@ final class WorldBuilder {
         }
     }
 
-    /// Déplace Dorin près de la porte nord (garde la porte Acte II).
+    /// Acte II : Dorin garde personnellement la porte nord ; Garen relevé du poste.
+    /// Évite le conflit de tap (Dorin/Garen étaient à <8% width l'un de l'autre).
     func repositionDorinToGate(in scene: SKScene) {
-        dorin.position = CGPoint(x: scene.size.width * 0.42, y: scene.size.height * 0.74)
+        dorin.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.72)
+        garen.isHidden = true
     }
 
     // MARK: - Helpers

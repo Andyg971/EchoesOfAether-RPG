@@ -39,21 +39,24 @@ final class WorldBuilder {
     }
 
     func layout(in size: CGSize) {
-        // Zone résidentielle (haut gauche)
-        lyra.position    = CGPoint(x: size.width * 0.22, y: size.height * 0.58)
-        dorin.position   = CGPoint(x: size.width * 0.78, y: size.height * 0.60)
-        // Zone marché (centre)
-        bram.position    = CGPoint(x: size.width * 0.55, y: size.height * 0.50)
-        mara.position    = CGPoint(x: size.width * 0.35, y: size.height * 0.44)
-        // Porte nord (haut)
-        garen.position   = CGPoint(x: size.width * 0.50, y: size.height * 0.72)
-        // Auberge (droite)
-        sage.position    = CGPoint(x: size.width * 0.82, y: size.height * 0.44)
-        // PNJ décoratifs
-        child.position   = CGPoint(x: size.width * 0.42, y: size.height * 0.33)
-        villager.position = CGPoint(x: size.width * 0.65, y: size.height * 0.36)
-        // Kael démarre en bas à gauche
-        kael.position    = CGPoint(x: size.width * 0.18, y: size.height * 0.35)
+        // Layout PNJ aligné avec la grille des maisons :
+        // Row haute  (h*0.75) : Country (Lyra) / Haunted (Dorin)
+        // Row mid    (h*0.62) : OneStory armurerie (Bram)
+        // Row basse  (h*0.48) : Japanese herboriste (Mara) / Country auberge (Sage)
+        // Chaque PNJ se tient juste DEVANT (au pied de) sa maison.
+        let w = size.width
+        let h = size.height
+
+        lyra.position    = CGPoint(x: w * 0.20, y: h * 0.58)  // devant Country
+        dorin.position   = CGPoint(x: w * 0.80, y: h * 0.58)  // devant Haunted
+        bram.position    = CGPoint(x: w * 0.50, y: h * 0.44)  // devant armurerie
+        mara.position    = CGPoint(x: w * 0.22, y: h * 0.30)  // devant Japanese
+        sage.position    = CGPoint(x: w * 0.78, y: h * 0.30)  // devant auberge
+        garen.position   = CGPoint(x: w * 0.50, y: h * 0.85)  // porte nord
+        // PNJ ambiants en bas
+        child.position   = CGPoint(x: w * 0.38, y: h * 0.18)
+        villager.position = CGPoint(x: w * 0.62, y: h * 0.18)
+        kael.position    = CGPoint(x: w * 0.50, y: h * 0.10)  // spawn centre bas
     }
 
     // MARK: - Zone Backgrounds
@@ -113,36 +116,46 @@ final class WorldBuilder {
         }
 
         // --- Bâtiments ---
-        // Tente d'abord la maison pixel art (Modern Exteriors), sinon
-        // bascule sur le rectangle programmatique d'origine.
+        // Layout grille 3 colonnes pour iPhone ET iPad portrait.
+        // Scale dynamique calculé depuis scene.size pour cibler ~16% de
+        // largeur d'écran par maison, peu importe le device.
+        let bScale = buildingScale(for: w)
 
-        addVillageBuilding(asset: "house_country", fallbackW: 70, fallbackH: 55,
+        // Ligne haute (h*0.70) : 2 maisons aux extrémités, sous le HUD
+        addVillageBuilding(asset: "house_country", scale: bScale,
+                            fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.18, y: h * 0.68), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.20, y: h * 0.70), in: scene)
 
-        addVillageBuilding(asset: "house_haunted", fallbackW: 90, fallbackH: 65,
+        addVillageBuilding(asset: "house_haunted", scale: bScale * 1.05,
+                            fallbackW: 90, fallbackH: 65,
                             wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.72), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.68), in: scene)
 
-        addVillageBuilding(asset: "house_one_story", fallbackW: 76, fallbackH: 58,
+        // Ligne médiane (h*0.54) : 1 maison centrale (armurerie ⚔)
+        addVillageBuilding(asset: "house_one_story", scale: bScale,
+                            fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: "⚔", at: CGPoint(x: w * 0.55, y: h * 0.62), in: scene)
+                            label: "⚔", at: CGPoint(x: w * 0.50, y: h * 0.54), in: scene)
 
-        addVillageBuilding(asset: "house_japanese", fallbackW: 62, fallbackH: 50,
+        // Ligne basse (h*0.40) : 2 maisons aux extrémités (herboriste + auberge)
+        addVillageBuilding(asset: "house_japanese", scale: bScale,
+                            fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: "🌿", at: CGPoint(x: w * 0.30, y: h * 0.57), in: scene)
+                            label: "🌿", at: CGPoint(x: w * 0.22, y: h * 0.40), in: scene)
 
-        addVillageBuilding(asset: "house_country", fallbackW: 88, fallbackH: 62,
+        addVillageBuilding(asset: "house_country", scale: bScale,
+                            fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: "🏠", at: CGPoint(x: w * 0.84, y: h * 0.55), in: scene)
+                            label: "🏠", at: CGPoint(x: w * 0.78, y: h * 0.40), in: scene)
 
-        // Porte nord (haut centre)
-        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.80), width: 80, in: scene)
+        // Porte nord — placée au-dessus des maisons hautes, centre écran
+        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
 
         // Torches
         let torchPositions: [CGPoint] = [
@@ -1127,25 +1140,35 @@ final class WorldBuilder {
         backdropNodes.append(node)
     }
 
+    /// Scale dynamique pour les sprites de maisons en fonction de la
+    /// largeur de l'écran. Cible ~16% de la largeur par maison pour
+    /// rester lisible sur iPhone portrait étroit ET iPad portrait large.
+    /// Clamp 0.22…0.38 pour éviter les extrêmes (trop petit / trop grand).
+    private func buildingScale(for sceneWidth: CGFloat) -> CGFloat {
+        // Native PNG ~288px largeur (Country/Haunted Modern Exteriors)
+        let targetWidth = sceneWidth * 0.16
+        let s = targetWidth / 288
+        return max(0.22, min(0.38, s))
+    }
+
     /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
     /// sinon fallback sur le rectangle programmatique d'origine.
-    /// Les sprites Modern Exteriors sont ~256-300px → scale 0.45 pour
-    /// matcher l'échelle du jeu. Anchor bas pour ancrage au sol.
-    private func addVillageBuilding(asset: String,
+    /// Anchor (0.5, 0) → la position passée est le pied de la maison.
+    private func addVillageBuilding(asset: String, scale: CGFloat,
                                      fallbackW: CGFloat, fallbackH: CGFloat,
                                      wallColor: SKColor, roofColor: SKColor,
                                      label: String?,
                                      at position: CGPoint, in scene: SKScene) {
         let node: SKNode
-        if let sprite = PixelArtSprites.still(name: asset, scale: 0.45,
+        if let sprite = PixelArtSprites.still(name: asset, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
             node = sprite
-            // Optionnel : enseigne au-dessus du sprite
+            // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {
                 let sign = SKLabelNode(text: label)
                 sign.fontSize = 14
                 sign.verticalAlignmentMode = .center
-                sign.position = CGPoint(x: 0, y: 130)
+                sign.position = CGPoint(x: 0, y: 280 * scale)
                 node.addChild(sign)
             }
         } else {

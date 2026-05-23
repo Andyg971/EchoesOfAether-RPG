@@ -113,51 +113,33 @@ final class WorldBuilder {
         }
 
         // --- Bâtiments ---
+        // Tente d'abord la maison pixel art (Modern Exteriors), sinon
+        // bascule sur le rectangle programmatique d'origine.
 
-        // Maison de Lyra (haut gauche)
-        let lyraHouse = makeBuilding(w: 70, h: 55,
-                                     wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
-                                     roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
-                                     label: nil)
-        lyraHouse.position = CGPoint(x: w * 0.18, y: h * 0.68)
-        lyraHouse.zPosition = -4
-        add(lyraHouse, to: scene)
+        addVillageBuilding(asset: "house_country", fallbackW: 70, fallbackH: 55,
+                            wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
+                            roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.18, y: h * 0.68), in: scene)
 
-        // Maison de Dorin (haut droite, plus grande)
-        let dorinHouse = makeBuilding(w: 90, h: 65,
-                                      wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
-                                      roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
-                                      label: nil)
-        dorinHouse.position = CGPoint(x: w * 0.78, y: h * 0.72)
-        dorinHouse.zPosition = -4
-        add(dorinHouse, to: scene)
+        addVillageBuilding(asset: "house_haunted", fallbackW: 90, fallbackH: 65,
+                            wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
+                            roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.72), in: scene)
 
-        // Armurerie (centre, enseigne)
-        let armory = makeBuilding(w: 76, h: 58,
-                                   wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
-                                   roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                                   label: "⚔")
-        armory.position = CGPoint(x: w * 0.55, y: h * 0.62)
-        armory.zPosition = -4
-        add(armory, to: scene)
+        addVillageBuilding(asset: "house_one_story", fallbackW: 76, fallbackH: 58,
+                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
+                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            label: "⚔", at: CGPoint(x: w * 0.55, y: h * 0.62), in: scene)
 
-        // Herboriste (gauche centre)
-        let herbShop = makeBuilding(w: 62, h: 50,
-                                     wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
-                                     roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                                     label: "🌿")
-        herbShop.position = CGPoint(x: w * 0.30, y: h * 0.57)
-        herbShop.zPosition = -4
-        add(herbShop, to: scene)
+        addVillageBuilding(asset: "house_japanese", fallbackW: 62, fallbackH: 50,
+                            wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
+                            roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
+                            label: "🌿", at: CGPoint(x: w * 0.30, y: h * 0.57), in: scene)
 
-        // Auberge (droite, plus large)
-        let inn = makeBuilding(w: 88, h: 62,
-                                wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
-                                roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                                label: "🏠")
-        inn.position = CGPoint(x: w * 0.84, y: h * 0.55)
-        inn.zPosition = -4
-        add(inn, to: scene)
+        addVillageBuilding(asset: "house_country", fallbackW: 88, fallbackH: 62,
+                            wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
+                            roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
+                            label: "🏠", at: CGPoint(x: w * 0.84, y: h * 0.55), in: scene)
 
         // Porte nord (haut centre)
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.80), width: 80, in: scene)
@@ -230,12 +212,40 @@ final class WorldBuilder {
         }
 
         // --- Arbres normaux (bordures) ---
+        // Arbres verts pixel art (Camping pack). Fallback shape si manquant.
+        let greenAssets = ["tree_green_1", "tree_green_12", "tree_green_24",
+                            "tree_green_36", "tree_green_48", "tree_green_60",
+                            "tree_green_72", "tree_green_84"]
         for i in 0..<10 {
-            let tree = makeTree(height: CGFloat.random(in: 90...150))
             let side: CGFloat = i < 5 ? 0.08 + CGFloat(i) * 0.04 : 0.75 + CGFloat(i - 5) * 0.05
-            tree.position = CGPoint(x: w * side + CGFloat.random(in: -10...10),
-                                    y: h * CGFloat.random(in: 0.25...0.80))
+            let pos = CGPoint(x: w * side + CGFloat.random(in: -10...10),
+                              y: h * CGFloat.random(in: 0.25...0.80))
+            let assetName = greenAssets[i % greenAssets.count]
+            let tree = PixelArtSprites.still(name: assetName, scale: 3.5,
+                                              anchor: CGPoint(x: 0.5, y: 0.0))
+                ?? makeTree(height: CGFloat.random(in: 90...150))
+            tree.position = pos
+            tree.zPosition = -3
             add(tree, to: scene)
+        }
+
+        // Décor nature pixel art (rocks + mushrooms + stumps)
+        let propAssets: [(name: String, scale: CGFloat)] = [
+            ("rock_1", 2.5), ("rock_3", 2.5), ("rock_5", 2.5),
+            ("rock_7", 2.0), ("rock_9", 2.2),
+            ("mushroom_1", 2.0), ("mushroom_3", 2.0), ("mushroom_5", 2.0),
+            ("stump_1", 2.5), ("stump_2", 2.5)
+        ]
+        for (i, p) in propAssets.enumerated() {
+            guard let prop = PixelArtSprites.still(name: p.name, scale: p.scale,
+                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            let angle = CGFloat(i) * 0.45 + 0.3
+            prop.position = CGPoint(
+                x: w * (0.20 + CGFloat(i % 5) * 0.15) + CGFloat(sin(angle)) * 20,
+                y: h * (0.20 + CGFloat(i / 5) * 0.25) + CGFloat(cos(angle)) * 15
+            )
+            prop.zPosition = -2
+            add(prop, to: scene)
         }
 
         // --- Arbres corrompus (violet/noir, au centre) ---
@@ -770,6 +780,18 @@ final class WorldBuilder {
             JuiceEngine.pulse(orb, scale: 1.5)
         }
 
+        // Statues anges pixel art encadrant l'autel (Modern Exteriors / Garden)
+        for (i, asset) in ["angel_statue_1", "angel_statue_2"].enumerated() {
+            if let statue = PixelArtSprites.still(name: asset, scale: 3.0,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0)) {
+                let dx: CGFloat = i == 0 ? -90 : 90
+                statue.position = CGPoint(x: altar.position.x + dx, y: altar.position.y - 30)
+                statue.zPosition = -3
+                statue.alpha = 0.95
+                add(statue, to: scene)
+            }
+        }
+
         // Boss — Gardien de l'Aether
         let boss = makeBossGuardian()
         boss.position = CGPoint(x: w * 0.70, y: h * 0.45)
@@ -1103,6 +1125,37 @@ final class WorldBuilder {
     private func add(_ node: SKNode, to scene: SKScene) {
         scene.addChild(node)
         backdropNodes.append(node)
+    }
+
+    /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
+    /// sinon fallback sur le rectangle programmatique d'origine.
+    /// Les sprites Modern Exteriors sont ~256-300px → scale 0.45 pour
+    /// matcher l'échelle du jeu. Anchor bas pour ancrage au sol.
+    private func addVillageBuilding(asset: String,
+                                     fallbackW: CGFloat, fallbackH: CGFloat,
+                                     wallColor: SKColor, roofColor: SKColor,
+                                     label: String?,
+                                     at position: CGPoint, in scene: SKScene) {
+        let node: SKNode
+        if let sprite = PixelArtSprites.still(name: asset, scale: 0.45,
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) {
+            node = sprite
+            // Optionnel : enseigne au-dessus du sprite
+            if let label {
+                let sign = SKLabelNode(text: label)
+                sign.fontSize = 14
+                sign.verticalAlignmentMode = .center
+                sign.position = CGPoint(x: 0, y: 130)
+                node.addChild(sign)
+            }
+        } else {
+            node = makeBuilding(w: fallbackW, h: fallbackH,
+                                 wallColor: wallColor, roofColor: roofColor,
+                                 label: label)
+        }
+        node.position = position
+        node.zPosition = -4
+        add(node, to: scene)
     }
 
     private func clearBackdrop() {

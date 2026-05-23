@@ -9,6 +9,12 @@ final class HUDOverlay {
     private let questLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
     private let interactionHintLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
     private let hpLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let levelLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    private let xpLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+    private let xpBarBack = SKShapeNode()
+    private let xpBarFill = SKShapeNode()
+    private let xpBarWidth: CGFloat = 88
+    private let xpBarHeight: CGFloat = 4
     let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
     let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
 
@@ -43,6 +49,21 @@ final class HUDOverlay {
 
     var hpValue: String = "" {
         didSet { hpLabel.text = hpValue }
+    }
+
+    /// Met à jour le niveau + la barre d'XP. `progress` ∈ [0, 1].
+    /// `isMax = true` → masque les chiffres XP et remplit la barre en doré.
+    func setLevel(_ level: Int, xp: Int, xpToNext: Int,
+                  progress: CGFloat, isMax: Bool) {
+        levelLabel.text = String(localized: "hud.level \(level)")
+        if isMax {
+            xpLabel.text = String(localized: "hud.xp.max")
+            xpBarFill.fillColor = SKColor(red: 0.95, green: 0.75, blue: 0.25, alpha: 1)
+        } else {
+            xpLabel.text = String(localized: "hud.xp \(xp) \(xpToNext)")
+            xpBarFill.fillColor = SKColor(red: 0.55, green: 0.80, blue: 1, alpha: 1)
+        }
+        xpBarFill.xScale = max(0.02, min(1, isMax ? 1 : progress))
     }
 
     func attach(to scene: SKScene) {
@@ -80,6 +101,34 @@ final class HUDOverlay {
         hpLabel.fontColor = SKColor(red: 0.50, green: 0.90, blue: 0.60, alpha: 1)
         hpLabel.horizontalAlignmentMode = .left
         root.addChild(hpLabel)
+
+        // Niveau + barre XP
+        levelLabel.fontSize = 13
+        levelLabel.fontColor = SKColor(red: 0.85, green: 0.70, blue: 1, alpha: 1)
+        levelLabel.horizontalAlignmentMode = .left
+        root.addChild(levelLabel)
+
+        xpLabel.fontSize = 10
+        xpLabel.fontColor = SKColor(white: 0.65, alpha: 1)
+        xpLabel.horizontalAlignmentMode = .left
+        root.addChild(xpLabel)
+
+        let xpRect = CGRect(x: -xpBarWidth / 2, y: -xpBarHeight / 2,
+                             width: xpBarWidth, height: xpBarHeight)
+        let xpPath = CGPath(roundedRect: xpRect,
+                             cornerWidth: xpBarHeight / 2,
+                             cornerHeight: xpBarHeight / 2, transform: nil)
+        xpBarBack.path = xpPath
+        xpBarBack.fillColor = SKColor(white: 0.15, alpha: 1)
+        xpBarBack.strokeColor = SKColor(white: 0.30, alpha: 0.6)
+        xpBarBack.lineWidth = 1
+        root.addChild(xpBarBack)
+
+        xpBarFill.path = xpPath
+        xpBarFill.fillColor = SKColor(red: 0.55, green: 0.80, blue: 1, alpha: 1)
+        xpBarFill.strokeColor = .clear
+        xpBarFill.xScale = 0.02
+        root.addChild(xpBarFill)
 
         setupInventoryButton()
         setupPauseButton()
@@ -119,9 +168,23 @@ final class HUDOverlay {
         resonanceLabel.position = CGPoint(x: size.width - margin, y: topY)
         goldLabel.position = CGPoint(x: size.width - margin, y: topY - 20 * s)
         questLabel.position = CGPoint(x: margin, y: topY - 20 * s)
-        hpLabel.position = CGPoint(x: margin, y: topY - 38 * s)
+        // Stats joueur décalées à droite des boutons (pause à x=36)
+        // pour éviter la collision visuelle.
+        let statsX = margin + 50 * s
+        hpLabel.position = CGPoint(x: statsX, y: topY - 38 * s)
+
+        // Niveau + barre XP sur une ligne compacte sous le HP
+        levelLabel.fontSize = 12 * s
+        xpLabel.fontSize = 9 * s
+        let levelY = topY - 56 * s
+        levelLabel.position = CGPoint(x: statsX, y: levelY)
+        let barX = statsX + 42 * s + xpBarWidth / 2
+        xpBarBack.position = CGPoint(x: barX, y: levelY + 4)
+        xpBarFill.position = xpBarBack.position
+        xpLabel.position = CGPoint(x: statsX + 42 * s, y: levelY - 11)
+
         inventoryButton.position = CGPoint(x: size.width - 36 * s, y: topY - 52 * s)
-        pauseButton.position = CGPoint(x: 36 * s, y: topY - 52 * s)
+        pauseButton.position = CGPoint(x: 36 * s, y: topY - 38 * s)
         interactionHintLabel.position = CGPoint(x: size.width / 2, y: size.height * 0.20)
     }
 

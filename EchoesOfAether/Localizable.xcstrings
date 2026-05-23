@@ -1,6 +1,134 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "hud.level %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lv. %lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niv. %lld"
+          }
+        }
+      }
+    },
+    "hud.xp %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld XP"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld / %2$lld XP"
+          }
+        }
+      }
+    },
+    "hud.xp.max" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MAX"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MAX"
+          }
+        }
+      }
+    },
+    "levelUp.title %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Level %lld!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau %lld !"
+          }
+        }
+      }
+    },
+    "levelUp.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael grows stronger"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael devient plus puissant"
+          }
+        }
+      }
+    },
+    "levelUp.stats" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "HP +12  ·  ATK +2  ·  Slash +4"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PV +12  ·  ATQ +2  ·  Entaille +4"
+          }
+        }
+      }
+    },
+    "levelUp.maxReached" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maximum level reached"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Niveau maximum atteint"
+          }
+        }
+      }
+    },
+    "levelUp.tapToContinue" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to continue"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Touche pour continuer"
+          }
+        }
+      }
+    },
     "combat.archivist.specialName" : {
       "localizations" : {
         "en" : {
@@ -3082,6 +3210,7 @@
       }
     },
     "dialogue.chooseResponse" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

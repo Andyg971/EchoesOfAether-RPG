@@ -50,6 +50,11 @@ extension CGPoint {
 
 @MainActor
 final class PlayerState {
+
+    // Niveau max ; après L30, plus de XP gagné. Choix narratif : Kael
+    // atteint le plafond avant le Seuil de l'Acte III.
+    static let maxLevel: Int = 30
+
     var gold: Int = 20
     var maxHP: Int = 280
     var currentHP: Int = 280      // PV actuels — non sauvegardé, reset sur load
@@ -57,6 +62,9 @@ final class PlayerState {
     var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
     var potions: Int = 0          // max 3
     var aetherShards: Int = 0     // recharge ATB
+
+    var level: Int = 1
+    var xp: Int = 0               // XP cumulé dans le niveau courant
 
     var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
     var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
@@ -78,11 +86,53 @@ final class PlayerState {
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
 
-    var attackDamage: Int { 42 + weaponLevel * 22 }
-    var blackSlashDamage: Int { 92 + weaponLevel * 35 }
-    var currentMaxHP: Int { maxHP + armorLevel * 50 }
+    // MARK: - Stats dérivées (incluent le bonus de niveau)
+    //
+    // Gain par niveau : +12 HP / +2 ATK / +4 Black Slash. L1 → L30 :
+    // HP 280→628, ATK 42→100, Black Slash 92→208 (avant équipement).
+    var attackDamage: Int      { 42 + weaponLevel * 22 + (level - 1) * 2 }
+    var blackSlashDamage: Int  { 92 + weaponLevel * 35 + (level - 1) * 4 }
+    var currentMaxHP: Int      { maxHP + armorLevel * 50 + (level - 1) * 12 }
 
     var potionsFull: Bool { potions >= 3 }
+
+    // MARK: - Système de niveau
+
+    /// XP nécessaire pour passer du niveau `n` au niveau `n+1`.
+    /// Courbe : 80 * n^1.5 — progression douce au début, plus longue en fin.
+    static func xpForLevel(_ n: Int) -> Int {
+        guard n >= 1, n < maxLevel else { return Int.max }
+        return Int(80.0 * pow(Double(n), 1.5))
+    }
+
+    /// XP requis avant le prochain niveau (au niveau actuel).
+    var xpToNextLevel: Int { Self.xpForLevel(level) }
+
+    /// Progression vers le prochain niveau (0...1).
+    var xpProgress: CGFloat {
+        guard level < Self.maxLevel else { return 1 }
+        let need = xpToNextLevel
+        return need > 0 ? CGFloat(xp) / CGFloat(need) : 0
+    }
+
+    /// Ajoute de l'XP et déclenche un level-up tant que le seuil est dépassé.
+    /// Retourne le nombre de niveaux gagnés (0 si rien ; > 0 → afficher overlay).
+    /// Plafonnée à `maxLevel`.
+    @discardableResult
+    func gainXP(_ amount: Int) -> Int {
+        guard amount > 0, level < Self.maxLevel else { return 0 }
+        xp += amount
+        var leveledUp = 0
+        while level < Self.maxLevel, xp >= xpToNextLevel {
+            xp -= xpToNextLevel
+            level += 1
+            leveledUp += 1
+        }
+        if level >= Self.maxLevel {
+            xp = 0   // affichage propre au plafond
+        }
+        return leveledUp
+    }
 
     // MARK: - Save / Load
 
@@ -91,6 +141,7 @@ final class PlayerState {
             gold: gold, maxHP: maxHP,
             weaponLevel: weaponLevel, armorLevel: armorLevel,
             potions: potions, aetherShards: aetherShards,
+            level: level, xp: xp,
             questDelivery: questDelivery, questMushroom: questMushroom,
             questLyraShards: questLyraShards, questChildToy: questChildToy,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
@@ -116,6 +167,9 @@ final class PlayerState {
         armorLevel = data.armorLevel
         potions = data.potions
         aetherShards = data.aetherShards
+        // Saves antérieurs au système de niveau : repart à L1/0
+        level = max(1, min(Self.maxLevel, data.level ?? 1))
+        xp = max(0, data.xp ?? 0)
         questDelivery = data.questDelivery
         questMushroom = data.questMushroom
         questLyraShards = data.questLyraShards
@@ -148,6 +202,9 @@ struct SaveData: Codable {
     let armorLevel: Int
     let potions: Int
     let aetherShards: Int
+    // Niveau & XP (optionnels — saves antérieurs au système n'ont pas ces clés)
+    let level: Int?
+    let xp: Int?
     let questDelivery: QuestState
     let questMushroom: QuestState
     let questLyraShards: QuestState

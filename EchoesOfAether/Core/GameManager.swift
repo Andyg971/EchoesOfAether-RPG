@@ -17,6 +17,7 @@ final class GameManager {
     let options   = OptionsOverlay()
     let lore      = LoreOverlay()
     let minimap   = MinimapOverlay()
+    let levelUp   = LevelUpOverlay()
     let player    = PlayerState()
 
     var onReturnToMenu: (() -> Void)?
@@ -42,6 +43,8 @@ final class GameManager {
         options.attach(to: scene)
         lore.attach(to: scene)
         minimap.attach(to: scene)
+        levelUp.attach(to: scene)
+        syncLevelHUD()
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
         hud.onPauseTap     = { [weak self] in self?.openPause() }
@@ -76,6 +79,29 @@ final class GameManager {
             self?.onReturnToMenu?()
         }
 
+        // Debug : --combat-test / --boss-test démarre directement un combat
+        // pour capturer le rendu de l'arène (skip wake/save).
+        if CommandLine.arguments.contains("--combat-test") {
+            hud.goldValue = player.gold
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self else { return }
+                self.phase = .forest
+                self.world.switchToForest(in: scene)
+                self.startGroveCombat()
+            }
+            return
+        }
+        if CommandLine.arguments.contains("--boss-test") {
+            hud.goldValue = player.gold
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self else { return }
+                self.phase = .shrine
+                self.world.switchToShrine(in: scene)
+                self.startBossFight()
+            }
+            return
+        }
+
         if let save = SaveManager.load() {
             restoreFrom(save: save, scene: scene)
         } else {
@@ -92,6 +118,28 @@ final class GameManager {
         inventory.layout(in: size, safeBottom: safeBottom)
         lore.layout(in: size)
         minimap.layout(in: size, safeBottom: safeBottom)
+        levelUp.layout(in: size)
+    }
+
+    /// Pousse l'état niveau/XP du joueur vers le HUD. À appeler après
+    /// chargement, level-up, ou tout changement de stats.
+    private func syncLevelHUD() {
+        let isMax = player.level >= PlayerState.maxLevel
+        hud.setLevel(player.level,
+                     xp: player.xp,
+                     xpToNext: isMax ? 0 : player.xpToNextLevel,
+                     progress: player.xpProgress,
+                     isMax: isMax)
+    }
+
+    /// Sync HUD + affiche overlay si level a augmenté. Non bloquant :
+    /// l'overlay s'affiche par-dessus le dialogue post-combat ; le joueur
+    /// tape pour fermer et continuer.
+    private func grantLevelUpDisplay(from levelBefore: Int) {
+        syncLevelHUD()
+        guard player.level > levelBefore else { return }
+        levelUp.show(newLevel: player.level,
+                     isMax: player.level >= PlayerState.maxLevel) {}
     }
 
     func update(deltaTime: TimeInterval) {
@@ -116,6 +164,9 @@ final class GameManager {
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {
+        // Le level-up est prioritaire : il bloque toute autre interaction
+        // tant qu'il est visible.
+        if levelUp.handleTap(at: point, in: scene) { return }
         if death.handleTap(at: point, in: scene) { return }
         if options.handleTap(at: point, in: scene) { return }
         if lore.handleTap(at: point, in: scene) { return }
@@ -551,6 +602,7 @@ final class GameManager {
         lastCombatStarter = { [weak self] in self?.startGroveCombat() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.beast"),
@@ -561,6 +613,7 @@ final class GameManager {
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
             resonanceTotal += resonance
             player.gold += gold
             player.forestProgress = 1
@@ -582,6 +635,7 @@ final class GameManager {
         lastCombatStarter = { [weak self] in self?.startClearingCombat() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.wolf"),
@@ -592,6 +646,7 @@ final class GameManager {
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
             resonanceTotal += resonance
             player.gold += gold
             player.forestProgress = 2
@@ -656,6 +711,7 @@ final class GameManager {
                 specialName: String(localized: "combat.boss.specialName")
             )
 
+            let levelBefore = player.level
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.guardian"),
@@ -673,6 +729,7 @@ final class GameManager {
                 }
 
                 // Victory
+                grantLevelUpDisplay(from: levelBefore)
                 resonanceTotal += resonance
                 player.gold += gold
                 player.bossDefeated = true
@@ -981,6 +1038,7 @@ final class GameManager {
         lastCombatStarter = { [weak self] in self?.startRuinsCombat1() }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.ruinsGuardian"),
@@ -991,6 +1049,7 @@ final class GameManager {
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
             resonanceTotal += resonance
             player.gold += gold
             player.ruinsProgress = 1
@@ -1022,6 +1081,7 @@ final class GameManager {
                 specialName: String(localized: "combat.archivist.specialName")
             )
 
+            let levelBefore = player.level
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.archivist"),
@@ -1033,6 +1093,7 @@ final class GameManager {
             ) { [weak self] resonance, gold in
                 guard let self, let scene = self.scene else { return }
                 if resonance < 0 { showDeathScreen(); return }
+                grantLevelUpDisplay(from: levelBefore)
                 resonanceTotal += resonance
                 player.gold += gold
                 player.ruinsProgress = 2

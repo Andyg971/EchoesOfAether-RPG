@@ -410,8 +410,12 @@ final class CombatSystem {
 
         // Restauration PV 100% entre combats — Kael se soigne après victoire.
         // (Tension narrative gardée via difficulté/boss, pas via attrition de PV.)
+        // XP : combat normal = maxHP/3, boss = maxHP × 1.5.
         if let p = _player {
             p.currentHP = p.currentMaxHP
+            let baseXP = enemy.maxHP / 3
+            let xpReward = isBoss ? Int(Double(enemy.maxHP) * 1.5) : baseXP
+            p.gainXP(xpReward)
         }
 
         let delay: TimeInterval = isBoss ? 1.8 : 0.8

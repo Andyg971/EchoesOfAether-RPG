@@ -556,7 +556,8 @@ final class GameManager {
             enemyName: String(localized: "combat.enemy.beast"),
             enemyHP: 150,
             goldReward: 35,
-            player: player
+            player: player,
+            enemyKind: .beast
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -586,7 +587,8 @@ final class GameManager {
             enemyName: String(localized: "combat.enemy.wolf"),
             enemyHP: 200,
             goldReward: 50,
-            player: player
+            player: player,
+            enemyKind: .wolf
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -660,6 +662,7 @@ final class GameManager {
                 enemyHP: 380,
                 goldReward: 120,
                 player: player,
+                enemyKind: .guardian,
                 boss: bossConfig
             ) { [weak self] resonance, gold in
                 guard let self else { return }
@@ -983,7 +986,8 @@ final class GameManager {
             enemyName: String(localized: "combat.enemy.ruinsGuardian"),
             enemyHP: 220,
             goldReward: 30,
-            player: player
+            player: player,
+            enemyKind: .ruinsGuardian
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1024,6 +1028,7 @@ final class GameManager {
                 enemyHP: 320,
                 goldReward: 55,
                 player: player,
+                enemyKind: .archivist,
                 boss: bossConfig
             ) { [weak self] resonance, gold in
                 guard let self, let scene = self.scene else { return }

@@ -38,6 +38,7 @@
 		6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFF02B8A741B0A0000001 /* Strings+References.swift */; };
 		6D7ECC04B8A741B0A0000001 /* EchoesOfAether.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */; };
 		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
+		6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,7 @@
 		6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EchoesOfAether.entitlements; sourceTree = "<group>"; };
 		6D7EFF02B8A741B0A0000001 /* Strings+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strings+References.swift"; sourceTree = "<group>"; };
 		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatSprites.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -181,8 +183,17 @@
 			isa = PBXGroup;
 			children = (
 				6D7E2012B8A741B0A0000001 /* Scenes */,
+				6D7ECC12B8A741B0A0000001 /* Combat */,
 			);
 			path = Game;
+			sourceTree = "<group>";
+		};
+		6D7ECC12B8A741B0A0000001 /* Combat */ = {
+			isa = PBXGroup;
+			children = (
+				6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */,
+			);
+			path = Combat;
 			sourceTree = "<group>";
 		};
 		6D7E2012B8A741B0A0000001 /* Scenes */ = {
@@ -296,6 +307,7 @@
 				6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */,
 				6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */,
 				6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */,
+				6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -86,4 +86,39 @@ enum PixelArtSprites {
     static func exists(_ name: String) -> Bool {
         UIImage(named: name) != nil
     }
+
+    /// Recouvre une zone rectangulaire avec un tile pixel art répété.
+    /// Utilise SKSpriteNode en grille (suffisant <2000 tiles), filtering
+    /// nearest pour rester crisp. Retourne le node parent (à ajouter
+    /// par l'appelant). `tint` optionnel pour assombrir/teinter le sol.
+    static func tiledFloor(tileName: String, in size: CGSize,
+                            tileScale: CGFloat = 2.0,
+                            tint: SKColor? = nil) -> SKNode? {
+        guard UIImage(named: tileName) != nil else { return nil }
+        let baseTex = SKTexture(imageNamed: tileName)
+        baseTex.filteringMode = .nearest
+
+        let tilePtSize = CGSize(width: baseTex.size().width * tileScale,
+                                 height: baseTex.size().height * tileScale)
+        let cols = Int(ceil(size.width / tilePtSize.width)) + 1
+        let rows = Int(ceil(size.height / tilePtSize.height)) + 1
+
+        let root = SKNode()
+        root.name = "tiledFloor_\(tileName)"
+        for r in 0..<rows {
+            for c in 0..<cols {
+                let sprite = SKSpriteNode(texture: baseTex)
+                sprite.anchorPoint = .zero
+                sprite.setScale(tileScale)
+                sprite.position = CGPoint(x: CGFloat(c) * tilePtSize.width,
+                                           y: CGFloat(r) * tilePtSize.height)
+                if let tint {
+                    sprite.color = tint
+                    sprite.colorBlendFactor = 0.45
+                }
+                root.addChild(sprite)
+            }
+        }
+        return root
+    }
 }

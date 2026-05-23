@@ -94,26 +94,31 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-        ground.fillColor = SKColor(red: 0.08, green: 0.10, blue: 0.11, alpha: 1)
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: 500, y: 500)
-        ground.zPosition = -10
-        add(ground, to: scene)
-
-        // Chemin central (cobblestone)
-        for i in 0..<6 {
-            let stone = SKShapeNode(rectOf: CGSize(width: CGFloat.random(in: 30...50),
-                                                    height: CGFloat.random(in: 18...28)),
-                                    cornerRadius: 4)
-            stone.fillColor = SKColor(white: 0.13, alpha: 1)
-            stone.strokeColor = SKColor(white: 0.18, alpha: 0.4)
-            stone.lineWidth = 1
-            stone.position = CGPoint(x: w * 0.48 + CGFloat(i % 3 - 1) * 35,
-                                     y: h * 0.35 + CGFloat(i / 3) * 30)
-            stone.zPosition = -3
-            add(stone, to: scene)
+        // Sol : tilemap herbe pixel art (Modern Exteriors) avec teinte
+        // sombre pour rester dans l'ambiance "village nocturne". Fallback
+        // sur l'aplat sombre original si l'asset manque.
+        if let grass = PixelArtSprites.tiledFloor(
+            tileName: "tile_grass",
+            in: CGSize(width: w + 32, height: h + 32),
+            tileScale: 2.0,
+            tint: SKColor(red: 0.10, green: 0.18, blue: 0.10, alpha: 1)) {
+            grass.position = CGPoint(x: -16, y: -16)
+            grass.zPosition = -10
+            add(grass, to: scene)
+        } else {
+            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+            ground.fillColor = SKColor(red: 0.08, green: 0.10, blue: 0.11, alpha: 1)
+            ground.strokeColor = .clear
+            ground.position = CGPoint(x: 500, y: 500)
+            ground.zPosition = -10
+            add(ground, to: scene)
         }
+
+        // Chemin de terre vertical traversant le village du bas (spawn)
+        // jusqu'à la porte nord. Largeur ~2 tiles, ~28 tiles de long.
+        addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
+                     to: CGPoint(x: w * 0.50, y: h * 0.86),
+                     width: 64)
 
         // --- Bâtiments ---
         // Layout grille 3 colonnes pour iPhone ET iPad portrait.
@@ -157,6 +162,34 @@ final class WorldBuilder {
         // Porte nord — placée au-dessus des maisons hautes, centre écran
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
 
+        // Arbres + buissons en bordure du village (donne un sentiment
+        // "village au cœur des bois"). Positions évitent le chemin central.
+        let villageDecor: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
+            ("tree_green_15",  0.05, 0.25, 3.0),
+            ("tree_green_30",  0.05, 0.60, 3.0),
+            ("tree_green_50",  0.05, 0.92, 2.8),
+            ("tree_green_100", 0.95, 0.25, 3.0),
+            ("tree_green_72",  0.95, 0.55, 2.8),
+            ("tree_green_24",  0.95, 0.88, 3.0),
+            ("bush_1",         0.10, 0.45, 2.0),
+            ("bush_2",         0.90, 0.40, 2.0),
+            ("bush_1",         0.35, 0.20, 1.8),
+            ("bush_2",         0.65, 0.20, 1.8),
+            ("rock_3",         0.13, 0.78, 2.0),
+            ("rock_7",         0.88, 0.72, 1.8),
+            ("mushroom_3",     0.08, 0.35, 1.6),
+            ("mushroom_5",     0.92, 0.35, 1.6)
+        ]
+        for d in villageDecor {
+            guard let sprite = PixelArtSprites.still(
+                name: d.name, scale: d.scale,
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            sprite.position = CGPoint(x: w * d.x, y: h * d.y)
+            sprite.zPosition = -3
+            sprite.alpha = 0.92
+            add(sprite, to: scene)
+        }
+
         // Torches
         let torchPositions: [CGPoint] = [
             CGPoint(x: w * 0.12, y: h * 0.55),
@@ -198,13 +231,23 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol sombre
-        let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-        ground.fillColor = SKColor(red: 0.04, green: 0.07, blue: 0.05, alpha: 1)
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: 500, y: 500)
-        ground.zPosition = -10
-        add(ground, to: scene)
+        // Sol : tilemap herbe sombre Forêt d'Ébène (variante darker).
+        if let grass = PixelArtSprites.tiledFloor(
+            tileName: "tile_grass_dark",
+            in: CGSize(width: w + 32, height: h + 32),
+            tileScale: 2.0,
+            tint: SKColor(red: 0.05, green: 0.10, blue: 0.06, alpha: 1)) {
+            grass.position = CGPoint(x: -16, y: -16)
+            grass.zPosition = -10
+            add(grass, to: scene)
+        } else {
+            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+            ground.fillColor = SKColor(red: 0.04, green: 0.07, blue: 0.05, alpha: 1)
+            ground.strokeColor = .clear
+            ground.position = CGPoint(x: 500, y: 500)
+            ground.zPosition = -10
+            add(ground, to: scene)
+        }
 
         // Sentier sinueux (pierres sombres du sud au nord)
         let pathPoints: [(CGFloat, CGFloat)] = [
@@ -500,13 +543,23 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : dalle craquelée noire-rouge
-        let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-        ground.fillColor = SKColor(red: 0.06, green: 0.03, blue: 0.04, alpha: 1)
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: 500, y: 500)
-        ground.zPosition = -10
-        add(ground, to: scene)
+        // Sol : dalle craquelée pixel art teintée rouge sombre
+        if let stone = PixelArtSprites.tiledFloor(
+            tileName: "tile_dirt_2",
+            in: CGSize(width: w + 32, height: h + 32),
+            tileScale: 2.0,
+            tint: SKColor(red: 0.25, green: 0.08, blue: 0.05, alpha: 1)) {
+            stone.position = CGPoint(x: -16, y: -16)
+            stone.zPosition = -10
+            add(stone, to: scene)
+        } else {
+            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+            ground.fillColor = SKColor(red: 0.06, green: 0.03, blue: 0.04, alpha: 1)
+            ground.strokeColor = .clear
+            ground.position = CGPoint(x: 500, y: 500)
+            ground.zPosition = -10
+            add(ground, to: scene)
+        }
 
         // Fissures d'Aether rouge dans le sol
         let crackPositions: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [
@@ -750,12 +803,23 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-        ground.fillColor = SKColor(red: 0.04, green: 0.03, blue: 0.08, alpha: 1)
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: 500, y: 500)
-        ground.zPosition = -10
-        add(ground, to: scene)
+        // Sol : pierres sombres (tile dirt teinté violet)
+        if let stone = PixelArtSprites.tiledFloor(
+            tileName: "tile_dirt_1",
+            in: CGSize(width: w + 32, height: h + 32),
+            tileScale: 2.0,
+            tint: SKColor(red: 0.18, green: 0.10, blue: 0.32, alpha: 1)) {
+            stone.position = CGPoint(x: -16, y: -16)
+            stone.zPosition = -10
+            add(stone, to: scene)
+        } else {
+            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+            ground.fillColor = SKColor(red: 0.04, green: 0.03, blue: 0.08, alpha: 1)
+            ground.strokeColor = .clear
+            ground.position = CGPoint(x: 500, y: 500)
+            ground.zPosition = -10
+            add(ground, to: scene)
+        }
 
         let altar = SKShapeNode(rectOf: CGSize(width: 80, height: 50), cornerRadius: 6)
         altar.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.18, alpha: 1)
@@ -1138,6 +1202,37 @@ final class WorldBuilder {
     private func add(_ node: SKNode, to scene: SKScene) {
         scene.addChild(node)
         backdropNodes.append(node)
+    }
+
+    /// Trace un chemin de terre pixel art entre 2 points (vertical pour
+    /// la rue principale du village). Tiles dirt aléatoires pour variété.
+    private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
+                              width: CGFloat) {
+        let tiles = ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"]
+        let length = hypot(b.x - a.x, b.y - a.y)
+        guard length > 0 else { return }
+        let stepSize: CGFloat = 24
+        let count = Int(ceil(length / stepSize))
+        for i in 0...count {
+            let t = CGFloat(i) / CGFloat(count)
+            let cx = a.x + (b.x - a.x) * t
+            let cy = a.y + (b.y - a.y) * t
+            // Tile principal + dispersion sur la largeur
+            for dx in stride(from: -width/2, through: width/2, by: 24) {
+                // Modulo positif (Swift % retourne négatif sur ints négatifs)
+                let raw = (i + Int(dx)) % tiles.count
+                let idx = (raw + tiles.count) % tiles.count
+                let assetName = tiles[idx]
+                guard let tile = PixelArtSprites.still(
+                    name: assetName, scale: 2.0,
+                    anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+                tile.position = CGPoint(x: cx + dx + CGFloat.random(in: -3...3),
+                                         y: cy + CGFloat.random(in: -3...3))
+                tile.zPosition = -9
+                tile.alpha = 0.85
+                add(tile, to: scene)
+            }
+        }
     }
 
     /// Scale dynamique pour les sprites de maisons en fonction de la

@@ -18,6 +18,7 @@ final class GameManager {
     let lore      = LoreOverlay()
     let minimap   = MinimapOverlay()
     let levelUp   = LevelUpOverlay()
+    let bubble    = InteractionBubble()
     let player    = PlayerState()
 
     var onReturnToMenu: (() -> Void)?
@@ -44,6 +45,7 @@ final class GameManager {
         lore.attach(to: scene)
         minimap.attach(to: scene)
         levelUp.attach(to: scene)
+        bubble.attach(to: scene)
         syncLevelHUD()
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
@@ -121,6 +123,21 @@ final class GameManager {
             phase = .ruins
             world.switchToRuins(in: scene)
             transition(to: .exploration)
+            return
+        }
+        // Debug : place Kael près de Lyra dans le village pour audit
+        // immédiat de la bulle d'interaction.
+        if CommandLine.arguments.contains("--bubble-test") {
+            hud.goldValue = player.gold
+            phase = .village
+            transition(to: .exploration)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
+                guard let self else { return }
+                // Lyra est à (w*0.20, h*0.58) — placer Kael 50pt en dessous
+                let target = CGPoint(x: self.world.lyra.position.x,
+                                      y: self.world.lyra.position.y - 50)
+                self.world.kael.position = target
+            }
             return
         }
 
@@ -1272,11 +1289,14 @@ final class GameManager {
     private func updateInteractionHint() {
         guard let scene else {
             hud.interactionHint = ""
+            bubble.hide()
             return
         }
         let kaelPos = world.kael.position
         let radius: CGFloat = 90
         var hint = ""
+        var bubbleAnchor: CGPoint? = nil
+        var bubbleAction: InteractionBubble.Action? = nil
 
         switch phase {
         case .village, .act2:
@@ -1290,11 +1310,12 @@ final class GameManager {
                 (world.child,    "hint.talk"),
                 (world.villager, "hint.talk")
             ]
-            for (npc, key) in npcs where !npc.isHidden {
-                if kaelPos.distance(to: npc.position) < radius {
-                    hint = localizedHint(key)
-                    break
-                }
+            if let nearest = nearestNPC(from: kaelPos, npcs: npcs, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                // Ancrer la bulle ~50pt au-dessus de la tête du PNJ
+                bubbleAnchor = CGPoint(x: nearest.node.position.x,
+                                        y: nearest.node.position.y + 60)
             }
         case .ruins:
             let w = scene.size.width, h = scene.size.height
@@ -1304,9 +1325,10 @@ final class GameManager {
                 (CGPoint(x: w*0.15, y: h*0.65), "hint.examine"),
                 (CGPoint(x: w*0.70, y: h*0.65), "hint.examine")
             ]
-            for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
-                hint = localizedHint(key)
-                break
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
             }
         case .forest:
             let w = scene.size.width, h = scene.size.height
@@ -1315,21 +1337,58 @@ final class GameManager {
                 (CGPoint(x: w*0.65, y: h*0.55), "hint.fight"),
                 (CGPoint(x: w*0.60, y: h*0.82), "hint.enter")
             ]
-            for (pt, key) in checkpoints where kaelPos.distance(to: pt) < radius {
-                hint = localizedHint(key)
-                break
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
             }
         default:
             break
         }
 
-        // Save crystal
+        // Save crystal — affichage texte uniquement (icône cristal déjà visible)
         if hint.isEmpty, let crystal = scene.childNode(withName: "saveCrystal"),
            kaelPos.distance(to: crystal.position) < radius {
             hint = String(localized: "hint.saveCrystal")
         }
 
         hud.interactionHint = hint
+
+        if let anchor = bubbleAnchor, let action = bubbleAction {
+            bubble.show(at: anchor, action: action)
+        } else {
+            bubble.hide()
+        }
+    }
+
+    /// Retourne le PNJ visible le plus proche de `origin` dans `radius`.
+    private func nearestNPC(from origin: CGPoint,
+                             npcs: [(SKNode, String)],
+                             radius: CGFloat) -> (node: SKNode, key: String)? {
+        var best: (node: SKNode, key: String, dist: CGFloat)? = nil
+        for (npc, key) in npcs where !npc.isHidden {
+            let d = origin.distance(to: npc.position)
+            guard d < radius else { continue }
+            if best == nil || d < best!.dist {
+                best = (npc, key, d)
+            }
+        }
+        return best.map { ($0.node, $0.key) }
+    }
+
+    /// Retourne le checkpoint le plus proche de `origin` dans `radius`.
+    private func nearestCheckpoint(from origin: CGPoint,
+                                    points: [(CGPoint, String)],
+                                    radius: CGFloat) -> (point: CGPoint, key: String)? {
+        var best: (point: CGPoint, key: String, dist: CGFloat)? = nil
+        for (pt, key) in points {
+            let d = origin.distance(to: pt)
+            guard d < radius else { continue }
+            if best == nil || d < best!.dist {
+                best = (pt, key, d)
+            }
+        }
+        return best.map { ($0.point, $0.key) }
     }
 
     // MARK: - Minimap
@@ -1417,6 +1476,12 @@ final class GameManager {
     private func transition(to newState: GameState) {
         state = newState
         if newState == .exploration { saveGame() }
+        // Bulle d'interaction visible uniquement en exploration ;
+        // sinon elle resterait à flotter pendant dialogue/combat/pause.
+        if newState != .exploration {
+            bubble.hide()
+            hud.interactionHint = ""
+        }
     }
 
     private func syncGold() {

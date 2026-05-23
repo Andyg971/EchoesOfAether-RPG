@@ -53,6 +53,14 @@ enum WorldNode {
     // MARK: - Lyra (alliée, nature, bâton)
 
     static func lyra() -> SKNode {
+        // Tentative pixel art : dès que `lyra_idle_1..4` sont dans Assets,
+        // la shape ci-dessous est ignorée. Pas besoin de modifier le code.
+        if let sprite = PixelArtSprites.animated(name: "lyra", frames: 4,
+                                                  scale: 0.55, timePerFrame: 0.14) {
+            sprite.name = "lyra"
+            return sprite
+        }
+
         let root = SKNode()
         root.name = "lyra"
 
@@ -96,6 +104,12 @@ enum WorldNode {
     // MARK: - Dorin (chef du village, armure dorée)
 
     static func dorin() -> SKNode {
+        if let sprite = PixelArtSprites.animated(name: "dorin", frames: 4,
+                                                  scale: 0.60, timePerFrame: 0.16) {
+            sprite.name = "dorin"
+            return sprite
+        }
+
         let root = SKNode()
         root.name = "dorin"
 

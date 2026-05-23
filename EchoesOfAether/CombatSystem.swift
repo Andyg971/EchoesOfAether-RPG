@@ -590,14 +590,6 @@ final class CombatSystem {
                 node.alpha = 0.85
                 floor.addChild(node)
             }
-            // Buissons au premier plan (sprite-only, pas de shape équivalent)
-            for (x, asset) in [(CGFloat(0.18), "bush_1"), (0.55, "bush_2"), (0.85, "bush_1")] {
-                if let bush = decorSprite(name: asset, pixelScale: 2.5) {
-                    bush.position = CGPoint(x: size.width * x, y: baseY - 60)
-                    bush.alpha = 0.9
-                    floor.addChild(bush)
-                }
-            }
         case .guardian:
             // Sanctuaire : 4 piliers (marble tombstone → pilier pierre)
             let assets = ["pillar_grey_1", "pillar_grey_2", "pillar_grey_1", "pillar_grey_2"]

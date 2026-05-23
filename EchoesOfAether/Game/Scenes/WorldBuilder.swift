@@ -136,40 +136,43 @@ final class WorldBuilder {
         // Scale dynamique calculé depuis scene.size pour cibler ~16% de
         // largeur d'écran par maison, peu importe le device.
         let bScale = buildingScale(for: w)
+        let tallHouseScale = bScale * 0.38
+        let wideHouseScale = bScale * 0.48
+        let compactHouseScale = bScale * 0.58
 
         // Ligne haute : 2 maisons aux extrémités, assez grandes pour lire
         // comme de vrais bâtiments RPG, mais sous la zone HUD.
-        addVillageBuilding(asset: "house_country", scale: bScale,
+        addVillageBuilding(asset: "village_house_victorian", scale: tallHouseScale,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.22, y: h * 0.66), in: scene)
 
-        addVillageBuilding(asset: "house_haunted", scale: bScale * 1.05,
+        addVillageBuilding(asset: "village_house_haunted", scale: tallHouseScale * 0.90,
                             fallbackW: 90, fallbackH: 65,
                             wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.78, y: h * 0.64), in: scene)
 
         // Ligne médiane : 1 maison centrale (armurerie)
-        addVillageBuilding(asset: "house_one_story", scale: bScale,
+        addVillageBuilding(asset: "village_house_armory", scale: wideHouseScale,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: "⚔", at: CGPoint(x: w * 0.50, y: h * 0.49), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.49), in: scene)
 
         // Ligne basse : herboriste + auberge.
-        addVillageBuilding(asset: "house_japanese", scale: bScale,
+        addVillageBuilding(asset: "village_house_japanese", scale: compactHouseScale,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: "🌿", at: CGPoint(x: w * 0.22, y: h * 0.33), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.33), in: scene)
 
-        addVillageBuilding(asset: "house_country", scale: bScale,
+        addVillageBuilding(asset: "village_house_inn", scale: wideHouseScale,
                             fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: "🏠", at: CGPoint(x: w * 0.78, y: h * 0.33), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.33), in: scene)
 
         // Porte nord — placée au-dessus des maisons hautes, centre écran
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
@@ -203,7 +206,6 @@ final class WorldBuilder {
             add(sprite, to: scene)
         }
 
-        addVillageMicroProps(in: scene, width: w, height: h)
 
         // Torches
         let torchPositions: [CGPoint] = [
@@ -219,17 +221,6 @@ final class WorldBuilder {
             t.position = pos
             t.zPosition = propLayer(for: pos.y, in: h)
             add(t, to: scene)
-        }
-
-        // Pierres décoratives
-        for i in 0..<10 {
-            let radius = CGFloat(5 + (i % 4) * 3)
-            let stone = SKShapeNode(circleOfRadius: radius)
-            stone.fillColor = SKColor(white: 0.10 + CGFloat(i % 3) * 0.02, alpha: 1)
-            stone.strokeColor = .clear
-            stone.position = CGPoint(x: CGFloat(30 + i * 65), y: CGFloat(60 + (i * 113) % 220))
-            stone.zPosition = -5
-            add(stone, to: scene)
         }
 
         // Puit au centre
@@ -1674,7 +1665,7 @@ final class WorldBuilder {
         if let sprite = PixelArtSprites.still(name: asset, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
             node = sprite
-            addGroundShadow(to: node, width: 230 * scale, height: 34 * scale, y: 8 * scale)
+            addGroundShadow(to: node, width: 720 * scale, height: 90 * scale, y: 12 * scale)
             // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {
                 let sign = SKLabelNode(text: label)
@@ -1712,48 +1703,6 @@ final class WorldBuilder {
         patch.lineWidth = 1
         patch.zPosition = -9
         add(patch, to: scene)
-    }
-
-    private func addVillageMicroProps(in scene: SKScene, width w: CGFloat, height h: CGFloat) {
-        let props: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            ("rock_1", 0.34, 0.23, 1.15), ("rock_9", 0.66, 0.23, 1.15),
-            ("stump_1", 0.11, 0.13, 1.10), ("stump_2", 0.89, 0.13, 1.10)
-        ]
-        for prop in props {
-            guard let node = PixelArtSprites.still(
-                name: prop.name,
-                scale: prop.scale,
-                anchor: CGPoint(x: 0.5, y: 0.0)
-            ) else { continue }
-            node.position = CGPoint(x: w * prop.x, y: h * prop.y)
-            node.zPosition = -2
-            add(node, to: scene)
-        }
-
-        addFenceSegment(at: CGPoint(x: w * 0.28, y: h * 0.52), posts: 2, in: scene)
-        addFenceSegment(at: CGPoint(x: w * 0.72, y: h * 0.51), posts: 2, in: scene)
-    }
-
-    private func addFenceSegment(at position: CGPoint, posts: Int, in scene: SKScene) {
-        let fence = SKNode()
-        fence.position = position
-        fence.zPosition = -3
-        let railTop = SKShapeNode(rectOf: CGSize(width: CGFloat(posts - 1) * 22 + 10, height: 4), cornerRadius: 1)
-        railTop.fillColor = SKColor(red: 0.24, green: 0.16, blue: 0.09, alpha: 1)
-        railTop.strokeColor = SKColor(red: 0.40, green: 0.28, blue: 0.15, alpha: 0.5)
-        railTop.position = CGPoint(x: 0, y: 10)
-        fence.addChild(railTop)
-        let railBottom = railTop.copy() as! SKShapeNode
-        railBottom.position = CGPoint(x: 0, y: 0)
-        fence.addChild(railBottom)
-        for i in 0..<posts {
-            let post = SKShapeNode(rectOf: CGSize(width: 6, height: 22), cornerRadius: 1)
-            post.fillColor = SKColor(red: 0.30, green: 0.20, blue: 0.10, alpha: 1)
-            post.strokeColor = .clear
-            post.position = CGPoint(x: CGFloat(i - posts / 2) * 22, y: 4)
-            fence.addChild(post)
-        }
-        add(fence, to: scene)
     }
 
     private func clearBackdrop() {

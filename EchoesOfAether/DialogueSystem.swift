@@ -268,9 +268,11 @@ final class DialogueSystem {
             continueIndicator.isHidden = false
 
         case let .choice(prompt, options):
+            // Le prompt sert de titre ; pas de body label pour éviter
+            // la collision avec les boutons de choix.
             speakerLabel.text = prompt
             applyPortrait(for: prompt)
-            bodyLabel.text = String(localized: "dialogue.chooseResponse")
+            bodyLabel.text = ""
             continueIndicator.isHidden = true
             createChoices(options)
         }

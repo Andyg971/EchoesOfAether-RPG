@@ -105,10 +105,10 @@ final class WorldBuilder {
         // sombre pour rester dans l'ambiance "village nocturne". Fallback
         // sur l'aplat sombre original si l'asset manque.
         if let grass = PixelArtSprites.tiledFloor(
-            tileName: "tile_grass",
+            tileName: "village_grass_clean",
             in: CGSize(width: w + 32, height: h + 32),
             tileScale: 2.0,
-            tint: SKColor(red: 0.10, green: 0.18, blue: 0.10, alpha: 1)) {
+            tint: SKColor(red: 0.15, green: 0.26, blue: 0.14, alpha: 1)) {
             grass.position = CGPoint(x: -16, y: -16)
             grass.zPosition = -10
             add(grass, to: scene)
@@ -177,54 +177,6 @@ final class WorldBuilder {
         // Porte nord — placée au-dessus des maisons hautes, centre écran
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
 
-        // Décor pixel art en bordure du village (effet "village au cœur
-        // des bois"). Strictement aligné contre les bords gauche/droit
-        // pour ne pas chevaucher les maisons ni le chemin central.
-        let villageDecor: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            // Bordure gauche : 4 arbres verts espacés verticalement
-            ("tree_green_15",  0.04, 0.18, 1.45),
-            ("tree_green_30",  0.04, 0.40, 1.55),
-            ("tree_green_50",  0.04, 0.62, 1.40),
-            ("tree_green_72",  0.04, 0.84, 1.35),
-            // Bordure droite : 4 arbres verts en symétrie
-            ("tree_green_100", 0.96, 0.18, 1.50),
-            ("tree_green_24",  0.96, 0.40, 1.40),
-            ("tree_green_84",  0.96, 0.62, 1.50),
-            ("tree_green_48",  0.96, 0.84, 1.35),
-            // Rochers près des arbres (continuité naturelle)
-            ("rock_3",         0.09, 0.30, 1.8),
-            ("rock_7",         0.91, 0.30, 1.8)
-        ]
-        for d in villageDecor {
-            guard let sprite = PixelArtSprites.still(
-                name: d.name, scale: d.scale,
-                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            sprite.position = CGPoint(x: w * d.x, y: h * d.y)
-            sprite.zPosition = propLayer(for: sprite.position.y, in: h)
-            sprite.alpha = 0.92
-            addGroundShadow(under: sprite, width: 30 * d.scale, height: 10 * d.scale)
-            add(sprite, to: scene)
-        }
-
-
-        // Torches
-        let torchPositions: [CGPoint] = [
-            CGPoint(x: w * 0.12, y: h * 0.55),
-            CGPoint(x: w * 0.30, y: h * 0.70),
-            CGPoint(x: w * 0.50, y: h * 0.65),
-            CGPoint(x: w * 0.68, y: h * 0.65),
-            CGPoint(x: w * 0.88, y: h * 0.62),
-            CGPoint(x: w * 0.45, y: h * 0.78)
-        ]
-        for pos in torchPositions {
-            let t = makeTorch()
-            t.position = pos
-            t.zPosition = propLayer(for: pos.y, in: h)
-            add(t, to: scene)
-        }
-
-        // Puit au centre
-        buildWell(at: CGPoint(x: w * 0.50, y: h * 0.42), in: scene)
 
         // Cristal de sauvegarde (bas gauche, facile d'accès)
         addSaveCrystal(at: CGPoint(x: w * 0.12, y: h * 0.22), in: scene)

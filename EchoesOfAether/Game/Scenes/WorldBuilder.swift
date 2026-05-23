@@ -162,23 +162,23 @@ final class WorldBuilder {
         // Porte nord — placée au-dessus des maisons hautes, centre écran
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
 
-        // Arbres + buissons en bordure du village (donne un sentiment
-        // "village au cœur des bois"). Positions évitent le chemin central.
+        // Décor pixel art en bordure du village (effet "village au cœur
+        // des bois"). Strictement aligné contre les bords gauche/droit
+        // pour ne pas chevaucher les maisons ni le chemin central.
         let villageDecor: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            ("tree_green_15",  0.05, 0.25, 3.0),
-            ("tree_green_30",  0.05, 0.60, 3.0),
-            ("tree_green_50",  0.05, 0.92, 2.8),
-            ("tree_green_100", 0.95, 0.25, 3.0),
-            ("tree_green_72",  0.95, 0.55, 2.8),
-            ("tree_green_24",  0.95, 0.88, 3.0),
-            ("bush_1",         0.10, 0.45, 2.0),
-            ("bush_2",         0.90, 0.40, 2.0),
-            ("bush_1",         0.35, 0.20, 1.8),
-            ("bush_2",         0.65, 0.20, 1.8),
-            ("rock_3",         0.13, 0.78, 2.0),
-            ("rock_7",         0.88, 0.72, 1.8),
-            ("mushroom_3",     0.08, 0.35, 1.6),
-            ("mushroom_5",     0.92, 0.35, 1.6)
+            // Bordure gauche : 4 arbres verts espacés verticalement
+            ("tree_green_15",  0.04, 0.18, 3.0),
+            ("tree_green_30",  0.04, 0.40, 3.0),
+            ("tree_green_50",  0.04, 0.62, 2.8),
+            ("tree_green_72",  0.04, 0.84, 2.8),
+            // Bordure droite : 4 arbres verts en symétrie
+            ("tree_green_100", 0.96, 0.18, 3.0),
+            ("tree_green_24",  0.96, 0.40, 2.8),
+            ("tree_green_84",  0.96, 0.62, 3.0),
+            ("tree_green_48",  0.96, 0.84, 2.8),
+            // Rochers près des arbres (continuité naturelle)
+            ("rock_3",         0.09, 0.30, 1.8),
+            ("rock_7",         0.91, 0.30, 1.8)
         ]
         for d in villageDecor {
             guard let sprite = PixelArtSprites.still(

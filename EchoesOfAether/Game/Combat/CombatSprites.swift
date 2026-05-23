@@ -53,6 +53,18 @@ enum CombatSprites {
         let root = SKNode()
         root.name = "combatEnemy"
         addShadow(to: root, width: enemyShadowWidth(kind))
+
+        // Tente d'abord un sprite pixel art (spritesheet RPG Maker MV
+        // 12×3 frames de 32×32, on prend la frame idle face = [col 1, row 0]).
+        // Fallback sur la shape programmatique si l'asset manque.
+        // Sprites ennemis : les sheets Modern Exteriors (zombie/skeleton)
+        // sont des "previews de générateur" (28+ sprites serrés sans
+        // grille régulière) → non exploitables directement. On garde
+        // les shapes programmatiques jusqu'à ce qu'un pack avec format
+        // standard ($character RPG Maker MV) soit ajouté.
+        // Le helper PixelArtSprites.frame reste prêt pour cet usage.
+        _ = spriteSheet(for: kind)  // référence conservée pour migration future
+
         switch kind {
         case .beast:         buildBeast(into: root)
         case .wolf:          buildWolf(into: root)
@@ -61,6 +73,16 @@ enum CombatSprites {
         case .archivist:     buildArchivist(into: root)
         }
         return root
+    }
+
+    private static func spriteSheet(for kind: CombatSpriteKind) -> String? {
+        switch kind {
+        case .beast:         return "enemy_zombie_1"
+        case .wolf:          return "enemy_zombie_2"
+        case .guardian:      return "enemy_skeleton"
+        case .ruinsGuardian: return "enemy_skeleton"
+        case .archivist:     return nil   // unique narratif → garde la shape
+        }
     }
 
     // MARK: - Shadow / ground anchor

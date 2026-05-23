@@ -87,6 +87,39 @@ enum PixelArtSprites {
         UIImage(named: name) != nil
     }
 
+    /// Extrait une frame depuis un spritesheet pixel art (RPG Maker MV
+    /// format : grille `cols × rows` de frames `frameSize×frameSize`).
+    /// Y est indexé depuis le haut (row 0 = première ligne).
+    /// Retourne nil si l'asset n'existe pas.
+    static func frame(from sheetName: String,
+                       frameSize: CGSize,
+                       col: Int, row: Int,
+                       scale: CGFloat = 1.0,
+                       anchor: CGPoint = CGPoint(x: 0.5, y: 0.0)) -> SKNode? {
+        guard UIImage(named: sheetName) != nil else { return nil }
+        let sheet = SKTexture(imageNamed: sheetName)
+        sheet.filteringMode = .nearest
+        let sheetPx = sheet.size()
+
+        // Coords normalisées (0…1). Y inversé : SpriteKit origin = bottom.
+        let x = CGFloat(col) * frameSize.width / sheetPx.width
+        let y = (sheetPx.height - CGFloat(row + 1) * frameSize.height) / sheetPx.height
+        let wN = frameSize.width / sheetPx.width
+        let hN = frameSize.height / sheetPx.height
+        let rect = CGRect(x: x, y: y, width: wN, height: hN)
+
+        let tex = SKTexture(rect: rect, in: sheet)
+        tex.filteringMode = .nearest
+
+        let sprite = SKSpriteNode(texture: tex)
+        sprite.anchorPoint = anchor
+        sprite.setScale(scale)
+        let root = SKNode()
+        root.name = "\(sheetName)_f\(col)_\(row)"
+        root.addChild(sprite)
+        return root
+    }
+
     /// Recouvre une zone rectangulaire avec un tile pixel art répété.
     /// Utilise SKSpriteNode en grille (suffisant <2000 tiles), filtering
     /// nearest pour rester crisp. Retourne le node parent (à ajouter

@@ -731,13 +731,13 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     weaknessLabel.fontSize = 12
     weaknessLabel.fontColor = SKColor(red: 0.94, green: 0.86, blue: 0.62, alpha: 1)
-    weaknessLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.685)
+    weaknessLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.695)
     weaknessLabel.zPosition = 920
     root.addChild(weaknessLabel)
 
     boostLabel.fontSize = 13
     boostLabel.fontColor = SKColor(red: 0.72, green: 0.62, blue: 1.00, alpha: 1)
-    boostLabel.position = CGPoint(x: scene.size.width / 2, y: 178)
+    boostLabel.position = CGPoint(x: scene.size.width / 2, y: 220)
     boostLabel.zPosition = 920
     root.addChild(boostLabel)
 
@@ -1194,44 +1194,45 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
 private func setupButtons(scene: SKScene) {
-    let panelWidth = min(scene.size.width - 24, 390)
-    let panelHeight: CGFloat = 154
-    let panelY: CGFloat = 98
+    let panelWidth = min(scene.size.width - 18, 398)
+    let panelHeight: CGFloat = 184
+    let panelY: CGFloat = 120
 
-    let panel = SKShapeNode(rectOf: CGSize(width: panelWidth, height: panelHeight), cornerRadius: 14)
-    panel.fillColor = SKColor(red: 0.045, green: 0.040, blue: 0.075, alpha: 0.96)
-    panel.strokeColor = SKColor(red: 0.58, green: 0.48, blue: 0.88, alpha: 0.9)
-    panel.lineWidth = 2
+    let panel = SKShapeNode(rectOf: CGSize(width: panelWidth, height: panelHeight), cornerRadius: 12)
+    panel.fillColor = SKColor(red: 0.035, green: 0.030, blue: 0.060, alpha: 0.98)
+    panel.strokeColor = SKColor(red: 0.72, green: 0.58, blue: 1.00, alpha: 1)
+    panel.lineWidth = 2.5
     panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
     panel.zPosition = 850
     root.addChild(panel)
 
-    let buttonW = (panelWidth - 42) / 3
-    let buttonH: CGFloat = 38
-    let x0 = scene.size.width / 2 - buttonW - 7
+    let buttonW = (panelWidth - 34) / 3
+    let buttonH: CGFloat = 44
+    let x0 = scene.size.width / 2 - buttonW - 6
     let x1 = scene.size.width / 2
-    let x2 = scene.size.width / 2 + buttonW + 7
+    let x2 = scene.size.width / 2 + buttonW + 6
     let topY = panelY + 22
-    let bottomY = panelY - 24
+    let bottomY = panelY - 30
 
-    addButton(attackButton, title: "Attaque", at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.14, green: 0.14, blue: 0.19, alpha: 1), stroke: CombatElement.physical.color)
-    addButton(fireButton, title: "Feu", at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.18, green: 0.08, blue: 0.06, alpha: 1), stroke: CombatElement.fire.color)
-    addButton(iceButton, title: "Glace", at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.06, green: 0.13, blue: 0.18, alpha: 1), stroke: CombatElement.ice.color)
-    addButton(blackSlashButton, title: "Entaille", at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.16, green: 0.10, blue: 0.24, alpha: 1), stroke: CombatElement.aether.color)
-    addButton(lightningButton, title: "Foudre", at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.18, green: 0.15, blue: 0.06, alpha: 1), stroke: CombatElement.lightning.color)
-    addButton(healButton, title: "Soin", at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.07, green: 0.17, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+    addButton(attackButton, title: "ATTAQUE", at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.16, green: 0.16, blue: 0.20, alpha: 1), stroke: CombatElement.physical.color, fontSize: 13)
+    addButton(fireButton, title: "FEU", at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.32, green: 0.075, blue: 0.035, alpha: 1), stroke: CombatElement.fire.color, fontSize: 15)
+    addButton(iceButton, title: "GLACE", at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.035, green: 0.18, blue: 0.28, alpha: 1), stroke: CombatElement.ice.color, fontSize: 15)
+    addButton(blackSlashButton, title: "AETHER", at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.22, green: 0.07, blue: 0.34, alpha: 1), stroke: CombatElement.aether.color, fontSize: 14)
+    addButton(lightningButton, title: "FOUDRE", at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.30, green: 0.22, blue: 0.035, alpha: 1), stroke: CombatElement.lightning.color, fontSize: 14)
+    addButton(healButton, title: "SOIN", at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.035, green: 0.26, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.40, green: 1.00, blue: 0.56, alpha: 1), fontSize: 16)
 
-    addButton(boostButton, title: "BOOST", at: CGPoint(x: scene.size.width / 2, y: panelY + 61), width: 96, height: 27,
-              fill: SKColor(red: 0.18, green: 0.12, blue: 0.32, alpha: 1), stroke: SKColor(red: 0.78, green: 0.62, blue: 1.00, alpha: 1), fontSize: 12)
+    addButton(boostButton, title: "BOOST", at: CGPoint(x: scene.size.width / 2, y: panelY + 72), width: 116, height: 30,
+              fill: SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 1), stroke: SKColor(red: 0.86, green: 0.68, blue: 1.00, alpha: 1), fontSize: 13)
 }
 
 // MARK: - Helpers
+
 
 
     private func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,

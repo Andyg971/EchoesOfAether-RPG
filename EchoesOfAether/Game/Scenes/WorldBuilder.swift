@@ -101,27 +101,14 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : tilemap herbe pixel art (Modern Exteriors) avec teinte
-        // sombre pour rester dans l'ambiance "village nocturne". Fallback
-        // sur l'aplat sombre original si l'asset manque.
-        if let grass = PixelArtSprites.tiledFloor(
-            tileName: "village_grass_clean",
-            in: CGSize(width: w + 32, height: h + 32),
-            tileScale: 2.0,
-            tint: SKColor(red: 0.15, green: 0.26, blue: 0.14, alpha: 1)) {
-            grass.position = CGPoint(x: -16, y: -16)
-            grass.zPosition = -10
-            add(grass, to: scene)
-        } else {
-            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-            ground.fillColor = SKColor(red: 0.08, green: 0.10, blue: 0.11, alpha: 1)
-            ground.strokeColor = .clear
-            ground.position = CGPoint(x: 500, y: 500)
-            ground.zPosition = -10
-            add(ground, to: scene)
-        }
+let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+ground.fillColor = SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1)
+ground.strokeColor = .clear
+ground.position = CGPoint(x: 500, y: 500)
+ground.zPosition = -10
+add(ground, to: scene)
 
-        // Chemin de terre vertical traversant le village du bas (spawn)
+// Chemin de terre vertical traversant le village du bas (spawn)
         // jusqu'à la porte nord. Largeur ~2 tiles, ~28 tiles de long.
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
                      to: CGPoint(x: w * 0.50, y: h * 0.86),
@@ -190,44 +177,22 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : tilemap herbe sombre Forêt d'Ébène (mix 2 tiles pour
-        // casser la grille monotone).
-        if let grass = PixelArtSprites.tiledFloor(
-            tileNames: ["tile_grass_dark", "tile_grass"],
-            in: CGSize(width: w + 32, height: h + 32),
-            tileScale: 2.0,
-            tint: SKColor(red: 0.04, green: 0.08, blue: 0.05, alpha: 1)) {
-            grass.position = CGPoint(x: -16, y: -16)
-            grass.zPosition = -10
-            add(grass, to: scene)
-        } else {
-            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-            ground.fillColor = SKColor(red: 0.04, green: 0.07, blue: 0.05, alpha: 1)
-            ground.strokeColor = .clear
-            ground.position = CGPoint(x: 500, y: 500)
-            ground.zPosition = -10
-            add(ground, to: scene)
-        }
+let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
+ground.fillColor = SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1)
+ground.strokeColor = .clear
+ground.position = CGPoint(x: 500, y: 500)
+ground.zPosition = -10
+add(ground, to: scene)
 
-        // Sentier sinueux (pierres sombres du sud au nord)
-        let pathPoints: [(CGFloat, CGFloat)] = [
-            (0.48, 0.18), (0.45, 0.28), (0.42, 0.38),
-            (0.38, 0.48), (0.35, 0.55), (0.40, 0.62),
-            (0.50, 0.68), (0.58, 0.74), (0.62, 0.80)
-        ]
-        for (px, py) in pathPoints {
-            let stone = SKShapeNode(rectOf: CGSize(width: CGFloat.random(in: 22...36),
-                                                    height: CGFloat.random(in: 12...20)),
-                                    cornerRadius: 3)
-            stone.fillColor = SKColor(red: 0.07, green: 0.09, blue: 0.06, alpha: 1)
-            stone.strokeColor = SKColor(white: 0.12, alpha: 0.3)
-            stone.lineWidth = 1
-            stone.position = CGPoint(x: w * px, y: h * py)
-            stone.zPosition = -8
-            add(stone, to: scene)
-        }
+let path = SKShapeNode(ellipseOf: CGSize(width: w * 0.55, height: h * 0.82))
+path.fillColor = SKColor(red: 0.10, green: 0.075, blue: 0.045, alpha: 0.72)
+path.strokeColor = SKColor(red: 0.18, green: 0.13, blue: 0.07, alpha: 0.45)
+path.lineWidth = 2
+path.position = CGPoint(x: w * 0.50, y: h * 0.48)
+path.zPosition = -9
+add(path, to: scene)
 
-        // --- Arbres normaux (bordures) ---
+// --- Arbres normaux (bordures) ---
         // Forêt dense : 2 rangées d'arbres (bordures + intérieur), scale
         // contenu pour rester lisible. Cible ~70-90 pt par arbre.
         let treeScale = forestTreeScale(for: w)
@@ -275,25 +240,6 @@ final class WorldBuilder {
             add(tree, to: scene)
         }
 
-        // Sol forêt : rochers + champignons + souches discrets, hors
-        // bordures déjà couvertes par les arbres.
-        let propLayout: [(name: String, x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            ("rock_3",     0.16, 0.45, 1.6),
-            ("rock_7",     0.84, 0.50, 1.6),
-            ("rock_5",     0.50, 0.20, 1.5),
-            ("mushroom_1", 0.30, 0.32, 1.4),
-            ("mushroom_5", 0.65, 0.62, 1.4),
-            ("stump_1",    0.45, 0.55, 1.8),
-            ("stump_2",    0.55, 0.35, 1.8)
-        ]
-        for p in propLayout {
-            guard let prop = PixelArtSprites.still(name: p.name, scale: p.scale,
-                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            prop.position = CGPoint(x: w * p.x, y: h * p.y)
-            prop.zPosition = propLayer(for: prop.position.y, in: h)
-            addGroundShadow(under: prop, width: 16 * p.scale, height: 6 * p.scale)
-            add(prop, to: scene)
-        }
 
         // --- Arbres corrompus (violet/noir, au centre) ---
         for i in 0..<6 {
@@ -338,28 +284,6 @@ final class WorldBuilder {
         pathLabel.zPosition = -1
         add(pathLabel, to: scene)
 
-        // --- Mares d'Aether noir ---
-        let poolPositions: [CGPoint] = [
-            CGPoint(x: w * 0.22, y: h * 0.60),
-            CGPoint(x: w * 0.55, y: h * 0.38),
-            CGPoint(x: w * 0.75, y: h * 0.70)
-        ]
-        for pos in poolPositions {
-            let pool = makeAetherPool(at: pos)
-            add(pool, to: scene)
-        }
-
-        // --- Champignons lumineux (ambiance) ---
-        let mushPositions: [CGPoint] = [
-            CGPoint(x: w * 0.15, y: h * 0.35),
-            CGPoint(x: w * 0.70, y: h * 0.30),
-            CGPoint(x: w * 0.85, y: h * 0.50),
-            CGPoint(x: w * 0.25, y: h * 0.75)
-        ]
-        for pos in mushPositions {
-            let m = makeGlowMushroom(at: pos)
-            add(m, to: scene)
-        }
 
         // Arbres fond (foreground parallax feel)
         for i in 0..<4 {

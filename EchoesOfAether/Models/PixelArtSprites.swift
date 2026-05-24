@@ -147,19 +147,18 @@ enum PixelArtSprites {
 
         // Random seedé (positions cellule) pour stable inter-frames
         // mais varié spatialement.
+        let step = tilePtSize.width - 1
+        let cols2 = Int(ceil(size.width / step)) + 1
+        let rows2 = Int(ceil(size.height / step)) + 1
         var rng = SystemRandomNumberGenerator()
-        let jitter = tilePtSize.width * 0.08
-        for r in 0..<rows {
-            for c in 0..<cols {
+        for r in 0..<rows2 {
+            for c in 0..<cols2 {
                 let idx = Int.random(in: 0..<textures.count, using: &rng)
                 let sprite = SKSpriteNode(texture: textures[idx])
                 sprite.anchorPoint = .zero
                 sprite.setScale(tileScale)
-                let dx = CGFloat.random(in: -jitter...jitter, using: &rng)
-                let dy = CGFloat.random(in: -jitter...jitter, using: &rng)
-                sprite.position = CGPoint(x: CGFloat(c) * tilePtSize.width + dx,
-                                           y: CGFloat(r) * tilePtSize.height + dy)
-                if Bool.random(using: &rng) { sprite.xScale = -tileScale }
+                sprite.position = CGPoint(x: CGFloat(c) * step,
+                                           y: CGFloat(r) * step)
                 if let tint {
                     sprite.color = tint
                     sprite.colorBlendFactor = 0.45

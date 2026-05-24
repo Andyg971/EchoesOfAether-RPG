@@ -98,6 +98,7 @@ enum WorldNode {
         root.addChild(staffGem)
         JuiceEngine.pulse(staffGem, scale: 1.3)
 
+        root.setScale(0.55)
         return root
     }
 
@@ -105,7 +106,7 @@ enum WorldNode {
 
     static func dorin() -> SKNode {
         if let sprite = PixelArtSprites.animated(name: "dorin", frames: 4,
-                                                  scale: 0.60, timePerFrame: 0.16) {
+                                                  scale: 0.55, timePerFrame: 0.16) {
             sprite.name = "dorin"
             return sprite
         }
@@ -152,6 +153,7 @@ enum WorldNode {
         shoulderR.position = CGPoint(x: 22, y: 14)
         root.addChild(shoulderR)
 
+        root.setScale(0.50)
         return root
     }
 
@@ -199,6 +201,7 @@ enum WorldNode {
         hammer.position = CGPoint(x: 22, y: 0)
         root.addChild(hammer)
 
+        root.setScale(0.48)
         return root
     }
 
@@ -242,6 +245,7 @@ enum WorldNode {
         root.addChild(potion)
         JuiceEngine.pulse(potion, scale: 1.3)
 
+        root.setScale(0.48)
         return root
     }
 
@@ -296,6 +300,7 @@ enum WorldNode {
         spear.position = CGPoint(x: 22, y: -6)
         root.addChild(spear)
 
+        root.setScale(0.46)
         return root
     }
 
@@ -336,6 +341,7 @@ enum WorldNode {
         root.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.15)
 
+        root.setScale(0.55)
         return root
     }
 
@@ -363,6 +369,7 @@ enum WorldNode {
         eyes.position = CGPoint(x: 0, y: 23)
         root.addChild(eyes)
 
+        root.setScale(0.70)
         JuiceEngine.float(root, distance: 3)
         return root
     }
@@ -391,6 +398,7 @@ enum WorldNode {
         eyes.position = CGPoint(x: 0, y: 29)
         root.addChild(eyes)
 
+        root.setScale(0.58)
         return root
     }
 }

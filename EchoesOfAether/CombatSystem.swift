@@ -17,6 +17,69 @@ struct Combatant {
 enum CombatAction {
     case attack
     case blackSlash
+    case spell(CombatSpell)
+}
+
+enum CombatElement: Hashable {
+    case physical
+    case fire
+    case ice
+    case lightning
+    case aether
+
+    var icon: String {
+        switch self {
+        case .physical: return "PHYS"
+        case .fire: return "FEU"
+        case .ice: return "GLACE"
+        case .lightning: return "FOUDRE"
+        case .aether: return "AETHER"
+        }
+    }
+
+    var color: SKColor {
+        switch self {
+        case .physical: return SKColor(white: 0.90, alpha: 1)
+        case .fire: return SKColor(red: 1.00, green: 0.36, blue: 0.16, alpha: 1)
+        case .ice: return SKColor(red: 0.45, green: 0.85, blue: 1.00, alpha: 1)
+        case .lightning: return SKColor(red: 1.00, green: 0.82, blue: 0.22, alpha: 1)
+        case .aether: return SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1)
+        }
+    }
+}
+
+enum CombatSpell: CaseIterable {
+    case ember
+    case frost
+    case thunder
+    case mend
+
+    var title: String {
+        switch self {
+        case .ember: return "Feu"
+        case .frost: return "Glace"
+        case .thunder: return "Foudre"
+        case .mend: return "Soin"
+        }
+    }
+
+    var element: CombatElement? {
+        switch self {
+        case .ember: return .fire
+        case .frost: return .ice
+        case .thunder: return .lightning
+        case .mend: return nil
+        }
+    }
+
+    var basePower: Int {
+        switch self {
+        case .ember: return 66
+        case .frost: return 58
+        case .thunder: return 72
+        case .mend: return 78
+        }
+    }
 }
 
 enum StatusEffect {
@@ -53,8 +116,16 @@ final class CombatSystem {
     private let enemyATBFill = SKShapeNode()
 
     // Buttons
-    private let attackButton = SKShapeNode(rectOf: CGSize(width: 150, height: 54), cornerRadius: 16)
-    private let blackSlashButton = SKShapeNode(rectOf: CGSize(width: 190, height: 54), cornerRadius: 16)
+private let attackButton = SKShapeNode(rectOf: CGSize(width: 150, height: 54), cornerRadius: 16)
+private let blackSlashButton = SKShapeNode(rectOf: CGSize(width: 190, height: 54), cornerRadius: 16)
+private let fireButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let iceButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let weaknessLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+private let boostLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+private let breakLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
 
     // Sprites combattants (refonte UI : on doit voir les personnages se battre)
     private var kaelSprite: SKNode?
@@ -65,8 +136,15 @@ final class CombatSystem {
 
     private var kael = Combatant(name: "Kael", maxHP: 280, hp: 280, speed: 0.35)
     private var enemy = Combatant(name: "Créature", maxHP: 160, hp: 160, speed: 0.18)
-    private var resonance = 0
-    private var goldReward = 0
+private var resonance = 0
+private var playerBP = 0
+private var queuedBoost = 0
+private var wasKaelReady = false
+private var enemyWeaknesses: Set<CombatElement> = []
+private var enemyShieldMax = 2
+private var enemyShield = 2
+private var enemyBrokenTurns = 0
+private var goldReward = 0
     private var completion: ((Int, Int) -> Void)?
     private weak var parentScene: SKScene?
     private var _player: PlayerState?
@@ -103,19 +181,28 @@ final class CombatSystem {
 
         let baseSpeed: CGFloat = boss != nil ? 0.25 : (enemyHP > 200 ? 0.22 : 0.18)
         let baseDmg = boss != nil ? 24 : 18
-        self.enemy = Combatant(name: enemyName, maxHP: enemyHP, hp: enemyHP,
-                               speed: baseSpeed, baseDamage: baseDmg)
-        let startHP = min(player.currentHP, player.currentMaxHP)
+self.enemy = Combatant(name: enemyName, maxHP: enemyHP, hp: enemyHP,
+                       speed: baseSpeed, baseDamage: baseDmg)
+configureEnemyTactics(kind: enemyKind, isBoss: boss != nil)
+let startHP = min(player.currentHP, player.currentMaxHP)
         self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP, speed: 0.35)
         self.kael.atb = 0
         self.enemy.atb = 0
-        self.resonance = 0
-        self.comboCount = 0
+self.resonance = 0
+self.playerBP = 0
+self.queuedBoost = 0
+self.wasKaelReady = false
+self.comboCount = 0
         self.completion = completion
         self._player = player
 
         root.removeFromParent()
         root.removeAllChildren()
+        statusLabel.text = ""
+        statusEffectLabel.text = ""
+        weaknessLabel.text = ""
+        boostLabel.text = ""
+        breakLabel.alpha = 0
         root.zPosition = 900
         scene.addChild(root)
 
@@ -140,102 +227,160 @@ final class CombatSystem {
         playEntranceAnimation()
     }
 
-    func update(deltaTime: TimeInterval) {
-        guard isActive else { return }
-        kael.atb = min(1, kael.atb + kael.speed * CGFloat(deltaTime))
-        enemy.atb = min(1, enemy.atb + enemy.speed * CGFloat(deltaTime))
+func update(deltaTime: TimeInterval) {
+    guard isActive else { return }
+    kael.atb = min(1, kael.atb + kael.speed * CGFloat(deltaTime))
+    enemy.atb = min(1, enemy.atb + enemy.speed * CGFloat(deltaTime))
 
-        // Check enrage threshold
-        if let boss = bossConfig, !isEnraged {
-            let ratio = CGFloat(enemy.hp) / CGFloat(enemy.maxHP)
-            if ratio <= boss.enrageThreshold {
-                triggerEnrage(boss)
-            }
+    if !wasKaelReady && kael.atb >= 1 {
+        wasKaelReady = true
+        playerBP = min(3, playerBP + 1)
+        if statusLabel.text?.contains("charge") == true || statusLabel.text?.isEmpty == true {
+            statusLabel.text = "Kael est prêt: choisis une technique."
         }
-
-        if enemy.atb >= 1 {
-            enemy.atb = 0
-            enemyTurnCount += 1
-
-            // Appliquer poison/aetherBurn à l'ennemi
-            if let status = enemy.statusEffect, enemy.statusTicks > 0 {
-                let tickDmg: Int
-                switch status {
-                case .poison:     tickDmg = 12
-                case .aetherBurn: tickDmg = 18
-                }
-                enemy.hp = max(0, enemy.hp - tickDmg)
-                enemy.statusTicks -= 1
-                if enemy.statusTicks <= 0 { enemy.statusEffect = nil }
-                statusEffectLabel.text = "🟢 \(String(localized: "combat.status.poison")) -\(tickDmg)"
-                if !enemy.isAlive { updateVisuals(); checkVictory(); return }
-            }
-
-            // Stun : l'ennemi perd son tour
-            if enemy.stunned {
-                enemy.stunned = false
-                statusLabel.text = String(localized: "combat.status.stunned")
-                updateVisuals()
-                return
-            }
-
-            let isSpecial = bossConfig.map { enemyTurnCount % $0.specialAttackInterval == 0 } ?? false
-            let dmgMult = isEnraged ? (bossConfig?.enrageDamageMult ?? 1) : 1
-            let dmg: Int
-            let sparkColor: SKColor
-            let shakeIntensity: CGFloat
-
-            if isSpecial, let boss = bossConfig {
-                dmg = boss.specialDamage * dmgMult
-                sparkColor = SKColor(red: 0.55, green: 0.15, blue: 0.80, alpha: 1)
-                shakeIntensity = 10
-                statusLabel.text = boss.specialName
-                if let scene = parentScene {
-                    JuiceEngine.flashOverlay(in: root, size: scene.size,
-                        color: SKColor(red: 0.40, green: 0.05, blue: 0.55, alpha: 1),
-                        duration: 0.25)
-                }
-            } else {
-                dmg = enemy.baseDamage * dmgMult
-                sparkColor = .red
-                shakeIntensity = isEnraged ? 6 : 3
-                statusLabel.text = String(localized: "combat.status.enemyHit \(enemy.name) \(kael.hp - dmg > 0 ? kael.hp - dmg : 0) \(kael.maxHP)")
-            }
-
-            kael.hp = max(0, kael.hp - dmg)
-            AudioEngine.shared.playDamage()
-            JuiceEngine.screenShake(root, intensity: shakeIntensity, duration: 0.15)
-            playEnemyAttackAnimation(isSpecial: isSpecial)
-            root.addChild(ParticleFactory.impactSparks(
-                at: kaelHomePosition,
-                color: sparkColor,
-                count: isSpecial ? 12 : 6
-            ))
-
-            if !kael.isAlive { handleDefeat(); return }
-        }
-
-        updateVisuals()
     }
 
-    func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
-        guard isActive else { return false }
-        let localPoint = root.convert(point, from: scene)
+    if let boss = bossConfig, !isEnraged {
+        let ratio = CGFloat(enemy.hp) / CGFloat(enemy.maxHP)
+        if ratio <= boss.enrageThreshold {
+            triggerEnrage(boss)
+        }
+    }
 
-        if attackButton.contains(localPoint), kael.atb >= 1 {
-            perform(.attack)
-            return true
+    if enemy.atb >= 1 {
+        enemy.atb = 0
+        enemyTurnCount += 1
+
+        if enemyBrokenTurns > 0 {
+            enemyBrokenTurns -= 1
+            statusLabel.text = "Break: " + enemy.name + " perd son tour."
+            showEffect("Bouclier restaure", color: SKColor(red: 0.95, green: 0.75, blue: 0.30, alpha: 1))
+            if enemyBrokenTurns == 0 { enemyShield = enemyShieldMax }
+            updateVisuals()
+            return
         }
 
-        if blackSlashButton.contains(localPoint), kael.atb >= 1 {
-            perform(.blackSlash)
-            return true
+        if let status = enemy.statusEffect, enemy.statusTicks > 0 {
+            let tickDmg: Int
+            switch status {
+            case .poison: tickDmg = 12
+            case .aetherBurn: tickDmg = 18
+            }
+            enemy.hp = max(0, enemy.hp - tickDmg)
+            enemy.statusTicks -= 1
+            if enemy.statusTicks <= 0 { enemy.statusEffect = nil }
+            showEffect("Brulure -" + String(tickDmg), color: SKColor(red: 0.40, green: 0.95, blue: 0.45, alpha: 1))
+            if !enemy.isAlive { updateVisuals(); checkVictory(); return }
         }
 
+        if enemy.stunned {
+            enemy.stunned = false
+            statusLabel.text = String(localized: "combat.status.stunned")
+            updateVisuals()
+            return
+        }
+
+        let isSpecial = bossConfig.map { enemyTurnCount % $0.specialAttackInterval == 0 } ?? false
+        let dmgMult = isEnraged ? (bossConfig?.enrageDamageMult ?? 1) : 1
+        let dmg: Int
+        let sparkColor: SKColor
+        let shakeIntensity: CGFloat
+
+        if isSpecial, let boss = bossConfig {
+            dmg = boss.specialDamage * dmgMult
+            sparkColor = SKColor(red: 0.55, green: 0.15, blue: 0.80, alpha: 1)
+            shakeIntensity = 10
+            statusLabel.text = boss.specialName
+            if let scene = parentScene {
+                JuiceEngine.flashOverlay(in: root, size: scene.size,
+                    color: SKColor(red: 0.40, green: 0.05, blue: 0.55, alpha: 1),
+                    duration: 0.25)
+            }
+        } else {
+            dmg = enemy.baseDamage * dmgMult
+            sparkColor = .red
+            shakeIntensity = isEnraged ? 6 : 3
+            statusLabel.text = enemy.name + " frappe Kael -" + String(dmg)
+        }
+
+        kael.hp = max(0, kael.hp - dmg)
+        AudioEngine.shared.playDamage()
+        JuiceEngine.screenShake(root, intensity: shakeIntensity, duration: 0.15)
+        playEnemyAttackAnimation(isSpecial: isSpecial)
+        root.addChild(ParticleFactory.impactSparks(
+            at: kaelHomePosition,
+            color: sparkColor,
+            count: isSpecial ? 12 : 6
+        ))
+
+        if !kael.isAlive { handleDefeat(); return }
+    }
+
+    updateVisuals()
+}
+
+func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
+    guard isActive else { return false }
+    let localPoint = root.convert(point, from: scene)
+    let ready = kael.atb >= 1
+
+    if boostButton.contains(localPoint), ready {
+        applyBoost()
+        return true
+    }
+    if attackButton.contains(localPoint), ready {
+        perform(.attack)
+        return true
+    }
+    if blackSlashButton.contains(localPoint), ready {
+        perform(.blackSlash)
+        return true
+    }
+    if fireButton.contains(localPoint), ready {
+        perform(.spell(.ember))
+        return true
+    }
+    if iceButton.contains(localPoint), ready {
+        perform(.spell(.frost))
+        return true
+    }
+    if lightningButton.contains(localPoint), ready {
+        perform(.spell(.thunder))
+        return true
+    }
+    if healButton.contains(localPoint), ready {
+        perform(.spell(.mend))
         return true
     }
 
-    // MARK: - Boss Mechanics
+    return true
+}
+
+private func configureEnemyTactics(kind: CombatSpriteKind, isBoss: Bool) {
+    switch kind {
+    case .beast:
+        enemyWeaknesses = [.fire, .aether]
+        enemyShieldMax = 2
+    case .wolf:
+        enemyWeaknesses = [.ice, .lightning]
+        enemyShieldMax = 2
+    case .guardian:
+        enemyWeaknesses = [.ice, .aether]
+        enemyShieldMax = 3
+    case .ruinsGuardian:
+        enemyWeaknesses = [.fire, .lightning]
+        enemyShieldMax = 3
+    case .archivist:
+        enemyWeaknesses = [.ice, .lightning, .aether]
+        enemyShieldMax = 4
+    }
+    if isBoss { enemyShieldMax += 1 }
+    enemyShield = enemyShieldMax
+    enemyBrokenTurns = 0
+}
+
+// MARK: - Boss Mechanics
+
 
     private func triggerEnrage(_ boss: BossConfig) {
         isEnraged = true
@@ -313,62 +458,203 @@ final class CombatSystem {
 
     // MARK: - Actions
 
-    private func perform(_ action: CombatAction) {
-        guard let scene = parentScene else { return }
-        kael.atb = 0
+private func perform(_ action: CombatAction) {
+    guard let scene = parentScene else { return }
+    let boost = queuedBoost
+    let damageMultiplier = 1.0 + CGFloat(boost) * 0.55
+    kael.atb = 0
+    wasKaelReady = false
+    queuedBoost = 0
 
-        let enemyCenter = enemyHomePosition
+    let enemyCenter = enemyHomePosition
+    let atkDmg = _player?.attackDamage ?? 42
+    let slashDmg = _player?.blackSlashDamage ?? 92
 
-        let atkDmg = _player?.attackDamage ?? 42
-        let slashDmg = _player?.blackSlashDamage ?? 92
+    switch action {
+    case .attack:
+        comboCount += 1
+        let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
+        let finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
+        enemy.hp = max(0, enemy.hp - finalDmg)
+        statusLabel.text = boost > 0 ? "Attaque boostee x" + String(boost + 1) + " -" + String(finalDmg) : String(localized: "combat.status.attack \(enemy.name)")
+        AudioEngine.shared.playHit()
+        HapticsEngine.medium()
+        JuiceEngine.screenShake(root, intensity: boost > 0 ? 7 : 5, duration: 0.2)
+        playKaelAttackAnimation(strong: boost > 0)
+        root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8 + boost * 4))
+        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: .white)
+        showComboIfNeeded()
 
-        switch action {
-        case .attack:
-            comboCount += 1
-            let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
-            let finalDmg = atkDmg * comboMult / 10
-            enemy.hp = max(0, enemy.hp - finalDmg)
-            statusLabel.text = String(localized: "combat.status.attack \(enemy.name)")
+    case .blackSlash:
+        comboCount = 0
+        resonance += 1
+        let finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
+        let broke = hitWeakness(with: .aether)
+        if resonance == 3 {
+            enemy.stunned = true
+            showEffect("Stun", color: SKColor(red: 0.45, green: 0.70, blue: 1.00, alpha: 1))
+        } else if broke {
+            showEffect("Break aether", color: CombatElement.aether.color)
+        } else if resonance >= 6 && enemy.statusEffect == nil {
+            enemy.statusEffect = .aetherBurn
+            enemy.statusTicks = 3
+            showEffect("Brulure aether", color: SKColor(red: 0.95, green: 0.35, blue: 1.00, alpha: 1))
+        }
+        enemy.hp = max(0, enemy.hp - finalDmg)
+        statusLabel.text = boost > 0 ? "Entaille Noire boostee x" + String(boost + 1) : String(localized: "combat.status.blackSlash \(resonance)")
+        AudioEngine.shared.playBlackSlash()
+        HapticsEngine.heavy()
+        JuiceEngine.screenShake(root, intensity: 12 + CGFloat(boost) * 3, duration: 0.35)
+        JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
+        JuiceEngine.flashOverlay(
+            in: root,
+            size: scene.size,
+            color: SKColor(red: 0.30, green: 0.02, blue: 0.40, alpha: 1),
+            duration: 0.2
+        )
+        playKaelAttackAnimation(strong: true)
+        root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
+        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: CombatElement.aether.color)
+
+    case .spell(let spell):
+        comboCount = 0
+        if spell == .mend {
+            let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 5) * damageMultiplier)
+            kael.hp = min(kael.maxHP, kael.hp + heal)
+            statusLabel.text = boost > 0 ? "Soin booste x" + String(boost + 1) + " +" + String(heal) : "Soin +" + String(heal)
             AudioEngine.shared.playHit()
-            HapticsEngine.medium()
-            JuiceEngine.screenShake(root, intensity: 5, duration: 0.2)
-            playKaelAttackAnimation(strong: false)
-            root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8))
-            showComboIfNeeded()
-
-        case .blackSlash:
-            comboCount = 0   // reset combo sur Entaille Noire
-            resonance += 1
-            // Stun à résonance 3 ; AetherBurn à résonance 6+
-            if resonance == 3 {
-                enemy.stunned = true
-                statusEffectLabel.text = "🔵 \(String(localized: "combat.status.stun"))"
-            } else if resonance >= 6 && enemy.statusEffect == nil {
-                enemy.statusEffect = .aetherBurn
-                enemy.statusTicks = 3
-                statusEffectLabel.text = "🔥 \(String(localized: "combat.status.aetherBurn"))"
-            }
-            enemy.hp = max(0, enemy.hp - slashDmg)
-            statusLabel.text = String(localized: "combat.status.blackSlash \(resonance)")
-            AudioEngine.shared.playBlackSlash()
-            HapticsEngine.heavy()
-            JuiceEngine.screenShake(root, intensity: 12, duration: 0.35)
-            JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
-            JuiceEngine.flashOverlay(
-                in: root,
-                size: scene.size,
-                color: SKColor(red: 0.30, green: 0.02, blue: 0.40, alpha: 1),
-                duration: 0.2
-            )
-            playKaelAttackAnimation(strong: true)
-            root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
+            HapticsEngine.success()
+            playSpellAnimation(spell, boosted: boost > 0)
+            showFloatingText("+" + String(heal), at: kaelHomePosition, color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+            updateVisuals()
+            return
         }
 
-        updateVisuals()
-        checkVictory()
+        guard let element = spell.element else { return }
+        let isWeak = enemyWeaknesses.contains(element)
+        let broke = isWeak ? hitWeakness(with: element) : false
+        let levelBonus = ((_player?.level ?? 1) - 1) * 5
+        var finalDmg = Int(CGFloat(spell.basePower + levelBonus) * damageMultiplier)
+        if isWeak { finalDmg = Int(CGFloat(finalDmg) * 1.35) }
+        if enemyBrokenTurns > 0 || broke { finalDmg = Int(CGFloat(finalDmg) * 1.25) }
+        enemy.hp = max(0, enemy.hp - finalDmg)
+        statusLabel.text = isWeak
+            ? spell.title + " touche la faiblesse -" + String(finalDmg)
+            : spell.title + " -" + String(finalDmg)
+        applySpellSideEffect(spell, wasWeak: isWeak, boosted: boost > 0)
+        AudioEngine.shared.playBlackSlash()
+        HapticsEngine.heavy()
+        JuiceEngine.screenShake(root, intensity: isWeak ? 8 : 4, duration: 0.18)
+        playSpellAnimation(spell, boosted: boost > 0)
+        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: element.color)
     }
 
-    private func showComboIfNeeded() {
+    updateVisuals()
+    checkVictory()
+}
+
+private func applyBoost() {
+    guard playerBP > 0, queuedBoost < 3 else { return }
+    playerBP -= 1
+    queuedBoost += 1
+    statusLabel.text = "Boost x" + String(queuedBoost + 1) + " pret."
+    HapticsEngine.light()
+    boostButton.run(.sequence([.scale(to: 1.08, duration: 0.08), .scale(to: 1.0, duration: 0.12)]))
+    updateVisuals()
+}
+
+@discardableResult
+private func hitWeakness(with element: CombatElement) -> Bool {
+    guard enemyWeaknesses.contains(element), enemyBrokenTurns == 0 else { return false }
+    enemyShield = max(0, enemyShield - 1)
+    showEffect("Faiblesse " + element.icon + ": bouclier " + String(enemyShield) + "/" + String(enemyShieldMax), color: element.color)
+    guard enemyShield == 0 else { return false }
+    enemyBrokenTurns = 1
+    enemy.atb = 0
+    breakLabel.text = "BREAK"
+    breakLabel.alpha = 1
+    breakLabel.setScale(0.6)
+    breakLabel.run(.sequence([
+        .group([.scale(to: 1.35, duration: 0.16), .fadeIn(withDuration: 0.08)]),
+        .scale(to: 1.0, duration: 0.10),
+        .wait(forDuration: 0.55),
+        .fadeOut(withDuration: 0.25)
+    ]))
+    JuiceEngine.screenShake(root, intensity: 9, duration: 0.20)
+    return true
+}
+
+private func applySpellSideEffect(_ spell: CombatSpell, wasWeak: Bool, boosted: Bool) {
+    switch spell {
+    case .ember:
+        if wasWeak || boosted {
+            enemy.statusEffect = .aetherBurn
+            enemy.statusTicks = boosted ? 3 : 2
+            showEffect("Brulure", color: CombatElement.fire.color)
+        }
+    case .frost:
+        enemy.atb = max(0, enemy.atb - (wasWeak ? 0.45 : 0.25))
+        showEffect("ATB ralentie", color: CombatElement.ice.color)
+    case .thunder:
+        enemy.atb = max(0, enemy.atb - (wasWeak ? 0.60 : 0.30))
+        showEffect("ATB brisee", color: CombatElement.lightning.color)
+    case .mend:
+        break
+    }
+}
+
+private func playSpellAnimation(_ spell: CombatSpell, boosted: Bool) {
+    let target = spell == .mend ? kaelHomePosition : enemyHomePosition
+    let color: SKColor
+    switch spell {
+    case .ember: color = CombatElement.fire.color
+    case .frost: color = CombatElement.ice.color
+    case .thunder: color = CombatElement.lightning.color
+    case .mend: color = SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1)
+    }
+    root.addChild(ParticleFactory.impactSparks(at: target, color: color, count: boosted ? 22 : 14))
+    let ring = SKShapeNode(circleOfRadius: spell == .mend ? 28 : 34)
+    ring.position = target
+    ring.fillColor = .clear
+    ring.strokeColor = color
+    ring.lineWidth = boosted ? 4 : 2
+    ring.glowWidth = boosted ? 8 : 4
+    ring.zPosition = 825
+    root.addChild(ring)
+    ring.run(.sequence([
+        .group([.scale(to: boosted ? 2.2 : 1.7, duration: 0.26), .fadeOut(withDuration: 0.28)]),
+        .removeFromParent()
+    ]))
+    if spell == .mend {
+        kaelSprite?.run(.sequence([.scale(to: 1.18, duration: 0.12), .scale(to: 1.10, duration: 0.18)]))
+    } else {
+        playEnemyHitReact(strong: boosted)
+    }
+}
+
+private func showFloatingText(_ text: String, at position: CGPoint, color: SKColor) {
+    let label = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    label.text = text
+    label.fontSize = 22
+    label.fontColor = color
+    label.position = CGPoint(x: position.x, y: position.y + 72)
+    label.zPosition = 940
+    root.addChild(label)
+    label.run(.sequence([
+        .group([.moveBy(x: 0, y: 34, duration: 0.45), .fadeOut(withDuration: 0.45)]),
+        .removeFromParent()
+    ]))
+}
+
+private func showEffect(_ text: String, color: SKColor) {
+    statusEffectLabel.text = text
+    statusEffectLabel.fontColor = color
+    statusEffectLabel.alpha = 1
+    statusEffectLabel.run(.sequence([.fadeIn(withDuration: 0.08), .wait(forDuration: 0.85), .fadeOut(withDuration: 0.35)]))
+}
+
+private func showComboIfNeeded() {
+
         guard comboCount >= 3 else { return }
         let text = comboCount >= 5
             ? String(localized: "combat.combo.mega \(comboCount)")
@@ -428,25 +714,42 @@ final class CombatSystem {
         ]))
     }
 
-    private func setupComboAndStatusUI(scene: SKScene) {
-        // Combo label (au-dessus des sprites)
-        comboLabel.fontSize = 24
-        comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
-        comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.62)
-        comboLabel.zPosition = 920
-        comboLabel.alpha = 0
-        root.addChild(comboLabel)
+private func setupComboAndStatusUI(scene: SKScene) {
+    comboLabel.fontSize = 24
+    comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
+    comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.62)
+    comboLabel.zPosition = 920
+    comboLabel.alpha = 0
+    root.addChild(comboLabel)
 
-        // Status effect label (sous l'ennemi)
-        statusEffectLabel.fontSize = 13
-        statusEffectLabel.fontColor = SKColor(red: 0.55, green: 0.90, blue: 0.55, alpha: 1)
-        statusEffectLabel.position = CGPoint(x: scene.size.width * 0.72, y: scene.size.height * 0.32)
-        statusEffectLabel.zPosition = 910
-        statusEffectLabel.alpha = 0
-        root.addChild(statusEffectLabel)
-    }
+    statusEffectLabel.fontSize = 13
+    statusEffectLabel.fontColor = SKColor(red: 0.55, green: 0.90, blue: 0.55, alpha: 1)
+    statusEffectLabel.position = CGPoint(x: scene.size.width * 0.72, y: scene.size.height * 0.32)
+    statusEffectLabel.zPosition = 930
+    statusEffectLabel.alpha = 0
+    root.addChild(statusEffectLabel)
 
-    // MARK: - Arena visuals (style Octopath/FF7 — décor contextuel + perspective)
+    weaknessLabel.fontSize = 12
+    weaknessLabel.fontColor = SKColor(red: 0.94, green: 0.86, blue: 0.62, alpha: 1)
+    weaknessLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.685)
+    weaknessLabel.zPosition = 920
+    root.addChild(weaknessLabel)
+
+    boostLabel.fontSize = 13
+    boostLabel.fontColor = SKColor(red: 0.72, green: 0.62, blue: 1.00, alpha: 1)
+    boostLabel.position = CGPoint(x: scene.size.width / 2, y: 178)
+    boostLabel.zPosition = 920
+    root.addChild(boostLabel)
+
+    breakLabel.fontSize = 34
+    breakLabel.fontColor = SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
+    breakLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.56)
+    breakLabel.zPosition = 950
+    breakLabel.alpha = 0
+    root.addChild(breakLabel)
+}
+
+    // MARK: - Arena visuals
 
     private func setupArenaFloor(scene: SKScene, enemyKind: CombatSpriteKind, isBoss: Bool) {
         let floor = SKNode()
@@ -890,52 +1193,46 @@ final class CombatSystem {
         addSmallLabel("ATB", at: CGPoint(x: enemyX, y: atbY + 10))
     }
 
-    private func setupButtons(scene: SKScene) {
-        // Panneau commandes encadré (style FF7) — contient les actions du joueur.
-        let panelWidth = min(scene.size.width - 24, 380)
-        let panelHeight: CGFloat = 92
-        let panelY: CGFloat = 96
+private func setupButtons(scene: SKScene) {
+    let panelWidth = min(scene.size.width - 24, 390)
+    let panelHeight: CGFloat = 154
+    let panelY: CGFloat = 98
 
-        let panel = SKShapeNode(rectOf: CGSize(width: panelWidth, height: panelHeight),
-                                 cornerRadius: 14)
-        panel.fillColor = SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.95)
-        panel.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.85, alpha: 0.9)
-        panel.lineWidth = 2
-        panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
-        panel.zPosition = 850
-        root.addChild(panel)
+    let panel = SKShapeNode(rectOf: CGSize(width: panelWidth, height: panelHeight), cornerRadius: 14)
+    panel.fillColor = SKColor(red: 0.045, green: 0.040, blue: 0.075, alpha: 0.96)
+    panel.strokeColor = SKColor(red: 0.58, green: 0.48, blue: 0.88, alpha: 0.9)
+    panel.lineWidth = 2
+    panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
+    panel.zPosition = 850
+    root.addChild(panel)
 
-        // Bandeau gauche : pictogramme combat (étoile) — repère visuel
-        let badge = SKShapeNode(circleOfRadius: 16)
-        badge.fillColor = SKColor(red: 0.40, green: 0.20, blue: 0.75, alpha: 1)
-        badge.strokeColor = SKColor(red: 0.75, green: 0.50, blue: 1, alpha: 0.9)
-        badge.lineWidth = 1.5
-        badge.position = CGPoint(x: -panelWidth / 2 + 24, y: 0)
-        panel.addChild(badge)
+    let buttonW = (panelWidth - 42) / 3
+    let buttonH: CGFloat = 38
+    let x0 = scene.size.width / 2 - buttonW - 7
+    let x1 = scene.size.width / 2
+    let x2 = scene.size.width / 2 + buttonW + 7
+    let topY = panelY + 22
+    let bottomY = panelY - 24
 
-        let badgeIcon = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-        badgeIcon.text = "⚔"
-        badgeIcon.fontSize = 16
-        badgeIcon.fontColor = .white
-        badgeIcon.verticalAlignmentMode = .center
-        badgeIcon.horizontalAlignmentMode = .center
-        badge.addChild(badgeIcon)
+    addButton(attackButton, title: "Attaque", at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.14, green: 0.14, blue: 0.19, alpha: 1), stroke: CombatElement.physical.color)
+    addButton(fireButton, title: "Feu", at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.18, green: 0.08, blue: 0.06, alpha: 1), stroke: CombatElement.fire.color)
+    addButton(iceButton, title: "Glace", at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.06, green: 0.13, blue: 0.18, alpha: 1), stroke: CombatElement.ice.color)
+    addButton(blackSlashButton, title: "Entaille", at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.16, green: 0.10, blue: 0.24, alpha: 1), stroke: CombatElement.aether.color)
+    addButton(lightningButton, title: "Foudre", at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.18, green: 0.15, blue: 0.06, alpha: 1), stroke: CombatElement.lightning.color)
+    addButton(healButton, title: "Soin", at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
+              fill: SKColor(red: 0.07, green: 0.17, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
 
-        // Boutons d'action positionnés à l'intérieur du panneau
-        let buttonsAreaWidth = panelWidth - 70
-        let attackX = scene.size.width / 2 - buttonsAreaWidth / 4 + 8
-        let slashX = scene.size.width / 2 + buttonsAreaWidth / 4 + 8
+    addButton(boostButton, title: "BOOST", at: CGPoint(x: scene.size.width / 2, y: panelY + 61), width: 96, height: 27,
+              fill: SKColor(red: 0.18, green: 0.12, blue: 0.32, alpha: 1), stroke: SKColor(red: 0.78, green: 0.62, blue: 1.00, alpha: 1), fontSize: 12)
+}
 
-        addButton(attackButton, title: String(localized: "combat.button.attack"),
-                  at: CGPoint(x: attackX, y: panelY))
-        addButton(blackSlashButton, title: String(localized: "combat.button.blackSlash"),
-                  at: CGPoint(x: slashX, y: panelY))
+// MARK: - Helpers
 
-        blackSlashButton.strokeColor = SKColor(red: 0.75, green: 0.30, blue: 0.95, alpha: 1)
-        blackSlashButton.fillColor = SKColor(red: 0.16, green: 0.10, blue: 0.24, alpha: 1)
-    }
-
-    // MARK: - Helpers
 
     private func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,
                               width: CGFloat, height: CGFloat,
@@ -976,15 +1273,22 @@ final class CombatSystem {
         root.addChild(label)
     }
 
-    private func addButton(_ node: SKShapeNode, title: String, at position: CGPoint) {
+    private func addButton(_ node: SKShapeNode, title: String, at position: CGPoint,
+                           width: CGFloat, height: CGFloat,
+                           fill: SKColor, stroke: SKColor,
+                           fontSize: CGFloat = 14) {
+        node.removeAllChildren()
+        let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
+        node.path = CGPath(roundedRect: rect, cornerWidth: 10, cornerHeight: 10, transform: nil)
         node.position = position
-        node.fillColor = SKColor(red: 0.14, green: 0.14, blue: 0.19, alpha: 1)
-        node.strokeColor = SKColor(red: 0.5, green: 0.48, blue: 0.84, alpha: 1)
-        node.lineWidth = 2
+        node.fillColor = fill
+        node.strokeColor = stroke
+        node.lineWidth = 1.8
+        node.glowWidth = 1.5
 
         let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
         label.text = title
-        label.fontSize = 15
+        label.fontSize = fontSize
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         node.addChild(label)
@@ -999,18 +1303,30 @@ final class CombatSystem {
         kaelHPFill.xScale = kaelHPRatio
         enemyHPFill.xScale = enemyHPRatio
 
-        kaelHPLabel.text = "\(kael.hp)/\(kael.maxHP)"
-        enemyHPLabel.text = "\(enemy.hp)/\(enemy.maxHP)"
+        kaelHPLabel.text = String(kael.hp) + "/" + String(kael.maxHP)
+        enemyHPLabel.text = String(enemy.hp) + "/" + String(enemy.maxHP)
 
         kaelATBFill.xScale = max(0.02, kael.atb)
         enemyATBFill.xScale = max(0.02, enemy.atb)
 
-        let ready = kael.atb >= 1
-        attackButton.alpha = ready ? 1 : 0.4
-        blackSlashButton.alpha = ready ? 1 : 0.4
+        let ready = kael.atb >= 1 && kael.isAlive && enemy.isAlive
+        for button in [attackButton, blackSlashButton, fireButton, iceButton, lightningButton, healButton] {
+            button.alpha = ready ? 1 : 0.36
+        }
+        boostButton.alpha = (ready && playerBP > 0 && queuedBoost < 3) ? 1 : 0.34
+
+        let weaknessText = enemyWeaknesses.map { $0.icon }.sorted().joined(separator: "  ")
+        weaknessLabel.text = "Faiblesses: " + weaknessText + "   Bouclier: " + String(enemyShield) + "/" + String(enemyShieldMax)
+        let bpPips = (0..<3).map { $0 < playerBP ? "●" : "○" }.joined()
+        boostLabel.text = queuedBoost > 0 ? "BP " + bpPips + "   Boost x" + String(queuedBoost + 1) : "BP " + bpPips
+
+        enemyHPBack.strokeColor = enemyBrokenTurns > 0
+            ? SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
+            : SKColor(white: 0.3, alpha: 1)
 
         if statusLabel.text?.isEmpty ?? true {
             statusLabel.text = String(localized: "combat.status.charging")
         }
     }
 }
+

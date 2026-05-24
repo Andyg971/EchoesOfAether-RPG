@@ -29,10 +29,10 @@ final class DialogueSystem {
     private var completion: (() -> Void)?
     private var hasAnimatedEntrance = false
 
-    private let panelHeightLine: CGFloat = 186
-    private let panelHeightChoices: CGFloat = 326
+    private let panelHeightLine: CGFloat = 120
+    private let panelHeightChoices: CGFloat = 210
     private var safeBottom: CGFloat = 0
-    private let portraitRadius: CGFloat = 26
+    private let portraitRadius: CGFloat = 18
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -59,14 +59,14 @@ final class DialogueSystem {
                                    transform: nil)
         root.addChild(portraitBack)
 
-        portraitInitial.fontSize = 22
+        portraitInitial.fontSize = 16
         portraitInitial.fontColor = .white
         portraitInitial.verticalAlignmentMode = .center
         portraitInitial.horizontalAlignmentMode = .center
         root.addChild(portraitInitial)
 
         speakerLabel.horizontalAlignmentMode = .left
-        speakerLabel.fontSize = 19
+        speakerLabel.fontSize = 13
         speakerLabel.fontColor = .white
         root.addChild(speakerLabel)
 
@@ -76,13 +76,13 @@ final class DialogueSystem {
 
         bodyLabel.horizontalAlignmentMode = .left
         bodyLabel.verticalAlignmentMode = .top
-        bodyLabel.fontSize = 16
+        bodyLabel.fontSize = 12
         bodyLabel.fontColor = SKColor(white: 0.94, alpha: 1)
         bodyLabel.numberOfLines = 0
         root.addChild(bodyLabel)
 
         continueIndicator.text = "▼"
-        continueIndicator.fontSize = 16
+        continueIndicator.fontSize = 11
         continueIndicator.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 0.9)
         continueIndicator.horizontalAlignmentMode = .right
         continueIndicator.isHidden = true
@@ -119,18 +119,18 @@ final class DialogueSystem {
         portraitBack.position = CGPoint(x: portraitX, y: portraitY)
         portraitInitial.position = CGPoint(x: portraitX, y: portraitY)
 
-        let textX = portraitX + portraitRadius + 14
-        speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 28)
+        let textX = portraitX + portraitRadius + 10
+        speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 20)
 
         // Trait séparateur sous le nom (s'étend jusqu'au bord droit)
-        let sepY = panelHeight / 2 - 48
+        let sepY = panelHeight / 2 - 34
         let sepPath = CGMutablePath()
         sepPath.move(to: CGPoint(x: textX, y: sepY))
         sepPath.addLine(to: CGPoint(x: panelWidth / 2 - 22, y: sepY))
         separator.path = sepPath
 
-        bodyLabel.position = CGPoint(x: -panelWidth / 2 + 22, y: sepY - 14)
-        bodyLabel.preferredMaxLayoutWidth = panelWidth - 44
+        bodyLabel.position = CGPoint(x: -panelWidth / 2 + 16, y: sepY - 8)
+        bodyLabel.preferredMaxLayoutWidth = panelWidth - 32
 
         continueIndicator.position = CGPoint(x: panelWidth / 2 - 18, y: -panelHeight / 2 + 16)
 
@@ -281,51 +281,49 @@ final class DialogueSystem {
     private func createChoices(_ options: [DialogueChoice]) {
         guard let sceneRef = root.scene else { return }
         let panelWidth = min(sceneRef.size.width - 32, 720)
-        let buttonWidth = panelWidth - 44
-        let buttonHeight: CGFloat = 52
+        let buttonWidth = panelWidth - 32
+        let buttonHeight: CGFloat = 36
 
         for (offset, option) in options.enumerated() {
-            let button = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: 14)
+            let button = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: 10)
             button.fillColor = SKColor(red: 0.12, green: 0.10, blue: 0.20, alpha: 1)
             button.strokeColor = SKColor(red: 0.55, green: 0.42, blue: 0.92, alpha: 1)
-            button.lineWidth = 1.8
+            button.lineWidth = 1.2
             button.userData = [
                 "title": option.title,
                 "responseSpeaker": option.responseSpeaker,
                 "response": option.response
             ]
 
-            // Marge intérieure : point de couleur à gauche
-            let bullet = SKShapeNode(circleOfRadius: 4)
+            let bullet = SKShapeNode(circleOfRadius: 3)
             bullet.fillColor = SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1)
             bullet.strokeColor = .clear
-            bullet.glowWidth = 3
-            bullet.position = CGPoint(x: -buttonWidth / 2 + 16, y: 0)
+            bullet.glowWidth = 2
+            bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)
             button.addChild(bullet)
 
             let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
             label.text = option.title
-            label.fontSize = 15
+            label.fontSize = 11
             label.fontColor = .white
             label.numberOfLines = 2
-            label.preferredMaxLayoutWidth = buttonWidth - 56
+            label.preferredMaxLayoutWidth = buttonWidth - 40
             label.verticalAlignmentMode = .center
             label.horizontalAlignmentMode = .left
-            label.position = CGPoint(x: -buttonWidth / 2 + 28, y: 0)
+            label.position = CGPoint(x: -buttonWidth / 2 + 22, y: 0)
             button.addChild(label)
 
-            // Chevron à droite
             let chevron = SKLabelNode(fontNamed: "AvenirNext-Medium")
             chevron.text = "›"
-            chevron.fontSize = 22
+            chevron.fontSize = 16
             chevron.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 0.8)
             chevron.verticalAlignmentMode = .center
             chevron.horizontalAlignmentMode = .right
-            chevron.position = CGPoint(x: buttonWidth / 2 - 14, y: 0)
+            chevron.position = CGPoint(x: buttonWidth / 2 - 10, y: 0)
             button.addChild(chevron)
 
-            let yOffset = -CGFloat(offset) * (buttonHeight + 10)
-            button.position = CGPoint(x: 0, y: yOffset - 60)
+            let yOffset = -CGFloat(offset) * (buttonHeight + 6)
+            button.position = CGPoint(x: 0, y: yOffset - 44)
 
             root.addChild(button)
             choiceNodes.append(button)
@@ -336,11 +334,11 @@ final class DialogueSystem {
 
     private func layoutChoices(panelWidth: CGFloat, panelHeight: CGFloat) {
         guard !choiceNodes.isEmpty else { return }
-        let buttonHeight: CGFloat = 52
-        let startY = panelHeight / 2 - 90
+        let buttonHeight: CGFloat = 36
+        let startY = panelHeight / 2 - 58
 
         for (offset, node) in choiceNodes.enumerated() {
-            node.position = CGPoint(x: 0, y: startY - CGFloat(offset) * (buttonHeight + 10))
+            node.position = CGPoint(x: 0, y: startY - CGFloat(offset) * (buttonHeight + 6))
         }
     }
 

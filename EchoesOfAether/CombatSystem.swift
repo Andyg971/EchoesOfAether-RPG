@@ -29,11 +29,11 @@ enum CombatElement: Hashable {
 
     var icon: String {
         switch self {
-        case .physical: return "PHYS"
-        case .fire: return "FEU"
-        case .ice: return "GLACE"
-        case .lightning: return "FOUDRE"
-        case .aether: return "AETHER"
+        case .physical: return String(localized: "combat.element.physical")
+        case .fire: return String(localized: "combat.element.fire")
+        case .ice: return String(localized: "combat.element.ice")
+        case .lightning: return String(localized: "combat.element.lightning")
+        case .aether: return String(localized: "combat.element.aether")
         }
     }
 
@@ -253,8 +253,8 @@ func update(deltaTime: TimeInterval) {
 
         if enemyBrokenTurns > 0 {
             enemyBrokenTurns -= 1
-            statusLabel.text = "Break: " + enemy.name + " perd son tour."
-            showEffect("Bouclier restaure", color: SKColor(red: 0.95, green: 0.75, blue: 0.30, alpha: 1))
+            statusLabel.text = String(localized: "combat.status.break \(enemy.name)")
+            showEffect(String(localized: "combat.effect.shieldRestored"), color: SKColor(red: 0.95, green: 0.75, blue: 0.30, alpha: 1))
             if enemyBrokenTurns == 0 { enemyShield = enemyShieldMax }
             updateVisuals()
             return
@@ -269,7 +269,7 @@ func update(deltaTime: TimeInterval) {
             enemy.hp = max(0, enemy.hp - tickDmg)
             enemy.statusTicks -= 1
             if enemy.statusTicks <= 0 { enemy.statusEffect = nil }
-            showEffect("Brulure -" + String(tickDmg), color: SKColor(red: 0.40, green: 0.95, blue: 0.45, alpha: 1))
+            showEffect(String(localized: "combat.effect.burn \(tickDmg)"), color: SKColor(red: 0.40, green: 0.95, blue: 0.45, alpha: 1))
             if !enemy.isAlive { updateVisuals(); checkVictory(); return }
         }
 
@@ -492,16 +492,16 @@ private func perform(_ action: CombatAction) {
         let broke = hitWeakness(with: .aether)
         if resonance == 3 {
             enemy.stunned = true
-            showEffect("Stun", color: SKColor(red: 0.45, green: 0.70, blue: 1.00, alpha: 1))
+            showEffect(String(localized: "combat.effect.stun"), color: SKColor(red: 0.45, green: 0.70, blue: 1.00, alpha: 1))
         } else if broke {
-            showEffect("Break aether", color: CombatElement.aether.color)
+            showEffect(String(localized: "combat.effect.breakAether"), color: CombatElement.aether.color)
         } else if resonance >= 6 && enemy.statusEffect == nil {
             enemy.statusEffect = .aetherBurn
             enemy.statusTicks = 3
-            showEffect("Brulure aether", color: SKColor(red: 0.95, green: 0.35, blue: 1.00, alpha: 1))
+            showEffect(String(localized: "combat.effect.burnAether"), color: SKColor(red: 0.95, green: 0.35, blue: 1.00, alpha: 1))
         }
         enemy.hp = max(0, enemy.hp - finalDmg)
-        statusLabel.text = boost > 0 ? "Entaille Noire boostee x" + String(boost + 1) : String(localized: "combat.status.blackSlash \(resonance)")
+        statusLabel.text = boost > 0 ? String(localized: "combat.status.blackSlashBoosted \(boost + 1)") : String(localized: "combat.status.blackSlash \(resonance)")
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
         JuiceEngine.screenShake(root, intensity: 12 + CGFloat(boost) * 3, duration: 0.35)
@@ -557,7 +557,7 @@ private func applyBoost() {
     guard playerBP > 0, queuedBoost < 3 else { return }
     playerBP -= 1
     queuedBoost += 1
-    statusLabel.text = "Boost x" + String(queuedBoost + 1) + " pret."
+    statusLabel.text = String(localized: "combat.status.boost \(queuedBoost + 1)")
     HapticsEngine.light()
     boostButton.run(.sequence([.scale(to: 1.08, duration: 0.08), .scale(to: 1.0, duration: 0.12)]))
     updateVisuals()
@@ -590,14 +590,14 @@ private func applySpellSideEffect(_ spell: CombatSpell, wasWeak: Bool, boosted: 
         if wasWeak || boosted {
             enemy.statusEffect = .aetherBurn
             enemy.statusTicks = boosted ? 3 : 2
-            showEffect("Brulure", color: CombatElement.fire.color)
+            showEffect(String(localized: "combat.effect.burnApplied"), color: CombatElement.fire.color)
         }
     case .frost:
         enemy.atb = max(0, enemy.atb - (wasWeak ? 0.45 : 0.25))
-        showEffect("ATB ralentie", color: CombatElement.ice.color)
+        showEffect(String(localized: "combat.effect.atbSlowed"), color: CombatElement.ice.color)
     case .thunder:
         enemy.atb = max(0, enemy.atb - (wasWeak ? 0.60 : 0.30))
-        showEffect("ATB brisee", color: CombatElement.lightning.color)
+        showEffect(String(localized: "combat.effect.atbBroken"), color: CombatElement.lightning.color)
     case .mend:
         break
     }
@@ -1214,20 +1214,20 @@ private func setupButtons(scene: SKScene) {
     let topY = panelY + 22
     let bottomY = panelY - 30
 
-    addButton(attackButton, title: "ATTAQUE", at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
+    addButton(attackButton, title: String(localized: "combat.button.attack"), at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.16, green: 0.16, blue: 0.20, alpha: 1), stroke: CombatElement.physical.color, fontSize: 13)
-    addButton(fireButton, title: "FEU", at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
+    addButton(fireButton, title: String(localized: "combat.button.fire"), at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.32, green: 0.075, blue: 0.035, alpha: 1), stroke: CombatElement.fire.color, fontSize: 15)
-    addButton(iceButton, title: "GLACE", at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
+    addButton(iceButton, title: String(localized: "combat.button.ice"), at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.035, green: 0.18, blue: 0.28, alpha: 1), stroke: CombatElement.ice.color, fontSize: 15)
-    addButton(blackSlashButton, title: "AETHER", at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
+    addButton(blackSlashButton, title: String(localized: "combat.button.aether"), at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.22, green: 0.07, blue: 0.34, alpha: 1), stroke: CombatElement.aether.color, fontSize: 14)
-    addButton(lightningButton, title: "FOUDRE", at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
+    addButton(lightningButton, title: String(localized: "combat.button.lightning"), at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.30, green: 0.22, blue: 0.035, alpha: 1), stroke: CombatElement.lightning.color, fontSize: 14)
-    addButton(healButton, title: "SOIN", at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
+    addButton(healButton, title: String(localized: "combat.button.heal"), at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.035, green: 0.26, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.40, green: 1.00, blue: 0.56, alpha: 1), fontSize: 16)
 
-    addButton(boostButton, title: "BOOST", at: CGPoint(x: scene.size.width / 2, y: panelY + 72), width: 116, height: 30,
+    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2, y: panelY + 72), width: 116, height: 30,
               fill: SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 1), stroke: SKColor(red: 0.86, green: 0.68, blue: 1.00, alpha: 1), fontSize: 13)
 }
 
@@ -1317,9 +1317,9 @@ private func setupButtons(scene: SKScene) {
         boostButton.alpha = (ready && playerBP > 0 && queuedBoost < 3) ? 1 : 0.34
 
         let weaknessText = enemyWeaknesses.map { $0.icon }.sorted().joined(separator: "  ")
-        weaknessLabel.text = "Faiblesses: " + weaknessText + "   Bouclier: " + String(enemyShield) + "/" + String(enemyShieldMax)
+        weaknessLabel.text = String(localized: "combat.hud.weakness") + " " + weaknessText + "   " + String(localized: "combat.hud.shield") + " " + String(enemyShield) + "/" + String(enemyShieldMax)
         let bpPips = (0..<3).map { $0 < playerBP ? "●" : "○" }.joined()
-        boostLabel.text = queuedBoost > 0 ? "BP " + bpPips + "   Boost x" + String(queuedBoost + 1) : "BP " + bpPips
+        boostLabel.text = queuedBoost > 0 ? "BP " + bpPips + "   " + String(localized: "combat.status.boost \(queuedBoost + 1)") : "BP " + bpPips
 
         enemyHPBack.strokeColor = enemyBrokenTurns > 0
             ? SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)

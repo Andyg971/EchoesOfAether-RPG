@@ -102,9 +102,9 @@ final class WorldBuilder {
         let h = scene.size.height
 
         addTiledFloor(in: scene,
-                      tileNames: ["ext_grass_1", "ext_grass_2", "ext_grass_3", "ext_grass_4"],
+                      tileNames: ["village_grass_clean"],
                       fallbackColor: SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1),
-                      tileScale: 1.0,
+                      tileScale: 0.75,
                       z: -10)
 
 // Chemin de terre vertical traversant le village du bas (spawn)
@@ -377,12 +377,19 @@ private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = scene.size.height
     let props: [(String, CGFloat, CGFloat, CGFloat)] = [
-        ("ext_fence", 0.12, 0.62, 0.90), ("ext_fence", 0.32, 0.62, 0.90),
-        ("ext_fence", 0.68, 0.61, 0.90), ("ext_fence", 0.88, 0.61, 0.90),
-        ("ext_sign", 0.43, 0.63, 0.92), ("ext_mailbox", 0.70, 0.27, 0.85),
-        ("ext_flower_yellow", 0.16, 0.28, 0.70), ("ext_flower_pink", 0.28, 0.28, 0.70),
-        ("ext_flower_sun", 0.72, 0.27, 0.70), ("ext_flower_yellow", 0.84, 0.27, 0.70),
-        ("ext_gate", 0.50, 0.80, 0.90), ("ext_pebbles", 0.58, 0.20, 0.70)
+        ("ext_fence", 0.12, 0.62, 0.65), ("ext_fence", 0.32, 0.62, 0.65),
+        ("ext_fence", 0.68, 0.61, 0.65), ("ext_fence", 0.88, 0.61, 0.65),
+        ("ext_sign", 0.43, 0.63, 0.70), ("ext_mailbox", 0.70, 0.27, 0.60),
+        ("village_flower_yellow", 0.16, 0.28, 0.55), ("village_flower_pink", 0.28, 0.28, 0.55),
+        ("village_sunflower", 0.72, 0.27, 0.55), ("village_flower_red", 0.84, 0.27, 0.55),
+        ("ext_gate", 0.50, 0.80, 0.70), ("ext_pebbles", 0.58, 0.20, 0.55),
+        ("village_lantern_1", 0.36, 0.55, 0.60), ("village_lantern_2", 0.64, 0.55, 0.60),
+        ("village_barrel_1", 0.14, 0.42, 0.55), ("village_barrel_2", 0.86, 0.42, 0.55),
+        ("village_crate_1", 0.40, 0.42, 0.50), ("village_crate_2", 0.60, 0.28, 0.50),
+        ("village_rock_1", 0.08, 0.18, 0.50), ("village_rock_2", 0.92, 0.18, 0.50),
+        ("village_rock_3", 0.34, 0.12, 0.45),
+        ("village_bench", 0.50, 0.22, 0.55),
+        ("village_fountain", 0.50, 0.70, 0.50)
     ]
     for item in props {
         addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
@@ -395,7 +402,12 @@ private func decorateForestFloor(in scene: SKScene) {
     let props: [(String, CGFloat, CGFloat, CGFloat)] = [
         ("ext_pebbles", 0.28, 0.34, 0.75), ("ext_pebbles", 0.72, 0.36, 0.75),
         ("ext_cut_wood", 0.20, 0.20, 0.80), ("ext_cut_wood", 0.82, 0.20, 0.80),
-        ("ext_sign", 0.60, 0.78, 0.85)
+        ("ext_sign", 0.60, 0.78, 0.85),
+        ("forest_mushroom_1", 0.15, 0.55, 0.50),
+        ("forest_mushroom_2", 0.88, 0.42, 0.50),
+        ("forest_mushroom_1", 0.45, 0.18, 0.45),
+        ("forest_stump_1", 0.35, 0.68, 0.55),
+        ("forest_stump_2", 0.78, 0.22, 0.55)
     ]
     for item in props {
         addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
@@ -1062,10 +1074,10 @@ private func decorateForestFloor(in scene: SKScene) {
     private func buildInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
         let w = scene.size.width
         let h = scene.size.height
-        let room = CGRect(x: w * 0.08, y: h * 0.14, width: w * 0.84, height: h * 0.70)
+        let room = CGRect(x: w * 0.15, y: h * 0.16, width: w * 0.70, height: h * 0.66)
 
-        let outerShadow = SKShapeNode(rectOf: CGSize(width: room.width + 18, height: room.height + 18), cornerRadius: 10)
-        outerShadow.position = CGPoint(x: room.midX, y: room.midY - 5)
+        let outerShadow = SKShapeNode(rectOf: CGSize(width: room.width + 12, height: room.height + 12), cornerRadius: 8)
+        outerShadow.position = CGPoint(x: room.midX, y: room.midY - 4)
         outerShadow.fillColor = SKColor(white: 0, alpha: 0.32)
         outerShadow.strokeColor = .clear
         outerShadow.zPosition = -10
@@ -1151,15 +1163,15 @@ private func decorateForestFloor(in scene: SKScene) {
         exit.name = "interiorExit"
         exit.zPosition = -1
 
-        let mat = SKShapeNode(ellipseOf: CGSize(width: 92, height: 26))
+        let mat = SKShapeNode(ellipseOf: CGSize(width: 64, height: 18))
         mat.fillColor = SKColor(red: 0.11, green: 0.075, blue: 0.045, alpha: 0.85)
         mat.strokeColor = SKColor(red: 0.55, green: 0.42, blue: 0.25, alpha: 0.5)
         mat.lineWidth = 1
         exit.addChild(mat)
 
         let icon = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-        icon.text = "SORTIE"
-        icon.fontSize = 11
+        icon.text = String(localized: "interior.exit")
+        icon.fontSize = 9
         icon.fontColor = SKColor(red: 0.92, green: 0.78, blue: 0.48, alpha: 0.9)
         icon.verticalAlignmentMode = .center
         icon.horizontalAlignmentMode = .center
@@ -1173,11 +1185,11 @@ private func decorateForestFloor(in scene: SKScene) {
     private func addInteriorTitle(_ kind: HouseInteriorKind, in scene: SKScene, room: CGRect) {
         let title = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
         switch kind {
-        case .armory: title.text = "Armurerie de Bram"
-        case .apothecary: title.text = "Herboristerie de Mara"
-        case .inn: title.text = "Auberge de Solis"
+        case .armory: title.text = String(localized: "interior.armory.title")
+        case .apothecary: title.text = String(localized: "interior.apothecary.title")
+        case .inn: title.text = String(localized: "interior.inn.title")
         }
-        title.fontSize = 14
+        title.fontSize = 11
         title.fontColor = SKColor(red: 0.88, green: 0.78, blue: 0.58, alpha: 0.95)
         title.horizontalAlignmentMode = .center
         title.position = CGPoint(x: room.midX, y: room.maxY - 36)
@@ -1193,40 +1205,42 @@ private func decorateForestFloor(in scene: SKScene) {
         node.position = position
         if flipped { node.xScale = -abs(node.xScale == 0 ? 1 : node.xScale) }
         node.zPosition = propLayer(for: position.y, in: scene.size.height)
-        addGroundShadow(under: node, width: 46 * scale, height: 12 * scale)
+        addGroundShadow(under: node, width: 32 * scale, height: 8 * scale)
         add(node, to: scene)
     }
 
     private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.42)
-        addInteriorSprite("interior_market", in: scene, at: CGPoint(x: room.minX + 70, y: room.maxY - 148), scale: 0.32)
-        addInteriorSprite("interior_market", in: scene, at: CGPoint(x: room.maxX - 70, y: room.maxY - 148), scale: 0.32, flipped: true)
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 6), scale: 1.15)
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Forger")
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 80), scale: 0.28)
+        addInteriorSprite("village_barrel_1", in: scene, at: CGPoint(x: room.minX + 40, y: room.maxY - 72), scale: 0.55)
+        addInteriorSprite("village_barrel_2", in: scene, at: CGPoint(x: room.maxX - 40, y: room.maxY - 72), scale: 0.55)
+        addInteriorSprite("village_crate_1", in: scene, at: CGPoint(x: room.minX + 40, y: room.midY - 10), scale: 0.55)
+        addInteriorSprite("village_crate_2", in: scene, at: CGPoint(x: room.maxX - 40, y: room.midY - 10), scale: 0.55)
+        addInteriorSprite("interior_bench_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 20), scale: 0.50)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 110), text: String(localized: "interior.armory.forge"))
     }
 
     private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.40)
-        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 10), scale: 0.58)
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 58, y: room.midY - 10), scale: 0.55)
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 58, y: room.midY - 10), scale: 0.55, flipped: true)
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Potions")
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 100), scale: 0.26)
+        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 10), scale: 0.38)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 10), scale: 0.36)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 42, y: room.midY - 10), scale: 0.36, flipped: true)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.apothecary.potions"))
     }
 
     private func buildInnInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.38)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 76, y: room.midY - 28), scale: 0.42)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.maxX - 76, y: room.midY - 28), scale: 0.42, flipped: true)
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 46), scale: 1.15)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 46, y: room.midY - 55), scale: 0.78)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 46, y: room.midY - 55), scale: 0.78, flipped: true)
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Repos")
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 100), scale: 0.24)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 52, y: room.midY - 18), scale: 0.28)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.maxX - 52, y: room.midY - 18), scale: 0.28, flipped: true)
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 32), scale: 0.75)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 32, y: room.midY - 38), scale: 0.50)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 32, y: room.midY - 38), scale: 0.50, flipped: true)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.inn.rest"))
     }
 
     private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {
         let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
         label.text = text
-        label.fontSize = 11
+        label.fontSize = 9
         label.fontColor = SKColor(red: 0.96, green: 0.84, blue: 0.52, alpha: 0.9)
         label.horizontalAlignmentMode = .center
         label.position = position
@@ -1407,8 +1421,8 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
                                fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
     let length = hypot(b.x - a.x, b.y - a.y)
     guard length > 0 else { return }
-    let tileScale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.72 : 2.0
-    let stepSize: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 28 : 24
+    let tileScale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.55 : 1.5
+    let stepSize: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 22 : 20
     let count = Int(ceil(length / stepSize))
     for i in 0...count {
         let t = CGFloat(i) / CGFloat(count)
@@ -1485,7 +1499,7 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
 private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
                                fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
-    let scale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.72 : 2.0
+    let scale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.55 : 1.5
     guard let patch = PixelArtSprites.tiledFloor(tileNames: tiles, in: size,
                                                  tileScale: scale) else { return }
     patch.position = CGPoint(x: center.x - size.width / 2, y: center.y - size.height / 2)

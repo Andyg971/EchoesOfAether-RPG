@@ -150,16 +150,16 @@ final class GameManager {
         }
     }
 
-    func layout(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat = 0) {
+    func layout(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat = 0, safeLeft: CGFloat = 0, safeRight: CGFloat = 0) {
         if activeInterior == nil {
             world.layout(in: size)
         }
-        hud.layout(in: size, safeTop: safeTop)
+        hud.layout(in: size, safeTop: safeTop, safeLeft: safeLeft, safeRight: safeRight)
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
         inventory.layout(in: size, safeBottom: safeBottom)
         lore.layout(in: size)
-        minimap.layout(in: size, safeBottom: safeBottom)
+        minimap.layout(in: size, safeBottom: safeBottom, safeLeft: safeLeft)
         levelUp.layout(in: size)
     }
 

@@ -169,9 +169,11 @@ final class HUDOverlay {
         return false
     }
 
-    func layout(in size: CGSize, safeTop: CGFloat = 0) {
+    func layout(in size: CGSize, safeTop: CGFloat = 0, safeLeft: CGFloat = 0, safeRight: CGFloat = 0) {
         let s: CGFloat = size.width > 500 ? min(size.width, size.height) / 390 : 1.0
         let margin: CGFloat = 16 * s
+        let leftEdge = safeLeft + margin
+        let rightEdge = size.width - safeRight - margin
         let topY = size.height - safeTop - 26 * s
 
         objectiveLabel.fontSize = 13 * s
@@ -185,20 +187,20 @@ final class HUDOverlay {
 
         let objectiveWidth = min(size.width * 0.58, 250 * s)
         setPlate(objectivePlate, size: CGSize(width: objectiveWidth, height: 42 * s), radius: 8 * s)
-        objectivePlate.position = CGPoint(x: margin + objectiveWidth / 2, y: topY - 10 * s)
-        objectiveLabel.position = CGPoint(x: margin + 13 * s, y: topY - 5 * s)
-        questLabel.position = CGPoint(x: margin + 13 * s, y: topY - 24 * s)
+        objectivePlate.position = CGPoint(x: leftEdge + objectiveWidth / 2, y: topY - 10 * s)
+        objectiveLabel.position = CGPoint(x: leftEdge + 13 * s, y: topY - 5 * s)
+        questLabel.position = CGPoint(x: leftEdge + 13 * s, y: topY - 24 * s)
 
         let resourceWidth = min(132 * s, size.width * 0.32)
         setPlate(resourcePlate, size: CGSize(width: resourceWidth, height: 44 * s), radius: 8 * s)
-        resourcePlate.position = CGPoint(x: size.width - margin - resourceWidth / 2, y: topY - 10 * s)
-        resonanceLabel.position = CGPoint(x: size.width - margin - 12 * s, y: topY - 2 * s)
-        goldLabel.position = CGPoint(x: size.width - margin - 12 * s, y: topY - 21 * s)
+        resourcePlate.position = CGPoint(x: rightEdge - resourceWidth / 2, y: topY - 10 * s)
+        resonanceLabel.position = CGPoint(x: rightEdge - 12 * s, y: topY - 2 * s)
+        goldLabel.position = CGPoint(x: rightEdge - 12 * s, y: topY - 21 * s)
 
         let statsWidth = min(178 * s, size.width * 0.48)
         setPlate(statsPlate, size: CGSize(width: statsWidth, height: 50 * s), radius: 8 * s)
-        statsPlate.position = CGPoint(x: margin + statsWidth / 2, y: topY - 68 * s)
-        let statsX = margin + 14 * s
+        statsPlate.position = CGPoint(x: leftEdge + statsWidth / 2, y: topY - 68 * s)
+        let statsX = leftEdge + 14 * s
         hpLabel.position = CGPoint(x: statsX, y: topY - 52 * s)
         levelLabel.position = CGPoint(x: statsX, y: topY - 70 * s)
         let barX = statsX + 44 * s + xpBarWidth / 2
@@ -208,9 +210,9 @@ final class HUDOverlay {
 
         let buttonSize = 46 * s
         setButton(pauseButton, size: buttonSize)
-        pauseButton.position = CGPoint(x: margin + buttonSize / 2, y: topY - 122 * s)
+        pauseButton.position = CGPoint(x: leftEdge + buttonSize / 2, y: topY - 122 * s)
         setButton(inventoryButton, size: buttonSize)
-        inventoryButton.position = CGPoint(x: size.width - margin - buttonSize / 2, y: topY - 68 * s)
+        inventoryButton.position = CGPoint(x: rightEdge - buttonSize / 2, y: topY - 68 * s)
 
         let promptWidth = min(size.width - 48 * s, 300 * s)
         setPlate(interactionPlate, size: CGSize(width: promptWidth, height: 34 * s), radius: 8 * s)

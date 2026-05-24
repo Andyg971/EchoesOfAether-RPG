@@ -5,6 +5,8 @@ final class GameScene: SKScene {
     private var lastUpdate: TimeInterval = 0
     var safeAreaTop: CGFloat = 0
     var safeAreaBottom: CGFloat = 0
+    var safeAreaLeft: CGFloat = 0
+    var safeAreaRight: CGFloat = 0
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
@@ -25,14 +27,12 @@ final class GameScene: SKScene {
         // Retour menu principal (depuis pause ou mort)
         manager.onReturnToMenu = { [weak self, weak view] in
             guard let self, let view else { return }
-            let portraitSize = CGSize(
-                width: min(view.bounds.width, view.bounds.height),
-                height: max(view.bounds.width, view.bounds.height)
-            )
-            let menu = MainMenuScene(size: portraitSize)
+            let menu = MainMenuScene(size: view.bounds.size)
             menu.scaleMode = .resizeFill
             menu.safeAreaTop = self.safeAreaTop
             menu.safeAreaBottom = self.safeAreaBottom
+            menu.safeAreaLeft = self.safeAreaLeft
+            menu.safeAreaRight = self.safeAreaRight
             view.presentScene(menu, transition: .fade(with: .black, duration: 0.5))
         }
 
@@ -46,7 +46,7 @@ final class GameScene: SKScene {
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom)
+        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom, safeLeft: safeAreaLeft, safeRight: safeAreaRight)
     }
 
     override func update(_ currentTime: TimeInterval) {

@@ -20,36 +20,41 @@ final class GameViewController: UIViewController {
         let bounds = skView.bounds
         guard bounds.width > 0, bounds.height > 0 else { return }
 
-        let portraitSize = CGSize(
-            width: min(bounds.width, bounds.height),
-            height: max(bounds.width, bounds.height)
-        )
+        let sceneSize = bounds.size
         let safeTop = view.safeAreaInsets.top
         let safeBottom = view.safeAreaInsets.bottom
+        let safeLeft = view.safeAreaInsets.left
+        let safeRight = view.safeAreaInsets.right
 
         if !didPresentScene {
             didPresentScene = true
 
-            let menu = MainMenuScene(size: portraitSize)
+            let menu = MainMenuScene(size: sceneSize)
             menu.scaleMode = .resizeFill
             menu.safeAreaTop = safeTop
             menu.safeAreaBottom = safeBottom
+            menu.safeAreaLeft = safeLeft
+            menu.safeAreaRight = safeRight
 
             skView.presentScene(menu)
         } else if let menuScene = skView.scene as? MainMenuScene {
             menuScene.safeAreaTop = safeTop
             menuScene.safeAreaBottom = safeBottom
-            menuScene.size = portraitSize
+            menuScene.safeAreaLeft = safeLeft
+            menuScene.safeAreaRight = safeRight
+            menuScene.size = sceneSize
         } else if let gameScene = skView.scene as? GameScene {
             gameScene.safeAreaTop = safeTop
             gameScene.safeAreaBottom = safeBottom
-            gameScene.size = portraitSize
+            gameScene.safeAreaLeft = safeLeft
+            gameScene.safeAreaRight = safeRight
+            gameScene.size = sceneSize
         }
     }
 
     override var prefersStatusBarHidden: Bool { true }
     override var prefersHomeIndicatorAutoHidden: Bool { true }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { [.bottom] }
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { .portrait }
-    override var shouldAutorotate: Bool { false }
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask { [.landscapeLeft, .landscapeRight] }
+    override var shouldAutorotate: Bool { true }
 }

@@ -4,6 +4,8 @@ final class MainMenuScene: SKScene {
 
     var safeAreaTop: CGFloat = 0
     var safeAreaBottom: CGFloat = 0
+    var safeAreaLeft: CGFloat = 0
+    var safeAreaRight: CGFloat = 0
 
     // SaveManager is a static enum — no instance needed
     private var buttonsBuilt = false
@@ -152,14 +154,12 @@ final class MainMenuScene: SKScene {
         guard let view = self.view else { return }
 
         let safeTop = safeAreaTop
-        let portraitSize = CGSize(
-            width: min(view.bounds.width, view.bounds.height),
-            height: max(view.bounds.width, view.bounds.height)
-        )
-        let gameScene = GameScene(size: portraitSize)
+        let gameScene = GameScene(size: view.bounds.size)
         gameScene.scaleMode = .resizeFill
         gameScene.safeAreaTop = safeTop
         gameScene.safeAreaBottom = safeAreaBottom
+        gameScene.safeAreaLeft = safeAreaLeft
+        gameScene.safeAreaRight = safeAreaRight
         view.presentScene(gameScene, transition: .fade(with: .black, duration: 0.5))
     }
 

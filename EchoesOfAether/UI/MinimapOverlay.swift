@@ -18,8 +18,8 @@ final class MinimapOverlay {
         layout(in: scene.size)
     }
 
-    func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        root.position = CGPoint(x: mapW / 2 + 10, y: safeBottom + mapH / 2 + 10)
+    func layout(in size: CGSize, safeBottom: CGFloat = 0, safeLeft: CGFloat = 0) {
+        root.position = CGPoint(x: safeLeft + mapW / 2 + 10, y: safeBottom + mapH / 2 + 10)
     }
 
     /// Appeler à chaque frame depuis GameManager.update (toutes les 0.1s max)

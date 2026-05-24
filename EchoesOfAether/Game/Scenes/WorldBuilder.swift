@@ -241,12 +241,21 @@ add(path, to: scene)
         }
 
 
-        // --- Arbres corrompus (violet/noir, au centre) ---
-        for i in 0..<6 {
-            let tree = makeCorruptedTree(height: CGFloat.random(in: 70...120))
-            let tx = w * (0.30 + CGFloat(i % 3) * 0.15) + CGFloat.random(in: -15...15)
-            let ty = h * (0.45 + CGFloat(i / 3) * 0.18) + CGFloat.random(in: -10...10)
-            tree.position = CGPoint(x: tx, y: ty)
+        let corruptedTreePositions: [(x: CGFloat, y: CGFloat, scale: CGFloat)] = [
+            (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
+        ]
+        for p in corruptedTreePositions {
+            guard let tree = PixelArtSprites.still(name: "tree_big", scale: treeScale * p.scale,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            tree.position = CGPoint(x: w * p.x, y: h * p.y)
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            tree.enumerateChildNodes(withName: "//*") { node, _ in
+                if let sprite = node as? SKSpriteNode {
+                    sprite.color = SKColor(red: 0.28, green: 0.12, blue: 0.42, alpha: 1)
+                    sprite.colorBlendFactor = 0.50
+                }
+            }
+            addGroundShadow(under: tree, width: 46 * treeScale, height: 13 * treeScale)
             add(tree, to: scene)
         }
 
@@ -285,11 +294,14 @@ add(path, to: scene)
         add(pathLabel, to: scene)
 
 
-        // Arbres fond (foreground parallax feel)
-        for i in 0..<4 {
-            let tree = makeTree(height: CGFloat.random(in: 50...80))
-            tree.position = CGPoint(x: CGFloat(50 + i * 140), y: h * 0.15 + CGFloat.random(in: -10...10))
-            tree.alpha = 0.3
+        let foregroundTrees: [(x: CGFloat, y: CGFloat, scale: CGFloat)] = [
+            (0.10, 0.13, 0.70), (0.32, 0.12, 0.62), (0.70, 0.13, 0.66), (0.91, 0.12, 0.72)
+        ]
+        for p in foregroundTrees {
+            guard let tree = PixelArtSprites.still(name: "tree_medium_2", scale: treeScale * p.scale,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            tree.position = CGPoint(x: w * p.x, y: h * p.y)
+            tree.alpha = 0.55
             tree.zPosition = 5
             add(tree, to: scene)
         }
@@ -363,39 +375,6 @@ add(path, to: scene)
 
     // MARK: - Forest Building Blocks
 
-    private func makeCorruptedTree(height: CGFloat) -> SKNode {
-        let tree = SKNode()
-        tree.zPosition = -4
-
-        let trunk = SKShapeNode(rectOf: CGSize(width: 10, height: height * 0.45), cornerRadius: 2)
-        trunk.fillColor = SKColor(red: 0.10, green: 0.06, blue: 0.12, alpha: 1)
-        trunk.strokeColor = .clear
-        tree.addChild(trunk)
-
-        let colors: [SKColor] = [
-            SKColor(red: 0.12, green: 0.06, blue: 0.18, alpha: 1),
-            SKColor(red: 0.08, green: 0.04, blue: 0.14, alpha: 1),
-            SKColor(red: 0.14, green: 0.08, blue: 0.22, alpha: 0.8)
-        ]
-        for i in 0..<3 {
-            let leaf = SKShapeNode(circleOfRadius: CGFloat(16 - i * 3))
-            leaf.fillColor = colors[i]
-            leaf.strokeColor = .clear
-            leaf.position = CGPoint(x: 0, y: height * 0.22 + CGFloat(i) * 12)
-            tree.addChild(leaf)
-        }
-
-        // Lueur violette subtile
-        let glow = SKShapeNode(circleOfRadius: 22)
-        glow.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.50, alpha: 0.06)
-        glow.strokeColor = .clear
-        glow.position = CGPoint(x: 0, y: height * 0.30)
-        tree.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.3)
-
-        return tree
-    }
-
     private func makeDangerZone(at pos: CGPoint, radius: CGFloat, color: SKColor) -> SKNode {
         let zone = SKNode()
         zone.position = pos
@@ -416,47 +395,6 @@ add(path, to: scene)
         JuiceEngine.float(icon, distance: 4)
 
         return zone
-    }
-
-    private func makeAetherPool(at pos: CGPoint) -> SKNode {
-        let pool = SKNode()
-        pool.position = pos
-        pool.zPosition = -6
-
-        let water = SKShapeNode(circleOfRadius: 12)
-        water.fillColor = SKColor(red: 0.08, green: 0.02, blue: 0.15, alpha: 0.8)
-        water.strokeColor = SKColor(red: 0.40, green: 0.15, blue: 0.65, alpha: 0.3)
-        water.lineWidth = 1
-        pool.addChild(water)
-
-        let glow = SKShapeNode(circleOfRadius: 18)
-        glow.fillColor = SKColor(red: 0.30, green: 0.08, blue: 0.50, alpha: 0.05)
-        glow.strokeColor = .clear
-        pool.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.5)
-
-        return pool
-    }
-
-    private func makeGlowMushroom(at pos: CGPoint) -> SKNode {
-        let mush = SKNode()
-        mush.position = pos
-        mush.zPosition = -3
-
-        let stem = SKShapeNode(rectOf: CGSize(width: 3, height: 8), cornerRadius: 1)
-        stem.fillColor = SKColor(white: 0.15, alpha: 1)
-        stem.strokeColor = .clear
-        mush.addChild(stem)
-
-        let cap = SKShapeNode(circleOfRadius: 5)
-        cap.fillColor = SKColor(red: 0.20, green: 0.55, blue: 0.30, alpha: 0.9)
-        cap.strokeColor = .clear
-        cap.glowWidth = 3
-        cap.position = CGPoint(x: 0, y: 7)
-        mush.addChild(cap)
-        JuiceEngine.pulse(cap, scale: 1.3)
-
-        return mush
     }
 
     // MARK: - Ruines de la Source (Acte II)
@@ -1218,39 +1156,42 @@ add(path, to: scene)
         add(title, to: scene)
     }
 
+
+    private func addInteriorSprite(_ name: String, in scene: SKScene, at position: CGPoint,
+                                   scale: CGFloat, flipped: Bool = false) {
+        guard let node = PixelArtSprites.still(name: name, scale: scale,
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        node.position = position
+        if flipped { node.xScale = -abs(node.xScale == 0 ? 1 : node.xScale) }
+        node.zPosition = propLayer(for: position.y, in: scene.size.height)
+        addGroundShadow(under: node, width: 46 * scale, height: 12 * scale)
+        add(node, to: scene)
+    }
+
     private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
-        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.58)
-        addWeaponRack(in: scene, at: CGPoint(x: room.minX + 62, y: room.maxY - 116))
-        addWeaponRack(in: scene, at: CGPoint(x: room.maxX - 62, y: room.maxY - 116))
-        addForge(in: scene, at: CGPoint(x: room.midX, y: room.midY - 8))
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Forger")
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.42)
+        addInteriorSprite("interior_market", in: scene, at: CGPoint(x: room.minX + 70, y: room.maxY - 148), scale: 0.32)
+        addInteriorSprite("interior_market", in: scene, at: CGPoint(x: room.maxX - 70, y: room.maxY - 148), scale: 0.32, flipped: true)
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 6), scale: 1.15)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Forger")
     }
 
     private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
-        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.56)
-        for i in 0..<5 {
-            addPotionBottle(in: scene, at: CGPoint(x: room.minX + 50 + CGFloat(i) * 34, y: room.maxY - 102), hue: i)
-        }
-        addHerbTable(in: scene, at: CGPoint(x: room.midX, y: room.midY - 6))
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Potions")
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.40)
+        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 10), scale: 0.58)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 58, y: room.midY - 10), scale: 0.55)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 58, y: room.midY - 10), scale: 0.55, flipped: true)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Potions")
     }
 
     private func buildInnInterior(in scene: SKScene, room: CGRect) {
-        addCounter(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 118), width: room.width * 0.52)
-        addBed(in: scene, at: CGPoint(x: room.minX + 70, y: room.midY + 6))
-        addBed(in: scene, at: CGPoint(x: room.maxX - 70, y: room.midY + 6))
-        addTable(in: scene, at: CGPoint(x: room.midX, y: room.midY - 42))
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 158), text: "Repos")
-    }
-
-    private func addCounter(in scene: SKScene, at position: CGPoint, width: CGFloat) {
-        let counter = SKShapeNode(rectOf: CGSize(width: width, height: 34), cornerRadius: 4)
-        counter.position = position
-        counter.fillColor = SKColor(red: 0.24, green: 0.15, blue: 0.08, alpha: 1)
-        counter.strokeColor = SKColor(red: 0.54, green: 0.34, blue: 0.16, alpha: 0.7)
-        counter.lineWidth = 2
-        counter.zPosition = 0
-        add(counter, to: scene)
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 142), scale: 0.38)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 76, y: room.midY - 28), scale: 0.42)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.maxX - 76, y: room.midY - 28), scale: 0.42, flipped: true)
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 46), scale: 1.15)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 46, y: room.midY - 55), scale: 0.78)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 46, y: room.midY - 55), scale: 0.78, flipped: true)
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 178), text: "Repos")
     }
 
     private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {
@@ -1263,103 +1204,6 @@ add(path, to: scene)
         label.zPosition = 3
         add(label, to: scene)
         JuiceEngine.float(label, distance: 3)
-    }
-
-    private func addWeaponRack(in scene: SKScene, at position: CGPoint) {
-        let rack = SKNode()
-        rack.position = position
-        rack.zPosition = 1
-        let back = SKShapeNode(rectOf: CGSize(width: 34, height: 58), cornerRadius: 3)
-        back.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.05, alpha: 1)
-        back.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.18, alpha: 0.7)
-        rack.addChild(back)
-        for x in [-9, 0, 9] as [CGFloat] {
-            let blade = SKShapeNode(rectOf: CGSize(width: 3, height: 48), cornerRadius: 1)
-            blade.fillColor = SKColor(red: 0.68, green: 0.70, blue: 0.74, alpha: 1)
-            blade.strokeColor = .clear
-            blade.position = CGPoint(x: x, y: 0)
-            rack.addChild(blade)
-        }
-        add(rack, to: scene)
-    }
-
-    private func addForge(in scene: SKScene, at position: CGPoint) {
-        let forge = SKNode()
-        forge.position = position
-        forge.zPosition = 1
-        let base = SKShapeNode(rectOf: CGSize(width: 84, height: 46), cornerRadius: 6)
-        base.fillColor = SKColor(red: 0.10, green: 0.09, blue: 0.09, alpha: 1)
-        base.strokeColor = SKColor(red: 0.46, green: 0.31, blue: 0.20, alpha: 0.7)
-        base.lineWidth = 2
-        forge.addChild(base)
-        let fire = SKShapeNode(circleOfRadius: 13)
-        fire.fillColor = SKColor(red: 0.94, green: 0.36, blue: 0.10, alpha: 0.88)
-        fire.strokeColor = .clear
-        fire.glowWidth = 7
-        forge.addChild(fire)
-        JuiceEngine.pulse(fire, scale: 1.25)
-        add(forge, to: scene)
-    }
-
-    private func addPotionBottle(in scene: SKScene, at position: CGPoint, hue: Int) {
-        let bottle = SKShapeNode(rectOf: CGSize(width: 12, height: 20), cornerRadius: 3)
-        bottle.position = position
-        let colors = [
-            SKColor(red: 0.35, green: 0.90, blue: 0.40, alpha: 0.95),
-            SKColor(red: 0.32, green: 0.70, blue: 1.0, alpha: 0.95),
-            SKColor(red: 0.90, green: 0.35, blue: 0.75, alpha: 0.95),
-            SKColor(red: 0.90, green: 0.72, blue: 0.25, alpha: 0.95),
-            SKColor(red: 0.58, green: 0.35, blue: 1.0, alpha: 0.95)
-        ]
-        bottle.fillColor = colors[hue % colors.count]
-        bottle.strokeColor = SKColor(white: 1, alpha: 0.45)
-        bottle.glowWidth = 2
-        bottle.zPosition = 2
-        add(bottle, to: scene)
-    }
-
-    private func addHerbTable(in scene: SKScene, at position: CGPoint) {
-        let table = SKShapeNode(rectOf: CGSize(width: 104, height: 44), cornerRadius: 6)
-        table.position = position
-        table.fillColor = SKColor(red: 0.18, green: 0.11, blue: 0.06, alpha: 1)
-        table.strokeColor = SKColor(red: 0.45, green: 0.30, blue: 0.14, alpha: 0.7)
-        table.lineWidth = 2
-        table.zPosition = 1
-        add(table, to: scene)
-        for dx in [-28, -8, 15, 34] as [CGFloat] {
-            let leaf = SKShapeNode(ellipseOf: CGSize(width: 15, height: 8))
-            leaf.position = CGPoint(x: position.x + dx, y: position.y + CGFloat.random(in: -6...8))
-            leaf.fillColor = SKColor(red: 0.20, green: 0.58, blue: 0.22, alpha: 1)
-            leaf.strokeColor = .clear
-            leaf.zPosition = 2
-            add(leaf, to: scene)
-        }
-    }
-
-    private func addBed(in scene: SKScene, at position: CGPoint) {
-        let bed = SKShapeNode(rectOf: CGSize(width: 70, height: 44), cornerRadius: 6)
-        bed.position = position
-        bed.fillColor = SKColor(red: 0.30, green: 0.10, blue: 0.12, alpha: 1)
-        bed.strokeColor = SKColor(red: 0.62, green: 0.38, blue: 0.22, alpha: 0.7)
-        bed.lineWidth = 2
-        bed.zPosition = 1
-        add(bed, to: scene)
-        let pillow = SKShapeNode(rectOf: CGSize(width: 50, height: 12), cornerRadius: 4)
-        pillow.position = CGPoint(x: position.x, y: position.y + 13)
-        pillow.fillColor = SKColor(red: 0.76, green: 0.70, blue: 0.60, alpha: 1)
-        pillow.strokeColor = .clear
-        pillow.zPosition = 2
-        add(pillow, to: scene)
-    }
-
-    private func addTable(in scene: SKScene, at position: CGPoint) {
-        let table = SKShapeNode(circleOfRadius: 26)
-        table.position = position
-        table.fillColor = SKColor(red: 0.22, green: 0.13, blue: 0.06, alpha: 1)
-        table.strokeColor = SKColor(red: 0.58, green: 0.36, blue: 0.16, alpha: 0.7)
-        table.lineWidth = 2
-        table.zPosition = 1
-        add(table, to: scene)
     }
 
     // MARK: - Save Crystal

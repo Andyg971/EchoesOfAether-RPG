@@ -180,14 +180,14 @@ final class WorldBuilder {
         addTiledFloor(in: scene,
                       tileNames: ["ext_grass_3", "ext_grass_4", "ext_grass_2"],
                       fallbackColor: SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1),
-                      tileScale: 1.0,
-                      tint: SKColor(red: 0.08, green: 0.18, blue: 0.10, alpha: 1),
+                      tileScale: 0.80,
+                      tint: SKColor(red: 0.04, green: 0.12, blue: 0.06, alpha: 1),
                       z: -10)
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
-                    to: CGPoint(x: w * 0.60, y: h * 0.86),
-                    width: 96)
+                    to: CGPoint(x: w * 0.58, y: h * 0.86),
+                    width: 72)
         addDirtPatch(at: CGPoint(x: w * 0.48, y: h * 0.48),
-                     size: CGSize(width: w * 0.35, height: h * 0.24),
+                     size: CGSize(width: w * 0.28, height: h * 0.18),
                      in: scene)
 
 // --- Arbres normaux (bordures) ---

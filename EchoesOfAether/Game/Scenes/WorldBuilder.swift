@@ -118,19 +118,14 @@ final class WorldBuilder {
         worldHeight = h
 
         addTiledFloor(in: scene,
-                      tileNames: ["me_grass_1", "me_grass_2", "me_grass_3", "me_grass_4", "me_grass_5"],
+                      tileNames: ["me_grass_1"],
                       fallbackColor: SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1),
-                      tileScale: 1.2,
+                      tileScale: 1.5,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Chemin principal vertical (centre)
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.44, y: 0, width: w * 0.12, height: h * 0.93))
-        // Chemins horizontaux (croisements vers les maisons)
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.35, width: w * 0.64, height: h * 0.022))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.49, width: w * 0.64, height: h * 0.022))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.63, width: w * 0.64, height: h * 0.022))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.79, width: w * 0.64, height: h * 0.022))
+        // Chemin principal vertical (centre) — fin et discret
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.47, y: 0, width: w * 0.06, height: h * 0.93))
 
         decorateVillage(in: scene)
 
@@ -204,9 +199,9 @@ final class WorldBuilder {
         let h = scene.size.height
 
         addTiledFloor(in: scene,
-                      tileNames: ["me_grass_1", "me_grass_3", "me_grass_5"],
+                      tileNames: ["me_grass_1"],
                       fallbackColor: SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1),
-                      tileScale: 1.1,
+                      tileScale: 1.5,
                       tint: SKColor(red: 0.02, green: 0.08, blue: 0.04, alpha: 1),
                       z: -10)
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
@@ -440,7 +435,11 @@ private func decorateVillage(in scene: SKScene) {
         ("me_tree_2", 0.08, 0.30), ("me_tree_4", 0.92, 0.30),
         ("me_tree_5", 0.08, 0.52), ("me_tree_6", 0.92, 0.52),
         ("me_tree_7", 0.08, 0.68), ("me_tree_8", 0.92, 0.68),
-        ("me_tree_9", 0.08, 0.84), ("me_tree_10", 0.92, 0.84)
+        ("me_tree_9", 0.08, 0.84), ("me_tree_10", 0.92, 0.84),
+        // +5 arbres supplémentaires (zones intérieures)
+        ("me_tree_2", 0.20, 0.10), ("me_tree_6", 0.80, 0.10),
+        ("me_tree_4", 0.20, 0.88), ("me_tree_8", 0.80, 0.88),
+        ("me_tree_1", 0.38, 0.05)
     ]
     for t in treePositions {
         addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: 0.42)
@@ -1689,17 +1688,11 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
 /// Trace un chemin de terre pixel art entre 2 points (vertical pour
 /// la rue principale du village). Tiles dirt aleatoires pour variete.
 private func addCleanPath(in scene: SKScene, rect: CGRect) {
-    let path = SKShapeNode(rect: rect, cornerRadius: 4)
-    path.fillColor = SKColor(red: 0.28, green: 0.20, blue: 0.12, alpha: 0.65)
-    path.strokeColor = SKColor(red: 0.22, green: 0.16, blue: 0.10, alpha: 0.30)
-    path.lineWidth = 1
+    let path = SKShapeNode(rect: rect, cornerRadius: 6)
+    path.fillColor = SKColor(red: 0.55, green: 0.45, blue: 0.30, alpha: 0.45)
+    path.strokeColor = .clear
     path.zPosition = -8
     add(path, to: scene)
-    let edge = SKShapeNode(rect: rect.insetBy(dx: 2, dy: 2), cornerRadius: 3)
-    edge.fillColor = SKColor(red: 0.32, green: 0.22, blue: 0.14, alpha: 0.25)
-    edge.strokeColor = .clear
-    edge.zPosition = -7
-    add(edge, to: scene)
 }
 
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,

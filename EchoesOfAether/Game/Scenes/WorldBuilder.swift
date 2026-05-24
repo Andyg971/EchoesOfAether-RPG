@@ -1242,31 +1242,217 @@ private func decorateForestFloor(in scene: SKScene) {
     }
 
     private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 80), scale: 0.28)
-        addInteriorSprite("village_barrel_1", in: scene, at: CGPoint(x: room.minX + 40, y: room.maxY - 72), scale: 0.55)
-        addInteriorSprite("village_barrel_2", in: scene, at: CGPoint(x: room.maxX - 40, y: room.maxY - 72), scale: 0.55)
-        addInteriorSprite("village_crate_1", in: scene, at: CGPoint(x: room.minX + 40, y: room.midY - 10), scale: 0.55)
-        addInteriorSprite("village_crate_2", in: scene, at: CGPoint(x: room.maxX - 40, y: room.midY - 10), scale: 0.55)
-        addInteriorSprite("interior_bench_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 20), scale: 0.50)
+        // Forge (fond centre) — braise rougeoyante
+        let forge = SKShapeNode(rectOf: CGSize(width: 56, height: 28), cornerRadius: 4)
+        forge.position = CGPoint(x: room.midX, y: room.maxY - 62)
+        forge.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.06, alpha: 1)
+        forge.strokeColor = SKColor(red: 0.40, green: 0.22, blue: 0.10, alpha: 0.8)
+        forge.lineWidth = 2
+        forge.zPosition = 2
+        add(forge, to: scene)
+        let ember = SKShapeNode(rectOf: CGSize(width: 36, height: 12), cornerRadius: 3)
+        ember.position = CGPoint(x: room.midX, y: room.maxY - 60)
+        ember.fillColor = SKColor(red: 0.85, green: 0.25, blue: 0.05, alpha: 0.7)
+        ember.strokeColor = .clear
+        ember.zPosition = 3
+        add(ember, to: scene)
+        JuiceEngine.pulse(ember, scale: 1.08)
+
+        // Enclume (devant forge)
+        let anvil = SKShapeNode(rectOf: CGSize(width: 22, height: 14), cornerRadius: 2)
+        anvil.position = CGPoint(x: room.midX, y: room.maxY - 96)
+        anvil.fillColor = SKColor(red: 0.28, green: 0.28, blue: 0.30, alpha: 1)
+        anvil.strokeColor = SKColor(red: 0.45, green: 0.45, blue: 0.50, alpha: 0.6)
+        anvil.lineWidth = 1
+        anvil.zPosition = 3
+        add(anvil, to: scene)
+
+        // Râteliers d'armes (mur gauche)
+        for i in 0..<3 {
+            let sword = SKShapeNode(rectOf: CGSize(width: 3, height: 28), cornerRadius: 1)
+            sword.position = CGPoint(x: room.minX + 32 + CGFloat(i) * 14, y: room.maxY - 50)
+            sword.fillColor = SKColor(red: 0.55, green: 0.55, blue: 0.62, alpha: 0.9)
+            sword.strokeColor = .clear
+            sword.zPosition = 1
+            add(sword, to: scene)
+        }
+
+        // Boucliers (mur droit)
+        for i in 0..<2 {
+            let shield = SKShapeNode(circleOfRadius: 10)
+            shield.position = CGPoint(x: room.maxX - 40 + CGFloat(i) * 24, y: room.maxY - 48)
+            shield.fillColor = SKColor(red: 0.35, green: 0.22, blue: 0.12, alpha: 0.9)
+            shield.strokeColor = SKColor(red: 0.55, green: 0.40, blue: 0.20, alpha: 0.7)
+            shield.lineWidth = 2
+            shield.zPosition = 1
+            add(shield, to: scene)
+        }
+
+        // Tonneaux côté gauche
+        addInteriorSprite("village_barrel_1", in: scene, at: CGPoint(x: room.minX + 30, y: room.midY + 6), scale: 0.50)
+        addInteriorSprite("village_barrel_2", in: scene, at: CGPoint(x: room.minX + 56, y: room.midY + 6), scale: 0.45)
+
+        // Caisses côté droit
+        addInteriorSprite("village_crate_1", in: scene, at: CGPoint(x: room.maxX - 34, y: room.midY + 6), scale: 0.50)
+        addInteriorSprite("village_crate_2", in: scene, at: CGPoint(x: room.maxX - 58, y: room.midY + 6), scale: 0.45)
+
+        // Établi (milieu-bas)
+        let workbench = SKShapeNode(rectOf: CGSize(width: 64, height: 20), cornerRadius: 3)
+        workbench.position = CGPoint(x: room.midX, y: room.midY - 22)
+        workbench.fillColor = SKColor(red: 0.30, green: 0.20, blue: 0.12, alpha: 1)
+        workbench.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.18, alpha: 0.7)
+        workbench.lineWidth = 1
+        workbench.zPosition = 3
+        add(workbench, to: scene)
+
         addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 110), text: String(localized: "interior.armory.forge"))
     }
 
     private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 100), scale: 0.26)
-        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 10), scale: 0.38)
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 10), scale: 0.36)
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 42, y: room.midY - 10), scale: 0.36, flipped: true)
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.apothecary.potions"))
+        // Comptoir herboriste (fond)
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 80), scale: 0.26)
+
+        // Étagères potions (mur gauche)
+        for i in 0..<3 {
+            let shelf = SKShapeNode(rectOf: CGSize(width: 32, height: 6), cornerRadius: 1)
+            shelf.position = CGPoint(x: room.minX + 36, y: room.maxY - 42 - CGFloat(i) * 18)
+            shelf.fillColor = SKColor(red: 0.28, green: 0.20, blue: 0.12, alpha: 1)
+            shelf.strokeColor = .clear
+            shelf.zPosition = 1
+            add(shelf, to: scene)
+            // Fioles sur étagère
+            for j in 0..<3 {
+                let potion = SKShapeNode(rectOf: CGSize(width: 5, height: 9), cornerRadius: 2)
+                potion.position = CGPoint(x: room.minX + 24 + CGFloat(j) * 12, y: room.maxY - 38 - CGFloat(i) * 18)
+                let colors: [SKColor] = [
+                    SKColor(red: 0.2, green: 0.7, blue: 0.3, alpha: 0.85),
+                    SKColor(red: 0.6, green: 0.2, blue: 0.7, alpha: 0.85),
+                    SKColor(red: 0.2, green: 0.4, blue: 0.8, alpha: 0.85)
+                ]
+                potion.fillColor = colors[(i + j) % 3]
+                potion.strokeColor = .clear
+                potion.zPosition = 2
+                add(potion, to: scene)
+            }
+        }
+
+        // Étagères (mur droit)
+        for i in 0..<3 {
+            let shelf = SKShapeNode(rectOf: CGSize(width: 32, height: 6), cornerRadius: 1)
+            shelf.position = CGPoint(x: room.maxX - 36, y: room.maxY - 42 - CGFloat(i) * 18)
+            shelf.fillColor = SKColor(red: 0.28, green: 0.20, blue: 0.12, alpha: 1)
+            shelf.strokeColor = .clear
+            shelf.zPosition = 1
+            add(shelf, to: scene)
+            // Livres/bocaux
+            for j in 0..<2 {
+                let book = SKShapeNode(rectOf: CGSize(width: 7, height: 10), cornerRadius: 1)
+                book.position = CGPoint(x: room.maxX - 44 + CGFloat(j) * 16, y: room.maxY - 38 - CGFloat(i) * 18)
+                book.fillColor = SKColor(red: 0.35 + CGFloat(j) * 0.15, green: 0.18, blue: 0.12, alpha: 0.9)
+                book.strokeColor = .clear
+                book.zPosition = 2
+                add(book, to: scene)
+            }
+        }
+
+        // Chaudron (centre)
+        let cauldron = SKShapeNode(circleOfRadius: 14)
+        cauldron.position = CGPoint(x: room.midX, y: room.midY - 8)
+        cauldron.fillColor = SKColor(red: 0.15, green: 0.15, blue: 0.18, alpha: 1)
+        cauldron.strokeColor = SKColor(red: 0.30, green: 0.30, blue: 0.35, alpha: 0.8)
+        cauldron.lineWidth = 2
+        cauldron.zPosition = 3
+        add(cauldron, to: scene)
+        let brew = SKShapeNode(circleOfRadius: 9)
+        brew.position = CGPoint(x: room.midX, y: room.midY - 6)
+        brew.fillColor = SKColor(red: 0.15, green: 0.55, blue: 0.25, alpha: 0.7)
+        brew.strokeColor = .clear
+        brew.zPosition = 4
+        add(brew, to: scene)
+        JuiceEngine.pulse(brew, scale: 1.05)
+
+        // Plantes
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 30, y: room.midY - 32), scale: 0.34)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 30, y: room.midY - 32), scale: 0.34, flipped: true)
+
+        // Herbes séchées (pendues au plafond)
+        for i in 0..<4 {
+            let herb = SKShapeNode(rectOf: CGSize(width: 4, height: 14), cornerRadius: 1)
+            herb.position = CGPoint(x: room.midX - 30 + CGFloat(i) * 20, y: room.maxY - 30)
+            herb.fillColor = SKColor(red: 0.22, green: 0.38, blue: 0.18, alpha: 0.8)
+            herb.strokeColor = .clear
+            herb.zPosition = 1
+            add(herb, to: scene)
+        }
+
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 110), text: String(localized: "interior.apothecary.potions"))
     }
 
     private func buildInnInterior(in scene: SKScene, room: CGRect) {
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 100), scale: 0.24)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 52, y: room.midY - 18), scale: 0.28)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.maxX - 52, y: room.midY - 18), scale: 0.28, flipped: true)
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 32), scale: 0.75)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 32, y: room.midY - 38), scale: 0.50)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 32, y: room.midY - 38), scale: 0.50, flipped: true)
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.inn.rest"))
+        // Comptoir/bar (fond droit)
+        let bar = SKShapeNode(rectOf: CGSize(width: 70, height: 18), cornerRadius: 3)
+        bar.position = CGPoint(x: room.maxX - 60, y: room.maxY - 68)
+        bar.fillColor = SKColor(red: 0.32, green: 0.20, blue: 0.10, alpha: 1)
+        bar.strokeColor = SKColor(red: 0.45, green: 0.30, blue: 0.15, alpha: 0.7)
+        bar.lineWidth = 2
+        bar.zPosition = 3
+        add(bar, to: scene)
+
+        // Fûts derrière le bar
+        for i in 0..<3 {
+            let keg = SKShapeNode(rectOf: CGSize(width: 12, height: 16), cornerRadius: 4)
+            keg.position = CGPoint(x: room.maxX - 82 + CGFloat(i) * 18, y: room.maxY - 44)
+            keg.fillColor = SKColor(red: 0.35, green: 0.22, blue: 0.10, alpha: 1)
+            keg.strokeColor = SKColor(red: 0.50, green: 0.35, blue: 0.18, alpha: 0.6)
+            keg.lineWidth = 1
+            keg.zPosition = 1
+            add(keg, to: scene)
+        }
+
+        // Cheminée (fond gauche)
+        let fireplace = SKShapeNode(rectOf: CGSize(width: 40, height: 32), cornerRadius: 3)
+        fireplace.position = CGPoint(x: room.minX + 44, y: room.maxY - 54)
+        fireplace.fillColor = SKColor(red: 0.16, green: 0.10, blue: 0.08, alpha: 1)
+        fireplace.strokeColor = SKColor(red: 0.35, green: 0.22, blue: 0.12, alpha: 0.8)
+        fireplace.lineWidth = 2
+        fireplace.zPosition = 1
+        add(fireplace, to: scene)
+        let fire = SKShapeNode(rectOf: CGSize(width: 24, height: 14), cornerRadius: 4)
+        fire.position = CGPoint(x: room.minX + 44, y: room.maxY - 58)
+        fire.fillColor = SKColor(red: 0.90, green: 0.45, blue: 0.08, alpha: 0.8)
+        fire.strokeColor = .clear
+        fire.zPosition = 2
+        add(fire, to: scene)
+        JuiceEngine.pulse(fire, scale: 1.10)
+
+        // Table centrale avec chaises
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX - 20, y: room.midY - 6), scale: 0.65)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 48, y: room.midY - 12), scale: 0.45)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 8, y: room.midY - 12), scale: 0.45, flipped: true)
+
+        // Seconde table (droite)
+        let table2 = SKShapeNode(rectOf: CGSize(width: 32, height: 18), cornerRadius: 3)
+        table2.position = CGPoint(x: room.maxX - 50, y: room.midY - 14)
+        table2.fillColor = SKColor(red: 0.30, green: 0.20, blue: 0.12, alpha: 1)
+        table2.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.16, alpha: 0.6)
+        table2.lineWidth = 1
+        table2.zPosition = 3
+        add(table2, to: scene)
+
+        // Lits (alcôve gauche bas)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 34), scale: 0.26)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 58), scale: 0.26)
+
+        // Tapis décoratif centre
+        let rug = SKShapeNode(rectOf: CGSize(width: 60, height: 28), cornerRadius: 6)
+        rug.position = CGPoint(x: room.midX, y: room.midY - 36)
+        rug.fillColor = SKColor(red: 0.45, green: 0.15, blue: 0.10, alpha: 0.35)
+        rug.strokeColor = SKColor(red: 0.55, green: 0.25, blue: 0.12, alpha: 0.3)
+        rug.lineWidth = 1
+        rug.zPosition = -6
+        add(rug, to: scene)
+
+        addServiceMarker(in: scene, at: CGPoint(x: room.maxX - 60, y: room.maxY - 92), text: String(localized: "interior.inn.rest"))
     }
 
     private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {

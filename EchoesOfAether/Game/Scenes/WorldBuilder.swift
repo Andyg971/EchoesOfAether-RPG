@@ -101,12 +101,11 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
-let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-ground.fillColor = SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1)
-ground.strokeColor = .clear
-ground.position = CGPoint(x: 500, y: 500)
-ground.zPosition = -10
-add(ground, to: scene)
+        addTiledFloor(in: scene,
+                      tileNames: ["ext_grass_1", "ext_grass_2", "ext_grass_3", "ext_grass_4"],
+                      fallbackColor: SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1),
+                      tileScale: 1.0,
+                      z: -10)
 
 // Chemin de terre vertical traversant le village du bas (spawn)
         // jusqu'à la porte nord. Largeur ~2 tiles, ~28 tiles de long.
@@ -117,6 +116,7 @@ add(ground, to: scene)
         addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.39),
                      size: CGSize(width: w * 0.34, height: h * 0.09),
                      in: scene)
+        decorateVillage(in: scene)
 
         // --- Bâtiments ---
         // Layout grille 3 colonnes pour iPhone ET iPad portrait.
@@ -177,29 +177,27 @@ add(ground, to: scene)
         let w = scene.size.width
         let h = scene.size.height
 
-let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-ground.fillColor = SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1)
-ground.strokeColor = .clear
-ground.position = CGPoint(x: 500, y: 500)
-ground.zPosition = -10
-add(ground, to: scene)
-
-let path = SKShapeNode(ellipseOf: CGSize(width: w * 0.55, height: h * 0.82))
-path.fillColor = SKColor(red: 0.10, green: 0.075, blue: 0.045, alpha: 0.72)
-path.strokeColor = SKColor(red: 0.18, green: 0.13, blue: 0.07, alpha: 0.45)
-path.lineWidth = 2
-path.position = CGPoint(x: w * 0.50, y: h * 0.48)
-path.zPosition = -9
-add(path, to: scene)
+        addTiledFloor(in: scene,
+                      tileNames: ["ext_grass_3", "ext_grass_4", "ext_grass_2"],
+                      fallbackColor: SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.08, green: 0.18, blue: 0.10, alpha: 1),
+                      z: -10)
+        addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
+                    to: CGPoint(x: w * 0.60, y: h * 0.86),
+                    width: 96)
+        addDirtPatch(at: CGPoint(x: w * 0.48, y: h * 0.48),
+                     size: CGSize(width: w * 0.35, height: h * 0.24),
+                     in: scene)
 
 // --- Arbres normaux (bordures) ---
         // Forêt dense : 2 rangées d'arbres (bordures + intérieur), scale
         // contenu pour rester lisible. Cible ~70-90 pt par arbre.
         let treeScale = forestTreeScale(for: w)
-        let greenAssets = ["tree_green_1", "tree_green_12", "tree_green_24",
-                            "tree_green_36", "tree_green_48", "tree_green_60",
-                            "tree_green_72", "tree_green_84", "tree_green_15",
-                            "tree_green_30", "tree_green_50", "tree_green_100"]
+        let greenAssets = ["ext_tree_1", "ext_tree_2", "ext_tree_3",
+                           "ext_tree_4", "ext_tree_5", "ext_tree_6",
+                           "ext_tree_1", "ext_tree_2", "ext_tree_3",
+                           "ext_tree_4", "ext_tree_5", "ext_tree_6"]
         // Bordure gauche (x ~0.08) : 5 arbres
         for (i, y) in [CGFloat(0.18), 0.36, 0.52, 0.68, 0.84].enumerated() {
             let name = greenAssets[i]
@@ -224,7 +222,7 @@ add(path, to: scene)
         }
         // Quelques arbres dans la zone jouable (entre les bordures),
         // espacés pour ne pas bloquer la circulation.
-        let scatterAssets = ["tree_green_24", "tree_green_60", "tree_green_100"]
+        let scatterAssets = ["ext_tree_2", "ext_tree_4", "ext_tree_6"]
         let scatterPositions: [(x: CGFloat, y: CGFloat)] = [
             (0.22, 0.78), (0.72, 0.74), (0.78, 0.28)
         ]
@@ -245,7 +243,7 @@ add(path, to: scene)
             (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
         ]
         for p in corruptedTreePositions {
-            guard let tree = PixelArtSprites.still(name: "tree_big", scale: treeScale * p.scale,
+            guard let tree = PixelArtSprites.still(name: "ext_tree_5", scale: treeScale * p.scale,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
@@ -298,13 +296,15 @@ add(path, to: scene)
             (0.10, 0.13, 0.70), (0.32, 0.12, 0.62), (0.70, 0.13, 0.66), (0.91, 0.12, 0.72)
         ]
         for p in foregroundTrees {
-            guard let tree = PixelArtSprites.still(name: "tree_medium_2", scale: treeScale * p.scale,
+            guard let tree = PixelArtSprites.still(name: "ext_tree_3", scale: treeScale * p.scale,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.alpha = 0.55
             tree.zPosition = 5
             add(tree, to: scene)
         }
+
+        decorateForestFloor(in: scene)
 
         // Cristal de sauvegarde (bas centre)
         addSaveCrystal(at: CGPoint(x: w * 0.50, y: h * 0.15), in: scene)
@@ -372,6 +372,35 @@ add(path, to: scene)
         }
         toyMarker = nil
     }
+
+private func decorateVillage(in scene: SKScene) {
+    let w = scene.size.width
+    let h = scene.size.height
+    let props: [(String, CGFloat, CGFloat, CGFloat)] = [
+        ("ext_fence", 0.12, 0.62, 0.90), ("ext_fence", 0.32, 0.62, 0.90),
+        ("ext_fence", 0.68, 0.61, 0.90), ("ext_fence", 0.88, 0.61, 0.90),
+        ("ext_sign", 0.43, 0.63, 0.92), ("ext_mailbox", 0.70, 0.27, 0.85),
+        ("ext_flower_yellow", 0.16, 0.28, 0.70), ("ext_flower_pink", 0.28, 0.28, 0.70),
+        ("ext_flower_sun", 0.72, 0.27, 0.70), ("ext_flower_yellow", 0.84, 0.27, 0.70),
+        ("ext_gate", 0.50, 0.80, 0.90), ("ext_pebbles", 0.58, 0.20, 0.70)
+    ]
+    for item in props {
+        addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
+    }
+}
+
+private func decorateForestFloor(in scene: SKScene) {
+    let w = scene.size.width
+    let h = scene.size.height
+    let props: [(String, CGFloat, CGFloat, CGFloat)] = [
+        ("ext_pebbles", 0.28, 0.34, 0.75), ("ext_pebbles", 0.72, 0.36, 0.75),
+        ("ext_cut_wood", 0.20, 0.20, 0.80), ("ext_cut_wood", 0.82, 0.20, 0.80),
+        ("ext_sign", 0.60, 0.78, 0.85)
+    ]
+    for item in props {
+        addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
+    }
+}
 
     // MARK: - Forest Building Blocks
 
@@ -1332,36 +1361,74 @@ add(path, to: scene)
         backdropNodes.append(node)
     }
 
-    /// Trace un chemin de terre pixel art entre 2 points (vertical pour
-    /// la rue principale du village). Tiles dirt aléatoires pour variété.
-    private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
-                              width: CGFloat) {
-        let tiles = ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"]
-        let length = hypot(b.x - a.x, b.y - a.y)
-        guard length > 0 else { return }
-        let stepSize: CGFloat = 24
-        let count = Int(ceil(length / stepSize))
-        for i in 0...count {
-            let t = CGFloat(i) / CGFloat(count)
-            let cx = a.x + (b.x - a.x) * t
-            let cy = a.y + (b.y - a.y) * t
-            // Tile principal + dispersion sur la largeur
-            for dx in stride(from: -width/2, through: width/2, by: 24) {
-                // Modulo positif (Swift % retourne négatif sur ints négatifs)
-                let raw = (i + Int(dx)) % tiles.count
-                let idx = (raw + tiles.count) % tiles.count
-                let assetName = tiles[idx]
-                guard let tile = PixelArtSprites.still(
-                    name: assetName, scale: 2.0,
-                    anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
-                tile.position = CGPoint(x: cx + dx + CGFloat.random(in: -3...3),
-                                         y: cy + CGFloat.random(in: -3...3))
-                tile.zPosition = -9
-                tile.alpha = 0.85
-                add(tile, to: scene)
-            }
+private func availableTiles(_ preferred: [String], fallback: [String]) -> [String] {
+    let available = preferred.filter { PixelArtSprites.exists($0) }
+    return available.isEmpty ? fallback : available
+}
+
+private func addTiledFloor(in scene: SKScene, tileNames: [String], fallbackColor: SKColor,
+                           tileScale: CGFloat, tint: SKColor? = nil, z: CGFloat) {
+    let available = availableTiles(tileNames, fallback: ["tile_grass", "tile_grass_dark"])
+    if let floor = PixelArtSprites.tiledFloor(tileNames: available,
+                                              in: CGSize(width: scene.size.width + 96,
+                                                         height: scene.size.height + 96),
+                                              tileScale: tileScale,
+                                              tint: tint) {
+        floor.position = CGPoint(x: -48, y: -48)
+        floor.zPosition = z
+        add(floor, to: scene)
+    } else {
+        let ground = SKShapeNode(rectOf: CGSize(width: scene.size.width + 96,
+                                                height: scene.size.height + 96))
+        ground.fillColor = fallbackColor
+        ground.strokeColor = .clear
+        ground.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        ground.zPosition = z
+        add(ground, to: scene)
+    }
+}
+
+private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoint,
+                          scale: CGFloat, flipped: Bool = false) {
+    guard let node = PixelArtSprites.still(name: name, scale: scale,
+                                           anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+    node.position = position
+    if flipped { node.xScale = -abs(node.xScale == 0 ? 1 : node.xScale) }
+    node.zPosition = propLayer(for: position.y, in: scene.size.height)
+    addGroundShadow(under: node, width: 34 * scale, height: 9 * scale)
+    add(node, to: scene)
+}
+
+/// Trace un chemin de terre pixel art entre 2 points (vertical pour
+/// la rue principale du village). Tiles dirt aleatoires pour variete.
+private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
+                          width: CGFloat) {
+    let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
+                               fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
+    let length = hypot(b.x - a.x, b.y - a.y)
+    guard length > 0 else { return }
+    let tileScale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.72 : 2.0
+    let stepSize: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 28 : 24
+    let count = Int(ceil(length / stepSize))
+    for i in 0...count {
+        let t = CGFloat(i) / CGFloat(count)
+        let cx = a.x + (b.x - a.x) * t
+        let cy = a.y + (b.y - a.y) * t
+        for dx in stride(from: -width/2, through: width/2, by: stepSize) {
+            let raw = (i + Int(dx)) % tiles.count
+            let idx = (raw + tiles.count) % tiles.count
+            let assetName = tiles[idx]
+            guard let tile = PixelArtSprites.still(
+                name: assetName, scale: tileScale,
+                anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+            tile.position = CGPoint(x: cx + dx + CGFloat.random(in: -3...3),
+                                     y: cy + CGFloat.random(in: -3...3))
+            tile.zPosition = -9
+            tile.alpha = 0.96
+            add(tile, to: scene)
         }
     }
+}
 
     /// Scale dynamique pour les sprites de maisons. Les assets Modern
     /// Exteriors font 288 px de large: en dessous de ~115 pt sur iPhone,
@@ -1415,15 +1482,17 @@ add(path, to: scene)
         node.addChild(shadow)
     }
 
-    private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
-        let patch = SKShapeNode(ellipseOf: size)
-        patch.position = center
-        patch.fillColor = SKColor(red: 0.16, green: 0.10, blue: 0.06, alpha: 0.42)
-        patch.strokeColor = SKColor(red: 0.22, green: 0.16, blue: 0.09, alpha: 0.35)
-        patch.lineWidth = 1
-        patch.zPosition = -9
-        add(patch, to: scene)
-    }
+private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
+    let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
+                               fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
+    let scale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.72 : 2.0
+    guard let patch = PixelArtSprites.tiledFloor(tileNames: tiles, in: size,
+                                                 tileScale: scale) else { return }
+    patch.position = CGPoint(x: center.x - size.width / 2, y: center.y - size.height / 2)
+    patch.zPosition = -9
+    patch.alpha = 0.94
+    add(patch, to: scene)
+}
 
     private func clearBackdrop() {
         backdropNodes.forEach { $0.removeFromParent() }

@@ -1,13 +1,1 @@
-{
-  "images": [
-    {
-      "filename": "village_house_haunted.png",
-      "idiom": "universal",
-      "scale": "1x"
-    }
-  ],
-  "info": {
-    "author": "xcode",
-    "version": 1
-  }
-}
+{"images":[{"filename":"village_house_haunted.png","idiom":"universal","scale":"1x"}],"info":{"author":"xcode","version":1},"properties":{"preserves-vector-representation":false}}

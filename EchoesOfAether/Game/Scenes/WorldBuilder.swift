@@ -118,9 +118,9 @@ final class WorldBuilder {
         worldHeight = h
 
         addTiledFloor(in: scene,
-                      tileNames: ["village_grass_clean"],
+                      tileNames: ["me_grass_1", "me_grass_2", "me_grass_3", "me_grass_4", "me_grass_5"],
                       fallbackColor: SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1),
-                      tileScale: 0.75,
+                      tileScale: 1.2,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
@@ -207,10 +207,10 @@ final class WorldBuilder {
         let h = scene.size.height
 
         addTiledFloor(in: scene,
-                      tileNames: ["ext_grass_3", "ext_grass_4", "ext_grass_2"],
+                      tileNames: ["me_grass_1", "me_grass_3", "me_grass_5"],
                       fallbackColor: SKColor(red: 0.025, green: 0.075, blue: 0.035, alpha: 1),
-                      tileScale: 0.80,
-                      tint: SKColor(red: 0.04, green: 0.12, blue: 0.06, alpha: 1),
+                      tileScale: 1.1,
+                      tint: SKColor(red: 0.02, green: 0.08, blue: 0.04, alpha: 1),
                       z: -10)
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
                     to: CGPoint(x: w * 0.58, y: h * 0.86),
@@ -219,50 +219,69 @@ final class WorldBuilder {
                      size: CGSize(width: w * 0.28, height: h * 0.18),
                      in: scene)
 
-// --- Arbres normaux (bordures) ---
-        // Forêt dense : 2 rangées d'arbres (bordures + intérieur), scale
-        // contenu pour rester lisible. Cible ~70-90 pt par arbre.
+// --- Arbres normaux (bordures) — Modern Exteriors ---
         let treeScale = forestTreeScale(for: w)
-        let greenAssets = ["ext_tree_1", "ext_tree_2", "ext_tree_3",
-                           "ext_tree_4", "ext_tree_5", "ext_tree_6",
-                           "ext_tree_1", "ext_tree_2", "ext_tree_3",
-                           "ext_tree_4", "ext_tree_5", "ext_tree_6"]
-        // Bordure gauche (x ~0.08) : 5 arbres
-        for (i, y) in [CGFloat(0.18), 0.36, 0.52, 0.68, 0.84].enumerated() {
-            let name = greenAssets[i]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale,
+        let meTreeAssets = ["me_tree_1", "me_tree_2", "me_tree_3", "me_tree_4", "me_tree_5",
+                            "me_tree_6", "me_tree_7", "me_tree_8", "me_tree_9", "me_tree_10"]
+        // Bordure gauche dense (x ~0.06) : 6 arbres
+        for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
+            let name = meTreeAssets[i % meTreeAssets.count]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.4,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 100)
-            tree.position = CGPoint(x: w * 0.08, y: h * y)
+            tree.position = CGPoint(x: w * 0.06, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
             add(tree, to: scene)
         }
-        // Bordure droite (x ~0.92) : 5 arbres
-        for (i, y) in [CGFloat(0.18), 0.36, 0.52, 0.68, 0.84].enumerated() {
-            let name = greenAssets[i + 5]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale,
+        // Deuxième rangée gauche (x ~0.16)
+        for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
+            let name = meTreeAssets[(i + 3) % meTreeAssets.count]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.2,
+                                              anchor: CGPoint(x: 0.5, y: 0.0))
+                ?? makeTree(height: 90)
+            tree.position = CGPoint(x: w * 0.16, y: h * y)
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            tree.alpha = 0.9
+            addGroundShadow(under: tree, width: 36 * treeScale, height: 12 * treeScale)
+            add(tree, to: scene)
+        }
+        // Bordure droite dense (x ~0.94)
+        for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
+            let name = meTreeAssets[(i + 5) % meTreeAssets.count]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.4,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 100)
-            tree.position = CGPoint(x: w * 0.92, y: h * y)
+            tree.position = CGPoint(x: w * 0.94, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
             add(tree, to: scene)
         }
-        // Quelques arbres dans la zone jouable (entre les bordures),
-        // espacés pour ne pas bloquer la circulation.
-        let scatterAssets = ["ext_tree_2", "ext_tree_4", "ext_tree_6"]
-        let scatterPositions: [(x: CGFloat, y: CGFloat)] = [
-            (0.22, 0.78), (0.72, 0.74), (0.78, 0.28)
+        // Deuxième rangée droite (x ~0.84)
+        for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
+            let name = meTreeAssets[(i + 7) % meTreeAssets.count]
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.2,
+                                              anchor: CGPoint(x: 0.5, y: 0.0))
+                ?? makeTree(height: 90)
+            tree.position = CGPoint(x: w * 0.84, y: h * y)
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            tree.alpha = 0.9
+            addGroundShadow(under: tree, width: 36 * treeScale, height: 12 * treeScale)
+            add(tree, to: scene)
+        }
+        // Arbres intérieurs (zone jouable) — épars pour créer des couloirs
+        let scatterPositions: [(x: CGFloat, y: CGFloat, idx: Int)] = [
+            (0.28, 0.80, 1), (0.72, 0.76, 3), (0.78, 0.28, 5),
+            (0.24, 0.42, 7), (0.68, 0.60, 9)
         ]
-        for (i, p) in scatterPositions.enumerated() {
-            let tree = PixelArtSprites.still(name: scatterAssets[i],
-                                              scale: treeScale * 0.85,
+        for p in scatterPositions {
+            let tree = PixelArtSprites.still(name: meTreeAssets[p.idx % meTreeAssets.count],
+                                              scale: treeScale * 1.1,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 80)
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
-            tree.alpha = 0.95
+            tree.alpha = 0.92
             addGroundShadow(under: tree, width: 34 * treeScale, height: 11 * treeScale)
             add(tree, to: scene)
         }
@@ -272,7 +291,7 @@ final class WorldBuilder {
             (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
         ]
         for p in corruptedTreePositions {
-            guard let tree = PixelArtSprites.still(name: "ext_tree_5", scale: treeScale * p.scale,
+            guard let tree = PixelArtSprites.still(name: "me_tree_5", scale: treeScale * p.scale * 1.3,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
@@ -405,42 +424,82 @@ final class WorldBuilder {
 private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = worldHeight > 0 ? worldHeight : scene.size.height
-    let props: [(String, CGFloat, CGFloat, CGFloat)] = [
-        ("village_fountain", 0.50, 0.50, 0.50),
-        ("village_lantern_1", 0.36, 0.70, 0.55), ("village_lantern_2", 0.64, 0.70, 0.55),
-        ("village_lantern_1", 0.36, 0.34, 0.55), ("village_lantern_2", 0.64, 0.34, 0.55),
-        ("village_barrel_1", 0.14, 0.58, 0.50), ("village_barrel_2", 0.86, 0.58, 0.50),
-        ("village_crate_1", 0.40, 0.44, 0.45), ("village_crate_2", 0.60, 0.30, 0.45),
-        ("village_flower_yellow", 0.16, 0.30, 0.50), ("village_flower_pink", 0.28, 0.30, 0.50),
-        ("village_sunflower", 0.72, 0.30, 0.50), ("village_flower_red", 0.84, 0.30, 0.50),
-        ("village_flower_yellow", 0.16, 0.62, 0.50), ("village_flower_pink", 0.84, 0.62, 0.50),
-        ("village_rock_1", 0.08, 0.15, 0.45), ("village_rock_2", 0.92, 0.15, 0.45),
-        ("village_rock_3", 0.34, 0.10, 0.40),
-        ("village_bench", 0.50, 0.28, 0.50),
-        ("ext_fence", 0.12, 0.76, 0.55), ("ext_fence", 0.88, 0.76, 0.55),
-        ("ext_sign", 0.43, 0.85, 0.60), ("ext_pebbles", 0.58, 0.16, 0.50)
+    let sc: CGFloat = 1.2
+
+    // Fontaine centre-village
+    addPixelProp("me_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: sc * 1.4)
+
+    // Lampadaires le long du chemin
+    let lampPositions: [(CGFloat, CGFloat)] = [
+        (0.40, 0.22), (0.60, 0.22), (0.40, 0.42), (0.60, 0.42),
+        (0.40, 0.60), (0.60, 0.60), (0.40, 0.76), (0.60, 0.76)
     ]
-    for item in props {
-        addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
+    for (i, p) in lampPositions.enumerated() {
+        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: sc * 1.3)
     }
+
+    // Arbres décoratifs disséminés
+    let treePositions: [(String, CGFloat, CGFloat)] = [
+        ("me_tree_1", 0.10, 0.14), ("me_tree_3", 0.90, 0.14),
+        ("me_tree_2", 0.10, 0.30), ("me_tree_4", 0.90, 0.30),
+        ("me_tree_5", 0.10, 0.52), ("me_tree_6", 0.90, 0.52),
+        ("me_tree_7", 0.10, 0.68), ("me_tree_8", 0.90, 0.68),
+        ("me_tree_9", 0.10, 0.84), ("me_tree_10", 0.90, 0.84)
+    ]
+    for t in treePositions {
+        addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: sc * 1.5)
+    }
+
+    // Bancs
+    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.28), scale: sc)
+    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.54), scale: sc)
+    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: sc)
+
+    // Buissons fleuris autour des maisons
+    let bushPositions: [(String, CGFloat, CGFloat)] = [
+        ("me_flower_bush_1", 0.16, 0.35), ("me_flower_bush_2", 0.84, 0.35),
+        ("me_flower_bush_3", 0.16, 0.63), ("me_flower_bush_4", 0.84, 0.63),
+        ("me_flower_bush_5", 0.16, 0.79), ("me_flower_bush_1", 0.84, 0.79),
+        ("me_flower_bush_2", 0.30, 0.17), ("me_flower_bush_3", 0.70, 0.17)
+    ]
+    for b in bushPositions {
+        addPixelProp(b.0, in: scene, at: CGPoint(x: w * b.1, y: h * b.2), scale: sc * 0.9)
+    }
+
+    // Tonneaux et chariot
+    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.49), scale: sc)
+    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.49), scale: sc)
+    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.44), scale: sc)
+    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.26), scale: sc * 1.2)
 }
 
 private func decorateForestFloor(in scene: SKScene) {
     let w = scene.size.width
     let h = scene.size.height
-    let props: [(String, CGFloat, CGFloat, CGFloat)] = [
-        ("ext_pebbles", 0.28, 0.34, 0.75), ("ext_pebbles", 0.72, 0.36, 0.75),
-        ("ext_cut_wood", 0.20, 0.20, 0.80), ("ext_cut_wood", 0.82, 0.20, 0.80),
-        ("ext_sign", 0.60, 0.78, 0.85),
-        ("forest_mushroom_1", 0.15, 0.55, 0.50),
-        ("forest_mushroom_2", 0.88, 0.42, 0.50),
-        ("forest_mushroom_1", 0.45, 0.18, 0.45),
-        ("forest_stump_1", 0.35, 0.68, 0.55),
-        ("forest_stump_2", 0.78, 0.22, 0.55)
-    ]
-    for item in props {
-        addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
-    }
+    let sc: CGFloat = 1.1
+
+    // Bois coupé et souches
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.22), scale: sc)
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.32), scale: sc * 0.9)
+
+    // Plantes / pousses
+    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.48), scale: sc)
+    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.85, y: h * 0.56), scale: sc)
+    addPixelProp("me_big_sprout_3", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.18), scale: sc * 0.8)
+    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.72), scale: sc * 0.85)
+
+    // Buissons fleuris éparpillés (sous-bois)
+    addPixelProp("me_flower_bush_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.68), scale: sc * 0.8)
+    addPixelProp("me_flower_bush_3", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.44), scale: sc * 0.8)
+    addPixelProp("me_flower_bush_5", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.82), scale: sc * 0.7)
+
+    // Feu de camp (zone repos)
+    addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.30), scale: sc * 1.2)
+
+    // Fallback anciens props si existants
+    addPixelProp("forest_mushroom_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.58), scale: 0.55)
+    addPixelProp("forest_mushroom_2", in: scene, at: CGPoint(x: w * 0.75, y: h * 0.38), scale: 0.55)
+    addPixelProp("forest_stump_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.65), scale: 0.60)
 }
 
     // MARK: - Forest Building Blocks

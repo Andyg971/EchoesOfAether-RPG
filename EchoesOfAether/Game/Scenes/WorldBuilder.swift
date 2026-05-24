@@ -124,23 +124,20 @@ final class WorldBuilder {
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
-                     to: CGPoint(x: w * 0.50, y: h * 0.92),
-                     width: 68)
-
-        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.55),
-                     size: CGSize(width: w * 0.30, height: h * 0.04),
-                     in: scene)
-        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.38),
-                     size: CGSize(width: w * 0.28, height: h * 0.03),
-                     in: scene)
+        // Chemin principal vertical (centre)
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.44, y: 0, width: w * 0.12, height: h * 0.93))
+        // Chemins horizontaux (croisements vers les maisons)
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.35, width: w * 0.64, height: h * 0.022))
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.49, width: w * 0.64, height: h * 0.022))
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.63, width: w * 0.64, height: h * 0.022))
+        addCleanPath(in: scene, rect: CGRect(x: w * 0.18, y: h * 0.79, width: w * 0.64, height: h * 0.022))
 
         decorateVillage(in: scene)
 
         let bScale = buildingScale(for: w)
-        let tallS = bScale * 0.36
-        let wideS = bScale * 0.42
-        let compactS = bScale * 0.50
+        let tallS = bScale
+        let wideS = bScale * 1.1
+        let compactS = bScale * 1.2
 
         // Row 5 (top) — Porte nord
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.92), width: 80, in: scene)
@@ -226,63 +223,63 @@ final class WorldBuilder {
         // Bordure gauche dense (x ~0.06) : 6 arbres
         for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
             let name = meTreeAssets[i % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.4,
+            let tree = PixelArtSprites.still(name: name, scale: treeScale,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 100)
+                ?? makeTree(height: 60)
             tree.position = CGPoint(x: w * 0.06, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
-            addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
+            addGroundShadow(under: tree, width: 18, height: 6)
             add(tree, to: scene)
         }
         // Deuxième rangée gauche (x ~0.16)
         for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
             let name = meTreeAssets[(i + 3) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.2,
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 0.85,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 90)
+                ?? makeTree(height: 50)
             tree.position = CGPoint(x: w * 0.16, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             tree.alpha = 0.9
-            addGroundShadow(under: tree, width: 36 * treeScale, height: 12 * treeScale)
+            addGroundShadow(under: tree, width: 14, height: 5)
             add(tree, to: scene)
         }
         // Bordure droite dense (x ~0.94)
         for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
             let name = meTreeAssets[(i + 5) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.4,
+            let tree = PixelArtSprites.still(name: name, scale: treeScale,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 100)
+                ?? makeTree(height: 60)
             tree.position = CGPoint(x: w * 0.94, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
-            addGroundShadow(under: tree, width: 42 * treeScale, height: 14 * treeScale)
+            addGroundShadow(under: tree, width: 18, height: 6)
             add(tree, to: scene)
         }
         // Deuxième rangée droite (x ~0.84)
         for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
             let name = meTreeAssets[(i + 7) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 1.2,
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * 0.85,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 90)
+                ?? makeTree(height: 50)
             tree.position = CGPoint(x: w * 0.84, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             tree.alpha = 0.9
-            addGroundShadow(under: tree, width: 36 * treeScale, height: 12 * treeScale)
+            addGroundShadow(under: tree, width: 14, height: 5)
             add(tree, to: scene)
         }
-        // Arbres intérieurs (zone jouable) — épars pour créer des couloirs
+        // Arbres intérieurs (zone jouable) — épars
         let scatterPositions: [(x: CGFloat, y: CGFloat, idx: Int)] = [
             (0.28, 0.80, 1), (0.72, 0.76, 3), (0.78, 0.28, 5),
             (0.24, 0.42, 7), (0.68, 0.60, 9)
         ]
         for p in scatterPositions {
             let tree = PixelArtSprites.still(name: meTreeAssets[p.idx % meTreeAssets.count],
-                                              scale: treeScale * 1.1,
+                                              scale: treeScale * 0.80,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 80)
+                ?? makeTree(height: 45)
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             tree.alpha = 0.92
-            addGroundShadow(under: tree, width: 34 * treeScale, height: 11 * treeScale)
+            addGroundShadow(under: tree, width: 12, height: 4)
             add(tree, to: scene)
         }
 
@@ -291,7 +288,7 @@ final class WorldBuilder {
             (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
         ]
         for p in corruptedTreePositions {
-            guard let tree = PixelArtSprites.still(name: "me_tree_5", scale: treeScale * p.scale * 1.3,
+            guard let tree = PixelArtSprites.still(name: "me_tree_5", scale: treeScale * p.scale,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
@@ -363,8 +360,8 @@ final class WorldBuilder {
     /// Scale dynamique des arbres pixel art de la forêt selon la largeur.
     /// Cible ~70 pt iPhone, ~110 pt iPad pour les arbres de bordure.
     private func forestTreeScale(for sceneWidth: CGFloat) -> CGFloat {
-        let s = sceneWidth / 700  // 0.57 iPhone 402 → 1.17 iPad 820
-        return max(0.6, min(1.5, s))
+        let s = sceneWidth / 2400
+        return max(0.22, min(0.45, s))
     }
 
     /// Place le jouet visible en forêt (si quête active)
@@ -424,38 +421,37 @@ final class WorldBuilder {
 private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = worldHeight > 0 ? worldHeight : scene.size.height
-    let sc: CGFloat = 1.2
 
-    // Fontaine centre-village
-    addPixelProp("me_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: sc * 1.4)
+    // Fontaine centre-village (144×96px → 0.45 ≈ 65×43pt)
+    addPixelProp("me_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: 0.45)
 
-    // Lampadaires le long du chemin
+    // Lampadaires le long du chemin (96×192px → 0.22 ≈ 21×42pt)
     let lampPositions: [(CGFloat, CGFloat)] = [
-        (0.40, 0.22), (0.60, 0.22), (0.40, 0.42), (0.60, 0.42),
-        (0.40, 0.60), (0.60, 0.60), (0.40, 0.76), (0.60, 0.76)
+        (0.42, 0.22), (0.58, 0.22), (0.42, 0.42), (0.58, 0.42),
+        (0.42, 0.60), (0.58, 0.60), (0.42, 0.76), (0.58, 0.76)
     ]
     for (i, p) in lampPositions.enumerated() {
-        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: sc * 1.3)
+        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: 0.22)
     }
 
-    // Arbres décoratifs disséminés
+    // Arbres décoratifs bordure village (96×144px → 0.42 ≈ 40×60pt)
     let treePositions: [(String, CGFloat, CGFloat)] = [
-        ("me_tree_1", 0.10, 0.14), ("me_tree_3", 0.90, 0.14),
-        ("me_tree_2", 0.10, 0.30), ("me_tree_4", 0.90, 0.30),
-        ("me_tree_5", 0.10, 0.52), ("me_tree_6", 0.90, 0.52),
-        ("me_tree_7", 0.10, 0.68), ("me_tree_8", 0.90, 0.68),
-        ("me_tree_9", 0.10, 0.84), ("me_tree_10", 0.90, 0.84)
+        ("me_tree_1", 0.08, 0.14), ("me_tree_3", 0.92, 0.14),
+        ("me_tree_2", 0.08, 0.30), ("me_tree_4", 0.92, 0.30),
+        ("me_tree_5", 0.08, 0.52), ("me_tree_6", 0.92, 0.52),
+        ("me_tree_7", 0.08, 0.68), ("me_tree_8", 0.92, 0.68),
+        ("me_tree_9", 0.08, 0.84), ("me_tree_10", 0.92, 0.84)
     ]
     for t in treePositions {
-        addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: sc * 1.5)
+        addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: 0.42)
     }
 
-    // Bancs
-    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.28), scale: sc)
-    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.54), scale: sc)
-    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: sc)
+    // Bancs (96×96px → 0.30 ≈ 29×29pt)
+    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.28), scale: 0.30)
+    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.54), scale: 0.30)
+    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: 0.30)
 
-    // Buissons fleuris autour des maisons
+    // Buissons fleuris (48×96px → 0.35 ≈ 17×34pt)
     let bushPositions: [(String, CGFloat, CGFloat)] = [
         ("me_flower_bush_1", 0.16, 0.35), ("me_flower_bush_2", 0.84, 0.35),
         ("me_flower_bush_3", 0.16, 0.63), ("me_flower_bush_4", 0.84, 0.63),
@@ -463,43 +459,42 @@ private func decorateVillage(in scene: SKScene) {
         ("me_flower_bush_2", 0.30, 0.17), ("me_flower_bush_3", 0.70, 0.17)
     ]
     for b in bushPositions {
-        addPixelProp(b.0, in: scene, at: CGPoint(x: w * b.1, y: h * b.2), scale: sc * 0.9)
+        addPixelProp(b.0, in: scene, at: CGPoint(x: w * b.1, y: h * b.2), scale: 0.35)
     }
 
-    // Tonneaux et chariot
-    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.49), scale: sc)
-    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.49), scale: sc)
-    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.44), scale: sc)
-    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.26), scale: sc * 1.2)
+    // Tonneaux (48×96px → 0.30 ≈ 14×29pt) + chariot (96×144px → 0.35)
+    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.49), scale: 0.30)
+    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.49), scale: 0.30)
+    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.44), scale: 0.30)
+    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.26), scale: 0.35)
 }
 
 private func decorateForestFloor(in scene: SKScene) {
     let w = scene.size.width
     let h = scene.size.height
-    let sc: CGFloat = 1.1
 
-    // Bois coupé et souches
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.22), scale: sc)
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.32), scale: sc * 0.9)
+    // Bois coupé (48×96px → 0.30 ≈ 14×29pt)
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.22), scale: 0.30)
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.32), scale: 0.28)
 
-    // Plantes / pousses
-    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.48), scale: sc)
-    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.85, y: h * 0.56), scale: sc)
-    addPixelProp("me_big_sprout_3", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.18), scale: sc * 0.8)
-    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.72), scale: sc * 0.85)
+    // Pousses (48×48px → 0.40 ≈ 19pt)
+    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.48), scale: 0.40)
+    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.85, y: h * 0.56), scale: 0.38)
+    addPixelProp("me_big_sprout_3", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.18), scale: 0.35)
+    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.72), scale: 0.36)
 
-    // Buissons fleuris éparpillés (sous-bois)
-    addPixelProp("me_flower_bush_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.68), scale: sc * 0.8)
-    addPixelProp("me_flower_bush_3", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.44), scale: sc * 0.8)
-    addPixelProp("me_flower_bush_5", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.82), scale: sc * 0.7)
+    // Buissons (48×96px → 0.30)
+    addPixelProp("me_flower_bush_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.68), scale: 0.28)
+    addPixelProp("me_flower_bush_3", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.44), scale: 0.28)
+    addPixelProp("me_flower_bush_5", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.82), scale: 0.25)
 
-    // Feu de camp (zone repos)
-    addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.30), scale: sc * 1.2)
+    // Feu de camp (48×96px → 0.35)
+    addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.30), scale: 0.35)
 
     // Fallback anciens props si existants
-    addPixelProp("forest_mushroom_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.58), scale: 0.55)
-    addPixelProp("forest_mushroom_2", in: scene, at: CGPoint(x: w * 0.75, y: h * 0.38), scale: 0.55)
-    addPixelProp("forest_stump_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.65), scale: 0.60)
+    addPixelProp("forest_mushroom_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.58), scale: 0.40)
+    addPixelProp("forest_mushroom_2", in: scene, at: CGPoint(x: w * 0.75, y: h * 0.38), scale: 0.40)
+    addPixelProp("forest_stump_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.65), scale: 0.45)
 }
 
     // MARK: - Forest Building Blocks
@@ -1693,6 +1688,20 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
 
 /// Trace un chemin de terre pixel art entre 2 points (vertical pour
 /// la rue principale du village). Tiles dirt aleatoires pour variete.
+private func addCleanPath(in scene: SKScene, rect: CGRect) {
+    let path = SKShapeNode(rect: rect, cornerRadius: 4)
+    path.fillColor = SKColor(red: 0.28, green: 0.20, blue: 0.12, alpha: 0.65)
+    path.strokeColor = SKColor(red: 0.22, green: 0.16, blue: 0.10, alpha: 0.30)
+    path.lineWidth = 1
+    path.zPosition = -8
+    add(path, to: scene)
+    let edge = SKShapeNode(rect: rect.insetBy(dx: 2, dy: 2), cornerRadius: 3)
+    edge.fillColor = SKColor(red: 0.32, green: 0.22, blue: 0.14, alpha: 0.25)
+    edge.strokeColor = .clear
+    edge.zPosition = -7
+    add(edge, to: scene)
+}
+
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
                           width: CGFloat) {
     let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
@@ -1727,9 +1736,9 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
     /// la maison devient un accessoire. On cible donc une vraie masse de
     /// bâtiment tout en gardant 3 colonnes lisibles en portrait.
     private func buildingScale(for sceneWidth: CGFloat) -> CGFloat {
-        let targetWidth = sceneWidth * 0.31
+        let targetWidth = sceneWidth * 0.14
         let s = targetWidth / 288
-        return max(0.40, min(0.58, s))
+        return max(0.12, min(0.22, s))
     }
 
     /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
@@ -1744,13 +1753,13 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
         if let sprite = PixelArtSprites.still(name: asset, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
             node = sprite
-            addGroundShadow(to: node, width: 720 * scale, height: 90 * scale, y: 12 * scale)
+            addGroundShadow(to: node, width: 160 * scale, height: 20 * scale, y: 4 * scale)
             // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {
                 let sign = SKLabelNode(text: label)
-                sign.fontSize = max(13, 28 * scale)
+                sign.fontSize = max(8, 14 * scale)
                 sign.verticalAlignmentMode = .center
-                sign.position = CGPoint(x: 0, y: 252 * scale)
+                sign.position = CGPoint(x: 0, y: 120 * scale)
                 sign.zPosition = 3
                 node.addChild(sign)
             }

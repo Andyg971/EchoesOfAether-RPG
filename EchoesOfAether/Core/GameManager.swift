@@ -187,21 +187,22 @@ final class GameManager {
     func update(deltaTime: TimeInterval) {
         combat.update(deltaTime: deltaTime)
 
-        // HP display
         hud.hpValue = "\u{2665} \(player.currentHP)/\(player.currentMaxHP)"
 
-        // Interaction hint — check every 0.15s
         hintUpdateTimer += deltaTime
         if hintUpdateTimer >= 0.15, state == .exploration {
             hintUpdateTimer = 0
             updateInteractionHint()
         }
 
-        // Minimap update every 0.1s during exploration
         minimapTimer += deltaTime
         if minimapTimer >= 0.10, state == .exploration {
             minimapTimer = 0
             updateMinimap()
+        }
+
+        if state == .exploration, let s = scene {
+            world.updateCamera(in: s.size)
         }
     }
 
@@ -241,29 +242,30 @@ final class GameManager {
     // MARK: - Exploration Tap Routing
 
     private func handleExplorationTap(_ point: CGPoint, in scene: SKScene) {
+        let wp = world.worldNode.convert(point, from: scene)
+
         if activeInterior != nil {
-            if tryInteriorInteraction(point, in: scene) { return }
+            if tryInteriorInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
             return
         }
 
-        // Cristal de sauvegarde — disponible dans toutes les zones jouables
-        if trySaveCrystalTap(point, in: scene) { return }
+        if trySaveCrystalTap(wp, in: scene) { return }
 
         switch phase {
         case .wake:
             return
 
         case .village:
-            if tryVillageInteraction(point, in: scene) { return }
+            if tryVillageInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
 
         case .forest:
-            if tryForestInteraction(point, in: scene) { return }
+            if tryForestInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
 
         case .shrine:
-            if point.x > scene.size.width * 0.55 && !player.bossDefeated {
+            if wp.x > scene.size.width * 0.55 && !player.bossDefeated {
                 startBossFight()
             } else {
                 tapAndMove(point, in: scene)
@@ -273,24 +275,25 @@ final class GameManager {
             tapAndMove(point, in: scene)
 
         case .act2:
-            if tryAct2VillageInteraction(point, in: scene) { return }
+            if tryAct2VillageInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
 
         case .ruins:
-            if tryRuinsInteraction(point, in: scene) { return }
+            if tryRuinsInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
 
         case .fallen:
-            break  // Pas d'interaction — écran de fin Act 2
+            break
 
         case .act3:
-            if tryAct3Interaction(point, in: scene) { return }
+            if tryAct3Interaction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
         }
     }
 
     private func trySaveCrystalTap(_ point: CGPoint, in scene: SKScene) -> Bool {
-        guard let crystal = scene.childNode(withName: "saveCrystal") else { return false }
+        guard let crystal = world.worldNode.childNode(withName: "saveCrystal")
+                ?? scene.childNode(withName: "saveCrystal") else { return false }
         guard point.distance(to: crystal.position) < 55 else { return false }
         triggerManualSave(crystalPosition: crystal.position, in: scene)
         return true
@@ -1452,7 +1455,8 @@ final class GameManager {
         }
 
         // Save crystal — affichage texte uniquement (icône cristal déjà visible)
-        if hint.isEmpty, let crystal = scene.childNode(withName: "saveCrystal"),
+        if hint.isEmpty, let crystal = world.worldNode.childNode(withName: "saveCrystal")
+                                        ?? scene.childNode(withName: "saveCrystal"),
            kaelPos.distance(to: crystal.position) < radius {
             hint = String(localized: "hint.saveCrystal")
         }
@@ -1460,7 +1464,8 @@ final class GameManager {
         hud.interactionHint = hint
 
         if let anchor = bubbleAnchor, let action = bubbleAction {
-            bubble.show(at: anchor, action: action)
+            let screenAnchor = scene.convert(anchor, from: world.worldNode)
+            bubble.show(at: screenAnchor, action: action)
         } else {
             bubble.hide()
         }
@@ -1508,8 +1513,10 @@ final class GameManager {
             (world.garen.position,   SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1)),
             (world.sage.position,    SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1))
         ].filter { !$0.position.equalTo(.zero) }
+        let worldSize = CGSize(width: scene.size.width,
+                               height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
         minimap.update(kaelPosition: world.kael.position,
-                       sceneSize: scene.size,
+                       sceneSize: worldSize,
                        npcs: npcs)
     }
 
@@ -1574,8 +1581,11 @@ final class GameManager {
     // MARK: - Helpers
 
     private func tapAndMove(_ point: CGPoint, in scene: SKScene) {
-        movement.move(world.kael, to: point, in: scene.size)
-        scene.addChild(ParticleFactory.tapMarker(at: point))
+        let worldPoint = world.worldNode.convert(point, from: scene)
+        let worldSize = CGSize(width: scene.size.width, height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
+        movement.move(world.kael, to: worldPoint, in: worldSize)
+        let marker = ParticleFactory.tapMarker(at: worldPoint)
+        world.worldNode.addChild(marker)
     }
 
     private func transition(to newState: GameState) {

@@ -14,6 +14,8 @@ final class WorldBuilder {
     let child: SKNode
     let villager: SKNode
 
+    let worldNode = SKNode()
+    private(set) var worldHeight: CGFloat = 0
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
@@ -32,42 +34,51 @@ final class WorldBuilder {
     }
 
     func build(in scene: SKScene) {
+        worldNode.name = "worldNode"
+        scene.addChild(worldNode)
         buildVillage(in: scene)
         for node in [kael, lyra, dorin, bram, mara, garen, sage, child, villager] {
-            scene.addChild(node)
+            worldNode.addChild(node)
         }
         layout(in: scene.size)
     }
 
     func layout(in size: CGSize) {
-        // Layout PNJ aligné avec la grille des maisons :
-        // Row haute  (h*0.75) : Country (Lyra) / Haunted (Dorin)
-        // Row mid    (h*0.62) : OneStory armurerie (Bram)
-        // Row basse  (h*0.48) : Japanese herboriste (Mara) / Country auberge (Sage)
-        // Chaque PNJ se tient juste DEVANT (au pied de) sa maison.
         let w = size.width
-        let h = size.height
+        let wh = worldHeight > 0 ? worldHeight : size.height
 
-        lyra.position    = CGPoint(x: w * 0.22, y: h * 0.57)  // devant Country
-        dorin.position   = CGPoint(x: w * 0.78, y: h * 0.56)  // devant Haunted
-        bram.position    = CGPoint(x: w * 0.50, y: h * 0.41)  // devant armurerie
-        mara.position    = CGPoint(x: w * 0.22, y: h * 0.25)  // devant Japanese
-        sage.position    = CGPoint(x: w * 0.78, y: h * 0.25)  // devant auberge
-        garen.position   = CGPoint(x: w * 0.50, y: h * 0.85)  // porte nord
-        // PNJ ambiants en bas
-        child.position   = CGPoint(x: w * 0.38, y: h * 0.18)
-        villager.position = CGPoint(x: w * 0.62, y: h * 0.18)
-        kael.position    = CGPoint(x: w * 0.50, y: h * 0.10)  // spawn centre bas
+        lyra.position    = CGPoint(x: w * 0.24, y: wh * 0.72)
+        dorin.position   = CGPoint(x: w * 0.76, y: wh * 0.72)
+        bram.position    = CGPoint(x: w * 0.50, y: wh * 0.55)
+        mara.position    = CGPoint(x: w * 0.24, y: wh * 0.40)
+        sage.position    = CGPoint(x: w * 0.76, y: wh * 0.40)
+        garen.position   = CGPoint(x: w * 0.50, y: wh * 0.90)
+        child.position   = CGPoint(x: w * 0.38, y: wh * 0.25)
+        villager.position = CGPoint(x: w * 0.62, y: wh * 0.25)
+        kael.position    = CGPoint(x: w * 0.50, y: wh * 0.08)
 
         [lyra, dorin, bram, mara, sage, garen, child, villager, kael].forEach {
             $0.zPosition = actorLayer(for: $0.position.y)
         }
     }
 
+    // MARK: - Camera
+
+    func updateCamera(in sceneSize: CGSize) {
+        guard worldHeight > sceneSize.height else { return }
+        let targetY = kael.position.y
+        let minY: CGFloat = 0
+        let maxY = worldHeight - sceneSize.height
+        let clamped = min(max(targetY - sceneSize.height / 2, minY), maxY)
+        worldNode.position.y = -clamped
+    }
+
     // MARK: - Zone Backgrounds
 
     func switchToForest(in scene: SKScene) {
         clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.06, blue: 0.04, alpha: 1)
         buildForest(in: scene)
@@ -75,7 +86,8 @@ final class WorldBuilder {
 
     func switchToShrine(in scene: SKScene) {
         clearBackdrop()
-        // PNJ village retirés visuellement quand on quitte le village.
+        worldHeight = scene.size.height
+        worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.07, alpha: 1)
         buildShrine(in: scene)
@@ -83,6 +95,7 @@ final class WorldBuilder {
 
     func switchToVillage(in scene: SKScene) {
         clearBackdrop()
+        worldNode.position = .zero
         scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
         buildVillage(in: scene)
@@ -90,6 +103,8 @@ final class WorldBuilder {
 
     func switchToRuins(in scene: SKScene) {
         clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.04, green: 0.02, blue: 0.03, alpha: 1)
         buildRuins(in: scene)
@@ -99,76 +114,90 @@ final class WorldBuilder {
 
     private func buildVillage(in scene: SKScene) {
         let w = scene.size.width
-        let h = scene.size.height
+        let h = scene.size.height * 2.5
+        worldHeight = h
 
         addTiledFloor(in: scene,
                       tileNames: ["village_grass_clean"],
                       fallbackColor: SKColor(red: 0.10, green: 0.20, blue: 0.10, alpha: 1),
                       tileScale: 0.75,
-                      z: -10)
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
 
-// Chemin de terre vertical traversant le village du bas (spawn)
-        // jusqu'à la porte nord. Largeur ~2 tiles, ~28 tiles de long.
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
-                     to: CGPoint(x: w * 0.50, y: h * 0.86),
-                     width: 78)
+                     to: CGPoint(x: w * 0.50, y: h * 0.92),
+                     width: 68)
 
-        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.39),
-                     size: CGSize(width: w * 0.34, height: h * 0.09),
+        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.55),
+                     size: CGSize(width: w * 0.30, height: h * 0.04),
                      in: scene)
+        addDirtPatch(at: CGPoint(x: w * 0.50, y: h * 0.38),
+                     size: CGSize(width: w * 0.28, height: h * 0.03),
+                     in: scene)
+
         decorateVillage(in: scene)
 
-        // --- Bâtiments ---
-        // Layout grille 3 colonnes pour iPhone ET iPad portrait.
-        // Scale dynamique calculé depuis scene.size pour cibler ~16% de
-        // largeur d'écran par maison, peu importe le device.
         let bScale = buildingScale(for: w)
-        let tallHouseScale = bScale * 0.38
-        let wideHouseScale = bScale * 0.48
-        let compactHouseScale = bScale * 0.58
+        let tallS = bScale * 0.36
+        let wideS = bScale * 0.42
+        let compactS = bScale * 0.50
 
-        // Ligne haute : 2 maisons aux extrémités, assez grandes pour lire
-        // comme de vrais bâtiments RPG, mais sous la zone HUD.
-        addVillageBuilding(asset: "village_house_victorian", scale: tallHouseScale,
+        // Row 5 (top) — Porte nord
+        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.92), width: 80, in: scene)
+
+        // Row 4 — Victorian (Lyra) + Haunted (Dorin)
+        addVillageBuilding(asset: "village_house_victorian", scale: tallS,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.66), in: scene)
-
-        addVillageBuilding(asset: "village_house_haunted", scale: tallHouseScale * 0.90,
+                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.80), in: scene)
+        addVillageBuilding(asset: "village_house_haunted", scale: tallS * 0.88,
                             fallbackW: 90, fallbackH: 65,
                             wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.64), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.80), in: scene)
 
-        // Ligne médiane : 1 maison centrale (armurerie)
-        addVillageBuilding(asset: "village_house_armory", scale: wideHouseScale,
+        // Row 3 — Country house (décoration) + Modern house (décoration)
+        addVillageBuilding(asset: "village_house_country", scale: wideS,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.49), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.64), in: scene)
+        addVillageBuilding(asset: "village_house_modern", scale: wideS,
+                            fallbackW: 76, fallbackH: 58,
+                            wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
+                            roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.64), in: scene)
 
-        // Ligne basse : herboriste + auberge.
-        addVillageBuilding(asset: "village_house_japanese", scale: compactHouseScale,
+        // Row 2 — Armurerie (Bram) centre
+        addVillageBuilding(asset: "village_house_armory", scale: wideS,
+                            fallbackW: 76, fallbackH: 58,
+                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
+                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.50), in: scene)
+
+        // Row 1 — Japanese herboriste (Mara) + Auberge (Sage)
+        addVillageBuilding(asset: "village_house_japanese", scale: compactS,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.33), in: scene)
-
-        addVillageBuilding(asset: "village_house_inn", scale: wideHouseScale,
+                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.36), in: scene)
+        addVillageBuilding(asset: "village_house_inn", scale: wideS,
                             fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.33), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.36), in: scene)
 
-        // Porte nord — placée au-dessus des maisons hautes, centre écran
-        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.87), width: 80, in: scene)
+        // Row 0 — One Story house (décoration) bas du village
+        addVillageBuilding(asset: "village_house_onestory", scale: compactS,
+                            fallbackW: 62, fallbackH: 50,
+                            wallColor: SKColor(red: 0.18, green: 0.16, blue: 0.12, alpha: 1),
+                            roofColor: SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.18), in: scene)
 
+        addSaveCrystal(at: CGPoint(x: w * 0.76, y: h * 0.18), in: scene)
 
-        // Cristal de sauvegarde (bas gauche, facile d'accès)
-        addSaveCrystal(at: CGPoint(x: w * 0.12, y: h * 0.22), in: scene)
-
-        addAtmosphere(ParticleFactory.ambientDust(in: scene.size), to: scene)
+        addAtmosphere(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)), to: scene)
     }
 
     // MARK: - Forêt d'Ébène
@@ -357,7 +386,7 @@ final class WorldBuilder {
         toy.addChild(label)
         JuiceEngine.float(label, distance: 4)
 
-        scene.addChild(toy)
+        worldNode.addChild(toy)
         backdropNodes.append(toy)
         toyMarker = toy
     }
@@ -375,21 +404,21 @@ final class WorldBuilder {
 
 private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
-    let h = scene.size.height
+    let h = worldHeight > 0 ? worldHeight : scene.size.height
     let props: [(String, CGFloat, CGFloat, CGFloat)] = [
-        ("ext_fence", 0.12, 0.62, 0.65), ("ext_fence", 0.32, 0.62, 0.65),
-        ("ext_fence", 0.68, 0.61, 0.65), ("ext_fence", 0.88, 0.61, 0.65),
-        ("ext_sign", 0.43, 0.63, 0.70), ("ext_mailbox", 0.70, 0.27, 0.60),
-        ("village_flower_yellow", 0.16, 0.28, 0.55), ("village_flower_pink", 0.28, 0.28, 0.55),
-        ("village_sunflower", 0.72, 0.27, 0.55), ("village_flower_red", 0.84, 0.27, 0.55),
-        ("ext_gate", 0.50, 0.80, 0.70), ("ext_pebbles", 0.58, 0.20, 0.55),
-        ("village_lantern_1", 0.36, 0.55, 0.60), ("village_lantern_2", 0.64, 0.55, 0.60),
-        ("village_barrel_1", 0.14, 0.42, 0.55), ("village_barrel_2", 0.86, 0.42, 0.55),
-        ("village_crate_1", 0.40, 0.42, 0.50), ("village_crate_2", 0.60, 0.28, 0.50),
-        ("village_rock_1", 0.08, 0.18, 0.50), ("village_rock_2", 0.92, 0.18, 0.50),
-        ("village_rock_3", 0.34, 0.12, 0.45),
-        ("village_bench", 0.50, 0.22, 0.55),
-        ("village_fountain", 0.50, 0.70, 0.50)
+        ("village_fountain", 0.50, 0.50, 0.50),
+        ("village_lantern_1", 0.36, 0.70, 0.55), ("village_lantern_2", 0.64, 0.70, 0.55),
+        ("village_lantern_1", 0.36, 0.34, 0.55), ("village_lantern_2", 0.64, 0.34, 0.55),
+        ("village_barrel_1", 0.14, 0.58, 0.50), ("village_barrel_2", 0.86, 0.58, 0.50),
+        ("village_crate_1", 0.40, 0.44, 0.45), ("village_crate_2", 0.60, 0.30, 0.45),
+        ("village_flower_yellow", 0.16, 0.30, 0.50), ("village_flower_pink", 0.28, 0.30, 0.50),
+        ("village_sunflower", 0.72, 0.30, 0.50), ("village_flower_red", 0.84, 0.30, 0.50),
+        ("village_flower_yellow", 0.16, 0.62, 0.50), ("village_flower_pink", 0.84, 0.62, 0.50),
+        ("village_rock_1", 0.08, 0.15, 0.45), ("village_rock_2", 0.92, 0.15, 0.45),
+        ("village_rock_3", 0.34, 0.10, 0.40),
+        ("village_bench", 0.50, 0.28, 0.50),
+        ("ext_fence", 0.12, 0.76, 0.55), ("ext_fence", 0.88, 0.76, 0.55),
+        ("ext_sign", 0.43, 0.85, 0.60), ("ext_pebbles", 0.58, 0.16, 0.50)
     ]
     for item in props {
         addPixelProp(item.0, in: scene, at: CGPoint(x: w * item.1, y: h * item.2), scale: item.3)
@@ -1032,13 +1061,14 @@ private func decorateForestFloor(in scene: SKScene) {
     // MARK: - House Interiors
 
     func houseDoorPosition(for kind: HouseInteriorKind, in size: CGSize) -> CGPoint {
+        let wh = worldHeight > 0 ? worldHeight : size.height
         switch kind {
         case .armory:
-            return CGPoint(x: size.width * 0.50, y: size.height * 0.49 + 12)
+            return CGPoint(x: size.width * 0.50, y: wh * 0.50 + 12)
         case .apothecary:
-            return CGPoint(x: size.width * 0.22, y: size.height * 0.33 + 12)
+            return CGPoint(x: size.width * 0.24, y: wh * 0.36 + 12)
         case .inn:
-            return CGPoint(x: size.width * 0.78, y: size.height * 0.33 + 12)
+            return CGPoint(x: size.width * 0.76, y: wh * 0.36 + 12)
         }
     }
 
@@ -1049,6 +1079,8 @@ private func decorateForestFloor(in scene: SKScene) {
     func switchToInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
         activeInterior = kind
         clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.035, green: 0.027, blue: 0.025, alpha: 1)
         buildInterior(kind, in: scene)
@@ -1371,7 +1403,7 @@ private func decorateForestFloor(in scene: SKScene) {
     // MARK: - Helpers
 
     private func add(_ node: SKNode, to scene: SKScene) {
-        scene.addChild(node)
+        worldNode.addChild(node)
         backdropNodes.append(node)
     }
 
@@ -1381,22 +1413,23 @@ private func availableTiles(_ preferred: [String], fallback: [String]) -> [Strin
 }
 
 private func addTiledFloor(in scene: SKScene, tileNames: [String], fallbackColor: SKColor,
-                           tileScale: CGFloat, tint: SKColor? = nil, z: CGFloat) {
+                           tileScale: CGFloat, tint: SKColor? = nil, z: CGFloat,
+                           overrideSize: CGSize? = nil) {
     let available = availableTiles(tileNames, fallback: ["tile_grass", "tile_grass_dark"])
+    let floorSize = overrideSize ?? CGSize(width: scene.size.width + 96,
+                                            height: scene.size.height + 96)
     if let floor = PixelArtSprites.tiledFloor(tileNames: available,
-                                              in: CGSize(width: scene.size.width + 96,
-                                                         height: scene.size.height + 96),
+                                              in: floorSize,
                                               tileScale: tileScale,
                                               tint: tint) {
         floor.position = CGPoint(x: -48, y: -48)
         floor.zPosition = z
         add(floor, to: scene)
     } else {
-        let ground = SKShapeNode(rectOf: CGSize(width: scene.size.width + 96,
-                                                height: scene.size.height + 96))
+        let ground = SKShapeNode(rectOf: floorSize)
         ground.fillColor = fallbackColor
         ground.strokeColor = .clear
-        ground.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        ground.position = CGPoint(x: floorSize.width / 2, y: floorSize.height / 2)
         ground.zPosition = z
         add(ground, to: scene)
     }
@@ -1518,6 +1551,6 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     private func addAtmosphere(_ node: SKNode, to scene: SKScene) {
         atmosphereNode?.removeFromParent()
         atmosphereNode = node
-        scene.addChild(node)
+        worldNode.addChild(node)
     }
 }

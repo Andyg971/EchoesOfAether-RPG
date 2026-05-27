@@ -454,6 +454,62 @@ private func decorateVillage(in scene: SKScene) {
     addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.58), scale: 0.28)
+
+    // Fleurs (parsemées, naturelles)
+    let flowers: [(String, CGFloat, CGFloat)] = [
+        ("me_flower_red", 0.12, 0.18), ("me_flower_pink", 0.18, 0.20),
+        ("me_flower_yellow", 0.82, 0.18), ("me_flower_white", 0.88, 0.20),
+        ("me_flower_blue", 0.14, 0.33), ("me_flower_red", 0.86, 0.33),
+        ("me_sunflower", 0.30, 0.32), ("me_sunflower", 0.70, 0.32),
+        ("me_flower_pink", 0.16, 0.62), ("me_flower_yellow", 0.84, 0.62),
+        ("me_flower_white", 0.12, 0.75), ("me_flower_blue", 0.88, 0.75),
+        ("me_flower_red", 0.22, 0.86), ("me_flower_pink", 0.78, 0.86)
+    ]
+    for f in flowers {
+        addPixelProp(f.0, in: scene, at: CGPoint(x: w * f.1, y: h * f.2), scale: 0.32)
+    }
+
+    // Vases fleurs (près des maisons / portes)
+    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.36), scale: 0.30)
+    addPixelProp("me_vase_pink", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.36), scale: 0.30)
+    addPixelProp("me_vase_yellow", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.64), scale: 0.30)
+    addPixelProp("me_vase_sunflower", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.64), scale: 0.30)
+
+    // Pousses naturelles (entre maisons)
+    addPixelProp("me_big_sprout_4", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.26), scale: 0.35)
+    addPixelProp("me_big_sprout_5", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.26), scale: 0.35)
+    addPixelProp("me_big_sprout_6", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.58), scale: 0.35)
+    addPixelProp("me_big_sprout_7", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.58), scale: 0.35)
+    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.74), scale: 0.32)
+    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.74), scale: 0.32)
+
+    // Champignons
+    addPixelProp("me_mushrooms_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.50), scale: 0.32)
+    addPixelProp("me_mushrooms_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.50), scale: 0.32)
+
+    // Cabanes à oiseaux
+    addPixelProp("me_birdhouse_blue", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.42), scale: 0.32)
+    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.66), scale: 0.32)
+
+    // Statues (touche RPG)
+    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.46), scale: 0.34)
+    addPixelProp("me_statue_grass_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.46), scale: 0.34)
+    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.88), scale: 0.32)
+
+    // Paniers et pommes (marché)
+    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.48), scale: 0.32)
+    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.48), scale: 0.32)
+    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.45), scale: 0.30)
+
+    // Bois empilé + banc de bois coupé
+    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.20, y: h * 0.50), scale: 0.32)
+    addPixelProp("me_cut_wood_bench", in: scene, at: CGPoint(x: w * 0.80, y: h * 0.50), scale: 0.32)
+
+    // Chariot vide (variante)
+    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.26), scale: 0.32)
+
+    // Marmite suspendue (foyer)
+    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.82), scale: 0.32)
 }
 
 private func decorateForestFloor(in scene: SKScene) {

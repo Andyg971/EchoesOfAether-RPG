@@ -485,9 +485,27 @@ private func decorateVillage(in scene: SKScene) {
     addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.58), scale: 0.28)
 
-    // ═══ ÉTANGS (coins du village, bordures) ═══
-    addWaterPond(in: scene, at: CGPoint(x: w * 0.06, y: h * 0.55), size: CGSize(width: 60, height: 40))
-    addWaterPond(in: scene, at: CGPoint(x: w * 0.94, y: h * 0.55), size: CGSize(width: 60, height: 40))
+    // ═══ ÉTANG MV — vraie crevasse d'eau avec bordure sable (asset MV) ═══
+    addPixelProp("mv_water_pond", in: scene, at: CGPoint(x: w * 0.06, y: h * 0.50), scale: 0.55)
+    addPixelProp("mv_water_pond", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.50), scale: 0.55)
+
+    // ═══ ARBRES EN POT (asset MV) — devant entrées ═══
+    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.36), scale: 0.45)
+    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.36), scale: 0.45)
+    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.64), scale: 0.45)
+    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.64), scale: 0.45)
+
+    // ═══ CHALET MV — maison isolée, bord village (loin des autres) ═══
+    addPixelProp("mv_chalet", in: scene, at: CGPoint(x: w * 0.06, y: h * 0.78), scale: 0.32)
+
+    // ═══ CHAMPS DE CULTURE MV — zone ferme, coin haut-gauche ═══
+    addPixelProp("mv_field", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.08), scale: 0.55)
+
+    // ═══ JARDINIÈRE SURÉLEVÉE MV — coin opposé ═══
+    addPixelProp("mv_garden_bed", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.08), scale: 0.50)
+
+    // ═══ RANGÉE DE FLEURS MV — devant champ ═══
+    addPixelProp("mv_flowers_row", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.04), scale: 0.40)
 
     // ═══ STATUES — flanquent porte nord (espacées de la porte) ═══
     addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.95), scale: 0.32)

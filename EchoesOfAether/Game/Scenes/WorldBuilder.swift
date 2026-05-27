@@ -229,10 +229,16 @@ final class WorldBuilder {
                      size: CGSize(width: w * 0.28, height: h * 0.18),
                      in: scene)
 
-// --- Arbres normaux (bordures) — Modern Exteriors ---
-        let treeScale = forestTreeScale(for: w)
-        let meTreeAssets = ["me_tree_1", "me_tree_2", "me_tree_3", "me_tree_4", "me_tree_5",
-                            "me_tree_6", "me_tree_7", "me_tree_8", "me_tree_9", "me_tree_10"]
+// --- Arbres MV (T26 light + T27 dark forest) ---
+        let treeScale = forestTreeScale(for: w) * 0.55  // MV trees plus gros que ME (~150-200px)
+        let meTreeAssets = ["mv_forest_tree_1", "mv_forest_tree_2", "mv_forest_tree_3",
+                            "mv_forest_tree_4", "mv_forest_tree_wide", "mv_forest_pines",
+                            "mv_dark_tree", "mv_tall_pine", "mv_dead_tree",
+                            "mv_oak_tree", "mv_apple_tree_tall"]
+
+        // 2 statues angel dans clairières
+        addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.30), scale: 0.28)
+        addPixelProp("me_angel_statue_2", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.65), scale: 0.28)
         // Bordure gauche dense (x ~0.06) : 6 arbres
         for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
             let name = meTreeAssets[i % meTreeAssets.count]
@@ -301,7 +307,7 @@ final class WorldBuilder {
             (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
         ]
         for p in corruptedTreePositions {
-            guard let tree = PixelArtSprites.still(name: "me_tree_5", scale: treeScale * p.scale,
+            guard let tree = PixelArtSprites.still(name: "mv_dead_tree", scale: treeScale * p.scale,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * p.x, y: h * p.y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)

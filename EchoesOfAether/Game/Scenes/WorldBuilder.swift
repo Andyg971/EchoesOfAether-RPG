@@ -47,17 +47,17 @@ final class WorldBuilder {
         let w = size.width
         let wh = worldHeight > 0 ? worldHeight : size.height
 
-        // NPC placés sur le chemin / zones ouvertes, jamais sur les maisons.
-        // Maisons aux x=0.24/0.76, y=0.18/0.36/0.50/0.64/0.80 → éviter ces zones.
-        lyra.position    = CGPoint(x: w * 0.38, y: wh * 0.74)  // devant Victorian
-        dorin.position   = CGPoint(x: w * 0.62, y: wh * 0.74)  // devant Haunted
-        bram.position    = CGPoint(x: w * 0.40, y: wh * 0.46)  // chemin armurerie
-        mara.position    = CGPoint(x: w * 0.38, y: wh * 0.30)  // devant Japanese
-        sage.position    = CGPoint(x: w * 0.62, y: wh * 0.30)  // devant Inn
-        garen.position   = CGPoint(x: w * 0.50, y: wh * 0.86)  // porte nord
-        child.position   = CGPoint(x: w * 0.42, y: wh * 0.12)
-        villager.position = CGPoint(x: w * 0.58, y: wh * 0.12)
-        kael.position    = CGPoint(x: w * 0.50, y: wh * 0.05)
+        // NPC sur chemin/devant leur shop selon nouveau layout village.
+        // Maisons aux x=0.20-0.80, zones distinctes par rôle.
+        lyra.position    = CGPoint(x: w * 0.30, y: wh * 0.76)  // devant Victorian (quartier haut)
+        dorin.position   = CGPoint(x: w * 0.70, y: wh * 0.76)  // devant Haunted (quartier haut)
+        bram.position    = CGPoint(x: w * 0.50, y: wh * 0.56)  // devant armurerie centre
+        mara.position    = CGPoint(x: w * 0.30, y: wh * 0.52)  // devant herboriste
+        sage.position    = CGPoint(x: w * 0.70, y: wh * 0.52)  // devant auberge
+        garen.position   = CGPoint(x: w * 0.50, y: wh * 0.89)  // porte nord (sentinelle)
+        child.position   = CGPoint(x: w * 0.42, y: wh * 0.42)  // joue sur place centrale
+        villager.position = CGPoint(x: w * 0.58, y: wh * 0.42)  // place centrale
+        kael.position    = CGPoint(x: w * 0.50, y: wh * 0.04)  // spawn entrée sud
 
         [lyra, dorin, bram, mara, sage, garen, child, villager, kael].forEach {
             $0.zPosition = actorLayer(for: $0.position.y)
@@ -114,92 +114,114 @@ final class WorldBuilder {
 
     // MARK: - Village Solis
 
+    /// VILLAGE SOLIS — design game-dev (assets uniquement)
+    /// Layout vertical scrollable (worldHeight = 2.5x screen):
+    ///   y=0-15%   ENTRÉE SUD (porte, panneau, allée principale)
+    ///   y=15-30%  RÉSIDENTIEL BAS (2 maisons + jardins)
+    ///   y=30-50%  PLACE CENTRALE (statue, marché, bancs, fontaine)
+    ///   y=50-70%  ZONE COMMERÇANTE (armurier, herboriste, auberge)
+    ///   y=70-90%  QUARTIER HAUT (maire + maisons hautes)
+    ///   y=90-100% SORTIE NORD (porte fortifiée vers forêt)
     private func buildVillage(in scene: SKScene) {
         let w = scene.size.width
         let h = scene.size.height * 2.5
         worldHeight = h
 
-        // Base solide verte + tile herbe asset par-dessus (1 seule, uniforme)
-        let baseGround = SKShapeNode(rectOf: CGSize(width: w + 96, height: h + 96))
-        baseGround.fillColor = SKColor(red: 0.36, green: 0.58, blue: 0.30, alpha: 1)
-        baseGround.strokeColor = .clear
-        baseGround.position = CGPoint(x: (w + 96) / 2 - 48, y: (h + 96) / 2 - 48)
-        baseGround.zPosition = -11
-        add(baseGround, to: scene)
-
+        // ── SOL : A2 grass tile (vert uniforme avec brins d'herbe) ──
         addTiledFloor(in: scene,
-                      tileNames: ["me_landscape_grass"],
+                      tileNames: ["a2_grass"],
                       fallbackColor: SKColor(red: 0.36, green: 0.58, blue: 0.30, alpha: 1),
                       tileScale: 1.0,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Chemin principal vertical (centre seul, plus de croisements)
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.47, y: 0, width: w * 0.06, height: h * 0.93))
+        // ── CHEMIN PRINCIPAL : a2_dirt vertical centre (entrée→sortie) ──
+        addAssetPath(in: scene, rect: CGRect(x: w * 0.46, y: 0, width: w * 0.08, height: h * 0.95),
+                      tileName: "a2_dirt")
+
+        // ── PLACE CENTRALE : a2_stone pavé (zone marché) ──
+        addAssetPath(in: scene, rect: CGRect(x: w * 0.32, y: h * 0.38, width: w * 0.36, height: h * 0.10),
+                      tileName: "a2_stone")
+
+        // ── ÉTANG : a2_water (bord ouest) ──
+        addAssetPath(in: scene, rect: CGRect(x: w * 0.02, y: h * 0.42, width: w * 0.08, height: h * 0.06),
+                      tileName: "a2_water")
 
         decorateVillage(in: scene)
 
         let bScale = buildingScale(for: w)
-        let tallS = bScale
-        let wideS = bScale * 1.1
-        let compactS = bScale * 1.2
 
-        // Row 5 (top) — Porte nord
-        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.92), width: 80, in: scene)
-
-        // Row 4 — Victorian (Lyra) + Haunted (Dorin)
-        addVillageBuilding(asset: "village_house_victorian", scale: tallS,
+        // ═══════════ MAISONS ═══════════
+        // Quartier nord (y=0.85) : maisons importantes + maire
+        buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.95), width: 80, in: scene)
+        addVillageBuilding(asset: "village_house_victorian", scale: bScale * 1.1,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.80), in: scene)
-        addVillageBuilding(asset: "village_house_haunted", scale: tallS * 0.88,
+                            label: nil, at: CGPoint(x: w * 0.20, y: h * 0.82), in: scene)
+        addVillageBuilding(asset: "village_house_haunted", scale: bScale,
                             fallbackW: 90, fallbackH: 65,
                             wallColor: SKColor(red: 0.25, green: 0.20, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.50, green: 0.40, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.80), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.82), in: scene)
+        // Chalet maire au centre haut (entre 2 maisons, recule sur le chemin)
+        addPixelProp("mv_chalet", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.78), scale: 0.30)
 
-        // Row 3 — Country house (décoration) + Modern house (décoration)
-        addVillageBuilding(asset: "village_house_country", scale: wideS,
+        // Zone commerçante (y=0.55-0.68)
+        addVillageBuilding(asset: "village_house_armory", scale: bScale * 1.1,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.64), in: scene)
-        addVillageBuilding(asset: "village_house_modern", scale: wideS,
-                            fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
-                            roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.64), in: scene)
-
-        // Row 2 — Armurerie (Bram) centre
-        addVillageBuilding(asset: "village_house_armory", scale: wideS,
-                            fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
-                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.50), in: scene)
-
-        // Row 1 — Japanese herboriste (Mara) + Auberge (Sage)
-        addVillageBuilding(asset: "village_house_japanese", scale: compactS,
+                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.63), in: scene)
+        addVillageBuilding(asset: "village_house_japanese", scale: bScale * 1.2,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.36), in: scene)
-        addVillageBuilding(asset: "village_house_inn", scale: wideS,
+                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.58), in: scene)
+        addVillageBuilding(asset: "village_house_inn", scale: bScale * 1.1,
                             fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.76, y: h * 0.36), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.58), in: scene)
 
-        // Row 0 — One Story house (décoration) bas du village
-        addVillageBuilding(asset: "village_house_onestory", scale: compactS,
+        // Résidentiel bas (y=0.22) : maisons habitants
+        addVillageBuilding(asset: "village_house_country", scale: bScale * 1.1,
+                            fallbackW: 76, fallbackH: 58,
+                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
+                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.22), in: scene)
+        addVillageBuilding(asset: "village_house_modern", scale: bScale * 1.1,
+                            fallbackW: 76, fallbackH: 58,
+                            wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
+                            roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.22), in: scene)
+        addVillageBuilding(asset: "village_house_onestory", scale: bScale * 1.2,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.18, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.24, y: h * 0.18), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.32), in: scene)
 
-        addSaveCrystal(at: CGPoint(x: w * 0.76, y: h * 0.18), in: scene)
+        // Crystal save proche auberge (UX : safe spot évident)
+        addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.50), in: scene)
 
         addAtmosphere(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)), to: scene)
+    }
+
+    /// Helper : tile rect avec un asset donné (path, water, stone, etc.)
+    private func addAssetPath(in scene: SKScene, rect: CGRect, tileName: String) {
+        let tileSize: CGFloat = 24
+        let cols = max(1, Int(ceil(rect.width / tileSize)))
+        let rows = max(1, Int(ceil(rect.height / tileSize)))
+        for r in 0..<rows {
+            for c in 0..<cols {
+                guard let tile = PixelArtSprites.still(name: tileName, scale: 0.5,
+                                                        anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+                tile.position = CGPoint(x: rect.minX + (CGFloat(c) + 0.5) * tileSize,
+                                         y: rect.minY + (CGFloat(r) + 0.5) * tileSize)
+                tile.zPosition = -9.5
+                add(tile, to: scene)
+            }
+        }
     }
 
     // MARK: - Forêt d'Ébène
@@ -440,6 +462,109 @@ final class WorldBuilder {
 private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+    // ═══ ZONE 1 : ENTRÉE SUD (y=0-15%) — accueil joueur ═══
+    addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.04), scale: 0.40)
+    addPixelProp("me_sign_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.04), scale: 0.40)
+    addPixelProp("me_lamp_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.10), scale: 0.24)
+    addPixelProp("me_lamp_1", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.10), scale: 0.24)
+    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.13), scale: 0.42)
+    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.13), scale: 0.42)
+    addPixelProp("me_flower_red", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.07), scale: 0.30)
+    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.56, y: h * 0.07), scale: 0.30)
+
+    // ═══ ZONE 2 : RÉSIDENTIEL BAS (y=15-30%) — habitations + jardins ═══
+    // Devant maison gauche (country)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.31, y: h * 0.20), scale: 0.28)
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.22, y: h * 0.17), scale: 0.30)
+    addPixelProp("me_flower_pink", in: scene, at: CGPoint(x: w * 0.16, y: h * 0.18), scale: 0.32)
+    addPixelProp("me_flower_white", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.18), scale: 0.32)
+    // Devant maison droite (modern)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.69, y: h * 0.20), scale: 0.28)
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.78, y: h * 0.17), scale: 0.30)
+    addPixelProp("me_flower_blue", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.18), scale: 0.32)
+    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.18), scale: 0.32)
+    // Devant maison centre (onestory)
+    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.28), scale: 0.32)
+    addPixelProp("me_birdhouse_blue", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.28), scale: 0.32)
+
+    // ═══ ZONE 3 : PLACE CENTRALE (y=38-48%) — cœur du village ═══
+    // Statue principale (remplace fontaine — placée au centre du pavé)
+    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.43), scale: 0.55)
+    // Lampadaires aux 4 coins de la place
+    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.40), scale: 0.24)
+    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.40), scale: 0.24)
+    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.46), scale: 0.24)
+    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.46), scale: 0.24)
+    // Bancs place centrale
+    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.36), scale: 0.32)
+    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.36), scale: 0.32)
+    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.50), scale: 0.30)
+    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.50), scale: 0.30)
+    // Marché : chariot + paniers/pommes (proche place)
+    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.44), scale: 0.32)
+    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.44), scale: 0.32)
+    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.50), scale: 0.30)
+    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.50), scale: 0.30)
+    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.46), scale: 0.28)
+
+    // ═══ ZONE 4 : COMMERÇANTE (y=55-68%) — devant chaque shop ═══
+    // Armurier (Bram) - centre - tonneaux + bois
+    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.56), scale: 0.30)
+    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.56), scale: 0.30)
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.60), scale: 0.30)
+    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.56, y: h * 0.60), scale: 0.30)
+    // Herboriste (Mara) - gauche - plantes
+    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.55), scale: 0.32)
+    addPixelProp("me_vase_yellow", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.55), scale: 0.32)
+    addPixelProp("me_mushrooms_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.60), scale: 0.30)
+    addPixelProp("me_big_sprout_4", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.60), scale: 0.32)
+    // Auberge (Sage) - droite - tonneaux + marmite
+    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.55), scale: 0.30)
+    addPixelProp("me_barrel_4", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.55), scale: 0.30)
+    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.60), scale: 0.32)
+    addPixelProp("me_lemonade_stand", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.62), scale: 0.36)
+
+    // ═══ ZONE 5 : QUARTIER HAUT (y=70-90%) — maisons + statues ═══
+    // Statues flanquent chalet maire
+    addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.76), scale: 0.20)
+    addPixelProp("me_angel_statue_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.76), scale: 0.20)
+    // Devant maisons hautes
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.80), scale: 0.28)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.80), scale: 0.28)
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.16, y: h * 0.83), scale: 0.30)
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.83), scale: 0.30)
+
+    // ═══ ZONE 6 : SORTIE NORD (y=90-100%) — porte fortifiée ═══
+    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.35, y: h * 0.95), scale: 0.40)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.92), scale: 0.24)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.92), scale: 0.24)
+
+    // ═══ BORDURES (forêt à gauche, ferme à droite) ═══
+    // Forêt gauche : arbres MV denses
+    let leftTrees: [(String, CGFloat)] = [
+        ("mv_forest_tree_1", 0.10), ("mv_forest_tree_2", 0.18),
+        ("mv_forest_tree_3", 0.28), ("mv_forest_tree_4", 0.38),
+        ("mv_forest_pines", 0.50), ("mv_dark_tree", 0.62),
+        ("mv_oak_tree", 0.72), ("mv_forest_tree_wide", 0.86),
+        ("mv_apple_tree_tall", 0.94)
+    ]
+    for (asset, y) in leftTrees {
+        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.05, y: h * y), scale: 0.32)
+    }
+    // Ferme droite : verger + champ
+    addPixelProp("mv_field", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.30), scale: 0.45)
+    addPixelProp("mv_garden_bed", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.42), scale: 0.40)
+    addPixelProp("mv_flowers_row", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.50), scale: 0.32)
+    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.66), scale: 0.42)
+    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.72), scale: 0.28)
+    let rightTrees: [(String, CGFloat)] = [
+        ("mv_forest_tree_1", 0.08), ("mv_apple_tree_tall", 0.20),
+        ("mv_oak_tree", 0.80), ("mv_forest_tree_3", 0.92)
+    ]
+    for (asset, y) in rightTrees {
+        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.95, y: h * y), scale: 0.32)
+    }
 
     // Arbres (bordures denses + intérieur)
     let treePositions: [(String, CGFloat, CGFloat)] = [
@@ -1270,11 +1395,11 @@ private func decorateForestFloor(in scene: SKScene) {
         let wh = worldHeight > 0 ? worldHeight : size.height
         switch kind {
         case .armory:
-            return CGPoint(x: size.width * 0.50, y: wh * 0.50 + 12)
+            return CGPoint(x: size.width * 0.50, y: wh * 0.63 + 12)
         case .apothecary:
-            return CGPoint(x: size.width * 0.24, y: wh * 0.36 + 12)
+            return CGPoint(x: size.width * 0.22, y: wh * 0.58 + 12)
         case .inn:
-            return CGPoint(x: size.width * 0.76, y: wh * 0.36 + 12)
+            return CGPoint(x: size.width * 0.78, y: wh * 0.58 + 12)
         }
     }
 

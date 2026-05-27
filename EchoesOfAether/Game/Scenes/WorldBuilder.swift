@@ -134,15 +134,8 @@ final class WorldBuilder {
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Chemin principal vertical (centre)
+        // Chemin principal vertical (centre seul, plus de croisements)
         addCleanPath(in: scene, rect: CGRect(x: w * 0.47, y: 0, width: w * 0.06, height: h * 0.93))
-        // Petits accès terre vers chaque maison
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.30, y: h * 0.36, width: w * 0.20, height: 12))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.50, y: h * 0.36, width: w * 0.20, height: 12))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.30, y: h * 0.64, width: w * 0.20, height: 12))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.50, y: h * 0.64, width: w * 0.20, height: 12))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.30, y: h * 0.80, width: w * 0.20, height: 12))
-        addCleanPath(in: scene, rect: CGRect(x: w * 0.50, y: h * 0.80, width: w * 0.20, height: 12))
 
         decorateVillage(in: scene)
 
@@ -496,11 +489,29 @@ private func decorateVillage(in scene: SKScene) {
     addWaterPond(in: scene, at: CGPoint(x: w * 0.06, y: h * 0.55), size: CGSize(width: 60, height: 40))
     addWaterPond(in: scene, at: CGPoint(x: w * 0.94, y: h * 0.55), size: CGSize(width: 60, height: 40))
 
-    // ═══ STATUE angel — entrée village (porte nord) ═══
-    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.92), scale: 0.34)
+    // ═══ STATUES — flanquent porte nord (espacées de la porte) ═══
+    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.95), scale: 0.32)
+    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.95), scale: 0.32)
 
-    // ═══ STATUE grey — coin bas opposé ═══
-    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.92), scale: 0.34)
+    // ═══ ZONE HAUTE (porte nord) — remplissage arbres + props ═══
+    addPixelProp("me_tree_5", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.90), scale: 0.42)
+    addPixelProp("me_tree_3", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.90), scale: 0.42)
+    addPixelProp("me_tree_7", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.96), scale: 0.40)
+    addPixelProp("me_tree_2", in: scene, at: CGPoint(x: w * 0.76, y: h * 0.96), scale: 0.40)
+    addPixelProp("me_tree_9", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.98), scale: 0.40)
+    addPixelProp("me_tree_4", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.98), scale: 0.40)
+
+    // Props zone haute
+    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.93), scale: 0.30)
+    addPixelProp("me_barrel_4", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.93), scale: 0.30)
+    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.90), scale: 0.32)
+    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.90), scale: 0.30)
+    addPixelProp("me_flower_red", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.88), scale: 0.32)
+    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.88), scale: 0.32)
+    addPixelProp("me_sunflower", in: scene, at: CGPoint(x: w * 0.20, y: h * 0.85), scale: 0.34)
+    addPixelProp("me_sunflower", in: scene, at: CGPoint(x: w * 0.80, y: h * 0.85), scale: 0.34)
+    addPixelProp("me_birdhouse_big", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.95), scale: 0.34)
+    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.95), scale: 0.34)
 
     // ═══ CABANE — coin haut-gauche isolé (loin centre) ═══
     addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.06), scale: 0.45)

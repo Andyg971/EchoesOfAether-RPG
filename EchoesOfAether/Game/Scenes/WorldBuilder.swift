@@ -47,15 +47,17 @@ final class WorldBuilder {
         let w = size.width
         let wh = worldHeight > 0 ? worldHeight : size.height
 
-        lyra.position    = CGPoint(x: w * 0.24, y: wh * 0.72)
-        dorin.position   = CGPoint(x: w * 0.76, y: wh * 0.72)
-        bram.position    = CGPoint(x: w * 0.50, y: wh * 0.55)
-        mara.position    = CGPoint(x: w * 0.24, y: wh * 0.40)
-        sage.position    = CGPoint(x: w * 0.76, y: wh * 0.40)
-        garen.position   = CGPoint(x: w * 0.50, y: wh * 0.90)
-        child.position   = CGPoint(x: w * 0.38, y: wh * 0.25)
-        villager.position = CGPoint(x: w * 0.62, y: wh * 0.25)
-        kael.position    = CGPoint(x: w * 0.50, y: wh * 0.08)
+        // NPC placés sur le chemin / zones ouvertes, jamais sur les maisons.
+        // Maisons aux x=0.24/0.76, y=0.18/0.36/0.50/0.64/0.80 → éviter ces zones.
+        lyra.position    = CGPoint(x: w * 0.38, y: wh * 0.74)  // devant Victorian
+        dorin.position   = CGPoint(x: w * 0.62, y: wh * 0.74)  // devant Haunted
+        bram.position    = CGPoint(x: w * 0.40, y: wh * 0.46)  // chemin armurerie
+        mara.position    = CGPoint(x: w * 0.38, y: wh * 0.30)  // devant Japanese
+        sage.position    = CGPoint(x: w * 0.62, y: wh * 0.30)  // devant Inn
+        garen.position   = CGPoint(x: w * 0.50, y: wh * 0.86)  // porte nord
+        child.position   = CGPoint(x: w * 0.42, y: wh * 0.12)
+        villager.position = CGPoint(x: w * 0.58, y: wh * 0.12)
+        kael.position    = CGPoint(x: w * 0.50, y: wh * 0.05)
 
         [lyra, dorin, bram, mara, sage, garen, child, villager, kael].forEach {
             $0.zPosition = actorLayer(for: $0.position.y)

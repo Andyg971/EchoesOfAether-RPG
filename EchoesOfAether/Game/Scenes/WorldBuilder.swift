@@ -415,7 +415,7 @@ private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = worldHeight > 0 ? worldHeight : scene.size.height
 
-    // ═══ ARBRES (15 total, bordures + intérieur) ═══
+    // Arbres (bordures + intérieur)
     let treePositions: [(String, CGFloat, CGFloat)] = [
         ("me_tree_1", 0.08, 0.14), ("me_tree_3", 0.92, 0.14),
         ("me_tree_2", 0.08, 0.30), ("me_tree_4", 0.92, 0.30),
@@ -430,61 +430,30 @@ private func decorateVillage(in scene: SKScene) {
         addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: 0.42)
     }
 
-    // ═══ PLACE CENTRALE — Fontaine ═══
+    // Fontaine centre
     addPixelProp("me_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: 0.45)
-    addFountainSparkles(at: CGPoint(x: w * 0.50, y: h * 0.50), in: scene)
 
-    // ═══ LAMPADAIRES ═══ (avec halo lumineux)
+    // Lampadaires
     let lampPositions: [(CGFloat, CGFloat)] = [
         (0.42, 0.22), (0.58, 0.22), (0.42, 0.42), (0.58, 0.42),
         (0.42, 0.60), (0.58, 0.60), (0.42, 0.76), (0.58, 0.76)
     ]
     for (i, p) in lampPositions.enumerated() {
-        let pos = CGPoint(x: w * p.0, y: h * p.1)
-        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: pos, scale: 0.22)
-        addLampGlow(at: CGPoint(x: pos.x, y: pos.y + 36), in: scene)
+        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: 0.22)
     }
 
-    // ═══ ÉTAL DE MARCHÉ (centre) ═══
-    addMarketStall(at: CGPoint(x: w * 0.65, y: h * 0.46), in: scene)
-    addMarketStall(at: CGPoint(x: w * 0.35, y: h * 0.46), in: scene)
-
-    // ═══ CHARIOT MARCHAND ═══
+    // Chariot marchand
     addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.26), scale: 0.35)
 
-    // ═══ BANCS (lieux de repos) ═══
+    // Bancs
     addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.50), scale: 0.30)
     addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.42), scale: 0.30)
     addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: 0.30)
 
-    // ═══ TONNEAUX (accessoires) ═══
+    // Tonneaux
     addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.58), scale: 0.28)
-
-    // ═══ FUMÉE DES CHEMINÉES ═══
-    addChimneySmoke(at: CGPoint(x: w * 0.24, y: h * 0.80 + 70), in: scene)
-    addChimneySmoke(at: CGPoint(x: w * 0.76, y: h * 0.80 + 70), in: scene)
-    addChimneySmoke(at: CGPoint(x: w * 0.76, y: h * 0.36 + 70), in: scene)
-    addChimneySmoke(at: CGPoint(x: w * 0.50, y: h * 0.50 + 70), in: scene)
-
-    // ═══ BANDEROLES suspendues (entre lampadaires) ═══
-    addBanner(from: CGPoint(x: w * 0.42, y: h * 0.42 + 42),
-              to: CGPoint(x: w * 0.58, y: h * 0.42 + 42),
-              color: SKColor(red: 0.85, green: 0.30, blue: 0.30, alpha: 1), in: scene)
-    addBanner(from: CGPoint(x: w * 0.42, y: h * 0.60 + 42),
-              to: CGPoint(x: w * 0.58, y: h * 0.60 + 42),
-              color: SKColor(red: 0.30, green: 0.55, blue: 0.85, alpha: 1), in: scene)
-
-    // ═══ ENSEIGNES SHOPS ═══
-    addShopSign(at: CGPoint(x: w * 0.50, y: h * 0.50 + 24), text: "⚔", in: scene)
-    addShopSign(at: CGPoint(x: w * 0.24, y: h * 0.36 + 24), text: "🌿", in: scene)
-    addShopSign(at: CGPoint(x: w * 0.76, y: h * 0.36 + 24), text: "🍺", in: scene)
-
-    // ═══ POULES (vie animée) ═══
-    addChicken(at: CGPoint(x: w * 0.28, y: h * 0.22), in: scene)
-    addChicken(at: CGPoint(x: w * 0.72, y: h * 0.22), in: scene)
-    addChicken(at: CGPoint(x: w * 0.40, y: h * 0.55), in: scene)
 }
 
 private func decorateForestFloor(in scene: SKScene) {
@@ -1701,12 +1670,25 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
 
 /// Trace un chemin de terre pixel art entre 2 points (vertical pour
 /// la rue principale du village). Tiles dirt aleatoires pour variete.
+/// Chemin construit à partir de tiles d'asset (me_path_1..6).
 private func addCleanPath(in scene: SKScene, rect: CGRect) {
-    let path = SKShapeNode(rect: rect, cornerRadius: 6)
-    path.fillColor = SKColor(red: 0.55, green: 0.45, blue: 0.30, alpha: 0.45)
-    path.strokeColor = .clear
-    path.zPosition = -8
-    add(path, to: scene)
+    let tileSize: CGFloat = 24  // 48px × 0.5 scale = 24pt par tile
+    let cols = max(1, Int(ceil(rect.width / tileSize)))
+    let rows = max(1, Int(ceil(rect.height / tileSize)))
+    var rng = SystemRandomNumberGenerator()
+    for r in 0..<rows {
+        for c in 0..<cols {
+            let idx = Int.random(in: 1...6, using: &rng)
+            let pos = CGPoint(x: rect.minX + (CGFloat(c) + 0.5) * tileSize,
+                              y: rect.minY + (CGFloat(r) + 0.5) * tileSize)
+            guard let tile = PixelArtSprites.still(name: "me_path_\(idx)",
+                                                    scale: 0.5,
+                                                    anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+            tile.position = pos
+            tile.zPosition = -8
+            add(tile, to: scene)
+        }
+    }
 }
 
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
@@ -1815,9 +1797,8 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         worldNode.addChild(node)
     }
 
-    // MARK: - Vie Village (style RPG Octopath/FF7)
+    // MARK: - Sol plat (fond uni, sans tiles répétitives)
 
-    /// Sol vert plat avec variations subtiles, sans grille tile.
     private func addFlatGroundVillage(in scene: SKScene, size: CGSize) {
         let base = SKShapeNode(rectOf: size)
         base.fillColor = SKColor(red: 0.32, green: 0.55, blue: 0.28, alpha: 1)
@@ -1825,29 +1806,6 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         base.position = CGPoint(x: size.width / 2 - 48, y: size.height / 2 - 48)
         base.zPosition = -10
         add(base, to: scene)
-
-        // Variations organiques : taches d'herbe légèrement plus foncées
-        for _ in 0..<60 {
-            let patch = SKShapeNode(ellipseOf: CGSize(width: CGFloat.random(in: 40...90),
-                                                       height: CGFloat.random(in: 24...50)))
-            patch.fillColor = SKColor(red: 0.26, green: 0.48, blue: 0.22, alpha: 0.35)
-            patch.strokeColor = .clear
-            patch.position = CGPoint(x: CGFloat.random(in: -48...size.width - 48),
-                                      y: CGFloat.random(in: -48...size.height - 48))
-            patch.zPosition = -9.5
-            add(patch, to: scene)
-        }
-        // Touffes claires
-        for _ in 0..<40 {
-            let patch = SKShapeNode(ellipseOf: CGSize(width: CGFloat.random(in: 20...40),
-                                                       height: CGFloat.random(in: 12...24)))
-            patch.fillColor = SKColor(red: 0.42, green: 0.65, blue: 0.32, alpha: 0.4)
-            patch.strokeColor = .clear
-            patch.position = CGPoint(x: CGFloat.random(in: -48...size.width - 48),
-                                      y: CGFloat.random(in: -48...size.height - 48))
-            patch.zPosition = -9.4
-            add(patch, to: scene)
-        }
     }
 
     private func addFlatGroundForest(in scene: SKScene, size: CGSize) {
@@ -1857,263 +1815,5 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         base.position = CGPoint(x: size.width / 2 - 48, y: size.height / 2 - 48)
         base.zPosition = -10
         add(base, to: scene)
-
-        for _ in 0..<40 {
-            let patch = SKShapeNode(ellipseOf: CGSize(width: CGFloat.random(in: 50...100),
-                                                       height: CGFloat.random(in: 30...60)))
-            patch.fillColor = SKColor(red: 0.06, green: 0.16, blue: 0.08, alpha: 0.45)
-            patch.strokeColor = .clear
-            patch.position = CGPoint(x: CGFloat.random(in: -48...size.width - 48),
-                                      y: CGFloat.random(in: -48...size.height - 48))
-            patch.zPosition = -9.5
-            add(patch, to: scene)
-        }
-    }
-
-    /// Halo lumineux jaune sous lampadaire
-    private func addLampGlow(at position: CGPoint, in scene: SKScene) {
-        let glow = SKShapeNode(circleOfRadius: 22)
-        glow.fillColor = SKColor(red: 1.0, green: 0.85, blue: 0.4, alpha: 0.18)
-        glow.strokeColor = .clear
-        glow.glowWidth = 8
-        glow.position = position
-        glow.zPosition = -2
-        glow.blendMode = .add
-        add(glow, to: scene)
-        JuiceEngine.pulse(glow, scale: 1.10)
-    }
-
-    /// Particules d'eau sur fontaine
-    private func addFountainSparkles(at position: CGPoint, in scene: SKScene) {
-        for i in 0..<6 {
-            let drop = SKShapeNode(circleOfRadius: 1.5)
-            drop.fillColor = SKColor(red: 0.6, green: 0.85, blue: 1.0, alpha: 0.8)
-            drop.strokeColor = .clear
-            drop.position = position
-            drop.zPosition = 5
-            add(drop, to: scene)
-            let angle = CGFloat(i) * (.pi / 3)
-            let dx = cos(angle) * 12
-            let dy = sin(angle) * 8 + 4
-            let arc = SKAction.sequence([
-                .group([.moveBy(x: dx, y: dy, duration: 0.5),
-                        .fadeAlpha(to: 0, duration: 0.5)]),
-                .move(to: position, duration: 0),
-                .fadeAlpha(to: 0.8, duration: 0)
-            ])
-            drop.run(.repeatForever(arc))
-        }
-    }
-
-    /// Étal de marché : 2 tonneaux + planche + tissu coloré
-    private func addMarketStall(at position: CGPoint, in scene: SKScene) {
-        let stall = SKNode()
-        stall.position = position
-        stall.zPosition = propLayer(for: position.y, in: scene.size.height)
-
-        // Tissu/auvent rouge
-        let cloth = SKShapeNode(rectOf: CGSize(width: 38, height: 18), cornerRadius: 2)
-        cloth.fillColor = SKColor(red: 0.75, green: 0.20, blue: 0.20, alpha: 1)
-        cloth.strokeColor = SKColor(red: 0.40, green: 0.10, blue: 0.10, alpha: 0.6)
-        cloth.lineWidth = 1
-        cloth.position = CGPoint(x: 0, y: 22)
-        stall.addChild(cloth)
-
-        // Rayures blanches
-        for i in 0..<3 {
-            let stripe = SKShapeNode(rectOf: CGSize(width: 3, height: 18))
-            stripe.fillColor = .white
-            stripe.strokeColor = .clear
-            stripe.position = CGPoint(x: -12 + CGFloat(i) * 12, y: 22)
-            stripe.alpha = 0.7
-            stall.addChild(stripe)
-        }
-
-        // Planche
-        let board = SKShapeNode(rectOf: CGSize(width: 42, height: 6), cornerRadius: 1)
-        board.fillColor = SKColor(red: 0.40, green: 0.27, blue: 0.15, alpha: 1)
-        board.strokeColor = .clear
-        board.position = CGPoint(x: 0, y: 8)
-        stall.addChild(board)
-
-        // Pieds
-        for x in [-18, 18] {
-            let leg = SKShapeNode(rectOf: CGSize(width: 3, height: 14))
-            leg.fillColor = SKColor(red: 0.30, green: 0.20, blue: 0.10, alpha: 1)
-            leg.strokeColor = .clear
-            leg.position = CGPoint(x: CGFloat(x), y: -2)
-            stall.addChild(leg)
-        }
-
-        // Marchandises sur la planche (3 petits objets colorés)
-        let colors: [SKColor] = [
-            SKColor(red: 0.85, green: 0.50, blue: 0.20, alpha: 1),
-            SKColor(red: 0.50, green: 0.20, blue: 0.55, alpha: 1),
-            SKColor(red: 0.20, green: 0.60, blue: 0.30, alpha: 1)
-        ]
-        for (i, c) in colors.enumerated() {
-            let item = SKShapeNode(circleOfRadius: 3)
-            item.fillColor = c
-            item.strokeColor = .clear
-            item.position = CGPoint(x: -10 + CGFloat(i) * 10, y: 13)
-            stall.addChild(item)
-        }
-
-        add(stall, to: scene)
-    }
-
-    /// Fumée animée au-dessus d'une cheminée
-    private func addChimneySmoke(at position: CGPoint, in scene: SKScene) {
-        let emitter = SKNode()
-        emitter.position = position
-        emitter.zPosition = 8
-        add(emitter, to: scene)
-
-        let spawn = SKAction.run { [weak emitter] in
-            guard let emitter else { return }
-            let puff = SKShapeNode(circleOfRadius: CGFloat.random(in: 3...5))
-            puff.fillColor = SKColor(white: 0.85, alpha: 0.55)
-            puff.strokeColor = .clear
-            puff.blendMode = .alpha
-            emitter.addChild(puff)
-            puff.run(.sequence([
-                .group([
-                    .moveBy(x: CGFloat.random(in: -8...8), y: 28, duration: 2.4),
-                    .scale(to: 2.2, duration: 2.4),
-                    .fadeAlpha(to: 0, duration: 2.4)
-                ]),
-                .removeFromParent()
-            ]))
-        }
-        emitter.run(.repeatForever(.sequence([spawn, .wait(forDuration: 0.6)])))
-    }
-
-    /// Banderole horizontale entre 2 points avec petits drapeaux
-    private func addBanner(from a: CGPoint, to b: CGPoint, color: SKColor, in scene: SKScene) {
-        // Corde
-        let rope = SKShapeNode()
-        let path = CGMutablePath()
-        path.move(to: a)
-        let mid = CGPoint(x: (a.x + b.x) / 2, y: min(a.y, b.y) - 6)
-        path.addQuadCurve(to: b, control: mid)
-        rope.path = path
-        rope.strokeColor = SKColor(red: 0.20, green: 0.14, blue: 0.08, alpha: 0.8)
-        rope.lineWidth = 1
-        rope.zPosition = 9
-        add(rope, to: scene)
-
-        // Petits drapeaux
-        let count = 6
-        for i in 1..<count {
-            let t = CGFloat(i) / CGFloat(count)
-            let x = a.x + (b.x - a.x) * t
-            let y = (a.y + (b.y - a.y) * t) - 3
-            let flag = SKShapeNode()
-            let fp = CGMutablePath()
-            fp.move(to: .zero)
-            fp.addLine(to: CGPoint(x: 4, y: -8))
-            fp.addLine(to: CGPoint(x: -4, y: -8))
-            fp.closeSubpath()
-            flag.path = fp
-            flag.fillColor = i % 2 == 0 ? color : color.withAlphaComponent(0.7)
-            flag.strokeColor = .clear
-            flag.position = CGPoint(x: x, y: y)
-            flag.zPosition = 10
-            add(flag, to: scene)
-            let sway = SKAction.sequence([
-                .rotate(toAngle: 0.12, duration: 1.2),
-                .rotate(toAngle: -0.12, duration: 1.2)
-            ])
-            sway.timingMode = .easeInEaseOut
-            flag.run(.repeatForever(sway))
-        }
-    }
-
-    /// Petite enseigne avec icône au-dessus d'une porte
-    private func addShopSign(at position: CGPoint, text: String, in scene: SKScene) {
-        let sign = SKNode()
-        sign.position = position
-        sign.zPosition = 6
-
-        let plank = SKShapeNode(rectOf: CGSize(width: 20, height: 14), cornerRadius: 2)
-        plank.fillColor = SKColor(red: 0.35, green: 0.22, blue: 0.12, alpha: 1)
-        plank.strokeColor = SKColor(red: 0.55, green: 0.40, blue: 0.20, alpha: 0.8)
-        plank.lineWidth = 1
-        sign.addChild(plank)
-
-        let label = SKLabelNode(text: text)
-        label.fontSize = 10
-        label.verticalAlignmentMode = .center
-        label.horizontalAlignmentMode = .center
-        sign.addChild(label)
-
-        // Petit chainon vers le mur
-        let hook = SKShapeNode(rectOf: CGSize(width: 1, height: 4))
-        hook.fillColor = SKColor(white: 0.3, alpha: 0.8)
-        hook.position = CGPoint(x: 0, y: 9)
-        sign.addChild(hook)
-
-        add(sign, to: scene)
-    }
-
-    /// Petite poule qui se déplace lentement
-    private func addChicken(at position: CGPoint, in scene: SKScene) {
-        let chicken = SKNode()
-        chicken.position = position
-        chicken.zPosition = propLayer(for: position.y, in: scene.size.height)
-
-        // Corps
-        let body = SKShapeNode(ellipseOf: CGSize(width: 8, height: 6))
-        body.fillColor = SKColor(white: 0.96, alpha: 1)
-        body.strokeColor = SKColor(white: 0.6, alpha: 0.4)
-        body.lineWidth = 0.5
-        chicken.addChild(body)
-
-        // Tête
-        let head = SKShapeNode(circleOfRadius: 2.5)
-        head.fillColor = SKColor(white: 0.96, alpha: 1)
-        head.strokeColor = .clear
-        head.position = CGPoint(x: 4, y: 3)
-        chicken.addChild(head)
-
-        // Crête rouge
-        let comb = SKShapeNode(circleOfRadius: 1)
-        comb.fillColor = SKColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 1)
-        comb.strokeColor = .clear
-        comb.position = CGPoint(x: 4, y: 5)
-        chicken.addChild(comb)
-
-        // Bec
-        let beak = SKShapeNode(circleOfRadius: 0.8)
-        beak.fillColor = SKColor(red: 0.90, green: 0.65, blue: 0.20, alpha: 1)
-        beak.strokeColor = .clear
-        beak.position = CGPoint(x: 6, y: 2.5)
-        chicken.addChild(beak)
-
-        // Petite ombre
-        let shadow = SKShapeNode(ellipseOf: CGSize(width: 10, height: 3))
-        shadow.fillColor = SKColor(white: 0, alpha: 0.18)
-        shadow.strokeColor = .clear
-        shadow.position = CGPoint(x: 0, y: -4)
-        shadow.zPosition = -1
-        chicken.addChild(shadow)
-
-        add(chicken, to: scene)
-
-        // Marche aléatoire
-        let wander = SKAction.run { [weak chicken] in
-            guard let chicken else { return }
-            let dx = CGFloat.random(in: -25...25)
-            let dy = CGFloat.random(in: -15...15)
-            chicken.run(.moveBy(x: dx, y: dy, duration: 2.0))
-        }
-        chicken.run(.repeatForever(.sequence([wander, .wait(forDuration: 3.0)])))
-
-        // Petit bobbing (la tête)
-        let bob = SKAction.sequence([
-            .moveBy(x: 0, y: 1, duration: 0.4),
-            .moveBy(x: 0, y: -1, duration: 0.4)
-        ])
-        head.run(.repeatForever(bob))
     }
 }

@@ -460,8 +460,8 @@ private func decorateVillage(in scene: SKScene) {
         addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: 0.42)
     }
 
-    // Fontaine centre
-    addPixelProp("me_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: 0.45)
+    // Statue centrale place du village (remplace fontaine)
+    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: 0.50)
 
     // Lampadaires
     let lampPositions: [(CGFloat, CGFloat)] = [
@@ -472,12 +472,12 @@ private func decorateVillage(in scene: SKScene) {
         addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: 0.22)
     }
 
-    // Chariot marchand
-    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.26), scale: 0.35)
+    // Chariot marchand (bord village, espacé)
+    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.16), scale: 0.32)
 
-    // Bancs
-    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.50), scale: 0.30)
-    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.42), scale: 0.30)
+    // Bancs (place centrale, autour statue mais espacés)
+    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.52), scale: 0.30)
+    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.40), scale: 0.30)
     addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: 0.30)
 
     // Tonneaux
@@ -583,25 +583,23 @@ private func decorateVillage(in scene: SKScene) {
     addPixelProp("me_birdhouse_blue", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.42), scale: 0.32)
     addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.66), scale: 0.32)
 
-    // Statues (touche RPG)
-    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.46), scale: 0.34)
-    addPixelProp("me_statue_grass_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.46), scale: 0.34)
-    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.88), scale: 0.32)
+    // Statues grass animaux (bordures, loin du centre)
+    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.20), scale: 0.30)
+    addPixelProp("me_statue_grass_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.20), scale: 0.30)
 
-    // Paniers et pommes (marché)
-    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.48), scale: 0.32)
-    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.48), scale: 0.32)
-    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.45), scale: 0.30)
+    // Paniers et pommes (zone marchand, loin centre)
+    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.28), scale: 0.30)
+    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.22), scale: 0.28)
 
-    // Bois empilé + banc de bois coupé
-    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.20, y: h * 0.50), scale: 0.32)
-    addPixelProp("me_cut_wood_bench", in: scene, at: CGPoint(x: w * 0.80, y: h * 0.50), scale: 0.32)
+    // Bois empilé (bord village)
+    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.72), scale: 0.30)
+    addPixelProp("me_cut_wood_bench", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.72), scale: 0.30)
 
-    // Chariot vide (variante)
-    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.26), scale: 0.32)
+    // Chariot vide (bord opposé au chariot plein)
+    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.74), scale: 0.30)
 
-    // Marmite suspendue (foyer)
-    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.82), scale: 0.32)
+    // Marmite suspendue (bord)
+    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.86), scale: 0.30)
 }
 
 private func decorateForestFloor(in scene: SKScene) {

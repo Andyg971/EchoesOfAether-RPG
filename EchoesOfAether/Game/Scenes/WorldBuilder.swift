@@ -492,44 +492,36 @@ private func decorateVillage(in scene: SKScene) {
     addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.40), scale: 0.30)
     addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.58), scale: 0.28)
 
-    // ═══ CLÔTURES (autour de 4 maisons clés) ═══
-    addFenceRect(in: scene, at: CGPoint(x: w * 0.24, y: h * 0.36), size: CGSize(width: 100, height: 70))
-    addFenceRect(in: scene, at: CGPoint(x: w * 0.76, y: h * 0.36), size: CGSize(width: 100, height: 70))
-    addFenceRect(in: scene, at: CGPoint(x: w * 0.24, y: h * 0.80), size: CGSize(width: 100, height: 70))
-    addFenceRect(in: scene, at: CGPoint(x: w * 0.76, y: h * 0.80), size: CGSize(width: 100, height: 70))
+    // ═══ ÉTANGS (coins du village, bordures) ═══
+    addWaterPond(in: scene, at: CGPoint(x: w * 0.06, y: h * 0.55), size: CGSize(width: 60, height: 40))
+    addWaterPond(in: scene, at: CGPoint(x: w * 0.94, y: h * 0.55), size: CGSize(width: 60, height: 40))
 
-    // ═══ ÉTANG (eau tiles asset) ═══
-    addWaterPond(in: scene, at: CGPoint(x: w * 0.12, y: h * 0.50), size: CGSize(width: 72, height: 48))
-    addWaterPond(in: scene, at: CGPoint(x: w * 0.88, y: h * 0.50), size: CGSize(width: 72, height: 48))
+    // ═══ STATUE angel — entrée village (porte nord) ═══
+    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.92), scale: 0.34)
 
-    // ═══ ESCALIERS (élévation visuelle place centrale) ═══
-    addPixelProp("me_stairs", in: scene, at: CGPoint(x: w * 0.45, y: h * 0.43), scale: 0.40)
-    addPixelProp("me_stairs", in: scene, at: CGPoint(x: w * 0.55, y: h * 0.43), scale: 0.40)
+    // ═══ STATUE grey — coin bas opposé ═══
+    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.92), scale: 0.34)
 
-    // ═══ STATUES (asset, replace anciennes) ═══
-    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.48), scale: 0.32)
-    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.48), scale: 0.32)
+    // ═══ CABANE — coin haut-gauche isolé (loin centre) ═══
+    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.06), scale: 0.45)
 
-    // ═══ MAILBOXES (devant chaque maison) ═══
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.34), scale: 0.30)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.34), scale: 0.30)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.78), scale: 0.30)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.78), scale: 0.30)
+    // ═══ LEMONADE STAND — bord village ═══
+    addPixelProp("me_lemonade_stand", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.06), scale: 0.42)
 
-    // ═══ PANNEAUX ═══
-    addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.04), scale: 0.40)  // entrée
-    addPixelProp("me_sign_2", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.32), scale: 0.32)
-    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.32), scale: 0.32)
+    // ═══ MAILBOXES (1 seul par maison, à l'écart de la porte) ═══
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.30), scale: 0.28)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.30), scale: 0.28)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.74), scale: 0.28)
+    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.74), scale: 0.28)
 
-    // ═══ STAND + CABANE ═══
-    addPixelProp("me_lemonade_stand", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.46), scale: 0.40)
-    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.46), scale: 0.40)
+    // ═══ PANNEAUX (entrée + porte nord) ═══
+    addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.05), scale: 0.36)
+    addPixelProp("me_sign_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.05), scale: 0.36)
+    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.96), scale: 0.36)
 
-    // ═══ FLEURS SUSPENDUES (devant maisons) ═══
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.42), scale: 0.32)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.42), scale: 0.32)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.72), scale: 0.32)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.72), scale: 0.32)
+    // ═══ FLEURS SUSPENDUES (1 par grande maison, devant porte) ═══
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.31), scale: 0.30)
+    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.76, y: h * 0.31), scale: 0.30)
 
     // Fleurs partout (zones ouvertes entre maisons et chemin)
     let flowers: [(String, CGFloat, CGFloat)] = [

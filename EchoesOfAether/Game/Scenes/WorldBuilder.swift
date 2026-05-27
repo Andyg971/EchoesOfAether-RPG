@@ -1727,6 +1727,7 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
 /// Trace un chemin de terre pixel art entre 2 points (vertical pour
 /// la rue principale du village). Tiles dirt aleatoires pour variete.
 /// Chemin construit à partir de tiles d'asset (me_path_1..6).
+/// zPosition très bas pour passer sous tous les props/maisons.
 private func addCleanPath(in scene: SKScene, rect: CGRect) {
     let tileSize: CGFloat = 24  // 48px × 0.5 scale = 24pt par tile
     let cols = max(1, Int(ceil(rect.width / tileSize)))
@@ -1741,7 +1742,7 @@ private func addCleanPath(in scene: SKScene, rect: CGRect) {
                                                     scale: 0.5,
                                                     anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
             tile.position = pos
-            tile.zPosition = -8
+            tile.zPosition = -9.8
             add(tile, to: scene)
         }
     }

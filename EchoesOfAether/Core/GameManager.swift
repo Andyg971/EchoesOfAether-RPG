@@ -325,7 +325,7 @@ final class GameManager {
     private func tryVillageInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
         if tryHouseDoorInteraction(point, in: scene) { return true }
 
-        let radius: CGFloat = 90
+        let radius: CGFloat = 32
 
         if point.distance(to: world.dorin.position) < radius {
             openDorinDialogue(scene: scene)
@@ -985,7 +985,7 @@ final class GameManager {
     // MARK: - Act 2 Village NPC interactions
 
     private func tryAct2VillageInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
-        let radius: CGFloat = 90
+        let radius: CGFloat = 32
 
         if point.distance(to: world.lyra.position) < radius {
             transition(to: .dialogue)

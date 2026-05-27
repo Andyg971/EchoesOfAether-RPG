@@ -119,11 +119,17 @@ final class WorldBuilder {
         let h = scene.size.height * 2.5
         worldHeight = h
 
-        // Sol herbe avec tiles ME uniformes (4 variantes pour casser pattern)
+        // Base solide verte + tile herbe asset par-dessus (1 seule, uniforme)
+        let baseGround = SKShapeNode(rectOf: CGSize(width: w + 96, height: h + 96))
+        baseGround.fillColor = SKColor(red: 0.36, green: 0.58, blue: 0.30, alpha: 1)
+        baseGround.strokeColor = .clear
+        baseGround.position = CGPoint(x: (w + 96) / 2 - 48, y: (h + 96) / 2 - 48)
+        baseGround.zPosition = -11
+        add(baseGround, to: scene)
+
         addTiledFloor(in: scene,
-                      tileNames: ["me_grass_clean_1", "me_grass_clean_2",
-                                  "me_grass_clean_3", "me_grass_clean_4"],
-                      fallbackColor: SKColor(red: 0.32, green: 0.55, blue: 0.28, alpha: 1),
+                      tileNames: ["me_landscape_grass"],
+                      fallbackColor: SKColor(red: 0.36, green: 0.58, blue: 0.30, alpha: 1),
                       tileScale: 1.0,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
@@ -209,12 +215,18 @@ final class WorldBuilder {
         let w = scene.size.width
         let h = scene.size.height
 
+        let forestBase = SKShapeNode(rectOf: CGSize(width: w + 96, height: h + 96))
+        forestBase.fillColor = SKColor(red: 0.12, green: 0.26, blue: 0.14, alpha: 1)
+        forestBase.strokeColor = .clear
+        forestBase.position = CGPoint(x: (w + 96) / 2 - 48, y: (h + 96) / 2 - 48)
+        forestBase.zPosition = -11
+        add(forestBase, to: scene)
+
         addTiledFloor(in: scene,
-                      tileNames: ["me_grass_clean_1", "me_grass_clean_2",
-                                  "me_grass_clean_3", "me_grass_clean_4"],
-                      fallbackColor: SKColor(red: 0.10, green: 0.22, blue: 0.12, alpha: 1),
+                      tileNames: ["me_landscape_grass"],
+                      fallbackColor: SKColor(red: 0.12, green: 0.26, blue: 0.14, alpha: 1),
                       tileScale: 1.0,
-                      tint: SKColor(red: 0.02, green: 0.10, blue: 0.04, alpha: 1),
+                      tint: SKColor(red: 0.04, green: 0.14, blue: 0.06, alpha: 1),
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
         addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),

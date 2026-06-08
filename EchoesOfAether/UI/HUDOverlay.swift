@@ -21,9 +21,11 @@ final class HUDOverlay {
     private let xpBarHeight: CGFloat = 4
     let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
     let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
+    let loreButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
 
     var onInventoryTap: (() -> Void)?
     var onPauseTap: (() -> Void)?
+    var onLoreTap: (() -> Void)?
 
     var objectiveText: String = "" {
         didSet { objectiveLabel.text = objectiveText }
@@ -151,6 +153,7 @@ final class HUDOverlay {
 
         setupInventoryButton()
         setupPauseButton()
+        setupLoreButton()
 
         scene.addChild(root)
         layout(in: scene.size)
@@ -164,6 +167,10 @@ final class HUDOverlay {
         }
         if pauseButton.contains(local) {
             onPauseTap?()
+            return true
+        }
+        if loreButton.contains(local) {
+            onLoreTap?()
             return true
         }
         return false
@@ -213,6 +220,8 @@ final class HUDOverlay {
         pauseButton.position = CGPoint(x: leftEdge + buttonSize / 2, y: topY - 122 * s)
         setButton(inventoryButton, size: buttonSize)
         inventoryButton.position = CGPoint(x: rightEdge - buttonSize / 2, y: topY - 68 * s)
+        setButton(loreButton, size: buttonSize)
+        loreButton.position = CGPoint(x: rightEdge - buttonSize / 2, y: topY - 122 * s)
 
         let promptWidth = min(size.width - 48 * s, 300 * s)
         setPlate(interactionPlate, size: CGSize(width: promptWidth, height: 34 * s), radius: 8 * s)
@@ -275,6 +284,31 @@ final class HUDOverlay {
         inventoryButton.addChild(handle)
 
         root.addChild(inventoryButton)
+    }
+
+    private func setupLoreButton() {
+        styleButton(loreButton)
+        // Icône livre : couverture + tranche + ligne de reliure
+        let cover = SKShapeNode(rectOf: CGSize(width: 20, height: 22), cornerRadius: 3)
+        cover.fillColor = SKColor(red: 0.16, green: 0.20, blue: 0.34, alpha: 1)
+        cover.strokeColor = SKColor(red: 0.55, green: 0.72, blue: 1.0, alpha: 0.9)
+        cover.lineWidth = 1.4
+        loreButton.addChild(cover)
+
+        let spine = SKShapeNode(rectOf: CGSize(width: 3, height: 22))
+        spine.fillColor = SKColor(red: 0.55, green: 0.72, blue: 1.0, alpha: 0.9)
+        spine.strokeColor = .clear
+        spine.position = CGPoint(x: -8.5, y: 0)
+        loreButton.addChild(spine)
+
+        for dy in [-4.0, 0.0, 4.0] {
+            let line = SKShapeNode(rectOf: CGSize(width: 11, height: 1.4))
+            line.fillColor = SKColor(red: 0.70, green: 0.82, blue: 1.0, alpha: 0.65)
+            line.strokeColor = .clear
+            line.position = CGPoint(x: 1, y: dy)
+            loreButton.addChild(line)
+        }
+        root.addChild(loreButton)
     }
 
     private func styleButton(_ button: SKShapeNode) {

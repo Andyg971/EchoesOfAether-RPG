@@ -35,7 +35,7 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 300, panelH: CGFloat = 380
+        let panelW: CGFloat = 300, panelH: CGFloat = 440
         let panel = SKShapeNode(path: CGPath(
             roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
             cornerWidth: 20, cornerHeight: 20, transform: nil))
@@ -64,20 +64,39 @@ final class OptionsOverlay {
         let sep = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
         sep.fillColor = SKColor(white: 0.20, alpha: 0.5)
         sep.strokeColor = .clear
-        sep.position = CGPoint(x: w/2, y: h/2 + 20)
+        sep.position = CGPoint(x: w/2, y: h/2 + 18)
         root.addChild(sep)
 
-        // Langue info
-        let langInfo = label(String(localized: "options.language.info"), size: 12,
-                             color: SKColor(white: 0.40, alpha: 1))
-        langInfo.position = CGPoint(x: w/2, y: h/2 - 10)
-        root.addChild(langInfo)
+        // Section Langue — sélecteur FR / EN
+        let langTitle = label(String(localized: "options.language"), size: 14,
+                              color: SKColor(white: 0.65, alpha: 1))
+        langTitle.position = CGPoint(x: w/2, y: h/2 - 4)
+        root.addChild(langTitle)
+
+        let current = currentLanguageCode()
+        let frBtn = makeLangButton("Français", code: "fr",
+                                   selected: current == "fr", name: "langFR")
+        frBtn.position = CGPoint(x: w/2 - 64, y: h/2 - 38)
+        root.addChild(frBtn)
+
+        let enBtn = makeLangButton("English", code: "en",
+                                   selected: current == "en", name: "langEN")
+        enBtn.position = CGPoint(x: w/2 + 64, y: h/2 - 38)
+        root.addChild(enBtn)
+
+        // Note redémarrage — cachée jusqu'au changement
+        let restart = label(String(localized: "options.language.restart"), size: 11,
+                            color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
+        restart.position = CGPoint(x: w/2, y: h/2 - 64)
+        restart.name = "langRestart"
+        restart.isHidden = true
+        root.addChild(restart)
 
         // Séparateur 2
         let sep2 = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
         sep2.fillColor = SKColor(white: 0.20, alpha: 0.4)
         sep2.strokeColor = .clear
-        sep2.position = CGPoint(x: w/2, y: h/2 - 35)
+        sep2.position = CGPoint(x: w/2, y: h/2 - 86)
         root.addChild(sep2)
 
         // Bouton Reset
@@ -85,7 +104,7 @@ final class OptionsOverlay {
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
             stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
             name: "optionsReset")
-        resetBtn.position = CGPoint(x: w/2, y: h/2 - 80)
+        resetBtn.position = CGPoint(x: w/2, y: h/2 - 124)
         root.addChild(resetBtn)
 
         // Bouton Fermer
@@ -93,7 +112,7 @@ final class OptionsOverlay {
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
             name: "optionsClose")
-        closeBtn.position = CGPoint(x: w/2, y: h/2 - 148)
+        closeBtn.position = CGPoint(x: w/2, y: h/2 - 184)
         root.addChild(closeBtn)
 
         // Animate
@@ -127,6 +146,14 @@ final class OptionsOverlay {
             onVolumeChange?(sfxVolume)
             return true
         }
+        if let btn = root.childNode(withName: "langFR") as? SKShapeNode, btn.contains(local) {
+            selectLanguage("fr")
+            return true
+        }
+        if let btn = root.childNode(withName: "langEN") as? SKShapeNode, btn.contains(local) {
+            selectLanguage("en")
+            return true
+        }
         if let btn = root.childNode(withName: "optionsReset") as? SKShapeNode, btn.contains(local) {
             handleReset(btn: btn)
             return true
@@ -137,6 +164,68 @@ final class OptionsOverlay {
             return true
         }
         return true
+    }
+
+    // MARK: - Language
+
+    /// Code langue actif (fr/en) — basé sur la localisation résolue du bundle.
+    private func currentLanguageCode() -> String {
+        if let override = UserDefaults.standard.stringArray(forKey: "AppleLanguages")?.first {
+            return override.hasPrefix("en") ? "en" : "fr"
+        }
+        return (Bundle.main.preferredLocalizations.first ?? "fr").hasPrefix("en") ? "en" : "fr"
+    }
+
+    /// Persiste la langue choisie. iOS charge le bundle au lancement :
+    /// effectif au prochain démarrage (on l'indique au joueur).
+    private func selectLanguage(_ code: String) {
+        HapticsEngine.light()
+        guard code != currentLanguageCode() else { return }
+        UserDefaults.standard.set([code], forKey: "AppleLanguages")
+        UserDefaults.standard.synchronize()
+        // Met à jour la sélection visuelle + affiche la note de redémarrage
+        refreshLangSelection(selected: code)
+        if let restart = root.childNode(withName: "langRestart") {
+            restart.isHidden = false
+            JuiceEngine.popIn(restart, delay: 0)
+        }
+    }
+
+    private func refreshLangSelection(selected: String) {
+        for (name, code) in [("langFR", "fr"), ("langEN", "en")] {
+            guard let btn = root.childNode(withName: name) as? SKShapeNode else { continue }
+            styleLangButton(btn, selected: code == selected)
+        }
+    }
+
+    private func makeLangButton(_ text: String, code: String,
+                                selected: Bool, name: String) -> SKShapeNode {
+        let btn = SKShapeNode(rectOf: CGSize(width: 112, height: 40), cornerRadius: 12)
+        btn.name = name
+        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        lbl.text = text
+        lbl.fontSize = 14
+        lbl.verticalAlignmentMode = .center
+        lbl.horizontalAlignmentMode = .center
+        lbl.isUserInteractionEnabled = false
+        lbl.name = "label"
+        btn.addChild(lbl)
+        styleLangButton(btn, selected: selected)
+        return btn
+    }
+
+    private func styleLangButton(_ btn: SKShapeNode, selected: Bool) {
+        if selected {
+            btn.fillColor = SKColor(red: 0.30, green: 0.22, blue: 0.50, alpha: 1)
+            btn.strokeColor = SKColor(red: 0.70, green: 0.58, blue: 1.0, alpha: 1)
+            btn.lineWidth = 2
+        } else {
+            btn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 1)
+            btn.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.7)
+            btn.lineWidth = 1.5
+        }
+        (btn.childNode(withName: "label") as? SKLabelNode)?.fontColor =
+            selected ? .white : SKColor(white: 0.60, alpha: 1)
     }
 
     // MARK: - Private

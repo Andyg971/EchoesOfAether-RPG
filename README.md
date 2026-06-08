@@ -147,42 +147,48 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 |----------------|--------|
 | Acte I — L'Éveil | ✅ Complet |
 | Acte II — La Chute de Kael | ✅ Complet |
-| Acte III — Le Seuil | 🔲 Prévu |
+| Acte III — Le Seuil | 🟡 Squelette (prologue + rencontre Eran → crédits) |
+| Menu principal / Pause / Options / Mort | ✅ Complet |
+| Combat ATB (sorts, statuts, combo, break, boss) | ✅ Complet |
+| Journal de quêtes + Journal de lore | ✅ Complet |
+| Minimap / Indicateur d'interaction / Haptics | ✅ Complet |
+| GameCenter (auth + achievements) | ✅ Câblé |
+| Localisation FR + EN | ✅ Complet (459 clés) |
+| AppIcon 1024 | ✅ Présent |
 | Graphismes placeholder | ✅ (formes programmatiques) |
-| Assets réels | 🔲 Prévu |
-| Build App Store | 🔲 Prévu |
+| Audio (SFX + musique) | 🔴 Stub silencieux (à réimplémenter) |
+| Assets réels | 🟡 Partiel (tiles RPG Maker MV intégrées) |
+| Build App Store | 🟡 Prêt côté build, audio + Acte III à finir |
 
 ---
 
-## Roadmap — Ce qui manque avant les assets
+## Roadmap — Ce qui reste
 
 ### 🔴 Indispensable
 
-- [ ] **Menu principal** — Démarrer / Continuer / Options. Le jeu démarre directement en gameplay.
-- [ ] **Écran de mort / Game Over** — En cas de défaite au combat, montrer un écran avec "Réessayer" plutôt que revenir silencieusement à l'exploration.
-- [ ] **Restauration des PV entre les combats** — Les PV de Kael ne se régénèrent jamais.
-- [ ] **Menu pause** — Pause en jeu avec Reprendre / Options / Menu Principal.
-- [ ] **Écran d'options** — Volume musique, volume SFX, changement de langue.
-- [ ] **Journal de quêtes** — Liste visible des quêtes actives/terminées dans l'inventaire.
-- [ ] **Indicateur d'interaction** — Prompt "Toucher pour parler" quand Kael est proche d'un NPC.
-- [ ] **Indicateur de sauvegarde** — Flash visuel quand le jeu sauvegarde (le joueur ne sait pas).
-- [ ] **Squelette Acte III** — Kael comme antagoniste. Eran Solace. La mécanique du Seuil.
+- [ ] **Audio réel** — `AudioEngine` est un stub no-op (crash IO thread iOS 26 simulateur). Réimplémenter avec `AVAudioPlayerNode` + `AVAudioPCMBuffer` pré-rendus. Débloque aussi le slider SFX (déjà câblé sur `masterVolume`) et le volume musique.
+- [ ] **Acte III complet** — Actuellement squelette : zone du Seuil dédiée (réutilise le décor des ruines), combat final, vraie fin.
 
 ### 🟡 Important
 
-- [ ] **Minimap** — Représentation en points de la zone + position de Kael.
-- [ ] **Système de combo** — Chaîner les attaques pour un bonus de résonance.
-- [ ] **Effets de statut** — Poison, étourdissement, Brûlure d'Aether pour plus de profondeur.
-- [ ] **Cinématique transformation Kael** — Moment visuel quand la corruption atteint le niveau 3.
-- [ ] **Journal de lore** — Notes de Kael sur les découvertes (inscription Eran, révélations Archiviste).
-- [ ] **Fix proximité Dorin/Garen** — Les deux sont à h×0.72-0.74 en Acte II, conflits de tap.
+- [ ] **Slots de sauvegarde multiples** — une seule save (`echoes_save.json`), écrasée en continu.
+- [ ] **Tutoriel / onboarding** — tap-to-move, combat ATB et sorts ne sont jamais expliqués.
+- [ ] **Support iPad adaptatif** — `TARGETED_DEVICE_FAMILY = 1,2` mais layout non adaptatif.
+- [ ] **Accessibilité** — Dynamic Type, option « réduire les animations » (flashs/screen shakes fréquents).
+- [ ] **Fix proximité Dorin/Garen** — conflits de tap possibles en Acte II.
 
 ### 🟢 Nice-to-have
 
-- [ ] **Crédits**
-- [ ] **Achievements** (GameCenter)
-- [ ] **Support iPad** (layout adaptatif)
-- [ ] **Haptics** CoreHaptics sur les impacts majeurs
+- [ ] **Tests unitaires** — `PlayerState` (courbe XP, save/load), transitions de quêtes.
+- [ ] **Musique d'ambiance par zone** (dépend de l'audio réel).
+
+### ✅ Déjà livré (anciennes entrées roadmap)
+
+Menu principal · Écran de mort + Réessayer · Restauration PV (cristaux/repos) · Menu pause ·
+Écran d'options (+ sélecteur langue FR/EN) · Journal de quêtes · Journal de lore (bouton HUD) ·
+Indicateur d'interaction (bulle + hint) · Indicateur de sauvegarde (flash) · Minimap ·
+Système de combo · Effets de statut (poison / Brûlure d'Aether) · Cinématique de corruption ·
+Crédits · Achievements GameCenter · Haptics CoreHaptics · Orientation portrait verrouillée.
 
 ---
 

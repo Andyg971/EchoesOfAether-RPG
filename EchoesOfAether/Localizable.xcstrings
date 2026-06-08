@@ -6304,6 +6304,22 @@
         }
       }
     },
+    "options.language": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Language"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Langue"
+          }
+        }
+      }
+    },
     "options.language.info": {
       "localizations": {
         "en": {
@@ -6316,6 +6332,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Langue : modifiable dans Réglages → Général"
+          }
+        }
+      }
+    },
+    "options.language.restart": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restart the app to apply."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Redémarre l'app pour appliquer."
           }
         }
       }

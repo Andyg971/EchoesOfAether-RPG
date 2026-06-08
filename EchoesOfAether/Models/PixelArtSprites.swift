@@ -139,8 +139,6 @@ enum PixelArtSprites {
         let firstSize = textures[0].size()
         let tilePtSize = CGSize(width: firstSize.width * tileScale,
                                  height: firstSize.height * tileScale)
-        let cols = Int(ceil(size.width / tilePtSize.width)) + 1
-        let rows = Int(ceil(size.height / tilePtSize.height)) + 1
 
         let root = SKNode()
         root.name = "tiledFloor"

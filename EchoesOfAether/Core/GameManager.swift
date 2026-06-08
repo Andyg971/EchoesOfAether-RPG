@@ -51,6 +51,7 @@ final class GameManager {
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
         hud.onPauseTap     = { [weak self] in self?.openPause() }
+        hud.onLoreTap      = { [weak self] in self?.openLore() }
 
         pause.onResume    = { [weak self] in self?.closePause() }
         pause.onSave      = { [weak self] in
@@ -1352,11 +1353,13 @@ final class GameManager {
 
     func openLore() {
         guard state == .exploration else { return }
+        // reuse inventory state to block exploration taps; transition() masque
+        // aussi la bulle d'interaction et le hint.
+        transition(to: .inventory)
         let entries = PrototypeContent.buildLoreEntries(for: player)
         lore.open(entries: entries) { [weak self] in
             self?.transition(to: .exploration)
         }
-        state = .inventory  // reuse inventory state to block exploration taps
     }
 
     // MARK: - Death / Retry

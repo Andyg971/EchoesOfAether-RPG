@@ -20,14 +20,22 @@ final class AudioEngine {
     private let musicMixer = AVAudioMixerNode()
     private var sfxPlayers: [AVAudioPlayerNode] = []
     private var sfxIndex = 0
-    private let musicPlayer = AVAudioPlayerNode()
+
+    // Deux nodes musique pour permettre un cross-fade propre entre ambiances
+    // (l'entrant monte pendant que le sortant descend). Le mixeur musique
+    // garde le volume utilisateur ; le fondu se fait sur `.volume` des nodes.
+    private let musicPlayerA = AVAudioPlayerNode()
+    private let musicPlayerB = AVAudioPlayerNode()
+    private var musicUsingA = true
+    private var musicFadeTask: Task<Void, Never>?
 
     private let sampleRate: Double = 44_100
     private lazy var format = AVAudioFormat(
         standardFormatWithSampleRate: sampleRate, channels: 2)!
 
     private var buffers: [Sound: AVAudioPCMBuffer] = [:]
-    private var musicBuffer: AVAudioPCMBuffer?
+    private var musicBuffers: [MusicMood: AVAudioPCMBuffer] = [:]
+    private(set) var currentMood: MusicMood = .calm
 
     private var started = false
     private let sfxVoiceCount = 8
@@ -53,6 +61,27 @@ final class AudioEngine {
     enum Sound: CaseIterable {
         case tap, select, hit, blackSlash, damage
         case gold, purchase, quest, victory, step, shopOpen
+    }
+
+    /// Ambiance musicale par zone. Chaque cas a sa propre boucle pré-rendue
+    /// (drone + harmoniques + battement). Aucune dépendance audio externe.
+    enum MusicMood: CaseIterable {
+        case calm        // village / éveil — la mineur doux, apaisé
+        case tense       // forêt corrompue — plus grave, dissonance légère
+        case sacred      // sanctuaire — quinte ouverte, lumineux
+        case ruins       // ruines / Acte II / Kael déchu — sombre, lent
+        case voidThreshold // Acte III, le Seuil — très grave, throb inquiétant
+
+        /// Ambiance associée à une phase de jeu.
+        static func forPhase(_ phase: GamePhase) -> MusicMood {
+            switch phase {
+            case .wake, .village, .complete: return .calm
+            case .forest:                    return .tense
+            case .shrine:                    return .sacred
+            case .act2, .ruins, .fallen:     return .ruins
+            case .act3:                      return .voidThreshold
+            }
+        }
     }
 
     // MARK: - Lifecycle
@@ -81,7 +110,9 @@ final class AudioEngine {
     }
 
     func stop() {
-        musicPlayer.stop()
+        musicFadeTask?.cancel()
+        musicPlayerA.stop()
+        musicPlayerB.stop()
         sfxPlayers.forEach { $0.stop() }
         engine.stop()
     }
@@ -101,7 +132,19 @@ final class AudioEngine {
     func playShopOpen()     { play(.shopOpen) }
 
     func playMusic()  { startMusic() }
-    func stopMusic()  { musicPlayer.stop() }
+    func stopMusic()  {
+        musicFadeTask?.cancel()
+        musicPlayerA.stop()
+        musicPlayerB.stop()
+    }
+
+    /// Bascule l'ambiance musicale (cross-fade si le moteur tourne déjà).
+    /// Idempotent : aucun effet si l'ambiance est déjà active.
+    func setMood(_ mood: MusicMood) {
+        guard mood != currentMood else { return }
+        currentMood = mood
+        if engine.isRunning { crossfade(to: mood) }
+    }
 
     // MARK: - Playback
 
@@ -115,10 +158,45 @@ final class AudioEngine {
     }
 
     private func startMusic() {
-        guard engine.isRunning, let loop = musicBuffer else { return }
-        if musicPlayer.isPlaying { return }
-        musicPlayer.scheduleBuffer(loop, at: nil, options: .loops, completionHandler: nil)
-        musicPlayer.play()
+        guard engine.isRunning, let loop = musicBuffers[currentMood] else { return }
+        let player = musicUsingA ? musicPlayerA : musicPlayerB
+        if player.isPlaying { return }
+        player.volume = 1
+        player.scheduleBuffer(loop, at: nil, options: .loops, completionHandler: nil)
+        player.play()
+    }
+
+    /// Cross-fade vers une nouvelle ambiance : l'entrant démarre à 0 et monte
+    /// pendant que le sortant descend, sur ~1.4 s. On ne capture que des
+    /// valeurs `Sendable` (mood, bool) dans la Task @MainActor — les nodes
+    /// non-Sendable sont relus via `self`, qui reste isolé au main actor.
+    private func crossfade(to mood: MusicMood, duration: Double = 1.4) {
+        let incomingUsesA = !musicUsingA
+        musicUsingA = incomingUsesA
+        musicFadeTask?.cancel()
+        musicFadeTask = Task { @MainActor [weak self] in
+            guard let self, let buffer = self.musicBuffers[mood] else { return }
+            let incoming = incomingUsesA ? self.musicPlayerA : self.musicPlayerB
+            let outgoing = incomingUsesA ? self.musicPlayerB : self.musicPlayerA
+            // stop() vide la file du node : évite qu'un buffer périmé reste en
+            // attente si les ambiances s'enchaînent vite.
+            incoming.stop()
+            incoming.volume = 0
+            incoming.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
+            incoming.play()
+
+            let steps = 28
+            let stepDur = duration / Double(steps)
+            for i in 1...steps {
+                if Task.isCancelled { return }
+                let p = Float(i) / Float(steps)
+                incoming.volume = p
+                outgoing.volume = 1 - p
+                try? await Task.sleep(nanoseconds: UInt64(stepDur * 1_000_000_000))
+            }
+            outgoing.stop()
+            outgoing.volume = 1
+        }
     }
 
     // MARK: - Setup
@@ -144,8 +222,10 @@ final class AudioEngine {
         }
         engine.connect(sfxMixer, to: engine.mainMixerNode, format: format)
 
-        engine.attach(musicPlayer)
-        engine.connect(musicPlayer, to: musicMixer, format: format)
+        engine.attach(musicPlayerA)
+        engine.attach(musicPlayerB)
+        engine.connect(musicPlayerA, to: musicMixer, format: format)
+        engine.connect(musicPlayerB, to: musicMixer, format: format)
         engine.connect(musicMixer, to: engine.mainMixerNode, format: format)
 
         sfxMixer.outputVolume = clamp(masterVolume)
@@ -158,7 +238,9 @@ final class AudioEngine {
         for sound in Sound.allCases {
             buffers[sound] = renderSFX(sound)
         }
-        musicBuffer = renderMusicLoop()
+        for mood in MusicMood.allCases {
+            musicBuffers[mood] = renderMusicLoop(mood)
+        }
     }
 
     /// Crée un buffer stéréo et le remplit via une fonction d'échantillon
@@ -252,17 +334,59 @@ final class AudioEngine {
         }
     }
 
-    /// Pad d'ambiance bouclable : drone mineur + LFO lent. ~8s pour une boucle
-    /// douce sans coupure perceptible (amplitude basse pour rester en fond).
-    private func renderMusicLoop() -> AVAudioPCMBuffer {
-        let duration = 8.0
-        return makeBuffer(duration: duration) { t in
-            let lfo: Float = Float(0.5 + 0.5 * sin(2 * .pi * t / duration))  // 1 cycle / boucle
-            let root: Float = sine(t, 110) * 0.5                              // La2
-            let fifth: Float = sine(t, 164.81) * 0.35                         // Mi3
-            let high: Float = sine(t, 220) * 0.18 * lfo                       // La3 ondulant
-            let shimmer: Float = sine(t, 329.63) * 0.10 * (1 - lfo)           // Mi4
-            return 0.16 * (root + fifth + high + shimmer)
+    /// Paramètres d'un pad d'ambiance bouclable.
+    /// `beat` (Hz) ajoute un trémolo lent qui crée une tension/inquiétude ;
+    /// 0 = drone stable et apaisé.
+    private struct MusicConfig {
+        let duration: Double
+        let root: Double      // fondamentale (drone grave)
+        let fifth: Double     // quinte / intervalle de soutien
+        let high: Double      // voix aiguë ondulante
+        let shimmer: Double   // brillance (contre-temps du LFO)
+        let amp: Float        // amplitude globale (fond sonore discret)
+        let beat: Double      // fréquence du trémolo (0 = aucun)
+    }
+
+    private func config(for mood: MusicMood) -> MusicConfig {
+        switch mood {
+        case .calm:
+            // La mineur ouvert, doux — identique à l'ancienne ambiance village.
+            return MusicConfig(duration: 8, root: 110, fifth: 164.81,
+                               high: 220, shimmer: 329.63, amp: 0.16, beat: 0)
+        case .tense:
+            // Sol grave + seconde mineure dissonante : forêt corrompue.
+            return MusicConfig(duration: 8, root: 98, fifth: 146.83,
+                               high: 207.65, shimmer: 277.18, amp: 0.15, beat: 0.18)
+        case .sacred:
+            // Do majeur lumineux, quinte ouverte : sanctuaire.
+            return MusicConfig(duration: 8, root: 130.81, fifth: 196,
+                               high: 261.63, shimmer: 392, amp: 0.14, beat: 0)
+        case .ruins:
+            // Fa grave, lent et sombre : ruines / Kael déchu.
+            return MusicConfig(duration: 8, root: 87.31, fifth: 130.81,
+                               high: 174.61, shimmer: 233.08, amp: 0.15, beat: 0.10)
+        case .voidThreshold:
+            // Ré très grave + triton sourd : le Seuil, dread pulsé.
+            return MusicConfig(duration: 8, root: 73.42, fifth: 110,
+                               high: 103.83, shimmer: 146.83, amp: 0.17, beat: 0.25)
+        }
+    }
+
+    /// Pad d'ambiance bouclable : drone + harmoniques + LFO lent, avec trémolo
+    /// optionnel. Boucle de 8 s sans coupure perceptible (amplitude basse pour
+    /// rester en fond).
+    private func renderMusicLoop(_ mood: MusicMood) -> AVAudioPCMBuffer {
+        let c = config(for: mood)
+        return makeBuffer(duration: c.duration) { t in
+            let lfo: Float = Float(0.5 + 0.5 * sin(2 * .pi * t / c.duration)) // 1 cycle / boucle
+            let tremolo: Float = c.beat > 0
+                ? Float(0.75 + 0.25 * sin(2 * .pi * c.beat * t))
+                : 1
+            let root: Float = sine(t, c.root) * 0.5
+            let fifth: Float = sine(t, c.fifth) * 0.35
+            let high: Float = sine(t, c.high) * 0.18 * lfo
+            let shimmer: Float = sine(t, c.shimmer) * 0.10 * (1 - lfo)
+            return c.amp * tremolo * (root + fifth + high + shimmer)
         }
     }
 

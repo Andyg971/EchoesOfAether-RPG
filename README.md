@@ -167,7 +167,8 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 ### ✅ Récemment livré
 
 - [x] **Audio réel** — `AudioEngine` synthétise SFX + pad d'ambiance dans des `AVAudioPCMBuffer`, joués via `AVAudioPlayerNode` (aucun render callback → pas de crash IO thread). Sliders SFX + Musique câblés dans Options.
-- [x] **Acte III jouable** — Zone du Seuil dédiée (assets existants : escalier, statues d'anges, piliers, arbres morts), boss final « Gardien du Seuil » (ATB + enrage), vraie fin (Kael franchit le Seuil → crédits). Reste : enrichissement narratif et embranchements de fin.
+- [x] **Acte III jouable** — Zone du Seuil dédiée (assets existants : escalier, statues d'anges, piliers, arbres morts), boss final « Gardien du Seuil » (ATB + enrage), vraie fin (Kael franchit le Seuil → crédits).
+- [x] **Acte III enrichi (narration)** — Beats ajoutés au prologue, à la rencontre d'Eran (lore du Seuil), à la pré-bataille et aux deux fins (franchir / résister), FR + EN.
 
 ### 🟡 Important
 
@@ -179,8 +180,8 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 ### 🟢 Nice-to-have
 
-- [ ] **Tests unitaires** — `PlayerState` (courbe XP, save/load), transitions de quêtes.
-- [ ] **Musique d'ambiance par zone** (dépend de l'audio réel).
+- [x] **Tests unitaires** — cible XCTest `EchoesOfAetherTests` rattachée au projet (`PlayerState` courbe XP, `SaveData` round-trip + rétro-compat). 11 tests verts.
+- [x] **Musique d'ambiance par zone** — 5 ambiances pré-rendues (calme / forêt tendue / sanctuaire / ruines / Seuil) avec cross-fade automatique au changement de phase.
 
 ### ✅ Déjà livré (anciennes entrées roadmap)
 

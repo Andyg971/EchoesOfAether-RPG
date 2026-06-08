@@ -30,22 +30,35 @@
 		6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */; };
 		6D7EAA04B8A741B0A0000001 /* DeathOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */; };
 		6D7EAA06B8A741B0A0000001 /* PauseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */; };
+		6D7EAB02B8A741B0A0000001 /* TutorialOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAB01B8A741B0A0000001 /* TutorialOverlay.swift */; };
 		6D7EBB02B8A741B0A0000001 /* HapticsEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */; };
 		6D7EBB04B8A741B0A0000001 /* OptionsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */; };
 		6D7EBB06B8A741B0A0000001 /* LoreOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */; };
 		6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */; };
 		6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */; };
-		6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFF02B8A741B0A0000001 /* Strings+References.swift */; };
-		6D7ECC04B8A741B0A0000001 /* EchoesOfAether.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = 6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */; };
-		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
 		6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */; };
 		6D7ECC21B8A741B0A0000001 /* LevelUpOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */; };
 		6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */; };
 		6D7ECC41B8A741B0A0000001 /* InteractionBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */; };
-		6D7EAB02B8A741B0A0000001 /* TutorialOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAB01B8A741B0A0000001 /* TutorialOverlay.swift */; };
+		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
+		6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFF02B8A741B0A0000001 /* Strings+References.swift */; };
+		71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */; };
+		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
+		9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9946241C401B2A418D271A /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		B01B9891D5DAB7B99E89CFFD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6D7E1019B8A741B0A0000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6D7E1015B8A741B0A0000001;
+			remoteInfo = EchoesOfAether;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SaveDataTests.swift; sourceTree = "<group>"; };
 		6D7E1000B8A741B0A0000001 /* EchoesOfAetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoesOfAetherApp.swift; sourceTree = "<group>"; };
 		6D7E1002B8A741B0A0000001 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		6D7E1004B8A741B0A0000001 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -70,22 +83,33 @@
 		6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuScene.swift; sourceTree = "<group>"; };
 		6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeathOverlay.swift; sourceTree = "<group>"; };
 		6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PauseOverlay.swift; sourceTree = "<group>"; };
+		6D7EAB01B8A741B0A0000001 /* TutorialOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsEngine.swift; sourceTree = "<group>"; };
 		6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoreOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EchoesOfAether.entitlements; sourceTree = "<group>"; };
-		6D7EFF02B8A741B0A0000001 /* Strings+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strings+References.swift"; sourceTree = "<group>"; };
-		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatSprites.swift; sourceTree = "<group>"; };
 		6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelUpOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArtSprites.swift; sourceTree = "<group>"; };
 		6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionBubble.swift; sourceTree = "<group>"; };
-		6D7EAB01B8A741B0A0000001 /* TutorialOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialOverlay.swift; sourceTree = "<group>"; };
+		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6D7EFF02B8A741B0A0000001 /* Strings+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strings+References.swift"; sourceTree = "<group>"; };
+		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
+		BD9946241C401B2A418D271A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		04DEEAF59EE8BF0564195079 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6D7E1011B8A741B0A0000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -96,11 +120,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0F170784FD3041E6E4F1AAEE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E5517E338CAD282EE301D317 /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		6D7E1012B8A741B0A0000001 = {
 			isa = PBXGroup;
 			children = (
 				6D7E1013B8A741B0A0000001 /* EchoesOfAether */,
 				6D7E1014B8A741B0A0000001 /* Products */,
+				0F170784FD3041E6E4F1AAEE /* Frameworks */,
+				77754BB35105F4CE1A4B1191 /* EchoesOfAetherTests */,
 			);
 			sourceTree = "<group>";
 		};
@@ -130,6 +164,7 @@
 			isa = PBXGroup;
 			children = (
 				6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */,
+				751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,14 +200,6 @@
 			path = Juice;
 			sourceTree = "<group>";
 		};
-		6D7EFF00B8A741B0A0000001 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				6D7EFF02B8A741B0A0000001 /* Strings+References.swift */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
 		6D7E2010B8A741B0A0000001 /* UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -200,14 +227,6 @@
 			path = Game;
 			sourceTree = "<group>";
 		};
-		6D7ECC12B8A741B0A0000001 /* Combat */ = {
-			isa = PBXGroup;
-			children = (
-				6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */,
-			);
-			path = Combat;
-			sourceTree = "<group>";
-		};
 		6D7E2012B8A741B0A0000001 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
@@ -217,6 +236,40 @@
 				6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */,
 			);
 			path = Scenes;
+			sourceTree = "<group>";
+		};
+		6D7ECC12B8A741B0A0000001 /* Combat */ = {
+			isa = PBXGroup;
+			children = (
+				6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */,
+			);
+			path = Combat;
+			sourceTree = "<group>";
+		};
+		6D7EFF00B8A741B0A0000001 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				6D7EFF02B8A741B0A0000001 /* Strings+References.swift */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		77754BB35105F4CE1A4B1191 /* EchoesOfAetherTests */ = {
+			isa = PBXGroup;
+			children = (
+				B090FF8964809699D851868F /* PlayerStateTests.swift */,
+				4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */,
+			);
+			name = EchoesOfAetherTests;
+			path = EchoesOfAetherTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		E5517E338CAD282EE301D317 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				BD9946241C401B2A418D271A /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -239,6 +292,24 @@
 			productReference = 6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */;
 			productType = "com.apple.product-type.application";
 		};
+		E94469FC353FDDA0CF8BE63E /* EchoesOfAetherTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8AA0D8D2367056B193267F88 /* Build configuration list for PBXNativeTarget "EchoesOfAetherTests" */;
+			buildPhases = (
+				53BA383D02B42DDE79DA1C38 /* Sources */,
+				04DEEAF59EE8BF0564195079 /* Frameworks */,
+				EA8255299C0EC465B97EE044 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B657B3D92211B6F16ED5176B /* PBXTargetDependency */,
+			);
+			name = EchoesOfAetherTests;
+			productName = EchoesOfAetherTests;
+			productReference = 751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -251,6 +322,10 @@
 				TargetAttributes = {
 					6D7E1015B8A741B0A0000001 = {
 						CreatedOnToolsVersion = 26.0;
+					};
+					E94469FC353FDDA0CF8BE63E = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 6D7E1015B8A741B0A0000001;
 					};
 				};
 			};
@@ -270,6 +345,7 @@
 			projectRoot = "";
 			targets = (
 				6D7E1015B8A741B0A0000001 /* EchoesOfAether */,
+				E94469FC353FDDA0CF8BE63E /* EchoesOfAetherTests */,
 			);
 		};
 /* End PBXProject section */
@@ -284,9 +360,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		EA8255299C0EC465B97EE044 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		53BA383D02B42DDE79DA1C38 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */,
+				71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6D7E1017B8A741B0A0000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -329,7 +421,51 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		B657B3D92211B6F16ED5176B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EchoesOfAether;
+			target = 6D7E1015B8A741B0A0000001 /* EchoesOfAether */;
+			targetProxy = B01B9891D5DAB7B99E89CFFD /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		156644A22AF111F2A5A36E4D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EchoesOfAether.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EchoesOfAether";
+			};
+			name = Debug;
+		};
+		37853A95EB42269B1D8D7A52 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 6.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/EchoesOfAether.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EchoesOfAether";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		6D7E101BB8A741B0A0000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -527,6 +663,15 @@
 			buildConfigurations = (
 				6D7E101BB8A741B0A0000001 /* Debug */,
 				6D7E101CB8A741B0A0000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8AA0D8D2367056B193267F88 /* Build configuration list for PBXNativeTarget "EchoesOfAetherTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				37853A95EB42269B1D8D7A52 /* Release */,
+				156644A22AF111F2A5A36E4D /* Debug */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

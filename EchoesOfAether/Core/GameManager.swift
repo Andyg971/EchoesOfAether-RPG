@@ -3,7 +3,12 @@ import SpriteKit
 @MainActor
 final class GameManager {
     private(set) var state: GameState = .exploration
-    private(set) var phase: GamePhase = .wake
+    private(set) var phase: GamePhase = .wake {
+        didSet {
+            // Chaque zone a son ambiance musicale (cross-fade automatique).
+            AudioEngine.shared.setMood(.forPhase(phase))
+        }
+    }
 
     let world     = WorldBuilder()
     let hud       = HUDOverlay()

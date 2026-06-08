@@ -678,7 +678,11 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.voice3")),
         .line(speaker: "Kael",
-              text: String(localized: "dialogue.act3.kael2"))
+              text: String(localized: "dialogue.act3.kael2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.voice4")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.kael2b"))
     ]
 
     /// Eran Solace — première rencontre au Seuil
@@ -705,7 +709,11 @@ enum PrototypeContent {
             ]
         ),
         .line(speaker: "Eran",
-              text: String(localized: "dialogue.act3.eran3"))
+              text: String(localized: "dialogue.act3.eran3")),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.eran4")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.kael4"))
     ]
 
     /// Ecran de fin Acte III (placeholder)
@@ -722,6 +730,8 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.guardianEran1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.guardianVoice1")),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.guardianEran2")),
         .line(speaker: "Kael",
               text: String(localized: "dialogue.act3.guardianKael1"))
     ]
@@ -741,7 +751,9 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.trueEnd2")),
         .line(speaker: "Kael",
-              text: String(localized: "dialogue.act3.trueEnd3"))
+              text: String(localized: "dialogue.act3.trueEnd3")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.trueEnd4"))
     ]
 
     /// Fin "Résister / refuser le Vide" — Kael tourne le dos au Seuil
@@ -752,7 +764,9 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.resist2")),
         .line(speaker: "Kael",
-              text: String(localized: "dialogue.act3.resist3"))
+              text: String(localized: "dialogue.act3.resist3")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.resist4"))
     ]
 
     /// Écran de fin de la branche "résister".

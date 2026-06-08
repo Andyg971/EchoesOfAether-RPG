@@ -19,6 +19,48 @@
         "fr": { "stringUnit": { "state": "translated", "value": "Le pouvoir n'a jamais été le but. Je recule, loin du Seuil." } }
       }
     },
+    "dialogue.act3.voice4": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Alive, yes. It feeds on what you carry. Let it take the grief, and you'll feel nothing at all." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Vivant, oui. Il se nourrit de ce que tu portes. Laisse-le prendre le chagrin, et tu ne sentiras plus rien." } }
+      }
+    },
+    "dialogue.act3.kael2b": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Then why does every step up sound like her footsteps behind me?" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Alors pourquoi chaque marche que je gravis résonne comme ses pas derrière moi ?" } }
+      }
+    },
+    "dialogue.act3.eran4": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "I crossed once. I came back wrong. The Threshold doesn't open a door — it rewrites whoever walks through." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Je l'ai franchi une fois. J'en suis revenue brisée. Le Seuil n'ouvre pas une porte — il réécrit celui qui le traverse." } }
+      }
+    },
+    "dialogue.act3.kael4": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Then let it rewrite me. There's little left worth keeping." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Alors qu'il me réécrive. Il ne reste plus grand-chose qui vaille d'être gardé." } }
+      }
+    },
+    "dialogue.act3.guardianEran2": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Strike true, Kael. If your hand wavers, the Threshold will wear my face next." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Frappe juste, Kael. Si ta main tremble, le Seuil portera mon visage ensuite." } }
+      }
+    },
+    "dialogue.act3.trueEnd4": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "And then there was no one left to be sorry. Only the Threshold, and the thing that wore Kael's name." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Et puis il ne resta personne pour être désolé. Seulement le Seuil, et la chose qui portait le nom de Kael." } }
+      }
+    },
+    "dialogue.act3.resist4": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "I'll carry them awake. Lyra. Eran. Every name. That's the only echo worth keeping." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Je les porterai éveillé. Lyra. Eran. Chaque nom. C'est le seul écho qui vaille d'être gardé." } }
+      }
+    },
     "dialogue.act3.resistEnd1": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "The Threshold stayed shut. Kael turned his back on the Void." } },

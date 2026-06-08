@@ -1,0 +1,120 @@
+import XCTest
+@testable import EchoesOfAether
+
+/// Tests de sérialisation `SaveData` (round-trip) et de rétro-compatibilité
+/// (champs optionnels absents des anciennes sauvegardes).
+///
+/// ⚠️ Cible de test non encore référencée dans le projet Xcode — voir la note
+/// dans `PlayerStateTests.swift`.
+@MainActor
+final class SaveDataTests: XCTestCase {
+
+    func testRoundTripPreservesFields() throws {
+        let player = PlayerState()
+        player.gold = 137
+        player.weaponLevel = 2
+        player.armorLevel = 1
+        player.potions = 3
+        player.aetherShards = 4
+        _ = player.gainXP(PlayerState.xpForLevel(1) + 5)   // level 2, xp 5
+        player.questDelivery = .complete
+        player.questLyraShards = .active
+        player.bossDefeated = true
+        player.loreDiscovered = ["eran", "void"]
+        player.act3EranMet = true
+        player.act3EndingChoice = 1
+
+        let data = player.toSaveData(phase: .act3, resonance: 42)
+        let encoded = try JSONEncoder().encode(data)
+        let decoded = try JSONDecoder().decode(SaveData.self, from: encoded)
+
+        XCTAssertEqual(decoded.gold, 137)
+        XCTAssertEqual(decoded.weaponLevel, 2)
+        XCTAssertEqual(decoded.armorLevel, 1)
+        XCTAssertEqual(decoded.potions, 3)
+        XCTAssertEqual(decoded.aetherShards, 4)
+        XCTAssertEqual(decoded.level, 2)
+        XCTAssertEqual(decoded.xp, 5)
+        XCTAssertEqual(decoded.questDelivery, .complete)
+        XCTAssertEqual(decoded.questLyraShards, .active)
+        XCTAssertTrue(decoded.bossDefeated)
+        XCTAssertEqual(Set(decoded.loreDiscovered), ["eran", "void"])
+        XCTAssertEqual(decoded.act3EranMet, true)
+        XCTAssertEqual(decoded.act3EndingChoice, 1)
+        XCTAssertEqual(decoded.phase, .act3)
+        XCTAssertEqual(decoded.resonanceTotal, 42)
+    }
+
+    func testLoadRestoresPlayerState() throws {
+        let original = PlayerState()
+        original.gold = 99
+        original.kaelCorruptionLevel = 3
+        original.act3EndingChoice = 0
+        let data = original.toSaveData(phase: .ruins, resonance: 10)
+
+        let encoded = try JSONEncoder().encode(data)
+        let decoded = try JSONDecoder().decode(SaveData.self, from: encoded)
+
+        let restored = PlayerState()
+        restored.load(from: decoded)
+        XCTAssertEqual(restored.gold, 99)
+        XCTAssertEqual(restored.kaelCorruptionLevel, 3)
+        XCTAssertEqual(restored.act3EndingChoice, 0)
+        // currentHP est toujours rempli au chargement.
+        XCTAssertEqual(restored.currentHP, restored.currentMaxHP)
+    }
+
+    /// Une sauvegarde « legacy » sans les clés optionnelles (level, xp, act3*)
+    /// doit se décoder et fournir des valeurs par défaut sûres.
+    func testBackwardCompatibilityWithMissingOptionalFields() throws {
+        let legacyJSON = """
+        {
+          "gold": 20,
+          "maxHP": 280,
+          "weaponLevel": 0,
+          "armorLevel": 0,
+          "potions": 0,
+          "aetherShards": 0,
+          "questDelivery": "inactive",
+          "questMushroom": "inactive",
+          "questLyraShards": "inactive",
+          "questChildToy": "inactive",
+          "talkedToSage": false,
+          "talkedToChild": false,
+          "talkedToVillager": false,
+          "innRested": false,
+          "forestProgress": 0,
+          "bossDefeated": false,
+          "lyraDeceased": false,
+          "act2SageConsulted": false,
+          "ruinsProgress": 0,
+          "act2DorinPassed": false,
+          "act2NightmareSeen": false,
+          "act2Vision1Seen": false,
+          "act2EranFound": false,
+          "kaelCorruptionLevel": 0,
+          "loreDiscovered": [],
+          "phase": 1,
+          "resonanceTotal": 0
+        }
+        """
+        let data = Data(legacyJSON.utf8)
+        let decoded = try JSONDecoder().decode(SaveData.self, from: data)
+
+        XCTAssertNil(decoded.level)
+        XCTAssertNil(decoded.xp)
+        XCTAssertNil(decoded.act3EranMet)
+        XCTAssertNil(decoded.act3BossDefeated)
+        XCTAssertNil(decoded.act3EndingChoice)
+        XCTAssertEqual(decoded.phase, .village)
+
+        // Le chargement applique les défauts sûrs.
+        let player = PlayerState()
+        player.load(from: decoded)
+        XCTAssertEqual(player.level, 1)
+        XCTAssertEqual(player.xp, 0)
+        XCTAssertFalse(player.act3EranMet)
+        XCTAssertFalse(player.act3BossDefeated)
+        XCTAssertNil(player.act3EndingChoice)
+    }
+}

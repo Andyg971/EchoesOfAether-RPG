@@ -716,6 +716,34 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.end2"))
     ]
 
+    /// Pré-combat : le Gardien du Seuil se dresse devant Kael.
+    static let act3GuardianPreDialogue: [DialogueStep] = [
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.guardianEran1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.guardianVoice1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.guardianKael1"))
+    ]
+
+    /// Post-combat : le Seuil cède.
+    static let act3GuardianPostDialogue: [DialogueStep] = [
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.guardianPost1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.guardianPost2"))
+    ]
+
+    /// Vraie fin de l'Acte III — Kael franchit le Seuil.
+    static let act3TrueEndingDialogue: [DialogueStep] = [
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.trueEnd1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.trueEnd2")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.trueEnd3"))
+    ]
+
     // MARK: - Lore entries (noms de clés xcstrings)
 
     @MainActor

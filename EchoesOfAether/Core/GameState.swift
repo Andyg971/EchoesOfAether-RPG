@@ -92,6 +92,8 @@ final class PlayerState {
     var act2EranFound: Bool = false
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
+    var act3EranMet: Bool = false      // rencontre Eran au Seuil faite
+    var act3BossDefeated: Bool = false // Gardien du Seuil vaincu → vraie fin
 
     // MARK: - Stats dérivées (incluent le bonus de niveau)
     //
@@ -163,6 +165,8 @@ final class PlayerState {
             act2EranFound: act2EranFound,
             kaelCorruptionLevel: kaelCorruptionLevel,
             loreDiscovered: Array(loreDiscovered),
+            act3EranMet: act3EranMet,
+            act3BossDefeated: act3BossDefeated,
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -196,6 +200,8 @@ final class PlayerState {
         act2EranFound = data.act2EranFound
         kaelCorruptionLevel = data.kaelCorruptionLevel
         loreDiscovered = Set(data.loreDiscovered)
+        act3EranMet = data.act3EranMet ?? false
+        act3BossDefeated = data.act3BossDefeated ?? false
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -231,6 +237,9 @@ struct SaveData: Codable {
     let act2EranFound: Bool
     let kaelCorruptionLevel: Int
     let loreDiscovered: [String]
+    // Acte III (optionnels — saves antérieurs n'ont pas ces clés)
+    let act3EranMet: Bool?
+    let act3BossDefeated: Bool?
     let phase: GamePhase
     let resonanceTotal: Int
 }

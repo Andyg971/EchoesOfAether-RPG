@@ -112,6 +112,17 @@ final class WorldBuilder {
         buildRuins(in: scene)
     }
 
+    /// Acte III — Le Seuil. Royaume du Vide où Kael franchit la frontière.
+    /// Décor 100% assets existants (statues, piliers, escalier, arbres morts).
+    func switchToThreshold(in scene: SKScene) {
+        clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.08, alpha: 1)
+        buildThreshold(in: scene)
+    }
+
     // MARK: - Village Solis
 
     /// VILLAGE SOLIS — design game-dev (assets uniquement)
@@ -917,6 +928,92 @@ private func decorateForestFloor(in scene: SKScene) {
 
         // Cristal de sauvegarde (entrée des ruines, bas droite)
         addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.22), in: scene)
+
+        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+    }
+
+    /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :
+    /// sol pierre teinté vide, escalier central (le Seuil), statues d'anges
+    /// gardiens, piliers, arbres morts et ossements. Aucune forme custom.
+    private func buildThreshold(in scene: SKScene) {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sol : pierre a2 teintée bleu-vide très sombre
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_stone"],
+                      fallbackColor: SKColor(red: 0.06, green: 0.05, blue: 0.12, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.16, green: 0.13, blue: 0.30, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
+
+        // Titre de zone
+        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        zoneLabel.text = String(localized: "world.threshold.title")
+        zoneLabel.fontSize = 11
+        zoneLabel.fontColor = SKColor(red: 0.55, green: 0.45, blue: 0.85, alpha: 0.65)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.93)
+        zoneLabel.zPosition = -1
+        add(zoneLabel, to: scene)
+
+        let statueScale = max(2.2, w / 220)
+        let pillarScale = max(2.5, w / 200)
+        let treeScale   = max(0.30, w / 1300)
+        let bonesScale  = max(1.8, w / 280)
+
+        // ── LE SEUIL : escalier central qui monte vers le Vide ──
+        addPixelProp("me_stairs", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.84), scale: max(0.5, w / 760))
+
+        // Statues d'anges gardiens flanquant le Seuil
+        addPixelProp("me_statue_angel", in: scene,
+                     at: CGPoint(x: w * 0.34, y: h * 0.82), scale: statueScale)
+        addPixelProp("me_statue_angel", in: scene,
+                     at: CGPoint(x: w * 0.66, y: h * 0.82), scale: statueScale, flipped: true)
+
+        // Allée de piliers (gauche / droite) cadrant l'arène
+        let pillarRows: [CGFloat] = [0.40, 0.55, 0.70]
+        for (i, py) in pillarRows.enumerated() {
+            let leftName = i % 2 == 0 ? "pillar_grey_1" : "column_broken_1"
+            let rightName = i % 2 == 0 ? "pillar_grey_2" : "column_broken_1"
+            addPixelProp(leftName, in: scene,
+                         at: CGPoint(x: w * 0.13, y: h * py), scale: pillarScale)
+            addPixelProp(rightName, in: scene,
+                         at: CGPoint(x: w * 0.87, y: h * py), scale: pillarScale)
+        }
+
+        // Lanternes spectrales près du Seuil
+        addPixelProp("village_lantern_1", in: scene,
+                     at: CGPoint(x: w * 0.42, y: h * 0.74), scale: max(0.4, w / 900))
+        addPixelProp("village_lantern_1", in: scene,
+                     at: CGPoint(x: w * 0.58, y: h * 0.74), scale: max(0.4, w / 900), flipped: true)
+
+        // Arbres morts dans les coins (le Vide consume la vie)
+        addPixelProp("mv_dead_tree", in: scene,
+                     at: CGPoint(x: w * 0.10, y: h * 0.28), scale: treeScale)
+        addPixelProp("mv_dark_tree", in: scene,
+                     at: CGPoint(x: w * 0.90, y: h * 0.30), scale: treeScale)
+
+        // Ossements épars (les âmes absorbées)
+        for p in [(0.30, 0.45), (0.66, 0.42), (0.48, 0.30)] {
+            guard let bones = PixelArtSprites.still(
+                name: "bones_1", scale: bonesScale,
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            bones.position = CGPoint(x: w * p.0, y: h * p.1)
+            bones.zPosition = -2
+            bones.alpha = 0.85
+            add(bones, to: scene)
+        }
+
+        // Marqueur de rencontre Eran (centre) — réutilise makeDangerZone (bleu)
+        let eranMark = makeDangerZone(
+            at: CGPoint(x: w * 0.50, y: h * 0.62), radius: 34,
+            color: SKColor(red: 0.40, green: 0.55, blue: 0.95, alpha: 1))
+        add(eranMark, to: scene)
+
+        // Cristal de sauvegarde (entrée du Seuil, bas droite)
+        addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.20), in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
     }

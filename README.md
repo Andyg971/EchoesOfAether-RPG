@@ -147,7 +147,7 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 |----------------|--------|
 | Acte I — L'Éveil | ✅ Complet |
 | Acte II — La Chute de Kael | ✅ Complet |
-| Acte III — Le Seuil | 🟡 Squelette (prologue + rencontre Eran → crédits) |
+| Acte III — Le Seuil | ✅ Jouable (zone du Seuil dédiée + boss final + vraie fin) |
 | Menu principal / Pause / Options / Mort | ✅ Complet |
 | Combat ATB (sorts, statuts, combo, break, boss) | ✅ Complet |
 | Journal de quêtes + Journal de lore | ✅ Complet |
@@ -167,7 +167,7 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 ### 🔴 Indispensable
 
 - [ ] **Audio réel** — `AudioEngine` est un stub no-op (crash IO thread iOS 26 simulateur). Réimplémenter avec `AVAudioPlayerNode` + `AVAudioPCMBuffer` pré-rendus. Débloque aussi le slider SFX (déjà câblé sur `masterVolume`) et le volume musique.
-- [ ] **Acte III complet** — Actuellement squelette : zone du Seuil dédiée (réutilise le décor des ruines), combat final, vraie fin.
+- [x] **Acte III jouable** — Zone du Seuil dédiée (assets existants : escalier, statues d'anges, piliers, arbres morts), boss final « Gardien du Seuil » (ATB + enrage), vraie fin (Kael franchit le Seuil → crédits). Reste : enrichissement narratif et embranchements de fin.
 
 ### 🟡 Important
 

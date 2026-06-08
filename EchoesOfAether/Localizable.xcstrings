@@ -1,6 +1,214 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "combat.enemy.thresholdGuardian": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Warden of the Threshold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardien du Seuil"
+          }
+        }
+      }
+    },
+    "combat.thresholdGuardian.specialName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Void Collapse"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effondrement du Vide"
+          }
+        }
+      }
+    },
+    "dialogue.act3.guardianEran1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Threshold defends itself, Kael. It wears the face of everything you buried."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Seuil se défend, Kael. Il porte le visage de tout ce que tu as enterré."
+          }
+        }
+      }
+    },
+    "dialogue.act3.guardianVoice1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Strike it down. One last door between you and freedom."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Abats-le. Une dernière porte entre toi et la liberté."
+          }
+        }
+      }
+    },
+    "dialogue.act3.guardianKael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then I open it myself."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors je l'ouvrirai moi-même."
+          }
+        }
+      }
+    },
+    "dialogue.act3.guardianPost1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's done. The way is open."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C'est fait. La voie est ouverte."
+          }
+        }
+      }
+    },
+    "dialogue.act3.guardianPost2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come, then. There is nothing left to hold you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Viens, alors. Plus rien ne te retient."
+          }
+        }
+      }
+    },
+    "dialogue.act3.trueEnd1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra. Eran. Everyone I burned to reach this step."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra. Eran. Tous ceux que j'ai brûlés pour atteindre cette marche."
+          }
+        }
+      }
+    },
+    "dialogue.act3.trueEnd2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Step through. Become what the Aether always meant you to be."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchis le Seuil. Deviens ce que l'Aether a toujours voulu que tu sois."
+          }
+        }
+      }
+    },
+    "dialogue.act3.trueEnd3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…I'm sorry, Lyra. You were right. About all of it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Pardon, Lyra. Tu avais raison. Sur tout."
+          }
+        }
+      }
+    },
+    "hud.objective.act3Boss": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Defeat the Warden of the Threshold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vaincs le Gardien du Seuil"
+          }
+        }
+      }
+    },
+    "hud.objective.act3End": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross the Threshold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchis le Seuil"
+          }
+        }
+      }
+    },
+    "world.threshold.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Threshold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Seuil"
+          }
+        }
+      }
+    },
     "combat.archivist.specialName": {
       "localizations": {
         "en": {

@@ -1452,6 +1452,21 @@ final class GameManager {
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
             }
+        case .act3:
+            let w = scene.size.width, h = scene.size.height
+            let checkpoints: [(CGPoint, String)]
+            if !player.act3EranMet {
+                checkpoints = [(CGPoint(x: w*0.50, y: h*0.62), "hint.examine")]
+            } else if !player.act3BossDefeated {
+                checkpoints = [(CGPoint(x: w*0.50, y: h*0.82), "hint.fight")]
+            } else {
+                checkpoints = [(CGPoint(x: w*0.50, y: h*0.82), "hint.enter")]
+            }
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+            }
             default:
                 break
             }
@@ -1527,9 +1542,27 @@ final class GameManager {
 
     private func tryAct3Interaction(_ point: CGPoint, in scene: SKScene) -> Bool {
         let w = scene.size.width, h = scene.size.height
-        // Eran encounter in act3 (placeholder position)
-        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.65)) < 80 {
-            openAct3EranMeet()
+        let gate = CGPoint(x: w * 0.50, y: h * 0.82)   // escalier = Le Seuil
+
+        // 1) Rencontre Eran (centre) tant qu'elle n'a pas eu lieu
+        if !player.act3EranMet {
+            if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.62)) < 80 {
+                openAct3EranMeet()
+                return true
+            }
+            return false
+        }
+        // 2) Gardien du Seuil — combat final
+        if !player.act3BossDefeated {
+            if point.distance(to: gate) < 90 {
+                startThresholdBoss()
+                return true
+            }
+            return false
+        }
+        // 3) Boss vaincu → franchir le Seuil (vraie fin)
+        if point.distance(to: gate) < 90 {
+            showAct3TrueEnding()
             return true
         }
         return false
@@ -1547,7 +1580,7 @@ final class GameManager {
             guard let self else { return }
             phase = .act3
             hud.objectiveText = String(localized: "hud.objective.act3")
-            world.switchToRuins(in: scene)  // Reuse ruins backdrop for threshold
+            world.switchToThreshold(in: scene)
             world.applyKaelCorruption(level: 3)
         } completion: { [weak self] in
             guard let self else { return }
@@ -1558,15 +1591,77 @@ final class GameManager {
         }
     }
 
+    /// Rencontre Eran au Seuil. Débloque ensuite le combat contre le Gardien.
     private func openAct3EranMeet() {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.act3EranMeetDialogue) { [weak self] in
-            guard let self, let scene = self.scene else { return }
+            guard let self else { return }
+            player.act3EranMet = true
             player.loreDiscovered.insert("threshold")
+            hud.objectiveText = String(localized: "hud.objective.act3Boss")
             transition(to: .exploration)
-            // Act 3 ends in placeholder screen for now
-            TransitionManager.showCredits(in: scene) { [weak self] in
-                self?.onReturnToMenu?()
+        }
+    }
+
+    /// Boss final — le Gardien du Seuil. Réutilise le sprite `.guardian`.
+    private func startThresholdBoss() {
+        guard scene != nil else { return }
+        lastCombatStarter = { [weak self] in self?.startThresholdBoss() }
+        transition(to: .dialogue)
+        hud.objectiveText = String(localized: "hud.objective.act3Boss")
+        dialogue.start(PrototypeContent.act3GuardianPreDialogue) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            transition(to: .combat)
+
+            let bossConfig = BossConfig(
+                enrageThreshold: 0.45,
+                enrageSpeedMult: 1.7,
+                enrageDamageMult: 2,
+                specialAttackInterval: 3,
+                specialDamage: 46,
+                specialName: String(localized: "combat.thresholdGuardian.specialName")
+            )
+
+            let levelBefore = player.level
+            combat.attach(
+                to: scene,
+                enemyName: String(localized: "combat.enemy.thresholdGuardian"),
+                enemyHP: 460,
+                goldReward: 0,
+                player: player,
+                enemyKind: .guardian,
+                boss: bossConfig
+            ) { [weak self] resonance, gold in
+                guard let self else { return }
+                if resonance < 0 { showDeathScreen(); return }
+                grantLevelUpDisplay(from: levelBefore)
+                resonanceTotal += resonance
+                player.gold += gold
+                player.act3BossDefeated = true
+                syncGold()
+                hud.resonanceValue = resonanceTotal
+                hud.objectiveText = String(localized: "hud.objective.act3End")
+                AudioEngine.shared.playQuestComplete()
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.act3GuardianPostDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            }
+        }
+    }
+
+    /// Vraie fin de l'Acte III — Kael franchit le Seuil → crédits → menu.
+    private func showAct3TrueEnding() {
+        guard scene != nil else { return }
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
+            guard let self else { return }
+            dialogue.start(PrototypeContent.act3EndPlaceholder) { [weak self] in
+                guard let self, let scene = self.scene else { return }
+                transition(to: .exploration)
+                TransitionManager.showCredits(in: scene) { [weak self] in
+                    self?.onReturnToMenu?()
+                }
             }
         }
     }
@@ -1665,8 +1760,12 @@ final class GameManager {
             TransitionManager.showAct2EndScreen(in: scene)
 
         case .act3:
-            hud.objectiveText = String(localized: "hud.objective.act3")
-            world.switchToRuins(in: scene)
+            hud.objectiveText = player.act3BossDefeated
+                ? String(localized: "hud.objective.act3End")
+                : (player.act3EranMet
+                    ? String(localized: "hud.objective.act3Boss")
+                    : String(localized: "hud.objective.act3"))
+            world.switchToThreshold(in: scene)
             world.applyKaelCorruption(level: 3)
             corruptionCinematicShown = true
             transition(to: .exploration)

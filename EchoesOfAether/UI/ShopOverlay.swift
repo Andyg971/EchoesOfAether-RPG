@@ -64,6 +64,9 @@ final class ShopOverlay {
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 24)
         goldLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 42)
         closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 22)
+
+        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
+        UIScale.scaleCentered(root, sceneSize: size)
     }
 
     func open(title: String, items: [ShopItem], player: PlayerState, completion: @escaping () -> Void) {

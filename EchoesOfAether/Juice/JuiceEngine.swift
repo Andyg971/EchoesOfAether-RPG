@@ -1,9 +1,59 @@
 import SpriteKit
 
+/// Réglages d'accessibilité persistés dans UserDefaults.
+/// Lus à chaud par JuiceEngine (réduction d'animations) et par le HUD /
+/// le dialogue (gros texte).
+enum AccessibilitySettings {
+    static let reduceMotionKey = "reduceMotion"
+    static let largeTextKey = "largeText"
+
+    static var reduceMotion: Bool {
+        UserDefaults.standard.bool(forKey: reduceMotionKey)
+    }
+    static var largeText: Bool {
+        UserDefaults.standard.bool(forKey: largeTextKey)
+    }
+    /// Facteur multiplicatif appliqué aux tailles de police quand « gros
+    /// texte » est actif.
+    static var textScale: CGFloat {
+        largeText ? 1.25 : 1.0
+    }
+}
+
+/// Échelle adaptative des overlays selon la taille d'écran (iPhone → iPad).
+/// Sur iPhone le facteur reste 1.0 ; sur grand écran il grandit (borné) pour
+/// que les panneaux ne soient ni minuscules ni coupés.
+@MainActor
+enum UIScale {
+    static func factor(for size: CGSize) -> CGFloat {
+        let minDim = min(size.width, size.height)
+        return max(1.0, min(minDim / 390.0, 1.7))
+    }
+
+    /// Applique le facteur à `root` en gardant le centre de l'écran fixe.
+    /// Astuce : un enfant placé en coordonnées absolues (ex. centre = w/2,h/2)
+    /// reste centré car le centre est le point fixe de la transformation.
+    static func apply(to root: SKNode, sceneSize: CGSize) {
+        let s = factor(for: sceneSize)
+        root.setScale(s)
+        let c = CGPoint(x: sceneSize.width / 2, y: sceneSize.height / 2)
+        root.position = CGPoint(x: c.x * (1 - s), y: c.y * (1 - s))
+    }
+
+    /// Variante pour les overlays dont le `root` est déjà positionné au centre
+    /// de l'écran et dont les enfants sont en coordonnées relatives : on se
+    /// contente de redimensionner (le pivot est déjà le centre).
+    static func scaleCentered(_ root: SKNode, sceneSize: CGSize) {
+        root.setScale(factor(for: sceneSize))
+    }
+}
+
 @MainActor
 enum JuiceEngine {
 
     static func screenShake(_ node: SKNode, intensity: CGFloat = 10, duration: TimeInterval = 0.3) {
+        // Accessibilité : « réduire les animations » neutralise le tremblement.
+        if AccessibilitySettings.reduceMotion { return }
         let shakes = Int(duration / 0.04)
         var actions: [SKAction] = []
         for i in 0..<shakes {
@@ -27,19 +77,23 @@ enum JuiceEngine {
     }
 
     static func flashOverlay(in parent: SKNode, size: CGSize, color: SKColor, duration: TimeInterval = 0.15) {
+        // Accessibilité : atténue fortement les flashs (notamment rouges agressifs).
+        let reduce = AccessibilitySettings.reduceMotion
         let overlay = SKShapeNode(rectOf: size)
         overlay.fillColor = color
         overlay.strokeColor = .clear
-        overlay.alpha = 0.6
+        overlay.alpha = reduce ? 0.18 : 0.6
         overlay.zPosition = 950
         parent.addChild(overlay)
         overlay.run(.sequence([
-            .fadeOut(withDuration: duration),
+            .fadeOut(withDuration: reduce ? min(duration, 0.12) : duration),
             .removeFromParent()
         ]))
     }
 
     static func slowMotion(scene: SKScene, duration: TimeInterval = 0.15, factor: CGFloat = 0.3) {
+        // Accessibilité : pas de ralenti quand « réduire les animations » est actif.
+        if AccessibilitySettings.reduceMotion { return }
         scene.speed = factor
         scene.run(.sequence([
             .wait(forDuration: duration * factor),

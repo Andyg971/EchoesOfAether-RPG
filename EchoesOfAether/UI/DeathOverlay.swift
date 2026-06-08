@@ -74,6 +74,9 @@ final class DeathOverlay {
         sub.run(.sequence([.wait(forDuration: 0.5), fadeIn]))
         retryBtn.run(.sequence([.wait(forDuration: 0.7), fadeIn]))
         crystalBtn.run(.sequence([.wait(forDuration: 0.85), fadeIn]))
+
+        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
+        UIScale.apply(to: root, sceneSize: scene.size)
     }
 
     func hide() {

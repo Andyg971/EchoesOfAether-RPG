@@ -7,11 +7,13 @@ final class GameScene: SKScene {
     var safeAreaBottom: CGFloat = 0
     var safeAreaLeft: CGFloat = 0
     var safeAreaRight: CGFloat = 0
+    /// Slot de sauvegarde sélectionné dans le menu (1...SaveManager.slotCount).
+    var activeSlot: Int = 1
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
         HapticsEngine.prepare()
-        manager.setup(scene: self)
+        manager.setup(scene: self, slot: activeSlot)
 
         // Audio démarré après transition complète (fade 0.5s + marge)
         // évite crash AURemoteIO::IOThread pendant changement de scène

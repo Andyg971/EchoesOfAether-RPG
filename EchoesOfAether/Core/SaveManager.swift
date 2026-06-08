@@ -1,39 +1,86 @@
 import Foundation
 
+/// Métadonnées légères d'un slot de sauvegarde — pour l'affichage du menu
+/// sans avoir à exposer toute la `SaveData`.
+struct SaveSlotInfo {
+    let phase: GamePhase
+    let level: Int
+    let gold: Int
+}
+
 enum SaveManager {
 
-    private static let fileName = "echoes_save.json"
+    /// Nombre de slots de sauvegarde exposés au joueur.
+    static let slotCount = 3
 
-    private static var fileURL: URL {
-        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        return docs.appendingPathComponent(fileName)
+    /// Ancien fichier mono-slot (avant l'introduction des slots multiples).
+    /// Migré vers le slot 1 au premier lancement s'il existe encore.
+    private static let legacyFileName = "echoes_save.json"
+
+    private static var documentsURL: URL {
+        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    }
+
+    private static func fileName(slot: Int) -> String {
+        "echoes_save_\(slot).json"
+    }
+
+    private static func fileURL(slot: Int) -> URL {
+        documentsURL.appendingPathComponent(fileName(slot: slot))
+    }
+
+    private static var legacyURL: URL {
+        documentsURL.appendingPathComponent(legacyFileName)
+    }
+
+    // MARK: - Migration rétro-compatible
+
+    /// Migre l'ancienne sauvegarde unique vers le slot 1 au premier lancement.
+    /// Idempotent : à appeler tôt (ex. depuis le menu principal).
+    static func migrateLegacyIfNeeded() {
+        let fm = FileManager.default
+        guard fm.fileExists(atPath: legacyURL.path) else { return }
+        let slot1 = fileURL(slot: 1)
+        if fm.fileExists(atPath: slot1.path) {
+            // Slot 1 déjà occupé : on retire simplement le legacy.
+            try? fm.removeItem(at: legacyURL)
+        } else {
+            do {
+                try fm.moveItem(at: legacyURL, to: slot1)
+            } catch {
+                #if DEBUG
+                print("[SaveManager] legacy migration failed: \(error)")
+                #endif
+            }
+        }
     }
 
     // MARK: - Save
 
-    static func save(_ data: SaveData) {
+    static func save(_ data: SaveData, slot: Int) {
         do {
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let json = try encoder.encode(data)
-            try json.write(to: fileURL, options: .atomic)
+            try json.write(to: fileURL(slot: slot), options: .atomic)
         } catch {
             #if DEBUG
-            print("[SaveManager] save failed: \(error)")
+            print("[SaveManager] save failed (slot \(slot)): \(error)")
             #endif
         }
     }
 
     // MARK: - Load
 
-    static func load() -> SaveData? {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
+    static func load(slot: Int) -> SaveData? {
+        let url = fileURL(slot: slot)
+        guard FileManager.default.fileExists(atPath: url.path) else { return nil }
         do {
-            let json = try Data(contentsOf: fileURL)
+            let json = try Data(contentsOf: url)
             return try JSONDecoder().decode(SaveData.self, from: json)
         } catch {
             #if DEBUG
-            print("[SaveManager] load failed: \(error)")
+            print("[SaveManager] load failed (slot \(slot)): \(error)")
             #endif
             return nil
         }
@@ -41,11 +88,19 @@ enum SaveManager {
 
     // MARK: - Delete
 
-    static func deleteSave() {
-        try? FileManager.default.removeItem(at: fileURL)
+    static func delete(slot: Int) {
+        try? FileManager.default.removeItem(at: fileURL(slot: slot))
     }
 
-    static var hasSave: Bool {
-        FileManager.default.fileExists(atPath: fileURL.path)
+    static func hasSave(slot: Int) -> Bool {
+        FileManager.default.fileExists(atPath: fileURL(slot: slot).path)
+    }
+
+    /// Métadonnées légères pour l'affichage du slot (nil si vide ou illisible).
+    static func metadata(slot: Int) -> SaveSlotInfo? {
+        guard let data = load(slot: slot) else { return nil }
+        return SaveSlotInfo(phase: data.phase,
+                            level: data.level ?? 1,
+                            gold: data.gold)
     }
 }

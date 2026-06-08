@@ -1,6 +1,216 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "dialogue.act3.resist1": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "No. Not like this. Not by forgetting why I came." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Non. Pas comme ça. Pas en oubliant pourquoi je suis venu." } }
+      }
+    },
+    "dialogue.act3.resist2": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "You refuse the power? After all that blood?" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Tu refuses le pouvoir ? Après tout ce sang ?" } }
+      }
+    },
+    "dialogue.act3.resist3": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Power was never the point. I step back from the Threshold." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le pouvoir n'a jamais été le but. Je recule, loin du Seuil." } }
+      }
+    },
+    "dialogue.act3.resistEnd1": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold stayed shut. Kael turned his back on the Void." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil resta clos. Kael tourna le dos au Vide." } }
+      }
+    },
+    "dialogue.act3.resistEnd2": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "To carry the weight, awake — perhaps that was the harder courage." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Porter le poids, lucide — c'était peut-être ça, le vrai courage." } }
+      }
+    },
+    "menu.chooseSlot": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Choose a slot" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Choisis un emplacement" } }
+      }
+    },
+    "menu.slot %lld": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Slot %lld" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Emplacement %lld" } }
+      }
+    },
+    "menu.slot.meta %@ %lld %lld": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%1$@ • Lv %2$lld • %3$lld gold" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "%1$@ • Niv %2$lld • %3$lld or" } }
+      }
+    },
+    "menu.slot.deleteConfirm": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Confirm?" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Confirmer ?" } }
+      }
+    },
+    "menu.phase.wake": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Awakening" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Réveil" } }
+      }
+    },
+    "menu.phase.village": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Village of Solis" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Village de Solis" } }
+      }
+    },
+    "menu.phase.forest": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Forest" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "La Forêt" } }
+      }
+    },
+    "menu.phase.shrine": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Shrine" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Sanctuaire" } }
+      }
+    },
+    "menu.phase.complete": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Act I complete" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Acte I terminé" } }
+      }
+    },
+    "menu.phase.act2": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Return to Solis" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Retour à Solis" } }
+      }
+    },
+    "menu.phase.ruins": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Ruins of the Source" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Ruines de la Source" } }
+      }
+    },
+    "menu.phase.fallen": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Fall" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "La Chute" } }
+      }
+    },
+    "menu.phase.act3": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The Threshold" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Le Seuil" } }
+      }
+    },
+    "tutorial.move.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Moving around" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Se déplacer" } }
+      }
+    },
+    "tutorial.move.body": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tap the ground to move Kael. He walks to the spot you tapped." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Touche le sol pour déplacer Kael. Il marche jusqu'au point indiqué." } }
+      }
+    },
+    "tutorial.npc.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Talk & interact" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Parler & interagir" } }
+      }
+    },
+    "tutorial.npc.body": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Get close to a character: a bubble appears above them. Tap to talk, trade, or move the story forward." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Approche-toi d'un personnage : une bulle apparaît au-dessus de lui. Touche-le pour discuter, commercer ou avancer l'histoire." } }
+      }
+    },
+    "tutorial.combat.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "ATB Combat" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Combat ATB" } }
+      }
+    },
+    "tutorial.combat.body": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "The action gauge fills over time. When it's full, choose Attack, Black Slash, or a spell. Keep an eye on your HP." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "La jauge d'action se remplit avec le temps. Quand elle est pleine, choisis Attaque, Entaille Noire ou un sort. Surveille tes PV." } }
+      }
+    },
+    "tutorial.save.title": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Saving your progress" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Sauvegarder" } }
+      }
+    },
+    "tutorial.save.body": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Tap a save crystal to record your progress and fully restore your HP." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Touche un cristal de sauvegarde pour enregistrer ta progression et restaurer tous tes PV." } }
+      }
+    },
+    "tutorial.next": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Next" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Suivant" } }
+      }
+    },
+    "tutorial.finish": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Start" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Commencer" } }
+      }
+    },
+    "tutorial.skip": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Skip" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Passer" } }
+      }
+    },
+    "tutorial.progress %lld %lld": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "%1$lld / %2$lld" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "%1$lld / %2$lld" } }
+      }
+    },
+    "options.reduceMotion": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Reduce motion" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Réduire les animations" } }
+      }
+    },
+    "options.largeText": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Large text" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Gros texte" } }
+      }
+    },
+    "options.replayTutorial": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Replay tutorial" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Revoir le tutoriel" } }
+      }
+    },
+    "options.toggle.on": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "ON" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "OUI" } }
+      }
+    },
+    "options.toggle.off": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "OFF" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "NON" } }
+      }
+    },
     "combat.enemy.thresholdGuardian": {
       "localizations": {
         "en": {

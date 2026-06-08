@@ -76,6 +76,9 @@ final class LevelUpOverlay {
         subtitleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 22)
         statsLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 22)
         hintLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 76)
+
+        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
+        UIScale.apply(to: root, sceneSize: size)
     }
 
     /// Affiche l'overlay avec le nouveau niveau et la ligne de gains.

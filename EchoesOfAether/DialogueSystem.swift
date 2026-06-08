@@ -29,6 +29,12 @@ final class DialogueSystem {
     private var completion: (() -> Void)?
     private var hasAnimatedEntrance = false
 
+    /// Index du dernier choix sélectionné dans une étape `.choice` (nil tant
+    /// qu'aucun choix n'a été fait). Permet de rendre un choix déterminant.
+    private(set) var lastChoiceIndex: Int?
+    /// Callback déclenché quand le joueur sélectionne un choix (index 0-based).
+    var onChoiceSelected: ((Int) -> Void)?
+
     private let panelHeightLine: CGFloat = 76
     private let panelHeightChoices: CGFloat = 170
     private var safeBottom: CGFloat = 0
@@ -94,6 +100,12 @@ final class DialogueSystem {
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
         self.safeBottom = safeBottom
+        // Accessibilité « gros texte » : agrandit les polices du dialogue.
+        let ts = AccessibilitySettings.textScale
+        speakerLabel.fontSize = 11 * ts
+        bodyLabel.fontSize = 10 * ts
+        continueIndicator.fontSize = 9 * ts
+        portraitInitial.fontSize = 12 * ts
         let hasChoices = !choiceNodes.isEmpty
         let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
         let panelWidth = min(size.width - 32, 720)
@@ -140,6 +152,7 @@ final class DialogueSystem {
         self.steps = steps
         self.index = 0
         self.pendingNPC = nil
+        self.lastChoiceIndex = nil
         self.completion = completion
         root.isHidden = false
         playEntranceAnimation()
@@ -214,6 +227,10 @@ final class DialogueSystem {
             guard let title = node.userData?["title"] as? String,
                   let npcSpeaker = node.userData?["responseSpeaker"] as? String,
                   let npcText = node.userData?["response"] as? String else { continue }
+            if let chosenIndex = node.userData?["index"] as? Int {
+                lastChoiceIndex = chosenIndex
+                onChoiceSelected?(chosenIndex)
+            }
             pendingNPC = (speaker: npcSpeaker, text: npcText)
             clearChoices()
             let kaelName = String(localized: "dialogue.kael")
@@ -291,7 +308,8 @@ final class DialogueSystem {
             button.userData = [
                 "title": option.title,
                 "responseSpeaker": option.responseSpeaker,
-                "response": option.response
+                "response": option.response,
+                "index": offset
             ]
 
             let bullet = SKShapeNode(circleOfRadius: 3)
@@ -303,7 +321,7 @@ final class DialogueSystem {
 
             let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
             label.text = option.title
-            label.fontSize = 9
+            label.fontSize = 9 * AccessibilitySettings.textScale
             label.fontColor = .white
             label.numberOfLines = 2
             label.preferredMaxLayoutWidth = buttonWidth - 32

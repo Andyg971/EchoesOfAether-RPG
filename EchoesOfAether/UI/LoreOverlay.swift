@@ -20,6 +20,9 @@ final class LoreOverlay {
         panelWidth = min(330, max(280, size.width - 36))
         panelHeight = min(500, max(420, size.height - 104))
         root.position = CGPoint(x: size.width / 2, y: size.height / 2)
+
+        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
+        UIScale.scaleCentered(root, sceneSize: size)
     }
 
     func open(entries: [LoreEntry], completion: @escaping () -> Void) {

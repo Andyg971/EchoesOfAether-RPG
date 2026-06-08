@@ -182,15 +182,17 @@ final class HUDOverlay {
         let leftEdge = safeLeft + margin
         let rightEdge = size.width - safeRight - margin
         let topY = size.height - safeTop - 26 * s
+        // Accessibilité « gros texte » : agrandit uniquement les polices.
+        let f = s * AccessibilitySettings.textScale
 
-        objectiveLabel.fontSize = 13 * s
-        resonanceLabel.fontSize = 12 * s
-        goldLabel.fontSize = 13 * s
-        questLabel.fontSize = 11 * s
-        interactionHintLabel.fontSize = 13 * s
-        hpLabel.fontSize = 12 * s
-        levelLabel.fontSize = 12 * s
-        xpLabel.fontSize = 9 * s
+        objectiveLabel.fontSize = 13 * f
+        resonanceLabel.fontSize = 12 * f
+        goldLabel.fontSize = 13 * f
+        questLabel.fontSize = 11 * f
+        interactionHintLabel.fontSize = 13 * f
+        hpLabel.fontSize = 12 * f
+        levelLabel.fontSize = 12 * f
+        xpLabel.fontSize = 9 * f
 
         let objectiveWidth = min(size.width * 0.58, 250 * s)
         setPlate(objectivePlate, size: CGSize(width: objectiveWidth, height: 42 * s), radius: 8 * s)

@@ -47,6 +47,9 @@ final class InventoryOverlay {
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 36)
         closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 34)
+
+        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
+        UIScale.scaleCentered(root, sceneSize: size)
     }
 
     func open(player: PlayerState, completion: @escaping () -> Void) {

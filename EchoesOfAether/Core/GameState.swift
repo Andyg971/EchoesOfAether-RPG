@@ -94,6 +94,9 @@ final class PlayerState {
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
     var act3EranMet: Bool = false      // rencontre Eran au Seuil faite
     var act3BossDefeated: Bool = false // Gardien du Seuil vaincu → vraie fin
+    // Choix d'Eran qui détermine la fin de l'Acte III :
+    // nil = non choisi, 0 = franchir le Seuil, 1 = résister / refuser le Vide.
+    var act3EndingChoice: Int? = nil
 
     // MARK: - Stats dérivées (incluent le bonus de niveau)
     //
@@ -167,6 +170,7 @@ final class PlayerState {
             loreDiscovered: Array(loreDiscovered),
             act3EranMet: act3EranMet,
             act3BossDefeated: act3BossDefeated,
+            act3EndingChoice: act3EndingChoice,
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -202,6 +206,7 @@ final class PlayerState {
         loreDiscovered = Set(data.loreDiscovered)
         act3EranMet = data.act3EranMet ?? false
         act3BossDefeated = data.act3BossDefeated ?? false
+        act3EndingChoice = data.act3EndingChoice
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -240,6 +245,7 @@ struct SaveData: Codable {
     // Acte III (optionnels — saves antérieurs n'ont pas ces clés)
     let act3EranMet: Bool?
     let act3BossDefeated: Bool?
+    let act3EndingChoice: Int?
     let phase: GamePhase
     let resonanceTotal: Int
 }

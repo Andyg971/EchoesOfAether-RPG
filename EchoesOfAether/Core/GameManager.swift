@@ -19,9 +19,13 @@ final class GameManager {
     let minimap   = MinimapOverlay()
     let levelUp   = LevelUpOverlay()
     let bubble    = InteractionBubble()
+    let tutorial  = TutorialOverlay()
     let player    = PlayerState()
 
     var onReturnToMenu: (() -> Void)?
+
+    /// Slot de sauvegarde actif (injecté au démarrage par la scène).
+    private(set) var activeSlot: Int = 1
 
     private weak var scene: SKScene?
     private var resonanceTotal = 0
@@ -33,8 +37,9 @@ final class GameManager {
 
     // MARK: - Setup
 
-    func setup(scene: SKScene) {
+    func setup(scene: SKScene, slot: Int = 1) {
         self.scene = scene
+        self.activeSlot = slot
         world.build(in: scene)
         hud.attach(to: scene)
         dialogue.attach(to: scene)
@@ -47,6 +52,7 @@ final class GameManager {
         minimap.attach(to: scene)
         levelUp.attach(to: scene)
         bubble.attach(to: scene)
+        tutorial.attach(to: scene)
         syncLevelHUD()
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
@@ -68,9 +74,10 @@ final class GameManager {
 
         options.onClose       = { [weak self] in self?.closeOptions() }
         options.onDeleteSave  = { [weak self] in
-            SaveManager.deleteSave()
-            self?.closeOptions()
-            self?.onReturnToMenu?()
+            guard let self else { return }
+            SaveManager.delete(slot: activeSlot)
+            closeOptions()
+            onReturnToMenu?()
         }
         options.onVolumeChange = { volume in
             AudioEngine.shared.masterVolume = volume
@@ -78,6 +85,8 @@ final class GameManager {
         options.onMusicVolumeChange = { volume in
             AudioEngine.shared.musicVolume = volume
         }
+        options.onLargeTextChange = { [weak self] in self?.relayoutForAccessibility() }
+        options.onShowTutorial = { [weak self] in self?.replayTutorial() }
 
         death.onRetry           = { [weak self] in self?.retryLastCombat() }
         death.onReturnToCrystal = { [weak self] in
@@ -146,7 +155,7 @@ final class GameManager {
             return
         }
 
-        if let save = SaveManager.load() {
+        if let save = SaveManager.load(slot: activeSlot) {
             restoreFrom(save: save, scene: scene)
         } else {
             hud.goldValue = player.gold
@@ -154,7 +163,10 @@ final class GameManager {
         }
     }
 
+    private var lastLayout: (size: CGSize, top: CGFloat, bottom: CGFloat, left: CGFloat, right: CGFloat)?
+
     func layout(size: CGSize, safeTop: CGFloat, safeBottom: CGFloat = 0, safeLeft: CGFloat = 0, safeRight: CGFloat = 0) {
+        lastLayout = (size, safeTop, safeBottom, safeLeft, safeRight)
         if activeInterior == nil {
             world.layout(in: size)
         }
@@ -211,6 +223,9 @@ final class GameManager {
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {
+        // Le tutoriel est modal : il bloque toute autre interaction tant
+        // qu'il est visible.
+        if tutorial.handleTap(at: point, in: scene) { return }
         // Le level-up est prioritaire : il bloque toute autre interaction
         // tant qu'il est visible.
         if levelUp.handleTap(at: point, in: scene) { return }
@@ -240,6 +255,33 @@ final class GameManager {
             phase = .village
             hud.objectiveText = String(localized: "hud.objective.village")
             transition(to: .exploration)
+            maybeShowTutorial()
+        }
+    }
+
+    /// Affiche le tutoriel à la première partie (flag UserDefaults).
+    private func maybeShowTutorial() {
+        guard let scene else { return }
+        guard !UserDefaults.standard.bool(forKey: TutorialOverlay.seenKey) else { return }
+        tutorial.show(in: scene)
+    }
+
+    /// Relance le tutoriel (depuis les Options), quel que soit le flag.
+    private func replayTutorial() {
+        guard let scene else { return }
+        options.hide()
+        pause.hide()
+        tutorial.show(in: scene)
+    }
+
+    /// Re-dispose HUD + dialogue après un changement d'accessibilité (gros texte).
+    private func relayoutForAccessibility() {
+        if let l = lastLayout {
+            layout(size: l.size, safeTop: l.top, safeBottom: l.bottom,
+                   safeLeft: l.left, safeRight: l.right)
+        } else if let scene {
+            hud.layout(in: scene.size)
+            dialogue.layout(in: scene.size)
         }
     }
 
@@ -330,37 +372,21 @@ final class GameManager {
         if tryHouseDoorInteraction(point, in: scene) { return true }
 
         let radius: CGFloat = 32
-
-        if point.distance(to: world.dorin.position) < radius {
-            openDorinDialogue(scene: scene)
-            return true
-        }
-        if point.distance(to: world.lyra.position) < radius {
-            openLyraDialogue()
-            return true
-        }
-        if point.distance(to: world.bram.position) < radius {
-            openBramShop()
-            return true
-        }
-        if point.distance(to: world.mara.position) < radius {
-            openMaraInteraction(scene: scene)
-            return true
-        }
-        if point.distance(to: world.garen.position) < radius {
-            openGarenDialogue()
-            return true
-        }
-        if point.distance(to: world.sage.position) < radius {
-            openSageDialogue()
-            return true
-        }
-        if point.distance(to: world.child.position) < radius {
-            openChildDialogue()
-            return true
-        }
-        if point.distance(to: world.villager.position) < radius {
-            openVillagerDialogue()
+        // PNJ candidats : on choisit le PLUS PROCHE dans le rayon (et non le
+        // premier rencontré) pour éviter qu'un tap entre deux PNJ proches en
+        // déclenche un autre que celui visé.
+        let candidates: [(node: SKNode, action: () -> Void)] = [
+            (world.dorin,    { [weak self] in self?.openDorinDialogue(scene: scene) }),
+            (world.lyra,     { [weak self] in self?.openLyraDialogue() }),
+            (world.bram,     { [weak self] in self?.openBramShop() }),
+            (world.mara,     { [weak self] in self?.openMaraInteraction(scene: scene) }),
+            (world.garen,    { [weak self] in self?.openGarenDialogue() }),
+            (world.sage,     { [weak self] in self?.openSageDialogue() }),
+            (world.child,    { [weak self] in self?.openChildDialogue() }),
+            (world.villager, { [weak self] in self?.openVillagerDialogue() })
+        ]
+        if let action = nearestInteraction(from: point, candidates: candidates, radius: radius) {
+            action()
             return true
         }
         return false
@@ -990,54 +1016,59 @@ final class GameManager {
 
     private func tryAct2VillageInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
         let radius: CGFloat = 32
-
-        if point.distance(to: world.lyra.position) < radius {
-            transition(to: .dialogue)
-            dialogue.start(PrototypeContent.act2LyraAnalysisDialogue) { [weak self] in
-                self?.transition(to: .exploration)
-            }
-            return true
-        }
-        // Dorin garde la porte nord (Garen retiré Acte II) :
-        // 1) bloque si !act2DorinPassed
-        // 2) ouvre les ruines si Sage consulté
-        // 3) sinon doute (Dorin attend que Kael consulte le Sage)
-        if point.distance(to: world.dorin.position) < radius {
-            if !player.act2DorinPassed {
-                openDorinBlock(scene: scene)
-            } else if player.act2SageConsulted {
-                enterRuins()
-            } else {
-                transition(to: .dialogue)
-                dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
-                    self?.transition(to: .exploration)
-                }
-            }
-            return true
-        }
-        // Sage / auberge : cauchemar d'abord si pas encore vu
-        if point.distance(to: world.sage.position) < radius {
-            if !player.act2NightmareSeen {
-                openNightmareSequence(scene: scene)
-            } else {
-                transition(to: .dialogue)
-                dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
-                    guard let self else { return }
-                    player.act2SageConsulted = true
-                    transition(to: .exploration)
-                }
-            }
-            return true
-        }
-        if point.distance(to: world.bram.position) < radius {
-            openBramShop()
-            return true
-        }
-        if point.distance(to: world.mara.position) < radius {
-            openMaraInteraction(scene: scene)
+        // Garen est masqué en Acte II (cf. repositionDorinToGate) — donc absent
+        // des candidats. On choisit le PNJ le plus proche dans le rayon pour
+        // éviter un conflit de tap quand Dorin (porte nord) est proche d'un autre.
+        let candidates: [(node: SKNode, action: () -> Void)] = [
+            (world.lyra,  { [weak self] in self?.openAct2LyraDialogue() }),
+            (world.dorin, { [weak self] in self?.handleAct2Dorin(scene: scene) }),
+            (world.sage,  { [weak self] in self?.handleAct2Sage(scene: scene) }),
+            (world.bram,  { [weak self] in self?.openBramShop() }),
+            (world.mara,  { [weak self] in self?.openMaraInteraction(scene: scene) })
+        ]
+        if let action = nearestInteraction(from: point, candidates: candidates, radius: radius) {
+            action()
             return true
         }
         return false
+    }
+
+    private func openAct2LyraDialogue() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act2LyraAnalysisDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Dorin garde la porte nord (Garen retiré Acte II) :
+    /// 1) bloque si !act2DorinPassed
+    /// 2) ouvre les ruines si Sage consulté
+    /// 3) sinon doute (Dorin attend que Kael consulte le Sage)
+    private func handleAct2Dorin(scene: SKScene) {
+        if !player.act2DorinPassed {
+            openDorinBlock(scene: scene)
+        } else if player.act2SageConsulted {
+            enterRuins()
+        } else {
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.act2DorinDoubtDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Sage / auberge : cauchemar d'abord si pas encore vu.
+    private func handleAct2Sage(scene: SKScene) {
+        if !player.act2NightmareSeen {
+            openNightmareSequence(scene: scene)
+        } else {
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
+                guard let self else { return }
+                player.act2SageConsulted = true
+                transition(to: .exploration)
+            }
+        }
     }
 
     private func openNightmareSequence(scene: SKScene) {
@@ -1492,6 +1523,23 @@ final class GameManager {
         }
     }
 
+    /// Retourne l'action du candidat (PNJ visible) le plus proche de `origin`
+    /// dans `radius`. Choisir le plus proche — et non le premier — évite qu'un
+    /// tap entre deux PNJ proches déclenche le mauvais.
+    private func nearestInteraction(from origin: CGPoint,
+                                    candidates: [(node: SKNode, action: () -> Void)],
+                                    radius: CGFloat) -> (() -> Void)? {
+        var best: (action: () -> Void, dist: CGFloat)?
+        for candidate in candidates where !candidate.node.isHidden {
+            let d = origin.distance(to: candidate.node.position)
+            guard d < radius else { continue }
+            if best == nil || d < best!.dist {
+                best = (candidate.action, d)
+            }
+        }
+        return best?.action
+    }
+
     /// Retourne le PNJ visible le plus proche de `origin` dans `radius`.
     private func nearestNPC(from origin: CGPoint,
                              npcs: [(SKNode, String)],
@@ -1597,8 +1645,17 @@ final class GameManager {
     /// Rencontre Eran au Seuil. Débloque ensuite le combat contre le Gardien.
     private func openAct3EranMeet() {
         transition(to: .dialogue)
+        // Le choix d'Eran détermine la fin : 0 = franchir le Seuil (hubris),
+        // 1 = résister / refuser le Vide (lucidité). Capturé ici, appliqué à
+        // la toute fin (showAct3Ending), et persisté dans la sauvegarde.
+        dialogue.onChoiceSelected = { [weak self] index in
+            guard let self else { return }
+            player.act3EndingChoice = index
+            saveGame()
+        }
         dialogue.start(PrototypeContent.act3EranMeetDialogue) { [weak self] in
             guard let self else { return }
+            dialogue.onChoiceSelected = nil
             player.act3EranMet = true
             player.loreDiscovered.insert("threshold")
             hud.objectiveText = String(localized: "hud.objective.act3Boss")
@@ -1653,19 +1710,46 @@ final class GameManager {
         }
     }
 
-    /// Vraie fin de l'Acte III — Kael franchit le Seuil → crédits → menu.
+    /// Fin de l'Acte III — branchée selon le choix d'Eran :
+    /// - 0 (ou non choisi) : Kael FRANCHIT le Seuil (embrasse le Vide).
+    /// - 1 : Kael RÉSISTE / refuse le Vide.
+    /// Chaque fin enchaîne ses dialogues → crédits → menu.
     private func showAct3TrueEnding() {
         guard scene != nil else { return }
         transition(to: .dialogue)
+        // Par défaut (aucun choix capturé), on retombe sur la fin "franchir".
+        if player.act3EndingChoice == 1 {
+            showAct3ResistEnding()
+        } else {
+            showAct3CrossEnding()
+        }
+    }
+
+    /// Fin "Franchir le Seuil" — Kael embrasse le Vide.
+    private func showAct3CrossEnding() {
         dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
             guard let self else { return }
             dialogue.start(PrototypeContent.act3EndPlaceholder) { [weak self] in
-                guard let self, let scene = self.scene else { return }
-                transition(to: .exploration)
-                TransitionManager.showCredits(in: scene) { [weak self] in
-                    self?.onReturnToMenu?()
-                }
+                self?.rollCreditsToMenu()
             }
+        }
+    }
+
+    /// Fin "Résister / refuser le Vide" — Kael tourne le dos au Seuil.
+    private func showAct3ResistEnding() {
+        dialogue.start(PrototypeContent.act3ResistEndingDialogue) { [weak self] in
+            guard let self else { return }
+            dialogue.start(PrototypeContent.act3ResistEndPlaceholder) { [weak self] in
+                self?.rollCreditsToMenu()
+            }
+        }
+    }
+
+    private func rollCreditsToMenu() {
+        guard let scene else { return }
+        transition(to: .exploration)
+        TransitionManager.showCredits(in: scene) { [weak self] in
+            self?.onReturnToMenu?()
         }
     }
 
@@ -1708,7 +1792,7 @@ final class GameManager {
 
     func saveGame() {
         let data = player.toSaveData(phase: phase, resonance: resonanceTotal)
-        SaveManager.save(data)
+        SaveManager.save(data, slot: activeSlot)
     }
 
     private func restoreFrom(save: SaveData, scene: SKScene) {

@@ -734,7 +734,7 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.guardianPost2"))
     ]
 
-    /// Vraie fin de l'Acte III — Kael franchit le Seuil.
+    /// Fin "Franchir le Seuil" — Kael embrasse le Vide (choix d'Eran : 0).
     static let act3TrueEndingDialogue: [DialogueStep] = [
         .line(speaker: "Kael",
               text: String(localized: "dialogue.act3.trueEnd1")),
@@ -742,6 +742,25 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.trueEnd2")),
         .line(speaker: "Kael",
               text: String(localized: "dialogue.act3.trueEnd3"))
+    ]
+
+    /// Fin "Résister / refuser le Vide" — Kael tourne le dos au Seuil
+    /// (choix d'Eran : 1). Conclusion alternative à `act3TrueEndingDialogue`.
+    static let act3ResistEndingDialogue: [DialogueStep] = [
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.resist1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resist2")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.resist3"))
+    ]
+
+    /// Écran de fin de la branche "résister".
+    static let act3ResistEndPlaceholder: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEnd1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEnd2"))
     ]
 
     // MARK: - Lore entries (noms de clés xcstrings)

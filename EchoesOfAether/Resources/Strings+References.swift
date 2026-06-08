@@ -13,6 +13,13 @@ private enum _StringsReferences {
     static let hudGold:            LocalizedStringResource = "hud.gold %lld"
     static let hudResonance:       LocalizedStringResource = "hud.resonance %lld"
 
+    // Menu — slots de sauvegarde
+    static let menuSlot:           LocalizedStringResource = "menu.slot %lld"
+    static let menuSlotMeta:       LocalizedStringResource = "menu.slot.meta %@ %lld %lld"
+
+    // Tutoriel
+    static let tutorialProgress:   LocalizedStringResource = "tutorial.progress %lld %lld"
+
     // Shop
     static let shopGold:           LocalizedStringResource = "shop.gold %lld"
     static let shopPrice:          LocalizedStringResource = "shop.price %lld"

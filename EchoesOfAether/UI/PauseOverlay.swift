@@ -101,6 +101,9 @@ final class PauseOverlay {
         saveBtn.run(.sequence([.wait(forDuration: 0.14), fadeIn]))
         optionsBtn.run(.sequence([.wait(forDuration: 0.18), fadeIn]))
         menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn, .run { [weak self] in self?.buttonsReady = true }]))
+
+        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
+        UIScale.apply(to: root, sceneSize: scene.size)
     }
 
     func hide() {

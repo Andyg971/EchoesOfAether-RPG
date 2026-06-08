@@ -7,21 +7,23 @@ final class MainMenuScene: SKScene {
     var safeAreaLeft: CGFloat = 0
     var safeAreaRight: CGFloat = 0
 
-    // SaveManager is a static enum — no instance needed
     private var buttonsBuilt = false
     private weak var highlightedButton: SKShapeNode?
+    /// Slot en attente de confirmation de suppression (nil = aucun).
+    private var confirmDeleteSlot: Int?
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.035, green: 0.030, blue: 0.055, alpha: 1)
-        // Pas d'audio dans menu — démarrage dans GameScene seulement
+        // Migration de l'ancienne sauvegarde unique vers le slot 1 (une fois).
+        SaveManager.migrateLegacyIfNeeded()
         buildUI()
 
         // Auto-tap pour test E2E si lancé avec --auto-tap
         if CommandLine.arguments.contains("--auto-tap") {
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                 NSLog("[E2E] Auto-tap newGame")
-                SaveManager.deleteSave()
-                self?.transitionToGame(newGame: true)
+                SaveManager.delete(slot: 1)
+                self?.transitionToGame(slot: 1, newGame: true)
             }
         }
     }
@@ -29,6 +31,7 @@ final class MainMenuScene: SKScene {
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
         guard buttonsBuilt else { return }
+        confirmDeleteSlot = nil
         removeAllChildren()
         buildUI()
     }
@@ -53,7 +56,7 @@ final class MainMenuScene: SKScene {
         titleLabel.fontColor = SKColor(red: 0.86, green: 0.78, blue: 1, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         titleLabel.verticalAlignmentMode = .center
-        titleLabel.position = CGPoint(x: w / 2, y: min(h - safeTop - h * 0.22, contentTop - 72))
+        titleLabel.position = CGPoint(x: w / 2, y: min(h - safeTop - h * 0.18, contentTop - 56))
         titleLabel.zPosition = 20
         addChild(titleLabel)
         JuiceEngine.float(titleLabel, distance: 4)
@@ -75,33 +78,38 @@ final class MainMenuScene: SKScene {
         sub.verticalAlignmentMode = .center
         sub.preferredMaxLayoutWidth = min(w - 48, 360)
         sub.numberOfLines = 2
-        sub.position = CGPoint(x: w / 2, y: titleLabel.position.y - 44)
+        sub.position = CGPoint(x: w / 2, y: titleLabel.position.y - 40)
         sub.zPosition = 20
         addChild(sub)
 
-        let primaryY = max(contentBottom + 150, h * (SaveManager.hasSave ? 0.43 : 0.40))
-        let newBtn = makeMenuButton(
-            label: String(localized: "menu.newGame"),
-            fill: SKColor(red: 0.15, green: 0.09, blue: 0.22, alpha: 0.94),
-            stroke: SKColor(red: 0.70, green: 0.52, blue: 0.95, alpha: 0.95),
-            name: "menuNewGame"
-        )
-        newBtn.position = CGPoint(x: w / 2, y: primaryY)
-        newBtn.zPosition = 20
-        addChild(newBtn)
-        JuiceEngine.popIn(newBtn, delay: 0.1)
+        // En-tête « Choisis un emplacement »
+        let slotsTitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        slotsTitle.text = String(localized: "menu.chooseSlot")
+        slotsTitle.fontSize = 13
+        slotsTitle.fontColor = SKColor(white: 0.62, alpha: 1)
+        slotsTitle.horizontalAlignmentMode = .center
+        slotsTitle.verticalAlignmentMode = .center
+        slotsTitle.zPosition = 20
 
-        if SaveManager.hasSave {
-            let contBtn = makeMenuButton(
-                label: String(localized: "menu.continue"),
-                fill: SKColor(red: 0.07, green: 0.12, blue: 0.18, alpha: 0.94),
-                stroke: SKColor(red: 0.38, green: 0.68, blue: 0.95, alpha: 0.9),
-                name: "menuContinue"
-            )
-            contBtn.position = CGPoint(x: w / 2, y: max(contentBottom + 78, primaryY - 72))
-            contBtn.zPosition = 20
-            addChild(contBtn)
-            JuiceEngine.popIn(contBtn, delay: 0.2)
+        // Empilement vertical des slots, centré dans la zone disponible.
+        let rowHeight: CGFloat = 66
+        let spacing: CGFloat = 16
+        let count = SaveManager.slotCount
+        let blockHeight = CGFloat(count) * rowHeight + CGFloat(count - 1) * spacing
+        let centerY = max(contentBottom + blockHeight / 2 + 40, h * 0.42)
+        let topRowY = centerY + blockHeight / 2 - rowHeight / 2
+
+        slotsTitle.position = CGPoint(x: w / 2, y: centerY + blockHeight / 2 + 26)
+        addChild(slotsTitle)
+
+        for i in 0..<count {
+            let slot = i + 1
+            let rowY = topRowY - CGFloat(i) * (rowHeight + spacing)
+            let row = makeSlotRow(slot: slot, height: rowHeight)
+            row.position = CGPoint(x: w / 2, y: rowY)
+            row.zPosition = 20
+            addChild(row)
+            JuiceEngine.popIn(row, delay: 0.1 + Double(i) * 0.08)
         }
 
         let version = SKLabelNode(fontNamed: "AvenirNext-Regular")
@@ -119,8 +127,8 @@ final class MainMenuScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let point = touches.first?.location(in: self) else { return }
-        highlightedButton = menuButton(at: point)
-        highlightedButton?.run(.scale(to: 0.96, duration: 0.06))
+        highlightedButton = slotRow(at: point)
+        highlightedButton?.run(.scale(to: 0.97, duration: 0.06))
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -130,17 +138,24 @@ final class MainMenuScene: SKScene {
         }
         defer { clearHighlight() }
 
-        guard let button = highlightedButton, button === menuButton(at: point) else { return }
-        HapticsEngine.light()
+        // 1) Bouton de suppression (prioritaire sur la ligne)
+        if let slot = deleteSlot(at: point) {
+            handleDeleteTap(slot: slot)
+            return
+        }
 
-        switch button.name {
-        case "menuNewGame":
-            SaveManager.deleteSave()
-            transitionToGame(newGame: true)
-        case "menuContinue":
-            transitionToGame(newGame: false)
-        default:
-            break
+        // 2) Tap sur une ligne de slot
+        guard let row = slotRow(at: point), row === highlightedButton,
+              let slot = row.userData?["slot"] as? Int else {
+            resetDeleteConfirmIfNeeded()
+            return
+        }
+        resetDeleteConfirmIfNeeded()
+        HapticsEngine.light()
+        if SaveManager.hasSave(slot: slot) {
+            transitionToGame(slot: slot, newGame: false)
+        } else {
+            transitionToGame(slot: slot, newGame: true)
         }
     }
 
@@ -148,19 +163,152 @@ final class MainMenuScene: SKScene {
         clearHighlight()
     }
 
+    private func handleDeleteTap(slot: Int) {
+        HapticsEngine.heavy()
+        if confirmDeleteSlot == slot {
+            // Deuxième tap : suppression effective.
+            SaveManager.delete(slot: slot)
+            confirmDeleteSlot = nil
+            HapticsEngine.error()
+            rebuild()
+        } else {
+            confirmDeleteSlot = slot
+            rebuild()
+        }
+    }
+
+    private func resetDeleteConfirmIfNeeded() {
+        guard confirmDeleteSlot != nil else { return }
+        confirmDeleteSlot = nil
+        rebuild()
+    }
+
+    private func rebuild() {
+        removeAllChildren()
+        buildUI()
+    }
+
     // MARK: - Transition
 
-    private func transitionToGame(newGame: Bool) {
+    private func transitionToGame(slot: Int, newGame: Bool) {
         guard let view = self.view else { return }
+        if newGame {
+            // Nouvelle partie dans ce slot : on efface toute sauvegarde résiduelle.
+            SaveManager.delete(slot: slot)
+        }
 
-        let safeTop = safeAreaTop
         let gameScene = GameScene(size: view.bounds.size)
         gameScene.scaleMode = .resizeFill
-        gameScene.safeAreaTop = safeTop
+        gameScene.safeAreaTop = safeAreaTop
         gameScene.safeAreaBottom = safeAreaBottom
         gameScene.safeAreaLeft = safeAreaLeft
         gameScene.safeAreaRight = safeAreaRight
+        gameScene.activeSlot = slot
         view.presentScene(gameScene, transition: .fade(with: .black, duration: 0.5))
+    }
+
+    // MARK: - Slot row
+
+    private func makeSlotRow(slot: Int, height: CGFloat) -> SKShapeNode {
+        let width = min(max(size.width - 56, 268), 360)
+        let hasSave = SaveManager.hasSave(slot: slot)
+
+        let row = SKShapeNode(rectOf: CGSize(width: width, height: height), cornerRadius: 14)
+        row.fillColor = hasSave
+            ? SKColor(red: 0.07, green: 0.12, blue: 0.18, alpha: 0.94)
+            : SKColor(red: 0.13, green: 0.09, blue: 0.20, alpha: 0.92)
+        row.strokeColor = hasSave
+            ? SKColor(red: 0.38, green: 0.68, blue: 0.95, alpha: 0.9)
+            : SKColor(red: 0.62, green: 0.46, blue: 0.92, alpha: 0.85)
+        row.lineWidth = 2
+        row.glowWidth = 1.2
+        row.name = "slotRow\(slot)"
+        row.userData = ["slot": slot]
+
+        let leftX = -width / 2 + 18
+
+        let titleL = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        titleL.text = String(localized: "menu.slot \(slot)")
+        titleL.fontSize = 17
+        titleL.fontColor = .white
+        titleL.horizontalAlignmentMode = .left
+        titleL.verticalAlignmentMode = .center
+        titleL.position = CGPoint(x: leftX, y: hasSave ? 11 : 0)
+        titleL.isUserInteractionEnabled = false
+        row.addChild(titleL)
+
+        let subL = SKLabelNode(fontNamed: "AvenirNext-Regular")
+        if hasSave, let meta = SaveManager.metadata(slot: slot) {
+            subL.text = String(localized: "menu.slot.meta \(phaseDisplayName(meta.phase)) \(meta.level) \(meta.gold)")
+            subL.fontColor = SKColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 0.95)
+        } else {
+            subL.text = String(localized: "menu.newGame")
+            subL.fontColor = SKColor(red: 0.80, green: 0.72, blue: 0.95, alpha: 0.9)
+        }
+        subL.fontSize = 11
+        subL.horizontalAlignmentMode = .left
+        subL.verticalAlignmentMode = .center
+        subL.position = CGPoint(x: leftX, y: -12)
+        subL.isUserInteractionEnabled = false
+        if hasSave { row.addChild(subL) } else {
+            subL.position = CGPoint(x: leftX, y: 0)
+            row.addChild(subL)
+        }
+
+        // Bouton suppression (uniquement si une sauvegarde existe)
+        if hasSave {
+            let confirming = confirmDeleteSlot == slot
+            let delBtn = SKShapeNode(circleOfRadius: 16)
+            delBtn.fillColor = confirming
+                ? SKColor(red: 0.55, green: 0.10, blue: 0.10, alpha: 1)
+                : SKColor(red: 0.16, green: 0.08, blue: 0.10, alpha: 1)
+            delBtn.strokeColor = confirming
+                ? SKColor(red: 1.0, green: 0.30, blue: 0.25, alpha: 1)
+                : SKColor(red: 0.65, green: 0.25, blue: 0.25, alpha: 0.9)
+            delBtn.lineWidth = 1.5
+            delBtn.name = "slotDelete\(slot)"
+            delBtn.userData = ["slot": slot]
+            delBtn.position = CGPoint(x: width / 2 - 26, y: 0)
+
+            let delLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            delLbl.text = confirming ? "?" : "✕"
+            delLbl.fontSize = confirming ? 16 : 14
+            delLbl.fontColor = .white
+            delLbl.verticalAlignmentMode = .center
+            delLbl.horizontalAlignmentMode = .center
+            delLbl.isUserInteractionEnabled = false
+            delBtn.addChild(delLbl)
+            row.addChild(delBtn)
+
+            if confirming {
+                let hint = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+                hint.text = String(localized: "menu.slot.deleteConfirm")
+                hint.fontSize = 9
+                hint.fontColor = SKColor(red: 1.0, green: 0.45, blue: 0.40, alpha: 1)
+                hint.horizontalAlignmentMode = .right
+                hint.verticalAlignmentMode = .center
+                hint.position = CGPoint(x: width / 2 - 50, y: 0)
+                hint.isUserInteractionEnabled = false
+                row.addChild(hint)
+            }
+        }
+
+        return row
+    }
+
+    /// Nom court de la phase pour l'affichage du slot.
+    private func phaseDisplayName(_ phase: GamePhase) -> String {
+        switch phase {
+        case .wake:     return String(localized: "menu.phase.wake")
+        case .village:  return String(localized: "menu.phase.village")
+        case .forest:   return String(localized: "menu.phase.forest")
+        case .shrine:   return String(localized: "menu.phase.shrine")
+        case .complete: return String(localized: "menu.phase.complete")
+        case .act2:     return String(localized: "menu.phase.act2")
+        case .ruins:    return String(localized: "menu.phase.ruins")
+        case .fallen:   return String(localized: "menu.phase.fallen")
+        case .act3:     return String(localized: "menu.phase.act3")
+        }
     }
 
     // MARK: - Helpers
@@ -215,42 +363,33 @@ final class MainMenuScene: SKScene {
         addChild(sprite)
     }
 
-    private func makeMenuButton(label: String,
-                                fill: SKColor, stroke: SKColor,
-                                name: String) -> SKShapeNode {
-        let width = min(max(size.width - 64, 248), 320)
-        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 56), cornerRadius: 12)
-        btn.fillColor = fill
-        btn.strokeColor = stroke
-        btn.lineWidth = 2
-        btn.glowWidth = 1.5
-        btn.name = name
-
-        let inner = SKShapeNode(rectOf: CGSize(width: width - 12, height: 44), cornerRadius: 8)
-        inner.fillColor = .clear
-        inner.strokeColor = SKColor(white: 1, alpha: 0.10)
-        inner.lineWidth = 1
-        inner.isUserInteractionEnabled = false
-        btn.addChild(inner)
-
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-        lbl.text = label
-        lbl.fontSize = 18
-        lbl.fontColor = .white
-        lbl.verticalAlignmentMode = .center
-        lbl.horizontalAlignmentMode = .center
-        lbl.isUserInteractionEnabled = false
-        btn.addChild(lbl)
-        return btn
+    /// Renvoie la ligne de slot touchée (en remontant au parent si besoin).
+    private func slotRow(at point: CGPoint) -> SKShapeNode? {
+        for node in nodes(at: point) {
+            if let row = node as? SKShapeNode, row.name?.hasPrefix("slotRow") == true {
+                return row
+            }
+            var parent = node.parent
+            while let p = parent {
+                if let row = p as? SKShapeNode, row.name?.hasPrefix("slotRow") == true {
+                    return row
+                }
+                parent = p.parent
+            }
+        }
+        return nil
     }
 
-    private func menuButton(at point: CGPoint) -> SKShapeNode? {
+    /// Renvoie le slot dont le bouton de suppression a été touché.
+    private func deleteSlot(at point: CGPoint) -> Int? {
         for node in nodes(at: point) {
-            if let button = node as? SKShapeNode, button.name?.hasPrefix("menu") == true {
-                return button
+            if let btn = node as? SKShapeNode, btn.name?.hasPrefix("slotDelete") == true,
+               let slot = btn.userData?["slot"] as? Int {
+                return slot
             }
-            if let button = node.parent as? SKShapeNode, button.name?.hasPrefix("menu") == true {
-                return button
+            if let btn = node.parent as? SKShapeNode, btn.name?.hasPrefix("slotDelete") == true,
+               let slot = btn.userData?["slot"] as? Int {
+                return slot
             }
         }
         return nil

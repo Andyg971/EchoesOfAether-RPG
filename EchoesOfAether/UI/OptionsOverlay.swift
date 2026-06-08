@@ -11,6 +11,11 @@ final class OptionsOverlay {
     var onDeleteSave: (() -> Void)?
     var onVolumeChange: ((Float) -> Void)?
     var onMusicVolumeChange: ((Float) -> Void)?
+    /// Appelé quand un réglage d'accessibilité « gros texte » change — permet
+    /// au jeu de re-disposer le HUD et le dialogue.
+    var onLargeTextChange: (() -> Void)?
+    /// Appelé pour relancer le tutoriel.
+    var onShowTutorial: (() -> Void)?
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -38,7 +43,7 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 300, panelH: CGFloat = 500
+        let panelW: CGFloat = 304, panelH: CGFloat = 624
         let panel = SKShapeNode(path: CGPath(
             roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
             cornerWidth: 20, cornerHeight: 20, transform: nil))
@@ -48,77 +53,84 @@ final class OptionsOverlay {
         panel.position = CGPoint(x: w/2, y: h/2)
         root.addChild(panel)
 
+        let cx = w / 2
+        let top = h / 2 + panelH / 2   // bord haut du panneau en coords écran
+
         // Titre
         let title = label(String(localized: "options.title"), size: 22,
                           color: SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1))
-        title.position = CGPoint(x: w/2, y: h/2 + panelH/2 - 36)
+        title.position = CGPoint(x: cx, y: top - 34)
         root.addChild(title)
 
         // Section Volume musique
         let musicTitle = label(String(localized: "options.music"), size: 14,
                                color: SKColor(white: 0.65, alpha: 1))
-        musicTitle.position = CGPoint(x: w/2, y: h/2 + 156)
+        musicTitle.position = CGPoint(x: cx, y: top - 70)
         root.addChild(musicTitle)
-
-        let musicRow = makeVolumeRow(value: musicVolume, at: CGPoint(x: w/2, y: h/2 + 128),
-                                     kind: .music)
-        root.addChild(musicRow)
+        root.addChild(makeVolumeRow(value: musicVolume, at: CGPoint(x: cx, y: top - 98), kind: .music))
 
         // Section Volume SFX
         let sfxTitle = label(String(localized: "options.sfx"), size: 14,
                              color: SKColor(white: 0.65, alpha: 1))
-        sfxTitle.position = CGPoint(x: w/2, y: h/2 + 92)
+        sfxTitle.position = CGPoint(x: cx, y: top - 134)
         root.addChild(sfxTitle)
+        root.addChild(makeVolumeRow(value: sfxVolume, at: CGPoint(x: cx, y: top - 162), kind: .sfx))
 
-        let sfxRow = makeVolumeRow(value: sfxVolume, at: CGPoint(x: w/2, y: h/2 + 64),
-                                   kind: .sfx)
-        root.addChild(sfxRow)
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 192))
 
-        // Séparateur
-        let sep = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
-        sep.fillColor = SKColor(white: 0.20, alpha: 0.5)
-        sep.strokeColor = .clear
-        sep.position = CGPoint(x: w/2, y: h/2 + 34)
-        root.addChild(sep)
+        // Accessibilité — toggles
+        root.addChild(makeToggleRow(String(localized: "options.reduceMotion"),
+                                    isOn: AccessibilitySettings.reduceMotion,
+                                    name: "toggleReduceMotion",
+                                    at: CGPoint(x: cx, y: top - 220), width: panelW - 44))
+        root.addChild(makeToggleRow(String(localized: "options.largeText"),
+                                    isOn: AccessibilitySettings.largeText,
+                                    name: "toggleLargeText",
+                                    at: CGPoint(x: cx, y: top - 256), width: panelW - 44))
+
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 286))
 
         // Section Langue — sélecteur FR / EN
         let langTitle = label(String(localized: "options.language"), size: 14,
                               color: SKColor(white: 0.65, alpha: 1))
-        langTitle.position = CGPoint(x: w/2, y: h/2 + 12)
+        langTitle.position = CGPoint(x: cx, y: top - 310)
         root.addChild(langTitle)
 
         let current = currentLanguageCode()
         let frBtn = makeLangButton("Français", code: "fr",
                                    selected: current == "fr", name: "langFR")
-        frBtn.position = CGPoint(x: w/2 - 64, y: h/2 - 22)
+        frBtn.position = CGPoint(x: cx - 64, y: top - 344)
         root.addChild(frBtn)
 
         let enBtn = makeLangButton("English", code: "en",
                                    selected: current == "en", name: "langEN")
-        enBtn.position = CGPoint(x: w/2 + 64, y: h/2 - 22)
+        enBtn.position = CGPoint(x: cx + 64, y: top - 344)
         root.addChild(enBtn)
 
         // Note redémarrage — cachée jusqu'au changement
         let restart = label(String(localized: "options.language.restart"), size: 11,
                             color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
-        restart.position = CGPoint(x: w/2, y: h/2 - 48)
+        restart.position = CGPoint(x: cx, y: top - 370)
         restart.name = "langRestart"
         restart.isHidden = true
         root.addChild(restart)
 
-        // Séparateur 2
-        let sep2 = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
-        sep2.fillColor = SKColor(white: 0.20, alpha: 0.4)
-        sep2.strokeColor = .clear
-        sep2.position = CGPoint(x: w/2, y: h/2 - 70)
-        root.addChild(sep2)
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 392))
+
+        // Bouton Revoir le tutoriel
+        let tutorialBtn = makeButton(String(localized: "options.replayTutorial"),
+            fill: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1),
+            stroke: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
+            name: "optionsTutorial")
+        tutorialBtn.position = CGPoint(x: cx, y: top - 426)
+        root.addChild(tutorialBtn)
 
         // Bouton Reset
         let resetBtn = makeButton(String(localized: "options.resetSave"),
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
             stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
             name: "optionsReset")
-        resetBtn.position = CGPoint(x: w/2, y: h/2 - 110)
+        resetBtn.position = CGPoint(x: cx, y: top - 480)
         root.addChild(resetBtn)
 
         // Bouton Fermer
@@ -126,14 +138,25 @@ final class OptionsOverlay {
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
             name: "optionsClose")
-        closeBtn.position = CGPoint(x: w/2, y: h/2 - 170)
+        closeBtn.position = CGPoint(x: cx, y: top - 534)
         root.addChild(closeBtn)
 
         // Animate
         panel.alpha = 0; panel.run(.fadeIn(withDuration: 0.2))
         for (i, child) in root.children.enumerated() where child !== scrim {
-            JuiceEngine.popIn(child, delay: Double(i) * 0.04)
+            JuiceEngine.popIn(child, delay: Double(i) * 0.03)
         }
+
+        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
+        UIScale.apply(to: root, sceneSize: scene.size)
+    }
+
+    private func addSeparator(width: CGFloat, at pos: CGPoint) {
+        let sep = SKShapeNode(rectOf: CGSize(width: width, height: 1))
+        sep.fillColor = SKColor(white: 0.20, alpha: 0.5)
+        sep.strokeColor = .clear
+        sep.position = pos
+        root.addChild(sep)
     }
 
     func hide() {
@@ -172,6 +195,20 @@ final class OptionsOverlay {
             refreshVolumeDisplay(.music)
             HapticsEngine.light()
             onMusicVolumeChange?(musicVolume)
+            return true
+        }
+        if let btn = root.childNode(withName: "toggleReduceMotion") as? SKShapeNode, btn.contains(local) {
+            toggle(key: AccessibilitySettings.reduceMotionKey, scene: scene)
+            return true
+        }
+        if let btn = root.childNode(withName: "toggleLargeText") as? SKShapeNode, btn.contains(local) {
+            toggle(key: AccessibilitySettings.largeTextKey, scene: scene)
+            onLargeTextChange?()
+            return true
+        }
+        if let btn = root.childNode(withName: "optionsTutorial") as? SKShapeNode, btn.contains(local) {
+            HapticsEngine.light()
+            onShowTutorial?()
             return true
         }
         if let btn = root.childNode(withName: "langFR") as? SKShapeNode, btn.contains(local) {
@@ -333,6 +370,60 @@ final class OptionsOverlay {
         lbl.isUserInteractionEnabled = false
         btn.addChild(lbl)
         return btn
+    }
+
+    /// Bascule un réglage booléen (UserDefaults) et rafraîchit l'overlay.
+    private func toggle(key: String, scene: SKScene) {
+        let newValue = !UserDefaults.standard.bool(forKey: key)
+        UserDefaults.standard.set(newValue, forKey: key)
+        HapticsEngine.light()
+        show(in: scene)   // rebuild pour refléter l'état ON/OFF
+    }
+
+    /// Ligne « libellé … [ON/OFF] » tappable (toute la ligne est la zone).
+    private func makeToggleRow(_ text: String, isOn: Bool, name: String,
+                               at pos: CGPoint, width: CGFloat) -> SKShapeNode {
+        let row = SKShapeNode(rectOf: CGSize(width: width, height: 30), cornerRadius: 8)
+        row.fillColor = SKColor(red: 0.09, green: 0.08, blue: 0.15, alpha: 1)
+        row.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.5)
+        row.lineWidth = 1
+        row.name = name
+        row.position = pos
+
+        let lbl = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        lbl.text = text
+        lbl.fontSize = 12
+        lbl.fontColor = SKColor(white: 0.85, alpha: 1)
+        lbl.horizontalAlignmentMode = .left
+        lbl.verticalAlignmentMode = .center
+        lbl.position = CGPoint(x: -width / 2 + 12, y: 0)
+        lbl.isUserInteractionEnabled = false
+        row.addChild(lbl)
+
+        let pill = SKShapeNode(rectOf: CGSize(width: 46, height: 20), cornerRadius: 10)
+        pill.fillColor = isOn
+            ? SKColor(red: 0.20, green: 0.55, blue: 0.32, alpha: 1)
+            : SKColor(red: 0.20, green: 0.18, blue: 0.26, alpha: 1)
+        pill.strokeColor = isOn
+            ? SKColor(red: 0.40, green: 0.85, blue: 0.55, alpha: 1)
+            : SKColor(red: 0.45, green: 0.40, blue: 0.55, alpha: 0.8)
+        pill.lineWidth = 1.2
+        pill.position = CGPoint(x: width / 2 - 33, y: 0)
+        pill.isUserInteractionEnabled = false
+        row.addChild(pill)
+
+        let pillLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        pillLbl.text = isOn ? String(localized: "options.toggle.on")
+                            : String(localized: "options.toggle.off")
+        pillLbl.fontSize = 10
+        pillLbl.fontColor = .white
+        pillLbl.verticalAlignmentMode = .center
+        pillLbl.horizontalAlignmentMode = .center
+        pillLbl.position = pill.position
+        pillLbl.isUserInteractionEnabled = false
+        row.addChild(pillLbl)
+
+        return row
     }
 
     private func makeButton(_ text: String, fill: SKColor, stroke: SKColor, name: String) -> SKShapeNode {

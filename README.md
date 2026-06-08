@@ -156,7 +156,7 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 | Localisation FR + EN | ✅ Complet (459 clés) |
 | AppIcon 1024 | ✅ Présent |
 | Graphismes placeholder | ✅ (formes programmatiques) |
-| Audio (SFX + musique) | 🔴 Stub silencieux (à réimplémenter) |
+| Audio (SFX + musique) | ✅ Synthèse procédurale (AVAudioPlayerNode + buffers PCM) |
 | Assets réels | 🟡 Partiel (tiles RPG Maker MV intégrées) |
 | Build App Store | 🟡 Prêt côté build, audio + Acte III à finir |
 
@@ -164,9 +164,9 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 ## Roadmap — Ce qui reste
 
-### 🔴 Indispensable
+### ✅ Récemment livré
 
-- [ ] **Audio réel** — `AudioEngine` est un stub no-op (crash IO thread iOS 26 simulateur). Réimplémenter avec `AVAudioPlayerNode` + `AVAudioPCMBuffer` pré-rendus. Débloque aussi le slider SFX (déjà câblé sur `masterVolume`) et le volume musique.
+- [x] **Audio réel** — `AudioEngine` synthétise SFX + pad d'ambiance dans des `AVAudioPCMBuffer`, joués via `AVAudioPlayerNode` (aucun render callback → pas de crash IO thread). Sliders SFX + Musique câblés dans Options.
 - [x] **Acte III jouable** — Zone du Seuil dédiée (assets existants : escalier, statues d'anges, piliers, arbres morts), boss final « Gardien du Seuil » (ATB + enrage), vraie fin (Kael franchit le Seuil → crédits). Reste : enrichissement narratif et embranchements de fin.
 
 ### 🟡 Important

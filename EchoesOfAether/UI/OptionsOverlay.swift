@@ -4,16 +4,19 @@ import SpriteKit
 final class OptionsOverlay {
     private let root = SKNode()
     private var sfxLabel: SKLabelNode?
+    private var musicLabel: SKLabelNode?
     private var confirmDelete = false
 
     var onClose: (() -> Void)?
     var onDeleteSave: (() -> Void)?
     var onVolumeChange: ((Float) -> Void)?
+    var onMusicVolumeChange: ((Float) -> Void)?
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
-    // Volume 0.0–1.0 (visuel seulement, AudioEngine n'a pas encore de knob global)
+    // Volumes 0.0–1.0 — câblés sur AudioEngine (SFX = masterVolume, musique = musicVolume).
     private(set) var sfxVolume: Float = 1.0
+    private(set) var musicVolume: Float = 0.55
 
     func attach(to scene: SKScene) {
         root.zPosition = 1_600
@@ -35,7 +38,7 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 300, panelH: CGFloat = 440
+        let panelW: CGFloat = 300, panelH: CGFloat = 500
         let panel = SKShapeNode(path: CGPath(
             roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
             cornerWidth: 20, cornerHeight: 20, transform: nil))
@@ -48,46 +51,57 @@ final class OptionsOverlay {
         // Titre
         let title = label(String(localized: "options.title"), size: 22,
                           color: SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1))
-        title.position = CGPoint(x: w/2, y: h/2 + panelH/2 - 40)
+        title.position = CGPoint(x: w/2, y: h/2 + panelH/2 - 36)
         root.addChild(title)
 
-        // Section SFX Volume
+        // Section Volume musique
+        let musicTitle = label(String(localized: "options.music"), size: 14,
+                               color: SKColor(white: 0.65, alpha: 1))
+        musicTitle.position = CGPoint(x: w/2, y: h/2 + 156)
+        root.addChild(musicTitle)
+
+        let musicRow = makeVolumeRow(value: musicVolume, at: CGPoint(x: w/2, y: h/2 + 128),
+                                     kind: .music)
+        root.addChild(musicRow)
+
+        // Section Volume SFX
         let sfxTitle = label(String(localized: "options.sfx"), size: 14,
                              color: SKColor(white: 0.65, alpha: 1))
-        sfxTitle.position = CGPoint(x: w/2, y: h/2 + 80)
+        sfxTitle.position = CGPoint(x: w/2, y: h/2 + 92)
         root.addChild(sfxTitle)
 
-        let sfxRow = makeVolumeRow(value: sfxVolume, at: CGPoint(x: w/2, y: h/2 + 50))
+        let sfxRow = makeVolumeRow(value: sfxVolume, at: CGPoint(x: w/2, y: h/2 + 64),
+                                   kind: .sfx)
         root.addChild(sfxRow)
 
         // Séparateur
         let sep = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
         sep.fillColor = SKColor(white: 0.20, alpha: 0.5)
         sep.strokeColor = .clear
-        sep.position = CGPoint(x: w/2, y: h/2 + 18)
+        sep.position = CGPoint(x: w/2, y: h/2 + 34)
         root.addChild(sep)
 
         // Section Langue — sélecteur FR / EN
         let langTitle = label(String(localized: "options.language"), size: 14,
                               color: SKColor(white: 0.65, alpha: 1))
-        langTitle.position = CGPoint(x: w/2, y: h/2 - 4)
+        langTitle.position = CGPoint(x: w/2, y: h/2 + 12)
         root.addChild(langTitle)
 
         let current = currentLanguageCode()
         let frBtn = makeLangButton("Français", code: "fr",
                                    selected: current == "fr", name: "langFR")
-        frBtn.position = CGPoint(x: w/2 - 64, y: h/2 - 38)
+        frBtn.position = CGPoint(x: w/2 - 64, y: h/2 - 22)
         root.addChild(frBtn)
 
         let enBtn = makeLangButton("English", code: "en",
                                    selected: current == "en", name: "langEN")
-        enBtn.position = CGPoint(x: w/2 + 64, y: h/2 - 38)
+        enBtn.position = CGPoint(x: w/2 + 64, y: h/2 - 22)
         root.addChild(enBtn)
 
         // Note redémarrage — cachée jusqu'au changement
         let restart = label(String(localized: "options.language.restart"), size: 11,
                             color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
-        restart.position = CGPoint(x: w/2, y: h/2 - 64)
+        restart.position = CGPoint(x: w/2, y: h/2 - 48)
         restart.name = "langRestart"
         restart.isHidden = true
         root.addChild(restart)
@@ -96,7 +110,7 @@ final class OptionsOverlay {
         let sep2 = SKShapeNode(rectOf: CGSize(width: panelW - 40, height: 1))
         sep2.fillColor = SKColor(white: 0.20, alpha: 0.4)
         sep2.strokeColor = .clear
-        sep2.position = CGPoint(x: w/2, y: h/2 - 86)
+        sep2.position = CGPoint(x: w/2, y: h/2 - 70)
         root.addChild(sep2)
 
         // Bouton Reset
@@ -104,7 +118,7 @@ final class OptionsOverlay {
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
             stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
             name: "optionsReset")
-        resetBtn.position = CGPoint(x: w/2, y: h/2 - 124)
+        resetBtn.position = CGPoint(x: w/2, y: h/2 - 110)
         root.addChild(resetBtn)
 
         // Bouton Fermer
@@ -112,7 +126,7 @@ final class OptionsOverlay {
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
             name: "optionsClose")
-        closeBtn.position = CGPoint(x: w/2, y: h/2 - 184)
+        closeBtn.position = CGPoint(x: w/2, y: h/2 - 170)
         root.addChild(closeBtn)
 
         // Animate
@@ -134,16 +148,30 @@ final class OptionsOverlay {
 
         if let btn = root.childNode(withName: "sfxDown") as? SKShapeNode, btn.contains(local) {
             sfxVolume = max(0, sfxVolume - 0.25)
-            refreshVolumeDisplay()
+            refreshVolumeDisplay(.sfx)
             HapticsEngine.light()
             onVolumeChange?(sfxVolume)
             return true
         }
         if let btn = root.childNode(withName: "sfxUp") as? SKShapeNode, btn.contains(local) {
             sfxVolume = min(1, sfxVolume + 0.25)
-            refreshVolumeDisplay()
+            refreshVolumeDisplay(.sfx)
             HapticsEngine.light()
             onVolumeChange?(sfxVolume)
+            return true
+        }
+        if let btn = root.childNode(withName: "musicDown") as? SKShapeNode, btn.contains(local) {
+            musicVolume = max(0, musicVolume - 0.25)
+            refreshVolumeDisplay(.music)
+            HapticsEngine.light()
+            onMusicVolumeChange?(musicVolume)
+            return true
+        }
+        if let btn = root.childNode(withName: "musicUp") as? SKShapeNode, btn.contains(local) {
+            musicVolume = min(1, musicVolume + 0.25)
+            refreshVolumeDisplay(.music)
+            HapticsEngine.light()
+            onMusicVolumeChange?(musicVolume)
             return true
         }
         if let btn = root.childNode(withName: "langFR") as? SKShapeNode, btn.contains(local) {
@@ -246,26 +274,32 @@ final class OptionsOverlay {
         }
     }
 
-    private func refreshVolumeDisplay() {
-        guard let lbl = sfxLabel else { return }
-        lbl.text = volumeString(sfxVolume)
+    private enum VolumeKind { case sfx, music }
+
+    private func refreshVolumeDisplay(_ kind: VolumeKind) {
+        switch kind {
+        case .sfx:   sfxLabel?.text = volumeString(sfxVolume)
+        case .music: musicLabel?.text = volumeString(musicVolume)
+        }
     }
 
     private func volumeString(_ v: Float) -> String {
-        let filled = Int(v * 4)
+        let filled = Int((v * 4).rounded())
         let blocks = String(repeating: "█", count: filled) + String(repeating: "░", count: 4 - filled)
         return blocks
     }
 
-    private func makeVolumeRow(value: Float, at pos: CGPoint) -> SKNode {
+    private func makeVolumeRow(value: Float, at pos: CGPoint, kind: VolumeKind) -> SKNode {
         let container = SKNode()
         container.position = pos
+        let downName = kind == .sfx ? "sfxDown" : "musicDown"
+        let upName   = kind == .sfx ? "sfxUp" : "musicUp"
 
-        let downBtn = makeSmallButton("◀", name: "sfxDown")
+        let downBtn = makeSmallButton("◀", name: downName)
         downBtn.position = CGPoint(x: -70, y: 0)
         container.addChild(downBtn)
 
-        let upBtn = makeSmallButton("▶", name: "sfxUp")
+        let upBtn = makeSmallButton("▶", name: upName)
         upBtn.position = CGPoint(x: 70, y: 0)
         container.addChild(upBtn)
 
@@ -276,7 +310,10 @@ final class OptionsOverlay {
         volLabel.horizontalAlignmentMode = .center
         volLabel.verticalAlignmentMode = .center
         container.addChild(volLabel)
-        sfxLabel = volLabel
+        switch kind {
+        case .sfx:   sfxLabel = volLabel
+        case .music: musicLabel = volLabel
+        }
 
         return container
     }

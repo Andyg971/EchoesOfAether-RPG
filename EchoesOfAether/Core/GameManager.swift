@@ -75,6 +75,9 @@ final class GameManager {
         options.onVolumeChange = { volume in
             AudioEngine.shared.masterVolume = volume
         }
+        options.onMusicVolumeChange = { volume in
+            AudioEngine.shared.musicVolume = volume
+        }
 
         death.onRetry           = { [weak self] in self?.retryLastCombat() }
         death.onReturnToCrystal = { [weak self] in

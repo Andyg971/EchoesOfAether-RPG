@@ -6560,6 +6560,22 @@
         }
       }
     },
+    "options.music": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Music Volume"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Volume musique"
+          }
+        }
+      }
+    },
     "options.resetSave": {
       "localizations": {
         "en": {

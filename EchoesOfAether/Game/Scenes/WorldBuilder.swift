@@ -135,7 +135,9 @@ final class WorldBuilder {
     ///   y=90-100% SORTIE NORD (porte fortifiée vers forêt)
     private func buildVillage(in scene: SKScene) {
         let w = scene.size.width
-        let h = scene.size.height * 2.5
+        // Monde paysage : écran court → on allonge le couloir vertical (×3.5)
+        // pour que les zones respirent et que les maisons ne se chevauchent pas.
+        let h = scene.size.height * 3.5
         worldHeight = h
 
         // ── SOL : A2 grass tile (vert uniforme avec brins d'herbe) ──
@@ -206,11 +208,13 @@ final class WorldBuilder {
                             wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.78, y: h * 0.22), in: scene)
+        // Maison onestory déplacée à l'ouest (hors de l'axe central) pour
+        // dégager l'approche sud vers la fontaine de la place.
         addVillageBuilding(asset: "village_house_onestory", scale: bScale * 1.2,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.18, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.32), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.30, y: h * 0.15), in: scene)
 
         // Crystal save proche auberge (UX : safe spot évident)
         addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.50), in: scene)
@@ -263,7 +267,9 @@ final class WorldBuilder {
                      in: scene)
 
 // --- Arbres MV (T26 light + T27 dark forest) ---
-        let treeScale = forestTreeScale(for: w) * 0.55  // MV trees plus gros que ME (~150-200px)
+        // MV trees natifs 144-192px : cible ~100pt iPhone / ~130pt iPad pour
+        // une vraie canopée dense. L'ancien `* 0.55` donnait des arbres de 23pt.
+        let treeScale = max(0.45, min(0.68, w / 760))
         let meTreeAssets = ["mv_forest_tree_1", "mv_forest_tree_2", "mv_forest_tree_3",
                             "mv_forest_tree_4", "mv_forest_tree_wide", "mv_forest_pines",
                             "mv_dark_tree", "mv_tall_pine", "mv_dead_tree",
@@ -390,7 +396,7 @@ final class WorldBuilder {
 
 
         let foregroundTrees: [(x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            (0.10, 0.13, 0.70), (0.32, 0.12, 0.62), (0.70, 0.13, 0.66), (0.91, 0.12, 0.72)
+            (0.08, 0.12, 1.7), (0.30, 0.11, 1.5), (0.72, 0.12, 1.6), (0.93, 0.11, 1.75)
         ]
         for p in foregroundTrees {
             guard let tree = PixelArtSprites.still(name: "ext_tree_3", scale: treeScale * p.scale,
@@ -474,292 +480,128 @@ private func decorateVillage(in scene: SKScene) {
     let w = scene.size.width
     let h = worldHeight > 0 ? worldHeight : scene.size.height
 
-    // ═══ ZONE 1 : ENTRÉE SUD (y=0-15%) — accueil joueur ═══
-    addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.04), scale: 0.40)
-    addPixelProp("me_sign_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.04), scale: 0.40)
-    addPixelProp("me_lamp_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.10), scale: 0.24)
-    addPixelProp("me_lamp_1", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.10), scale: 0.24)
-    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.13), scale: 0.42)
-    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.13), scale: 0.42)
-    addPixelProp("me_flower_red", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.07), scale: 0.30)
-    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.56, y: h * 0.07), scale: 0.30)
+    // Pose un groupe de props serrés autour d'un point (cohérence : on
+    // regroupe ce qui va ensemble plutôt que d'éparpiller sur la pelouse).
+    func group(_ items: [(String, CGFloat, CGFloat, CGFloat)], at c: CGPoint) {
+        for (name, dx, dy, s) in items {
+            addPixelProp(name, in: scene,
+                         at: CGPoint(x: c.x + w * dx, y: c.y + h * dy), scale: s)
+        }
+    }
 
-    // ═══ ZONE 2 : RÉSIDENTIEL BAS (y=15-30%) — habitations + jardins ═══
-    // Devant maison gauche (country)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.31, y: h * 0.20), scale: 0.28)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.22, y: h * 0.17), scale: 0.30)
-    addPixelProp("me_flower_pink", in: scene, at: CGPoint(x: w * 0.16, y: h * 0.18), scale: 0.32)
-    addPixelProp("me_flower_white", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.18), scale: 0.32)
-    // Devant maison droite (modern)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.69, y: h * 0.20), scale: 0.28)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.78, y: h * 0.17), scale: 0.30)
-    addPixelProp("me_flower_blue", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.18), scale: 0.32)
-    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.18), scale: 0.32)
-    // Devant maison centre (onestory)
-    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.28), scale: 0.32)
-    addPixelProp("me_birdhouse_blue", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.28), scale: 0.32)
+    // ═══ ENTRÉE SUD — portail d'accueil serré contre le chemin ═══
+    group([("me_sign_1", -0.05, 0.005, 0.40), ("me_sign_2", 0.05, 0.005, 0.40),
+           ("me_lamp_1", -0.05, 0.055, 0.26), ("me_lamp_1", 0.05, 0.055, 0.26),
+           ("me_flower_red", -0.02, 0.03, 0.32), ("me_flower_yellow", 0.02, 0.03, 0.32)],
+          at: CGPoint(x: w * 0.50, y: h * 0.045))
+    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.12), scale: 0.42)
+    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.12), scale: 0.42)
 
-    // ═══ ZONE 3 : PLACE CENTRALE (y=38-48%) — cœur du village ═══
-    // Statue principale (remplace fontaine — placée au centre du pavé)
-    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.43), scale: 0.55)
-    // Lampadaires aux 4 coins de la place
-    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.40), scale: 0.24)
-    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.40), scale: 0.24)
-    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.46), scale: 0.24)
-    addPixelProp("me_lamp_2", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.46), scale: 0.24)
-    // Bancs place centrale
-    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.36), scale: 0.32)
-    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.36), scale: 0.32)
-    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.50), scale: 0.30)
-    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.50), scale: 0.30)
-    // Marché : chariot + paniers/pommes (proche place)
-    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.44), scale: 0.32)
-    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.44), scale: 0.32)
-    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.50), scale: 0.30)
-    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.50), scale: 0.30)
-    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.46), scale: 0.28)
+    // ═══ RÉSIDENTIEL BAS — chaque maison a SA cour (props collés au pied) ═══
+    // Country (gauche) : boîte aux lettres côté chemin, massif + nichoir.
+    group([("me_mailbox_1", 0.05, -0.035, 0.28), ("me_hanging_flowers", -0.05, -0.05, 0.30),
+           ("me_flower_pink", -0.02, -0.055, 0.32), ("me_flower_white", 0.02, -0.05, 0.32),
+           ("me_birdhouse_brown", -0.06, -0.02, 0.30)],
+          at: CGPoint(x: w * 0.22, y: h * 0.22))
+    // Modern (droite) : symétrique + banc devant la porte.
+    group([("me_mailbox_1", -0.05, -0.035, 0.28), ("me_hanging_flowers", 0.05, -0.05, 0.30),
+           ("me_flower_blue", 0.02, -0.055, 0.32), ("me_flower_yellow", -0.02, -0.05, 0.32),
+           ("me_garden_bench", 0.06, -0.02, 0.30)],
+          at: CGPoint(x: w * 0.78, y: h * 0.22))
+    // Cour de la maison onestory (ouest, près de l'entrée).
+    group([("mv_garden_bed", 0.0, -0.045, 0.34), ("me_birdhouse_blue", -0.05, -0.02, 0.30),
+           ("me_flower_white", 0.04, -0.05, 0.30), ("me_birdhouse_big", -0.05, -0.05, 0.30)],
+          at: CGPoint(x: w * 0.30, y: h * 0.15))
+    // Approche sud de la place : massifs fleuris encadrant le chemin (mène l'œil à la fontaine).
+    group([("mv_flowers_row", -0.09, 0.0, 0.30), ("me_flower_red", -0.12, 0.012, 0.30),
+           ("mv_flowers_row", 0.09, 0.0, 0.30), ("me_flower_yellow", 0.12, 0.012, 0.30)],
+          at: CGPoint(x: w * 0.50, y: h * 0.34))
 
-    // ═══ ZONE 4 : COMMERÇANTE (y=55-68%) — devant chaque shop ═══
-    // Armurier (Bram) - centre - tonneaux + bois
-    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.56), scale: 0.30)
-    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.56), scale: 0.30)
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.60), scale: 0.30)
-    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.56, y: h * 0.60), scale: 0.30)
-    // Herboriste (Mara) - gauche - plantes
-    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.55), scale: 0.32)
-    addPixelProp("me_vase_yellow", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.55), scale: 0.32)
-    addPixelProp("me_mushrooms_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.60), scale: 0.30)
-    addPixelProp("me_big_sprout_4", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.60), scale: 0.32)
-    // Auberge (Sage) - droite - tonneaux + marmite
-    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.55), scale: 0.30)
-    addPixelProp("me_barrel_4", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.55), scale: 0.30)
-    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.60), scale: 0.32)
-    addPixelProp("me_lemonade_stand", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.62), scale: 0.36)
+    // ═══ PLACE CENTRALE — fontaine au cœur, bancs en cercle, lampes aux coins ═══
+    addPixelProp("village_fountain", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.43), scale: 0.62)
+    group([("me_bench_1", -0.07, -0.045, 0.30), ("me_bench_2", 0.07, -0.045, 0.30),
+           ("me_garden_bench", -0.07, 0.04, 0.30), ("me_bench_3", 0.07, 0.04, 0.30),
+           ("me_lamp_2", -0.10, -0.05, 0.24), ("me_lamp_2", 0.10, -0.05, 0.24),
+           ("me_lamp_2", -0.10, 0.05, 0.24), ("me_lamp_2", 0.10, 0.05, 0.24),
+           ("me_vase_red", -0.10, 0.0, 0.28), ("me_vase_sunflower", 0.10, 0.0, 0.28)],
+          at: CGPoint(x: w * 0.50, y: h * 0.43))
 
-    // ═══ ZONE 5 : QUARTIER HAUT (y=70-90%) — maisons + statues ═══
-    // Statues flanquent chalet maire
-    addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.76), scale: 0.20)
-    addPixelProp("me_angel_statue_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.76), scale: 0.20)
-    // Devant maisons hautes
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.80), scale: 0.28)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.80), scale: 0.28)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.16, y: h * 0.83), scale: 0.30)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.83), scale: 0.30)
+    // ═══ MARCHÉ — UN seul étal regroupé sur le pavé ouest de la place ═══
+    group([("me_wood_cart", 0.0, 0.0, 0.34), ("village_crate_1", -0.04, -0.025, 0.30),
+           ("village_crate_2", 0.04, -0.02, 0.30), ("me_barrel_1", -0.05, 0.02, 0.30),
+           ("me_basket", 0.03, 0.025, 0.28), ("me_apples", 0.0, 0.035, 0.26)],
+          at: CGPoint(x: w * 0.29, y: h * 0.44))
 
-    // ═══ ZONE 6 : SORTIE NORD (y=90-100%) — porte fortifiée ═══
-    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.35, y: h * 0.95), scale: 0.40)
-    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.92), scale: 0.24)
-    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.92), scale: 0.24)
+    // ═══ COMMERÇANTE — props serrés devant chaque échoppe ═══
+    // Herboriste (Mara) : potager CLÔTURÉ devant la maison japonaise.
+    addFenceRect(in: scene, at: CGPoint(x: w * 0.20, y: h * 0.53),
+                 size: CGSize(width: w * 0.14, height: h * 0.06))
+    group([("me_vase_red", -0.04, 0.01, 0.30), ("me_vase_yellow", 0.04, 0.01, 0.30),
+           ("me_mushrooms_1", -0.04, -0.01, 0.28), ("me_big_sprout_4", 0.04, -0.01, 0.30),
+           ("me_mushrooms_2", 0.0, 0.0, 0.28)],
+          at: CGPoint(x: w * 0.20, y: h * 0.53))
+    // Auberge (Sage) : tonneaux, marmite, lanterne, stand.
+    group([("me_barrel_3", -0.04, -0.03, 0.30), ("me_barrel_4", 0.04, -0.03, 0.30),
+           ("me_hanging_pot", 0.0, -0.045, 0.30), ("village_lantern_1", 0.07, -0.02, 0.32),
+           ("me_lemonade_stand", -0.07, -0.06, 0.34)],
+          at: CGPoint(x: w * 0.78, y: h * 0.58))
+    // Armurier (Bram) : bois empilé + tonneaux devant la forge.
+    group([("me_cut_wood", -0.04, -0.035, 0.30), ("me_cut_wood_2", 0.04, -0.035, 0.30),
+           ("me_barrel_1", -0.06, -0.05, 0.30), ("me_barrel_2", 0.06, -0.05, 0.30),
+           ("me_cut_wood_bench", 0.0, -0.055, 0.30)],
+          at: CGPoint(x: w * 0.50, y: h * 0.63))
 
-    // ═══ BORDURES (forêt à gauche, ferme à droite) ═══
-    // Forêt gauche : arbres MV denses
+    // ═══ QUARTIER HAUT — mairie civique : 2 anges encadrent le chalet ═══
+    addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.78), scale: 0.24)
+    addPixelProp("me_angel_statue_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.78), scale: 0.24)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.74), scale: 0.24)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.57, y: h * 0.74), scale: 0.24)
+    group([("me_mailbox_1", 0.05, -0.035, 0.28), ("me_hanging_flowers", -0.04, -0.05, 0.30),
+           ("me_flower_red", -0.02, -0.055, 0.32)],
+          at: CGPoint(x: w * 0.20, y: h * 0.82))
+    group([("me_mailbox_1", -0.05, -0.035, 0.28), ("me_hanging_flowers", 0.04, -0.05, 0.30),
+           ("me_flower_blue", 0.02, -0.055, 0.32)],
+          at: CGPoint(x: w * 0.80, y: h * 0.82))
+
+    // ═══ SORTIE NORD — porte gardée : statues + lampes + panneau ═══
+    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.93), scale: 0.30)
+    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.93), scale: 0.30)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.91), scale: 0.24)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.56, y: h * 0.91), scale: 0.24)
+    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.97), scale: 0.36)
+
+    // ═══ FERME (coin est) — champ + potager CLÔTURÉS, grange, épouvantail ═══
+    addFenceRect(in: scene, at: CGPoint(x: w * 0.90, y: h * 0.37),
+                 size: CGSize(width: w * 0.14, height: h * 0.12))
+    group([("mv_field", 0.0, 0.02, 0.40), ("mv_garden_bed", 0.0, -0.04, 0.34),
+           ("mv_flowers_row", 0.0, 0.05, 0.30)],
+          at: CGPoint(x: w * 0.90, y: h * 0.37))
+    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.92, y: h * 0.48), scale: 0.42)
+    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.85, y: h * 0.30), scale: 0.26)
+
+    // ═══ ÉTANG OUEST — roseaux au bord de l'eau ═══
+    group([("me_big_sprout_1", 0.02, 0.01, 0.32), ("me_big_sprout_2", 0.03, -0.01, 0.30),
+           ("me_mushrooms_1", 0.04, 0.02, 0.26)],
+          at: CGPoint(x: w * 0.07, y: h * 0.45))
+
+    // ═══ BORDURES forêt (gauche dense, droite plus clairsemée) ═══
     let leftTrees: [(String, CGFloat)] = [
-        ("mv_forest_tree_1", 0.10), ("mv_forest_tree_2", 0.18),
-        ("mv_forest_tree_3", 0.28), ("mv_forest_tree_4", 0.38),
-        ("mv_forest_pines", 0.50), ("mv_dark_tree", 0.62),
-        ("mv_oak_tree", 0.72), ("mv_forest_tree_wide", 0.86),
-        ("mv_apple_tree_tall", 0.94)
+        ("mv_forest_tree_1", 0.10), ("mv_forest_tree_2", 0.20),
+        ("mv_forest_tree_3", 0.30), ("mv_forest_tree_4", 0.40),
+        ("mv_forest_pines", 0.52), ("mv_dark_tree", 0.64),
+        ("mv_oak_tree", 0.74), ("mv_forest_tree_wide", 0.86),
+        ("mv_apple_tree_tall", 0.95)
     ]
     for (asset, y) in leftTrees {
-        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.05, y: h * y), scale: 0.32)
+        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.045, y: h * y), scale: 0.34)
     }
-    // Ferme droite : verger + champ
-    addPixelProp("mv_field", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.30), scale: 0.45)
-    addPixelProp("mv_garden_bed", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.42), scale: 0.40)
-    addPixelProp("mv_flowers_row", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.50), scale: 0.32)
-    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.66), scale: 0.42)
-    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.93, y: h * 0.72), scale: 0.28)
     let rightTrees: [(String, CGFloat)] = [
-        ("mv_forest_tree_1", 0.08), ("mv_apple_tree_tall", 0.20),
-        ("mv_oak_tree", 0.80), ("mv_forest_tree_3", 0.92)
+        ("mv_forest_tree_2", 0.10), ("mv_apple_tree_tall", 0.22),
+        ("mv_oak_tree", 0.68), ("mv_forest_tree_3", 0.90)
     ]
     for (asset, y) in rightTrees {
-        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.95, y: h * y), scale: 0.32)
+        addPixelProp(asset, in: scene, at: CGPoint(x: w * 0.955, y: h * y), scale: 0.34)
     }
-
-    // Arbres (bordures denses + intérieur)
-    let treePositions: [(String, CGFloat, CGFloat)] = [
-        // Bordure gauche
-        ("me_tree_1", 0.04, 0.08), ("me_tree_3", 0.08, 0.14),
-        ("me_tree_2", 0.04, 0.22), ("me_tree_4", 0.08, 0.30),
-        ("me_tree_5", 0.04, 0.40), ("me_tree_6", 0.08, 0.48),
-        ("me_tree_7", 0.04, 0.58), ("me_tree_8", 0.08, 0.66),
-        ("me_tree_9", 0.04, 0.76), ("me_tree_10", 0.08, 0.84),
-        ("me_tree_2", 0.04, 0.92),
-        // Bordure droite
-        ("me_tree_3", 0.96, 0.08), ("me_tree_1", 0.92, 0.14),
-        ("me_tree_4", 0.96, 0.22), ("me_tree_2", 0.92, 0.30),
-        ("me_tree_6", 0.96, 0.40), ("me_tree_5", 0.92, 0.48),
-        ("me_tree_8", 0.96, 0.58), ("me_tree_7", 0.92, 0.66),
-        ("me_tree_10", 0.96, 0.76), ("me_tree_9", 0.92, 0.84),
-        ("me_tree_4", 0.96, 0.92),
-        // Bas / haut
-        ("me_tree_1", 0.20, 0.06), ("me_tree_6", 0.80, 0.06),
-        ("me_tree_5", 0.38, 0.04), ("me_tree_3", 0.62, 0.04),
-        ("me_tree_4", 0.20, 0.94), ("me_tree_8", 0.80, 0.94)
-    ]
-    for t in treePositions {
-        addPixelProp(t.0, in: scene, at: CGPoint(x: w * t.1, y: h * t.2), scale: 0.42)
-    }
-
-    // Statue centrale place du village (remplace fontaine)
-    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.46), scale: 0.50)
-
-    // Lampadaires
-    let lampPositions: [(CGFloat, CGFloat)] = [
-        (0.42, 0.22), (0.58, 0.22), (0.42, 0.42), (0.58, 0.42),
-        (0.42, 0.60), (0.58, 0.60), (0.42, 0.76), (0.58, 0.76)
-    ]
-    for (i, p) in lampPositions.enumerated() {
-        addPixelProp("me_lamp_\((i % 3) + 1)", in: scene, at: CGPoint(x: w * p.0, y: h * p.1), scale: 0.22)
-    }
-
-    // Chariot marchand (bord village, espacé)
-    addPixelProp("me_wood_cart", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.16), scale: 0.32)
-
-    // Bancs (place centrale, autour statue mais espacés)
-    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.52), scale: 0.30)
-    addPixelProp("me_bench_2", in: scene, at: CGPoint(x: w * 0.62, y: h * 0.40), scale: 0.30)
-    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.68), scale: 0.30)
-
-    // Tonneaux
-    addPixelProp("me_barrel_1", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.40), scale: 0.30)
-    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.40), scale: 0.30)
-    addPixelProp("me_barrel_3", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.58), scale: 0.28)
-
-    // ═══ ÉTANG MV — vraie crevasse d'eau avec bordure sable (asset MV) ═══
-    addPixelProp("mv_water_pond", in: scene, at: CGPoint(x: w * 0.06, y: h * 0.50), scale: 0.55)
-    addPixelProp("mv_water_pond", in: scene, at: CGPoint(x: w * 0.94, y: h * 0.50), scale: 0.55)
-
-    // ═══ ARBRES EN POT (asset MV) — devant entrées ═══
-    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.36), scale: 0.45)
-    addPixelProp("mv_tree_potted", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.36), scale: 0.45)
-    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.64), scale: 0.45)
-    addPixelProp("mv_tree_alt", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.64), scale: 0.45)
-
-    // ═══ CHALET MV — maison isolée, bord village (loin des autres) ═══
-    addPixelProp("mv_chalet", in: scene, at: CGPoint(x: w * 0.06, y: h * 0.78), scale: 0.32)
-
-    // ═══ CHAMPS DE CULTURE MV — zone ferme, coin haut-gauche ═══
-    addPixelProp("mv_field", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.08), scale: 0.55)
-
-    // ═══ JARDINIÈRE SURÉLEVÉE MV — coin opposé ═══
-    addPixelProp("mv_garden_bed", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.08), scale: 0.50)
-
-    // ═══ RANGÉE DE FLEURS MV — devant champ ═══
-    addPixelProp("mv_flowers_row", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.04), scale: 0.40)
-
-    // ═══ STATUES — flanquent porte nord (espacées de la porte) ═══
-    addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.95), scale: 0.32)
-    addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.95), scale: 0.32)
-
-    // ═══ ZONE HAUTE (porte nord) — remplissage arbres + props ═══
-    addPixelProp("me_tree_5", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.90), scale: 0.42)
-    addPixelProp("me_tree_3", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.90), scale: 0.42)
-    addPixelProp("me_tree_7", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.96), scale: 0.40)
-    addPixelProp("me_tree_2", in: scene, at: CGPoint(x: w * 0.76, y: h * 0.96), scale: 0.40)
-    addPixelProp("me_tree_9", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.98), scale: 0.40)
-    addPixelProp("me_tree_4", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.98), scale: 0.40)
-
-    // Props zone haute
-    addPixelProp("me_barrel_2", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.93), scale: 0.30)
-    addPixelProp("me_barrel_4", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.93), scale: 0.30)
-    addPixelProp("me_basket_2", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.90), scale: 0.32)
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.90), scale: 0.30)
-    addPixelProp("me_flower_red", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.88), scale: 0.32)
-    addPixelProp("me_flower_yellow", in: scene, at: CGPoint(x: w * 0.72, y: h * 0.88), scale: 0.32)
-    addPixelProp("me_sunflower", in: scene, at: CGPoint(x: w * 0.20, y: h * 0.85), scale: 0.34)
-    addPixelProp("me_sunflower", in: scene, at: CGPoint(x: w * 0.80, y: h * 0.85), scale: 0.34)
-    addPixelProp("me_birdhouse_big", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.95), scale: 0.34)
-    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.95), scale: 0.34)
-
-    // ═══ CABANE — coin haut-gauche isolé (loin centre) ═══
-    addPixelProp("me_wood_storage", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.06), scale: 0.45)
-
-    // ═══ LEMONADE STAND — bord village ═══
-    addPixelProp("me_lemonade_stand", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.06), scale: 0.42)
-
-    // ═══ MAILBOXES (1 seul par maison, à l'écart de la porte) ═══
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.30), scale: 0.28)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.30), scale: 0.28)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.74), scale: 0.28)
-    addPixelProp("me_mailbox_1", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.74), scale: 0.28)
-
-    // ═══ PANNEAUX (entrée + porte nord) ═══
-    addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.05), scale: 0.36)
-    addPixelProp("me_sign_2", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.05), scale: 0.36)
-    addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.96), scale: 0.36)
-
-    // ═══ FLEURS SUSPENDUES (1 par grande maison, devant porte) ═══
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.31), scale: 0.30)
-    addPixelProp("me_hanging_flowers", in: scene, at: CGPoint(x: w * 0.76, y: h * 0.31), scale: 0.30)
-
-    // Fleurs partout (zones ouvertes entre maisons et chemin)
-    let flowers: [(String, CGFloat, CGFloat)] = [
-        // Rangée haute
-        ("me_flower_red", 0.14, 0.12), ("me_flower_pink", 0.22, 0.14),
-        ("me_flower_yellow", 0.78, 0.14), ("me_flower_white", 0.86, 0.12),
-        ("me_sunflower", 0.32, 0.10), ("me_sunflower", 0.68, 0.10),
-        // Rangée 0.25-0.30
-        ("me_flower_blue", 0.14, 0.26), ("me_flower_red", 0.86, 0.26),
-        ("me_flower_pink", 0.30, 0.24), ("me_flower_yellow", 0.70, 0.24),
-        ("me_flower_white", 0.42, 0.18), ("me_flower_blue", 0.58, 0.18),
-        // Rangée milieu
-        ("me_sunflower", 0.16, 0.42), ("me_sunflower", 0.84, 0.42),
-        ("me_flower_red", 0.30, 0.46), ("me_flower_pink", 0.70, 0.46),
-        ("me_flower_yellow", 0.14, 0.55), ("me_flower_white", 0.86, 0.55),
-        // Rangée 0.60-0.70
-        ("me_flower_blue", 0.16, 0.62), ("me_flower_red", 0.84, 0.62),
-        ("me_flower_pink", 0.30, 0.68), ("me_flower_yellow", 0.70, 0.68),
-        ("me_sunflower", 0.42, 0.66), ("me_sunflower", 0.58, 0.66),
-        // Rangée bas
-        ("me_flower_white", 0.14, 0.78), ("me_flower_blue", 0.86, 0.78),
-        ("me_flower_red", 0.22, 0.86), ("me_flower_pink", 0.78, 0.86),
-        ("me_flower_yellow", 0.32, 0.92), ("me_flower_white", 0.68, 0.92)
-    ]
-    for f in flowers {
-        addPixelProp(f.0, in: scene, at: CGPoint(x: w * f.1, y: h * f.2), scale: 0.32)
-    }
-
-    // Vases fleurs (près des maisons / portes)
-    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.36), scale: 0.30)
-    addPixelProp("me_vase_pink", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.36), scale: 0.30)
-    addPixelProp("me_vase_yellow", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.64), scale: 0.30)
-    addPixelProp("me_vase_sunflower", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.64), scale: 0.30)
-
-    // Pousses naturelles (entre maisons)
-    addPixelProp("me_big_sprout_4", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.26), scale: 0.35)
-    addPixelProp("me_big_sprout_5", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.26), scale: 0.35)
-    addPixelProp("me_big_sprout_6", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.58), scale: 0.35)
-    addPixelProp("me_big_sprout_7", in: scene, at: CGPoint(x: w * 0.64, y: h * 0.58), scale: 0.35)
-    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.74), scale: 0.32)
-    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.74), scale: 0.32)
-
-    // Champignons
-    addPixelProp("me_mushrooms_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.50), scale: 0.32)
-    addPixelProp("me_mushrooms_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.50), scale: 0.32)
-
-    // Cabanes à oiseaux
-    addPixelProp("me_birdhouse_blue", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.42), scale: 0.32)
-    addPixelProp("me_birdhouse_brown", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.66), scale: 0.32)
-
-    // Statues grass animaux (bordures, loin du centre)
-    addPixelProp("me_statue_grass_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.20), scale: 0.30)
-    addPixelProp("me_statue_grass_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.20), scale: 0.30)
-
-    // Paniers et pommes (zone marchand, loin centre)
-    addPixelProp("me_basket", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.28), scale: 0.30)
-    addPixelProp("me_apples", in: scene, at: CGPoint(x: w * 0.86, y: h * 0.22), scale: 0.28)
-
-    // Bois empilé (bord village)
-    addPixelProp("me_cut_wood_2", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.72), scale: 0.30)
-    addPixelProp("me_cut_wood_bench", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.72), scale: 0.30)
-
-    // Chariot vide (bord opposé au chariot plein)
-    addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.74), scale: 0.30)
-
-    // Marmite suspendue (bord)
-    addPixelProp("me_hanging_pot", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.86), scale: 0.30)
 }
 
 private func decorateForestFloor(in scene: SKScene) {
@@ -1955,12 +1797,14 @@ private func addCleanPath(in scene: SKScene, rect: CGRect) {
 
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
                           width: CGFloat) {
-    let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
+    // Sentier de terre PLEINE (a2_dirt opaque) au lieu des décals
+    // transparents ext_dirt (mottes + pousses) qui jonchaient le sol.
+    let tiles = availableTiles(["a2_dirt"],
                                fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
     let length = hypot(b.x - a.x, b.y - a.y)
     guard length > 0 else { return }
-    let tileScale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.55 : 1.5
-    let stepSize: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 22 : 20
+    let tileScale: CGFloat = 0.9   // 48px → ~43pt, sol plein et crisp
+    let stepSize: CGFloat = 18
     let count = Int(ceil(length / stepSize))
     for i in 0...count {
         let t = CGFloat(i) / CGFloat(count)
@@ -1982,14 +1826,12 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
     }
 }
 
-    /// Scale dynamique pour les sprites de maisons. Les assets Modern
-    /// Exteriors font 288 px de large: en dessous de ~115 pt sur iPhone,
-    /// la maison devient un accessoire. On cible donc une vraie masse de
-    /// bâtiment tout en gardant 3 colonnes lisibles en portrait.
+    /// Scale des sprites de maisons. Les assets font 576-1200 px de haut ;
+    /// en paysage le monde est court, donc on plafonne bas (~0.14 iPhone,
+    /// ~0.16 iPad) pour des maisons de ~110-170 pt qui n'écrasent pas la
+    /// colonne verticale ni ne masquent la place centrale.
     private func buildingScale(for sceneWidth: CGFloat) -> CGFloat {
-        let targetWidth = sceneWidth * 0.14
-        let s = targetWidth / 288
-        return max(0.12, min(0.22, s))
+        max(0.11, min(0.16, sceneWidth / 6000))
     }
 
     /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
@@ -2035,9 +1877,10 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
     }
 
 private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
-    let tiles = availableTiles(["ext_dirt_1", "ext_dirt_2", "ext_dirt_3"],
+    // Clairière de terre pleine (a2_dirt) au lieu des décals transparents.
+    let tiles = availableTiles(["a2_dirt"],
                                fallback: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"])
-    let scale: CGFloat = tiles.first?.hasPrefix("ext_") == true ? 0.55 : 1.5
+    let scale: CGFloat = 0.9
     guard let patch = PixelArtSprites.tiledFloor(tileNames: tiles, in: size,
                                                  tileScale: scale) else { return }
     patch.position = CGPoint(x: center.x - size.width / 2, y: center.y - size.height / 2)

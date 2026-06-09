@@ -180,10 +180,7 @@ final class AudioEngine {
             let outgoing = incomingUsesA ? self.musicPlayerB : self.musicPlayerA
             // stop() vide la file du node : évite qu'un buffer périmé reste en
             // attente si les ambiances s'enchaînent vite.
-            incoming.stop()
-            incoming.volume = 0
-            incoming.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
-            incoming.play()
+            self.startLoop(incoming, buffer: buffer)
 
             let steps = 28
             let stepDur = duration / Double(steps)
@@ -197,6 +194,18 @@ final class AudioEngine {
             outgoing.stop()
             outgoing.volume = 1
         }
+    }
+
+    /// Démarre une boucle musicale via l'API à callback. Isolée dans une
+    /// fonction synchrone : appelée depuis le `Task` async, elle évite le
+    /// warning « consider using asynchronous alternative » (la variante
+    /// async de `scheduleBuffer` ne rend jamais la main sur `.loops`).
+    @MainActor
+    private func startLoop(_ player: AVAudioPlayerNode, buffer: AVAudioPCMBuffer) {
+        player.stop()
+        player.volume = 0
+        player.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)
+        player.play()
     }
 
     // MARK: - Setup

@@ -56,7 +56,7 @@ final class GameViewController: UIViewController {
     override var prefersHomeIndicatorAutoHidden: Bool { true }
     override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { [.bottom] }
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        UIDevice.current.userInterfaceIdiom == .pad ? .portrait.union(.portraitUpsideDown) : .portrait
+        .landscape
     }
     override var shouldAutorotate: Bool { true }
 }

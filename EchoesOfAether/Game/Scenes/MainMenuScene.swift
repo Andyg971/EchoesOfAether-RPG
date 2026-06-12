@@ -26,6 +26,17 @@ final class MainMenuScene: SKScene {
                 self?.transitionToGame(slot: 1, newGame: true)
             }
         }
+
+        // Audit visuel : les args --combat/--boss/--zone-* sautent le menu
+        // sur le slot 2 (scratch) sans toucher aux sauvegardes joueur.
+        let debugZoneArgs = ["--combat-test", "--boss-test", "--zone-forest",
+                             "--zone-shrine", "--zone-ruins", "--zone-village"]
+        if CommandLine.arguments.contains(where: debugZoneArgs.contains) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                SaveManager.delete(slot: 2)
+                self?.transitionToGame(slot: 2, newGame: true)
+            }
+        }
     }
 
     override func didChangeSize(_ oldSize: CGSize) {

@@ -144,6 +144,20 @@ final class GameManager {
             transition(to: .exploration)
             return
         }
+        // Audit visuel du village : --zone-village [--cam-y 0.5] place Kael
+        // à la fraction de hauteur demandée (la caméra le suit).
+        if CommandLine.arguments.contains("--zone-village") {
+            hud.goldValue = player.gold
+            phase = .village
+            transition(to: .exploration)
+            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
+               CommandLine.arguments.indices.contains(idx + 1),
+               let frac = Double(CommandLine.arguments[idx + 1]) {
+                world.kael.position = CGPoint(x: scene.size.width * 0.5,
+                                              y: world.worldHeight * CGFloat(frac))
+            }
+            return
+        }
         // Debug : place Kael près de Lyra dans le village pour audit
         // immédiat de la bulle d'interaction.
         if CommandLine.arguments.contains("--bubble-test") {
@@ -255,6 +269,7 @@ final class GameManager {
         transition(to: .dialogue)
         phase = .wake
         hud.objectiveText = String(localized: "hud.objective.lyra")
+        if let scene { world.placeLyraBesideKael(in: scene.size) }
         dialogue.start(PrototypeContent.wakeDialogue) { [weak self] in
             guard let self else { return }
             phase = .village
@@ -524,6 +539,7 @@ final class GameManager {
                 guard let self else { return }
                 phase = .forest
                 hud.objectiveText = String(localized: "hud.objective.forest")
+                world.endLyraVigil()
                 world.switchToForest(in: scene)
             } completion: { [weak self] in
                 guard let self else { return }

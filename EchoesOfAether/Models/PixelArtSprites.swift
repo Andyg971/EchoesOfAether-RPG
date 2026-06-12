@@ -1,6 +1,20 @@
 import SpriteKit
 import UIKit
 
+extension SKNode {
+    /// Parcourt récursivement les SKSpriteNode DESCENDANTS de ce node.
+    /// ⚠️ Ne pas remplacer par `enumerateChildNodes(withName: "//*")` :
+    /// le préfixe `//` cherche depuis la RACINE de la scène, pas depuis
+    /// ce node — ça corrompait des sprites étrangers (ex. le Kael du
+    /// monde recevait les textures d'attaque des ennemis).
+    func forEachDescendantSprite(_ body: (SKSpriteNode) -> Void) {
+        for child in children {
+            if let sprite = child as? SKSpriteNode { body(sprite) }
+            child.forEachDescendantSprite(body)
+        }
+    }
+}
+
 /// Helpers d'import pixel art avec fallback automatique. Permet de migrer
 /// progressivement les personnages/décors shape vers de vraies textures
 /// PNG sans casser le rendu actuel : tant que l'image n'est pas ajoutée

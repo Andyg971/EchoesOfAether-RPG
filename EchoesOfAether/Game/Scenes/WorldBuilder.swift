@@ -330,10 +330,12 @@ final class WorldBuilder {
                       tint: SKColor(red: 0.16, green: 0.10, blue: 0.07, alpha: 1))
 
         // ── CANOPÉE : double mur d'arbres ouest/est + lisières sud/nord ──
+        // me_tree_1..6 UNIQUEMENT : arbres ME naturels complets.
+        // (me_tree_7..10 = arbres en jardinière urbaine — réservés au
+        // village ; mv_forest_* = tuiles de canopée non homogènes.)
         let treeScale = max(0.45, min(0.68, w / 760))
-        let borderTrees = ["mv_forest_tree_1", "mv_forest_tree_2", "mv_forest_tree_3",
-                           "mv_forest_tree_4", "mv_forest_tree_wide", "mv_forest_pines",
-                           "mv_dark_tree", "mv_tall_pine", "mv_oak_tree"]
+        let borderTrees = ["me_tree_1", "me_tree_5", "me_tree_2",
+                           "me_tree_3", "me_tree_6", "me_tree_4"]
         var treeIdx = 0
         func plantTree(_ x: CGFloat, _ y: CGFloat, scaleMult: CGFloat = 1.0, dim: CGFloat = 1.0) {
             let name = borderTrees[treeIdx % borderTrees.count]
@@ -387,11 +389,9 @@ final class WorldBuilder {
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * x, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
-            tree.enumerateChildNodes(withName: "//*") { node, _ in
-                if let sprite = node as? SKSpriteNode {
-                    sprite.color = SKColor(red: 0.28, green: 0.12, blue: 0.42, alpha: 1)
-                    sprite.colorBlendFactor = 0.50
-                }
+            tree.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.28, green: 0.12, blue: 0.42, alpha: 1)
+                sprite.colorBlendFactor = 0.50
             }
             addGroundShadow(under: tree, width: 46 * treeScale, height: 13 * treeScale)
             add(tree, to: scene)
@@ -656,18 +656,20 @@ private func decorateVillage(in scene: SKScene) {
     addPixelProp("me_sign_3", in: scene, at: CGPoint(x: w * 0.565, y: h * 0.952), scale: 0.42)
 
     // ═══ ARBRES — bordures forestières + arbres ME dans le village ═══
+    // Bordure forestière : me_tree_1..6 naturels uniquement (7..10 = arbres
+    // en jardinière urbaine, réservés à l'intérieur du village).
     let borderTrees: [(String, CGFloat, CGFloat, CGFloat)] = [
         // (asset, x, y, scale) — colonnes ouest/est, espèces variées
         ("me_tree_1", 0.035, 0.055, 0.60), ("me_tree_5", 0.030, 0.13, 0.62),
-        ("me_tree_2", 0.040, 0.22, 0.58), ("me_tree_9", 0.030, 0.30, 0.62),
+        ("me_tree_2", 0.040, 0.22, 0.58), ("me_tree_6", 0.030, 0.30, 0.62),
         ("me_tree_3", 0.035, 0.38, 0.58), ("me_tree_6", 0.030, 0.56, 0.62),
-        ("me_tree_10", 0.040, 0.64, 0.60), ("me_tree_4", 0.030, 0.72, 0.58),
-        ("me_tree_7", 0.035, 0.83, 0.62), ("me_tree_1", 0.030, 0.92, 0.58),
-        ("me_tree_8", 0.965, 0.05, 0.60), ("me_tree_2", 0.970, 0.13, 0.58),
+        ("me_tree_4", 0.040, 0.64, 0.60), ("me_tree_4", 0.030, 0.72, 0.58),
+        ("me_tree_5", 0.035, 0.83, 0.62), ("me_tree_1", 0.030, 0.92, 0.58),
+        ("me_tree_3", 0.965, 0.05, 0.60), ("me_tree_2", 0.970, 0.13, 0.58),
         ("me_tree_5", 0.960, 0.24, 0.62), ("me_tree_1", 0.965, 0.33, 0.58),
-        ("me_tree_9", 0.970, 0.42, 0.62), ("me_tree_3", 0.965, 0.50, 0.58),
-        ("me_tree_6", 0.960, 0.64, 0.62), ("me_tree_10", 0.970, 0.72, 0.60),
-        ("me_tree_4", 0.965, 0.82, 0.58), ("me_tree_7", 0.960, 0.92, 0.62)
+        ("me_tree_6", 0.970, 0.42, 0.62), ("me_tree_3", 0.965, 0.50, 0.58),
+        ("me_tree_6", 0.960, 0.64, 0.62), ("me_tree_2", 0.970, 0.72, 0.60),
+        ("me_tree_4", 0.965, 0.82, 0.58), ("me_tree_5", 0.960, 0.92, 0.62)
     ]
     for (asset, x, y, s) in borderTrees {
         addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
@@ -2057,11 +2059,9 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
                                   y: CGFloat(piece.row) * map.tile)
             t.zPosition = piece.suffix == nil ? z : z + 0.05
             if let tint {
-                t.enumerateChildNodes(withName: "//*") { node, _ in
-                    if let sprite = node as? SKSpriteNode {
-                        sprite.color = tint
-                        sprite.colorBlendFactor = 0.45
-                    }
+                t.forEachDescendantSprite { sprite in
+                    sprite.color = tint
+                    sprite.colorBlendFactor = 0.45
                 }
             }
             add(t, to: scene)

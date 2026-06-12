@@ -1293,10 +1293,9 @@ private func setupComboAndStatusUI(scene: SKScene) {
         ])
         recoil.timingMode = .easeOut
         e.run(recoil)
-        // Flash : applique aux SKSpriteNode enfants (pas les SKShape),
+        // Flash : applique aux SKSpriteNode descendants (pas les SKShape),
         // en restaurant la teinte d'origine (loup d'ombre = teinté).
-        e.enumerateChildNodes(withName: "//*") { node, _ in
-            guard let sprite = node as? SKSpriteNode else { return }
+        e.forEachDescendantSprite { sprite in
             let prevColor = sprite.color
             let prevFactor = sprite.colorBlendFactor
             sprite.run(.sequence([
@@ -1331,9 +1330,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
             .colorize(withColorBlendFactor: 0, duration: 0.20)
         ])
         k.run(recoil)
-        k.enumerateChildNodes(withName: "//*") { node, _ in
-            if let sprite = node as? SKSpriteNode { sprite.run(flash) }
-        }
+        k.forEachDescendantSprite { $0.run(flash) }
     }
 
     private func playEnemyDeathAnimation(_ foe: EnemyState) {

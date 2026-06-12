@@ -65,11 +65,9 @@ enum CombatSprites {
                                                  anchor: CGPoint(x: 0.5, y: 0.0)) {
             sprite.position = CGPoint(x: 0, y: -34)
             if let tint = config.tint {
-                sprite.enumerateChildNodes(withName: "//*") { node, _ in
-                    if let s = node as? SKSpriteNode {
-                        s.color = tint
-                        s.colorBlendFactor = 0.38
-                    }
+                sprite.forEachDescendantSprite { s in
+                    s.color = tint
+                    s.colorBlendFactor = 0.38
                 }
             }
             root.addChild(sprite)
@@ -103,8 +101,7 @@ enum CombatSprites {
             t.filteringMode = .nearest
             return t
         }
-        node.enumerateChildNodes(withName: "//*") { n, stop in
-            guard let sprite = n as? SKSpriteNode else { return }
+        node.forEachDescendantSprite { sprite in
             sprite.removeAllActions()
             sprite.run(.sequence([
                 .animate(with: attack, timePerFrame: 0.07, resize: false, restore: false),
@@ -113,7 +110,6 @@ enum CombatSprites {
                                                        resize: false, restore: true)))
                 }
             ]))
-            stop.pointee = true
         }
     }
 

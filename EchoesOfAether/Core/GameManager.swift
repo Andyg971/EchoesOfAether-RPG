@@ -128,6 +128,16 @@ final class GameManager {
             phase = .forest
             world.switchToForest(in: scene)
             transition(to: .exploration)
+            let frac: Double
+            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
+               CommandLine.arguments.indices.contains(idx + 1),
+               let f = Double(CommandLine.arguments[idx + 1]) {
+                frac = f
+            } else {
+                frac = 0.05
+            }
+            world.kael.position = CGPoint(x: scene.size.width * 0.5,
+                                          y: world.worldHeight * CGFloat(frac))
             return
         }
         if CommandLine.arguments.contains("--zone-shrine") {
@@ -547,10 +557,13 @@ final class GameManager {
                     world.addToyMarker(in: scene)
                 }
                 transition(to: .exploration)
+                // Spawn à l'orée sud, puis quelques pas d'entrée sur le sentier.
+                let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.02)
                 movement.move(world.kael, to: CGPoint(
                     x: scene.size.width * 0.5,
-                    y: scene.size.height * 0.45
-                ), in: scene.size)
+                    y: wh * 0.08
+                ), in: CGSize(width: scene.size.width, height: wh))
             }
         }
     }
@@ -708,39 +721,41 @@ final class GameManager {
     // MARK: - Forest Interactions
 
     private func tryForestInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        // Trek scrollable : les POI vivent en coordonnées MONDE
+        // (fractions de worldHeight, synchronisées avec buildForest).
         let w = scene.size.width
-        let h = scene.size.height
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
 
-        // Zone 1 : Bosquet corrompu (gauche) — combat bête
+        // Zone 1 : Bosquet corrompu (ouest) — combat bête
         if player.forestProgress < 1 {
-            let groveCenter = CGPoint(x: w * 0.30, y: h * 0.45)
+            let groveCenter = CGPoint(x: w * 0.30, y: h * 0.31)
             if point.distance(to: groveCenter) < 80 {
                 startGroveCombat()
                 return true
             }
         }
 
-        // Zone 2 : Clairière sombre (droite) — combat loups
+        // Zone 2 : Clairière sombre (est) — combat loups
         if player.forestProgress >= 1 && player.forestProgress < 2 {
-            let clearingCenter = CGPoint(x: w * 0.65, y: h * 0.55)
+            let clearingCenter = CGPoint(x: w * 0.70, y: h * 0.66)
             if point.distance(to: clearingCenter) < 80 {
                 startClearingCombat()
                 return true
             }
         }
 
-        // Zone 3 : Sentier profond (nord) → sanctuaire
+        // Zone 3 : Seuil du sanctuaire (nord)
         if player.forestProgress >= 2 {
-            let deepPath = CGPoint(x: w * 0.60, y: h * 0.82)
+            let deepPath = CGPoint(x: w * 0.55, y: h * 0.90)
             if point.distance(to: deepPath) < 70 {
                 enterShrine()
                 return true
             }
         }
 
-        // Jouet perdu (bas-droite de la forêt)
+        // Jouet perdu (fourrés à l'est du campement)
         if player.questChildToy == .active {
-            let toySpot = CGPoint(x: w * 0.80, y: h * 0.28)
+            let toySpot = CGPoint(x: w * 0.80, y: h * 0.45)
             if point.distance(to: toySpot) < 60 {
                 pickupToy()
                 return true
@@ -761,9 +776,10 @@ final class GameManager {
         // Remove toy visual from world
         world.removeToyMarker()
 
-        // Sparkle pickup effect
-        let toySpot = CGPoint(x: scene.size.width * 0.80, y: scene.size.height * 0.28)
-        scene.addChild(ParticleFactory.impactSparks(at: toySpot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
+        // Sparkle pickup effect (coordonnées monde — la forêt scrolle)
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let toySpot = CGPoint(x: scene.size.width * 0.80, y: wh * 0.45)
+        world.worldNode.addChild(ParticleFactory.impactSparks(at: toySpot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
 
         transition(to: .dialogue)
         hud.questText = ""
@@ -1496,11 +1512,13 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
             }
         case .forest:
-            let w = scene.size.width, h = scene.size.height
+            // POI en coordonnées MONDE (trek scrollable, cf. buildForest)
+            let w = scene.size.width
+            let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
             let checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.30, y: h*0.45), "hint.fight"),
-                (CGPoint(x: w*0.65, y: h*0.55), "hint.fight"),
-                (CGPoint(x: w*0.60, y: h*0.82), "hint.enter")
+                (CGPoint(x: w*0.30, y: h*0.31), "hint.fight"),
+                (CGPoint(x: w*0.70, y: h*0.66), "hint.fight"),
+                (CGPoint(x: w*0.55, y: h*0.90), "hint.enter")
             ]
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -1843,6 +1861,9 @@ final class GameManager {
             if player.questChildToy == .active {
                 world.addToyMarker(in: scene)
             }
+            // Spawn à l'orée sud du trek (la forêt scrolle).
+            world.kael.position = CGPoint(x: scene.size.width * 0.5,
+                                          y: world.worldHeight * 0.05)
             transition(to: .exploration)
         case .shrine:
             hud.objectiveText = String(localized: "hud.objective.shrine")

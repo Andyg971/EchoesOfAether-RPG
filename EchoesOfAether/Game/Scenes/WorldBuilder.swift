@@ -99,11 +99,10 @@ final class WorldBuilder {
 
     func switchToForest(in scene: SKScene) {
         clearBackdrop()
-        worldHeight = scene.size.height
         worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.06, blue: 0.04, alpha: 1)
-        buildForest(in: scene)
+        buildForest(in: scene)   // définit worldHeight (trek scrollable)
     }
 
     func switchToShrine(in scene: SKScene) {
@@ -271,114 +270,122 @@ final class WorldBuilder {
 
     // MARK: - Forêt d'Ébène
 
+    /// FORÊT D'ÉBÈNE — trek vertical sud→nord (worldHeight = 2.8× écran).
+    /// Sentier sinueux autotilé reliant 4 clairières :
+    ///   y≈0.31  BOSQUET CORROMPU (combat 1, ouest)
+    ///   y≈0.52  CAMPEMENT (feu + cristal de sauvegarde, centre)
+    ///   y≈0.66  CLAIRIÈRE SOMBRE (combat 2, est)
+    ///   y≈0.90  SEUIL DU SANCTUAIRE (sortie nord)
+    /// POI synchronisés avec GameManager.tryForestInteraction (worldHeight).
     private func buildForest(in scene: SKScene) {
         let w = scene.size.width
-        let h = scene.size.height
+        let h = scene.size.height * 2.8
+        worldHeight = h
 
+        // ── SOL : herbe ME noyée d'ombre (palette assortie aux transitions) ──
+        let forestShade = SKColor(red: 0.05, green: 0.13, blue: 0.08, alpha: 1)
         let forestBase = SKShapeNode(rectOf: CGSize(width: w + 96, height: h + 96))
-        forestBase.fillColor = SKColor(red: 0.12, green: 0.26, blue: 0.14, alpha: 1)
+        forestBase.fillColor = SKColor(red: 0.05, green: 0.12, blue: 0.07, alpha: 1)
         forestBase.strokeColor = .clear
         forestBase.position = CGPoint(x: (w + 96) / 2 - 48, y: (h + 96) / 2 - 48)
         forestBase.zPosition = -11
         add(forestBase, to: scene)
 
         addTiledFloor(in: scene,
-                      tileNames: ["me_landscape_grass"],
-                      fallbackColor: SKColor(red: 0.12, green: 0.26, blue: 0.14, alpha: 1),
-                      tileScale: 1.0,
-                      tint: SKColor(red: 0.04, green: 0.14, blue: 0.06, alpha: 1),
+                      tileNames: ["me_grassvar_1", "me_grassvar_1", "me_grassvar_5",
+                                  "me_grassvar_2", "me_grassvar_3", "me_grassvar_4"],
+                      fallbackColor: SKColor(red: 0.05, green: 0.12, blue: 0.07, alpha: 1),
+                      tileScale: 0.5,
+                      tint: forestShade,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
-        addDirtPath(in: scene, from: CGPoint(x: w * 0.50, y: 0),
-                    to: CGPoint(x: w * 0.58, y: h * 0.86),
-                    width: 72)
-        addDirtPatch(at: CGPoint(x: w * 0.48, y: h * 0.48),
-                     size: CGSize(width: w * 0.28, height: h * 0.18),
-                     in: scene)
 
-// --- Arbres MV (T26 light + T27 dark forest) ---
-        // MV trees natifs 144-192px : cible ~100pt iPhone / ~130pt iPad pour
-        // une vraie canopée dense. L'ancien `* 0.55` donnait des arbres de 23pt.
+        // ── SENTIER SINUEUX + CLAIRIÈRES (autotile assombri) ──
+        var trail = VillageTileMap(width: w, height: h, tile: 24)
+        // Entrée sud → premier virage
+        trail.stamp(rect: CGRect(x: w * 0.50 - 24, y: 0, width: 48, height: h * 0.155))
+        // Virage ouest vers le bosquet
+        trail.stamp(rect: CGRect(x: w * 0.27, y: h * 0.12, width: w * 0.26, height: 44))
+        trail.stamp(rect: CGRect(x: w * 0.27, y: h * 0.12, width: 48, height: h * 0.30))
+        trail.stampEllipse(center: CGPoint(x: w * 0.30, y: h * 0.31),
+                           radiusX: w * 0.13, radiusY: h * 0.045)
+        // Vers le campement central
+        trail.stamp(rect: CGRect(x: w * 0.27, y: h * 0.40, width: w * 0.25, height: 44))
+        trail.stamp(rect: CGRect(x: w * 0.49, y: h * 0.40, width: 48, height: h * 0.13))
+        trail.stampEllipse(center: CGPoint(x: w * 0.52, y: h * 0.52),
+                           radiusX: w * 0.11, radiusY: h * 0.040)
+        // Vers la clairière sombre (est)
+        trail.stamp(rect: CGRect(x: w * 0.49, y: h * 0.52, width: 48, height: h * 0.12))
+        trail.stamp(rect: CGRect(x: w * 0.49, y: h * 0.62, width: w * 0.24, height: 44))
+        trail.stampEllipse(center: CGPoint(x: w * 0.70, y: h * 0.66),
+                           radiusX: w * 0.12, radiusY: h * 0.045)
+        // Remontée finale vers le seuil nord
+        trail.stamp(rect: CGRect(x: w * 0.67, y: h * 0.66, width: 48, height: h * 0.13))
+        trail.stamp(rect: CGRect(x: w * 0.52, y: h * 0.76, width: w * 0.20, height: 44))
+        trail.stamp(rect: CGRect(x: w * 0.52, y: h * 0.76, width: 48, height: h * 0.16))
+        trail.stampEllipse(center: CGPoint(x: w * 0.55, y: h * 0.90),
+                           radiusX: w * 0.09, radiusY: h * 0.035)
+        renderTileMap(trail, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -9.6,
+                      tint: SKColor(red: 0.16, green: 0.10, blue: 0.07, alpha: 1))
+
+        // ── CANOPÉE : double mur d'arbres ouest/est + lisières sud/nord ──
         let treeScale = max(0.45, min(0.68, w / 760))
-        let meTreeAssets = ["mv_forest_tree_1", "mv_forest_tree_2", "mv_forest_tree_3",
-                            "mv_forest_tree_4", "mv_forest_tree_wide", "mv_forest_pines",
-                            "mv_dark_tree", "mv_tall_pine", "mv_dead_tree",
-                            "mv_oak_tree", "mv_apple_tree_tall"]
-
-        // 2 statues angel dans clairières
-        addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.30), scale: 0.28)
-        addPixelProp("me_angel_statue_2", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.65), scale: 0.28)
-        // Bordure gauche dense (x ~0.06) : 6 arbres
-        for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
-            let name = meTreeAssets[i % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale,
+        let borderTrees = ["mv_forest_tree_1", "mv_forest_tree_2", "mv_forest_tree_3",
+                           "mv_forest_tree_4", "mv_forest_tree_wide", "mv_forest_pines",
+                           "mv_dark_tree", "mv_tall_pine", "mv_oak_tree"]
+        var treeIdx = 0
+        func plantTree(_ x: CGFloat, _ y: CGFloat, scaleMult: CGFloat = 1.0, dim: CGFloat = 1.0) {
+            let name = borderTrees[treeIdx % borderTrees.count]
+            treeIdx += 1
+            let tree = PixelArtSprites.still(name: name, scale: treeScale * scaleMult,
                                               anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 60)
-            tree.position = CGPoint(x: w * 0.06, y: h * y)
-            tree.zPosition = propLayer(for: tree.position.y, in: h)
-            addGroundShadow(under: tree, width: 18, height: 6)
+            tree.position = CGPoint(x: x, y: y)
+            tree.zPosition = propLayer(for: y, in: h)
+            tree.alpha = dim
+            addGroundShadow(under: tree, width: 18 * scaleMult, height: 6)
             add(tree, to: scene)
         }
-        // Deuxième rangée gauche (x ~0.16)
-        for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
-            let name = meTreeAssets[(i + 3) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 0.85,
-                                              anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 50)
-            tree.position = CGPoint(x: w * 0.16, y: h * y)
-            tree.zPosition = propLayer(for: tree.position.y, in: h)
-            tree.alpha = 0.9
-            addGroundShadow(under: tree, width: 14, height: 5)
-            add(tree, to: scene)
+        var yCursor = h * 0.03
+        var side = 0
+        while yCursor < h * 0.97 {
+            // jitter déterministe pour casser l'alignement
+            let jitter = CGFloat((side * 7) % 13) / 13.0
+            plantTree(w * (0.040 + 0.020 * jitter), yCursor, scaleMult: 1.0)
+            plantTree(w * (0.125 + 0.025 * jitter), yCursor + h * 0.022, scaleMult: 0.85, dim: 0.92)
+            plantTree(w * (0.960 - 0.020 * jitter), yCursor + h * 0.012, scaleMult: 1.0)
+            plantTree(w * (0.875 - 0.025 * jitter), yCursor + h * 0.034, scaleMult: 0.85, dim: 0.92)
+            yCursor += h * 0.052
+            side += 1
         }
-        // Bordure droite dense (x ~0.94)
-        for (i, y) in [CGFloat(0.12), 0.26, 0.40, 0.54, 0.68, 0.82].enumerated() {
-            let name = meTreeAssets[(i + 5) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale,
-                                              anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 60)
-            tree.position = CGPoint(x: w * 0.94, y: h * y)
-            tree.zPosition = propLayer(for: tree.position.y, in: h)
-            addGroundShadow(under: tree, width: 18, height: 6)
-            add(tree, to: scene)
+        // Lisière sud (entrée) et nord (seuil) : encadre sans bloquer le sentier
+        for x in [0.22, 0.34, 0.64, 0.76] {
+            plantTree(w * CGFloat(x), h * 0.015, scaleMult: 0.9)
         }
-        // Deuxième rangée droite (x ~0.84)
-        for (i, y) in [CGFloat(0.20), 0.38, 0.58, 0.76].enumerated() {
-            let name = meTreeAssets[(i + 7) % meTreeAssets.count]
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * 0.85,
-                                              anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 50)
-            tree.position = CGPoint(x: w * 0.84, y: h * y)
-            tree.zPosition = propLayer(for: tree.position.y, in: h)
-            tree.alpha = 0.9
-            addGroundShadow(under: tree, width: 14, height: 5)
-            add(tree, to: scene)
+        for x in [0.24, 0.38, 0.70, 0.82] {
+            plantTree(w * CGFloat(x), h * 0.965, scaleMult: 0.9)
         }
-        // Arbres intérieurs (zone jouable) — épars
-        let scatterPositions: [(x: CGFloat, y: CGFloat, idx: Int)] = [
-            (0.28, 0.80, 1), (0.72, 0.76, 3), (0.78, 0.28, 5),
-            (0.24, 0.42, 7), (0.68, 0.60, 9)
+        // Arbres intérieurs épars (hors sentier)
+        let innerTrees: [(CGFloat, CGFloat)] = [
+            (0.62, 0.10), (0.78, 0.18), (0.22, 0.22), (0.58, 0.26),
+            (0.80, 0.33), (0.24, 0.46), (0.70, 0.46), (0.30, 0.58),
+            (0.78, 0.56), (0.24, 0.68), (0.40, 0.72), (0.80, 0.78),
+            (0.30, 0.84), (0.74, 0.92)
         ]
-        for p in scatterPositions {
-            let tree = PixelArtSprites.still(name: meTreeAssets[p.idx % meTreeAssets.count],
-                                              scale: treeScale * 0.80,
-                                              anchor: CGPoint(x: 0.5, y: 0.0))
-                ?? makeTree(height: 45)
-            tree.position = CGPoint(x: w * p.x, y: h * p.y)
-            tree.zPosition = propLayer(for: tree.position.y, in: h)
-            tree.alpha = 0.92
-            addGroundShadow(under: tree, width: 12, height: 4)
-            add(tree, to: scene)
+        for (x, y) in innerTrees {
+            plantTree(w * x, h * y, scaleMult: 0.82, dim: 0.94)
         }
 
-
-        let corruptedTreePositions: [(x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            (0.34, 0.46, 0.78), (0.50, 0.55, 0.86), (0.66, 0.46, 0.78)
+        // ── ARBRES MORTS CORROMPUS près des zones de danger (teinte Aether) ──
+        let corrupted: [(CGFloat, CGFloat, CGFloat)] = [
+            (0.20, 0.295, 0.80), (0.40, 0.33, 0.74),
+            (0.61, 0.645, 0.80), (0.79, 0.695, 0.74)
         ]
-        for p in corruptedTreePositions {
-            guard let tree = PixelArtSprites.still(name: "mv_dead_tree", scale: treeScale * p.scale,
+        for (x, y, s) in corrupted {
+            guard let tree = PixelArtSprites.still(name: "mv_dead_tree", scale: treeScale * s,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            tree.position = CGPoint(x: w * p.x, y: h * p.y)
+            tree.position = CGPoint(x: w * x, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
             tree.enumerateChildNodes(withName: "//*") { node, _ in
                 if let sprite = node as? SKSpriteNode {
@@ -390,59 +397,84 @@ final class WorldBuilder {
             add(tree, to: scene)
         }
 
-        // --- Zone 1 : Bosquet corrompu (centre-gauche) ---
-        let groveZone = makeDangerZone(
-            at: CGPoint(x: w * 0.30, y: h * 0.45),
-            radius: 35,
-            color: SKColor(red: 0.50, green: 0.10, blue: 0.10, alpha: 1)
-        )
-        add(groveZone, to: scene)
+        // ── POI : zones de danger, campement, seuil, statues ──
+        add(makeDangerZone(at: CGPoint(x: w * 0.30, y: h * 0.31), radius: 35,
+                           color: SKColor(red: 0.50, green: 0.10, blue: 0.10, alpha: 1)),
+            to: scene)
+        add(makeDangerZone(at: CGPoint(x: w * 0.70, y: h * 0.66), radius: 40,
+                           color: SKColor(red: 0.40, green: 0.08, blue: 0.45, alpha: 1)),
+            to: scene)
 
-        // --- Zone 2 : Clairière sombre (centre-droite) ---
-        let clearingZone = makeDangerZone(
-            at: CGPoint(x: w * 0.65, y: h * 0.55),
-            radius: 40,
-            color: SKColor(red: 0.40, green: 0.08, blue: 0.45, alpha: 1)
-        )
-        add(clearingZone, to: scene)
+        // Campement : feu, bois, banc — havre au milieu du trek
+        addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.52, y: h * 0.515), scale: 0.50)
+        addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.575, y: h * 0.505), scale: 0.42)
+        addPixelProp("me_cut_wood_bench", in: scene, at: CGPoint(x: w * 0.465, y: h * 0.500), scale: 0.42)
+        addSaveCrystal(at: CGPoint(x: w * 0.46, y: h * 0.540), in: scene)
 
-        // --- Zone 3 : Sentier profond (nord) → vers sanctuaire ---
-        let deepPath = SKShapeNode(rectOf: CGSize(width: 60, height: 30), cornerRadius: 8)
-        deepPath.fillColor = SKColor(red: 0.12, green: 0.05, blue: 0.18, alpha: 0.15)
-        deepPath.strokeColor = SKColor(red: 0.50, green: 0.25, blue: 0.75, alpha: 0.30)
+        // Statues gardiennes oubliées le long du sentier
+        addPixelProp("me_angel_statue_1", in: scene, at: CGPoint(x: w * 0.36, y: h * 0.355), scale: 0.26)
+        addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.49, y: h * 0.875), scale: 0.26)
+
+        // Seuil du sanctuaire (sortie nord)
+        let deepPath = SKShapeNode(rectOf: CGSize(width: 64, height: 32), cornerRadius: 8)
+        deepPath.fillColor = SKColor(red: 0.12, green: 0.05, blue: 0.18, alpha: 0.18)
+        deepPath.strokeColor = SKColor(red: 0.50, green: 0.25, blue: 0.75, alpha: 0.35)
         deepPath.lineWidth = 1.5
-        deepPath.position = CGPoint(x: w * 0.60, y: h * 0.82)
+        deepPath.position = CGPoint(x: w * 0.55, y: h * 0.90)
         deepPath.zPosition = -2
         add(deepPath, to: scene)
         JuiceEngine.pulse(deepPath, scale: 1.15)
 
         let pathLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
         pathLabel.text = String(localized: "world.deepPath")
-        pathLabel.fontSize = 10
-        pathLabel.fontColor = SKColor(red: 0.55, green: 0.35, blue: 0.80, alpha: 0.7)
-        pathLabel.position = CGPoint(x: w * 0.60, y: h * 0.87)
+        pathLabel.fontSize = 11
+        pathLabel.fontColor = SKColor(red: 0.60, green: 0.40, blue: 0.85, alpha: 0.8)
+        pathLabel.position = CGPoint(x: w * 0.55, y: h * 0.925)
         pathLabel.zPosition = -1
         add(pathLabel, to: scene)
 
+        scatterForestProps(in: scene, w: w, h: h)
 
-        let foregroundTrees: [(x: CGFloat, y: CGFloat, scale: CGFloat)] = [
-            (0.08, 0.12, 1.7), (0.30, 0.11, 1.5), (0.72, 0.12, 1.6), (0.93, 0.11, 1.75)
+        addAtmosphere(ParticleFactory.forestFog(in: CGSize(width: w, height: h)), to: scene)
+    }
+
+    /// Sous-bois : champignons, rochers, souches, pousses et os dispersés
+    /// de façon déterministe, hors sentier et clairières.
+    private func scatterForestProps(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        let reserved: [CGRect] = [
+            CGRect(x: w * 0.44, y: 0, width: w * 0.12, height: h * 0.17),
+            CGRect(x: w * 0.15, y: h * 0.25, width: w * 0.30, height: h * 0.13),  // bosquet
+            CGRect(x: w * 0.39, y: h * 0.47, width: w * 0.26, height: h * 0.10),  // campement
+            CGRect(x: w * 0.56, y: h * 0.60, width: w * 0.28, height: h * 0.12),  // clairière
+            CGRect(x: w * 0.44, y: h * 0.85, width: w * 0.22, height: h * 0.10)   // seuil
         ]
-        for p in foregroundTrees {
-            guard let tree = PixelArtSprites.still(name: "ext_tree_3", scale: treeScale * p.scale,
-                                                   anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            tree.position = CGPoint(x: w * p.x, y: h * p.y)
-            tree.alpha = 0.55
-            tree.zPosition = 5
-            add(tree, to: scene)
+        let props = ["me_mushrooms_1", "me_mushrooms_2", "forest_mushroom_1",
+                     "forest_mushroom_2", "mushroom_1", "mushroom_3",
+                     "rock_1", "rock_3", "rock_5", "village_rock_1",
+                     "stump_1", "stump_2", "forest_stump_1",
+                     "me_big_sprout_1", "me_big_sprout_2", "me_big_sprout_3",
+                     "bones_1"]
+        var seed: UInt64 = 0xF0E5_57_2026
+        func next() -> CGFloat {
+            seed = seed &* 6364136223846793005 &+ 1442695040888963407
+            return CGFloat(seed >> 40) / CGFloat(1 << 24)
         }
-
-        decorateForestFloor(in: scene)
-
-        // Cristal de sauvegarde (bas centre)
-        addSaveCrystal(at: CGPoint(x: w * 0.50, y: h * 0.15), in: scene)
-
-        addAtmosphere(ParticleFactory.forestFog(in: scene.size), to: scene)
+        var placed = 0
+        var attempts = 0
+        while placed < 52 && attempts < 420 {
+            attempts += 1
+            let p = CGPoint(x: w * 0.16 + next() * w * 0.68,
+                            y: h * 0.02 + next() * h * 0.94)
+            if reserved.contains(where: { $0.contains(p) }) { continue }
+            let name = props[Int(next() * CGFloat(props.count)) % props.count]
+            guard let node = PixelArtSprites.still(name: name, scale: 0.42,
+                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            node.position = p
+            node.zPosition = -8.8
+            node.alpha = 0.92
+            add(node, to: scene)
+            placed += 1
+        }
     }
 
     /// Scale dynamique des arbres pixel art de la forêt selon la largeur.
@@ -456,10 +488,10 @@ final class WorldBuilder {
     func addToyMarker(in scene: SKScene) {
         guard toyMarker == nil else { return }
         let w = scene.size.width
-        let h = scene.size.height
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
 
         let toy = SKNode()
-        toy.position = CGPoint(x: w * 0.80, y: h * 0.28)
+        toy.position = CGPoint(x: w * 0.80, y: h * 0.45)
         toy.zPosition = 3
 
         // Petit ours en bois (placeholder)
@@ -696,29 +728,6 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         add(node, to: scene)
         placed += 1
     }
-}
-
-private func decorateForestFloor(in scene: SKScene) {
-    let w = scene.size.width
-    let h = scene.size.height
-
-    // Bois coupé (48×96px → 0.30 ≈ 14×29pt)
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.18, y: h * 0.22), scale: 0.30)
-    addPixelProp("me_cut_wood", in: scene, at: CGPoint(x: w * 0.82, y: h * 0.32), scale: 0.28)
-
-    // Pousses (48×48px → 0.40 ≈ 19pt)
-    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.15, y: h * 0.48), scale: 0.40)
-    addPixelProp("me_big_sprout_2", in: scene, at: CGPoint(x: w * 0.85, y: h * 0.56), scale: 0.38)
-    addPixelProp("me_big_sprout_3", in: scene, at: CGPoint(x: w * 0.42, y: h * 0.18), scale: 0.35)
-    addPixelProp("me_big_sprout_1", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.72), scale: 0.36)
-
-    // Feu de camp (48×96px → 0.35)
-    addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.30), scale: 0.35)
-
-    // Fallback anciens props si existants
-    addPixelProp("forest_mushroom_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.58), scale: 0.40)
-    addPixelProp("forest_mushroom_2", in: scene, at: CGPoint(x: w * 0.75, y: h * 0.38), scale: 0.40)
-    addPixelProp("forest_stump_1", in: scene, at: CGPoint(x: w * 0.38, y: h * 0.65), scale: 0.45)
 }
 
     // MARK: - Forest Building Blocks
@@ -2035,8 +2044,11 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     /// Pose les tuiles d'une `VillageTileMap` : tuiles pleines sur les
     /// cellules marquées, transitions nommées sur l'herbe adjacente
     /// (ex. `me_edge_n` = matière au nord de la cellule d'herbe).
+    /// `tint` assombrit/teinte les tuiles (forêt sombre, etc.) pour
+    /// rester assorti au sol teinté.
     private func renderTileMap(_ map: VillageTileMap, fullTile: String,
-                               edgePrefix: String, in scene: SKScene, z: CGFloat) {
+                               edgePrefix: String, in scene: SKScene, z: CGFloat,
+                               tint: SKColor? = nil) {
         for piece in map.pieces() {
             let name = piece.suffix.map { edgePrefix + $0 } ?? fullTile
             guard let t = PixelArtSprites.still(name: name, scale: 0.5,
@@ -2044,6 +2056,14 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
             t.position = CGPoint(x: CGFloat(piece.col) * map.tile,
                                   y: CGFloat(piece.row) * map.tile)
             t.zPosition = piece.suffix == nil ? z : z + 0.05
+            if let tint {
+                t.enumerateChildNodes(withName: "//*") { node, _ in
+                    if let sprite = node as? SKSpriteNode {
+                        sprite.color = tint
+                        sprite.colorBlendFactor = 0.45
+                    }
+                }
+            }
             add(t, to: scene)
         }
     }

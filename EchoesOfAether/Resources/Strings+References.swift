@@ -39,6 +39,15 @@ private enum _StringsReferences {
     static let statusAttack:       LocalizedStringResource = "combat.status.attack %@"
     static let statusBlackSlash:   LocalizedStringResource = "combat.status.blackSlash %lld"
     static let statusDefeated:     LocalizedStringResource = "combat.status.defeated %@"
-    static let statusEnemyHit:     LocalizedStringResource = "combat.status.enemyHit %@ %lld %lld"
+
+    // Combat — tour par tour
+    static let turnEnemy:          LocalizedStringResource = "combat.turn.enemy %@"
+    static let turnIntent:         LocalizedStringResource = "combat.turn.intent %@"
+    static let statusAttackBoost:  LocalizedStringResource = "combat.status.attackBoosted %lld %lld"
+    static let statusHeal:         LocalizedStringResource = "combat.status.heal %lld"
+    static let statusHealBoost:    LocalizedStringResource = "combat.status.healBoosted %lld %lld"
+    static let statusSpellHit:     LocalizedStringResource = "combat.status.spellHit %@ %lld"
+    static let statusSpellWeak:    LocalizedStringResource = "combat.status.spellWeak %@ %lld"
+    static let statusEnemyHits:    LocalizedStringResource = "combat.status.enemyHits %@ %lld"
 }
 // swiftlint:enable unused_declaration

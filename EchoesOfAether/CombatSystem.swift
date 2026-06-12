@@ -780,7 +780,7 @@ private func showComboIfNeeded() {
 private func setupComboAndStatusUI(scene: SKScene) {
     comboLabel.fontSize = 24
     comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
-    comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.62)
+    comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.56)
     comboLabel.zPosition = 920
     comboLabel.alpha = 0
     root.addChild(comboLabel)
@@ -1208,10 +1208,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
     // MARK: - Setup
 
     private func setupStatus(scene: SKScene) {
-        // 13pt : doit tenir entre les plaques de nom Kael/ennemi (≈245pt).
+        // Ligne de log dédiée au-dessus de l'arène : jamais en collision
+        // avec les plaques de nom (h-72 chevauchait sur grands iPhone).
         statusLabel.fontSize = 13
         statusLabel.fontColor = .white
-        statusLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 72)
+        statusLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.645)
         root.addChild(statusLabel)
     }
 

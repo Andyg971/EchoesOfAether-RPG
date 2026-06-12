@@ -1795,6 +1795,7 @@ final class GameManager {
     }
 
     private func transition(to newState: GameState) {
+        let wasCombat = state == .combat
         state = newState
         if newState == .exploration { saveGame() }
         // Bulle d'interaction visible uniquement en exploration ;
@@ -1802,6 +1803,12 @@ final class GameManager {
         if newState != .exploration {
             bubble.hide()
             hud.interactionHint = ""
+        }
+        // Le combat occupe l'écran entier : HUD d'exploration masqué.
+        if newState == .combat {
+            hud.setVisible(false)
+        } else if wasCombat {
+            hud.setVisible(true)
         }
     }
 

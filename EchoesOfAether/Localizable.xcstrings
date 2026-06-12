@@ -670,13 +670,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Boosted attack ×%1$lld −%2$lld"
+            "value": "Boosted attack ×%lld −%lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Attaque boostée ×%1$lld −%2$lld"
+            "value": "Attaque boostée ×%lld −%lld"
           }
         }
       }
@@ -798,13 +798,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ hits Kael −%2$lld"
+            "value": "%@ hits Kael −%lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ frappe Kael −%2$lld"
+            "value": "%@ frappe Kael −%lld"
           }
         }
       }
@@ -830,13 +830,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Boosted heal ×%1$lld +%2$lld"
+            "value": "Boosted heal ×%lld +%lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Soin boosté ×%1$lld +%2$lld"
+            "value": "Soin boosté ×%lld +%lld"
           }
         }
       }
@@ -863,13 +863,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ −%2$lld"
+            "value": "%@ −%lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ −%2$lld"
+            "value": "%@ −%lld"
           }
         }
       }
@@ -879,13 +879,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ strikes the weakness −%2$lld"
+            "value": "%@ strikes the weakness −%lld"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ touche la faiblesse −%2$lld"
+            "value": "%@ touche la faiblesse −%lld"
           }
         }
       }

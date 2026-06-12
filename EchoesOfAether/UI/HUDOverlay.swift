@@ -74,6 +74,12 @@ final class HUDOverlay {
         xpBarFill.xScale = max(0.02, min(1, isMax ? 1 : progress))
     }
 
+    /// Masque/affiche tout le HUD d'exploration (le combat occupe
+    /// l'écran entier : cœur, XP et plaques ne doivent pas transparaître).
+    func setVisible(_ visible: Bool) {
+        root.run(.fadeAlpha(to: visible ? 1 : 0, duration: 0.20))
+    }
+
     func attach(to scene: SKScene) {
         root.zPosition = 100
 

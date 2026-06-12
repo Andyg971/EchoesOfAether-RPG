@@ -1144,14 +1144,17 @@ private func setupComboAndStatusUI(scene: SKScene) {
             .moveBy(x: -dx, y: 0, duration: 0.18)
         ])
         recoil.timingMode = .easeOut
-        let flash = SKAction.sequence([
-            .colorize(with: .red, colorBlendFactor: 0.7, duration: 0.05),
-            .colorize(withColorBlendFactor: 0, duration: 0.20)
-        ])
         e.run(recoil)
-        // Flash : applique aux SKSpriteNode enfants (pas les SKShape)
+        // Flash : applique aux SKSpriteNode enfants (pas les SKShape),
+        // en restaurant la teinte d'origine (loup d'ombre = teinté).
         e.enumerateChildNodes(withName: "//*") { node, _ in
-            if let sprite = node as? SKSpriteNode { sprite.run(flash) }
+            guard let sprite = node as? SKSpriteNode else { return }
+            let prevColor = sprite.color
+            let prevFactor = sprite.colorBlendFactor
+            sprite.run(.sequence([
+                .colorize(with: .red, colorBlendFactor: 0.7, duration: 0.05),
+                .colorize(with: prevColor, colorBlendFactor: prevFactor, duration: 0.20)
+            ]))
         }
     }
 

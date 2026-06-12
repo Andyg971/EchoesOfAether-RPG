@@ -54,16 +54,27 @@ enum CombatSprites {
         root.name = "combatEnemy"
         addShadow(to: root, width: enemyShadowWidth(kind))
 
-        // Tente d'abord un sprite pixel art (spritesheet RPG Maker MV
-        // 12×3 frames de 32×32, on prend la frame idle face = [col 1, row 0]).
-        // Fallback sur la shape programmatique si l'asset manque.
-        // Sprites ennemis : les sheets Modern Exteriors (zombie/skeleton)
-        // sont des "previews de générateur" (28+ sprites serrés sans
-        // grille régulière) → non exploitables directement. On garde
-        // les shapes programmatiques jusqu'à ce qu'un pack avec format
-        // standard ($character RPG Maker MV) soit ajouté.
-        // Le helper PixelArtSprites.frame reste prêt pour cet usage.
-        _ = spriteSheet(for: kind)  // référence conservée pour migration future
+        // Sprites pixel art animés (frames 48×96 extraites des sheets
+        // Modern Exteriors). Les boss (guardian, archivist) gardent leurs
+        // silhouettes programmatiques uniques. Fallback shape si asset
+        // manquant.
+        if let config = pixelSprite(for: kind),
+           let sprite = PixelArtSprites.animated(name: config.name, frames: 6,
+                                                 scale: 1.7,
+                                                 timePerFrame: 0.16,
+                                                 anchor: CGPoint(x: 0.5, y: 0.0)) {
+            sprite.position = CGPoint(x: 0, y: -34)
+            if let tint = config.tint {
+                sprite.enumerateChildNodes(withName: "//*") { node, _ in
+                    if let s = node as? SKSpriteNode {
+                        s.color = tint
+                        s.colorBlendFactor = 0.38
+                    }
+                }
+            }
+            root.addChild(sprite)
+            return root
+        }
 
         switch kind {
         case .beast:         buildBeast(into: root)
@@ -75,13 +86,20 @@ enum CombatSprites {
         return root
     }
 
-    private static func spriteSheet(for kind: CombatSpriteKind) -> String? {
+    /// Asset pixel art + teinte optionnelle par type d'ennemi.
+    private static func pixelSprite(for kind: CombatSpriteKind)
+        -> (name: String, tint: SKColor?)? {
         switch kind {
-        case .beast:         return "enemy_zombie_1"
-        case .wolf:          return "enemy_zombie_2"
-        case .guardian:      return "enemy_skeleton"
-        case .ruinsGuardian: return "enemy_skeleton"
-        case .archivist:     return nil   // unique narratif → garde la shape
+        case .beast:
+            return ("enemy_beast", nil)
+        case .wolf:
+            // "Loup d'ombre" : même créature, noyée d'ombre violette.
+            return ("enemy_shadewolf",
+                    SKColor(red: 0.22, green: 0.10, blue: 0.38, alpha: 1))
+        case .ruinsGuardian:
+            return ("enemy_bone", nil)
+        case .guardian, .archivist:
+            return nil   // boss uniques → silhouettes dédiées
         }
     }
 

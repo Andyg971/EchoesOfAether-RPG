@@ -326,6 +326,22 @@
         }
       }
     },
+    "combat.effect.shieldHit %@ %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weakness %@: shield %lld/%lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faiblesse %@ : bouclier %lld/%lld"
+          }
+        }
+      }
+    },
     "combat.effect.shieldRestored": {
       "localizations": {
         "en": {
@@ -482,6 +498,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gardien fêlé"
+          }
+        }
+      }
+    },
+    "combat.enemy.numbered %@ %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ %lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ %lld"
           }
         }
       }
@@ -953,6 +985,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisis une technique."
+          }
+        }
+      }
+    },
+    "combat.turn.chooseMulti": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choose a technique — tap an enemy to target it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Choisis une technique — touche un ennemi pour le cibler."
           }
         }
       }

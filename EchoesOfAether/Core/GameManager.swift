@@ -112,6 +112,16 @@ final class GameManager {
             }
             return
         }
+        if CommandLine.arguments.contains("--combat-multi") {
+            hud.goldValue = player.gold
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self else { return }
+                self.phase = .forest
+                self.world.switchToForest(in: scene)
+                self.startClearingCombat()
+            }
+            return
+        }
         if CommandLine.arguments.contains("--boss-test") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
@@ -830,13 +840,18 @@ final class GameManager {
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
         let levelBefore = player.level
+        // La clairière sombre : une MEUTE de deux loups d'ombre.
+        let wolfName = String(localized: "combat.enemy.wolf")
         combat.attach(
             to: scene,
-            enemyName: String(localized: "combat.enemy.wolf"),
-            enemyHP: 200,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(wolfName) \(1)"),
+                          hp: 110, kind: .wolf),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(wolfName) \(2)"),
+                          hp: 110, kind: .wolf)
+            ],
             goldReward: 50,
-            player: player,
-            enemyKind: .wolf
+            player: player
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }

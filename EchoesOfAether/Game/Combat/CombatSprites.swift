@@ -86,6 +86,37 @@ enum CombatSprites {
         return root
     }
 
+    /// Joue les frames d'attaque (row "marche/agression" des sheets ME)
+    /// une fois, puis reprend la boucle idle. Silencieux si pas d'assets.
+    static func playAttackFrames(on node: SKNode, kind: CombatSpriteKind) {
+        guard let config = pixelSprite(for: kind) else { return }
+        let attack = (1...6).compactMap { i -> SKTexture? in
+            let n = "\(config.name)_attack_\(i)"
+            guard UIImage(named: n) != nil else { return nil }
+            let t = SKTexture(imageNamed: n)
+            t.filteringMode = .nearest
+            return t
+        }
+        guard attack.count == 6 else { return }
+        let idle = (1...6).map { i -> SKTexture in
+            let t = SKTexture(imageNamed: "\(config.name)_idle_\(i)")
+            t.filteringMode = .nearest
+            return t
+        }
+        node.enumerateChildNodes(withName: "//*") { n, stop in
+            guard let sprite = n as? SKSpriteNode else { return }
+            sprite.removeAllActions()
+            sprite.run(.sequence([
+                .animate(with: attack, timePerFrame: 0.07, resize: false, restore: false),
+                .run {
+                    sprite.run(.repeatForever(.animate(with: idle, timePerFrame: 0.16,
+                                                       resize: false, restore: true)))
+                }
+            ]))
+            stop.pointee = true
+        }
+    }
+
     /// Asset pixel art + teinte optionnelle par type d'ennemi.
     private static func pixelSprite(for kind: CombatSpriteKind)
         -> (name: String, tint: SKColor?)? {

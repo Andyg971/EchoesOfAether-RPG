@@ -125,8 +125,12 @@ enum CombatSprites {
                     SKColor(red: 0.22, green: 0.10, blue: 0.38, alpha: 1))
         case .ruinsGuardian:
             return ("enemy_bone", nil)
-        case .guardian, .archivist:
-            return nil   // boss uniques → silhouettes dédiées
+        case .archivist:
+            // Squelette érudit noyé d'Aether violet
+            return ("enemy_archivist",
+                    SKColor(red: 0.30, green: 0.14, blue: 0.48, alpha: 1))
+        case .guardian:
+            return nil   // boss Acte I → statue d'ange animée (cas dédié)
         }
     }
 
@@ -264,7 +268,58 @@ enum CombatSprites {
 
     // MARK: - Guardian Aether (boss, géant minéral pourpre)
 
+    /// Gardien de l'Aether : la statue d'ange du sanctuaire, animée par
+    /// l'Aether noir — pixel art teinté + cœur violet + yeux corrompus.
     private static func buildGuardian(into root: SKNode) {
+        guard let statue = PixelArtSprites.still(name: "me_statue_angel",
+                                                 scale: 0.50,
+                                                 anchor: CGPoint(x: 0.5, y: 0.0)) else {
+            buildGuardianFallback(into: root)
+            return
+        }
+        statue.position = CGPoint(x: 0, y: -34)
+        statue.forEachDescendantSprite { sprite in
+            sprite.color = SKColor(red: 0.30, green: 0.16, blue: 0.46, alpha: 1)
+            sprite.colorBlendFactor = 0.35
+        }
+        root.addChild(statue)
+        JuiceEngine.float(statue, distance: 4)
+
+        // Cœur d'Aether qui bat dans la pierre
+        let core = SKShapeNode(circleOfRadius: 10)
+        core.fillColor = SKColor(red: 0.65, green: 0.25, blue: 0.95, alpha: 1)
+        core.strokeColor = .clear
+        core.glowWidth = 9
+        core.position = CGPoint(x: 0, y: 26)
+        core.zPosition = 2
+        root.addChild(core)
+        JuiceEngine.pulse(core, scale: 1.3)
+
+        // Yeux corrompus
+        for dx: CGFloat in [-7, 7] {
+            let eye = SKShapeNode(circleOfRadius: 2.5)
+            eye.fillColor = SKColor(red: 0.95, green: 0.45, blue: 1, alpha: 1)
+            eye.strokeColor = .clear
+            eye.glowWidth = 5
+            eye.position = CGPoint(x: dx, y: 78)
+            eye.zPosition = 2
+            root.addChild(eye)
+            JuiceEngine.pulse(eye, scale: 1.4)
+        }
+
+        // Aura d'Aether
+        let aura = SKShapeNode(circleOfRadius: 58)
+        aura.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.55, alpha: 0.07)
+        aura.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.16)
+        aura.lineWidth = 1.5
+        aura.position = CGPoint(x: 0, y: 30)
+        aura.zPosition = -1
+        root.addChild(aura)
+        JuiceEngine.pulse(aura, scale: 1.25)
+    }
+
+    /// Fallback shape si l'asset statue manque.
+    private static func buildGuardianFallback(into root: SKNode) {
         let body = SKShapeNode(rectOf: CGSize(width: 70, height: 90), cornerRadius: 14)
         body.fillColor = SKColor(red: 0.18, green: 0.10, blue: 0.28, alpha: 1)
         body.strokeColor = SKColor(red: 0.55, green: 0.22, blue: 0.85, alpha: 0.8)
@@ -272,7 +327,6 @@ enum CombatSprites {
         body.position = CGPoint(x: 0, y: 14)
         root.addChild(body)
 
-        // Cœur d'Aether (joyau central)
         let core = SKShapeNode(circleOfRadius: 11)
         core.fillColor = SKColor(red: 0.65, green: 0.25, blue: 0.95, alpha: 1)
         core.strokeColor = .clear
@@ -280,42 +334,6 @@ enum CombatSprites {
         core.position = CGPoint(x: 0, y: 18)
         root.addChild(core)
         JuiceEngine.pulse(core, scale: 1.3)
-
-        // Tête flottante
-        let head = SKShapeNode(circleOfRadius: 18)
-        head.fillColor = SKColor(red: 0.22, green: 0.12, blue: 0.34, alpha: 1)
-        head.strokeColor = SKColor(red: 0.55, green: 0.22, blue: 0.85, alpha: 0.7)
-        head.lineWidth = 2
-        head.position = CGPoint(x: 0, y: 68)
-        root.addChild(head)
-        JuiceEngine.float(head, distance: 4)
-
-        // Yeux pourpres
-        for dx: CGFloat in [-6, 6] {
-            let eye = SKShapeNode(circleOfRadius: 2.5)
-            eye.fillColor = SKColor(red: 0.95, green: 0.55, blue: 1, alpha: 1)
-            eye.strokeColor = .clear
-            eye.glowWidth = 4
-            eye.position = CGPoint(x: dx, y: 70)
-            root.addChild(eye)
-        }
-
-        // Bras minéral (gauche, vers Kael)
-        let armL = SKShapeNode(rectOf: CGSize(width: 16, height: 56), cornerRadius: 6)
-        armL.fillColor = body.fillColor
-        armL.strokeColor = body.strokeColor
-        armL.lineWidth = 1.5
-        armL.position = CGPoint(x: -34, y: 14)
-        armL.zRotation = -.pi / 12
-        root.addChild(armL)
-
-        let armR = SKShapeNode(rectOf: CGSize(width: 16, height: 56), cornerRadius: 6)
-        armR.fillColor = body.fillColor
-        armR.strokeColor = body.strokeColor
-        armR.lineWidth = 1.5
-        armR.position = CGPoint(x: 34, y: 14)
-        armR.zRotation = .pi / 12
-        root.addChild(armR)
     }
 
     // MARK: - Ruins Guardian (sentinelle de pierre Acte II)

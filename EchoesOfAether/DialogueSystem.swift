@@ -19,6 +19,7 @@ final class DialogueSystem {
     private let separator = SKShapeNode()          // trait fin sous le nom
     private let portraitBack = SKShapeNode()       // cercle avatar
     private let portraitInitial = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    private var portraitSprite: SKSpriteNode?     // portrait pixel (Kael)
     private let speakerLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
     private let bodyLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
     private let continueIndicator = SKLabelNode(fontNamed: "AvenirNext-Medium")
@@ -209,7 +210,32 @@ final class DialogueSystem {
         let color = portraitColor(for: speaker)
         portraitBack.fillColor = color.withAlphaComponent(0.85)
         portraitBack.strokeColor = color
-        portraitInitial.text = String(speaker.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased()
+        // Kael a un portrait pixel art (tête du sprite) ; les autres
+        // gardent l'initiale colorée.
+        let isKael = speaker.trimmingCharacters(in: .whitespaces)
+            .compare("Kael", options: .caseInsensitive) == .orderedSame
+        if isKael, UIImage(named: "kael_portrait") != nil {
+            portraitInitial.text = ""
+            if portraitSprite == nil {
+                let tex = SKTexture(imageNamed: "kael_portrait")
+                tex.filteringMode = .nearest
+                let sprite = SKSpriteNode(texture: tex)
+                sprite.size = CGSize(width: portraitRadius * 1.8, height: portraitRadius * 1.8)
+                let mask = SKShapeNode(circleOfRadius: portraitRadius - 1.5)
+                mask.fillColor = .white
+                mask.strokeColor = .clear
+                let crop = SKCropNode()
+                crop.maskNode = mask
+                crop.addChild(sprite)
+                crop.zPosition = 1
+                portraitBack.addChild(crop)
+                portraitSprite = sprite
+            }
+            portraitSprite?.parent?.isHidden = false
+        } else {
+            portraitSprite?.parent?.isHidden = true
+            portraitInitial.text = String(speaker.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased()
+        }
         // Petit "pop" quand le speaker change
         portraitBack.run(.sequence([
             .scale(to: 1.15, duration: 0.08),

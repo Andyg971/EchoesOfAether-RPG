@@ -164,6 +164,22 @@ final class GameManager {
             transition(to: .exploration)
             return
         }
+        // Audit visuel des intérieurs : --interior armory|apothecary|inn
+        if let idx = CommandLine.arguments.firstIndex(of: "--interior"),
+           CommandLine.arguments.indices.contains(idx + 1) {
+            let kind: HouseInteriorKind? = switch CommandLine.arguments[idx + 1] {
+            case "armory": .armory
+            case "apothecary": .apothecary
+            case "inn": .inn
+            default: nil
+            }
+            if let kind {
+                hud.goldValue = player.gold
+                phase = .village
+                enterHouse(kind, in: scene)
+                return
+            }
+        }
         if CommandLine.arguments.contains("--zone-threshold") {
             hud.goldValue = player.gold
             phase = .act3

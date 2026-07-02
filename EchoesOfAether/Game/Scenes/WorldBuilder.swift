@@ -1406,7 +1406,16 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         floor.zPosition = -9
         add(floor, to: scene)
 
-        addInteriorFloorBoards(in: scene, room: room)
+        // Plancher en vraies tuiles (terre battue teintée par échoppe)
+        if let boards = PixelArtSprites.tiledFloor(
+            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
+            in: CGSize(width: room.width - 8, height: room.height - 8),
+            tileScale: 1.0,
+            tint: interiorFloorColor(for: kind)) {
+            boards.position = CGPoint(x: room.minX + 4, y: room.minY + 4)
+            boards.zPosition = -8.5
+            add(boards, to: scene)
+        }
         addInteriorWallBand(in: scene, room: room, kind: kind)
         addInteriorExitDoor(in: scene, room: room)
         addInteriorTitle(kind, in: scene, room: room)
@@ -1432,44 +1441,35 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
     }
 
-    private func addInteriorFloorBoards(in scene: SKScene, room: CGRect) {
-        for i in 0..<9 {
-            let y = room.minY + CGFloat(i + 1) * room.height / 10
-            let line = SKShapeNode(rectOf: CGSize(width: room.width - 20, height: 2), cornerRadius: 1)
-            line.position = CGPoint(x: room.midX, y: y)
-            line.fillColor = SKColor(white: 0, alpha: 0.10)
-            line.strokeColor = .clear
-            line.zPosition = -8
-            add(line, to: scene)
-        }
-        for i in 0..<5 {
-            let x = room.minX + CGFloat(i + 1) * room.width / 6
-            let line = SKShapeNode(rectOf: CGSize(width: 2, height: room.height - 96), cornerRadius: 1)
-            line.position = CGPoint(x: x, y: room.midY - 30)
-            line.fillColor = SKColor(white: 1, alpha: 0.035)
-            line.strokeColor = .clear
-            line.zPosition = -8
-            add(line, to: scene)
-        }
-    }
-
     private func addInteriorWallBand(in scene: SKScene, room: CGRect, kind: HouseInteriorKind) {
-        let wallColor: SKColor
+        // Mur du fond en vraies tuiles de pierre ME, teintées par échoppe.
+        let wallTint: SKColor
         switch kind {
         case .armory:
-            wallColor = SKColor(red: 0.23, green: 0.18, blue: 0.15, alpha: 1)
+            wallTint = SKColor(red: 0.30, green: 0.24, blue: 0.20, alpha: 1)
         case .apothecary:
-            wallColor = SKColor(red: 0.13, green: 0.22, blue: 0.15, alpha: 1)
+            wallTint = SKColor(red: 0.18, green: 0.28, blue: 0.20, alpha: 1)
         case .inn:
-            wallColor = SKColor(red: 0.25, green: 0.16, blue: 0.10, alpha: 1)
+            wallTint = SKColor(red: 0.32, green: 0.22, blue: 0.14, alpha: 1)
         }
-        let backWall = SKShapeNode(rectOf: CGSize(width: room.width, height: room.height * 0.22), cornerRadius: 8)
-        backWall.position = CGPoint(x: room.midX, y: room.maxY - room.height * 0.11)
-        backWall.fillColor = wallColor
-        backWall.strokeColor = SKColor(white: 0.55, alpha: 0.14)
-        backWall.lineWidth = 1
-        backWall.zPosition = -7
-        add(backWall, to: scene)
+        let tile: CGFloat = 24
+        let cols = Int(ceil(room.width / tile))
+        let wallNames = ["me_wall_1", "me_wall_2", "me_wall_3", "me_wall_5"]
+        for r in 0..<2 {
+            for c in 0..<cols {
+                let name = wallNames[(c + r) % wallNames.count]
+                guard let t = PixelArtSprites.still(name: name, scale: 0.5,
+                                                     anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+                t.position = CGPoint(x: room.minX + (CGFloat(c) + 0.5) * tile,
+                                      y: room.maxY - (CGFloat(r) + 0.5) * tile)
+                t.zPosition = -7
+                t.forEachDescendantSprite { sprite in
+                    sprite.color = wallTint
+                    sprite.colorBlendFactor = 0.40
+                }
+                add(t, to: scene)
+            }
+        }
     }
 
     private func addInteriorExitDoor(in scene: SKScene, room: CGRect) {

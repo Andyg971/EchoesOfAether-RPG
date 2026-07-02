@@ -31,7 +31,7 @@ final class MainMenuScene: SKScene {
         // sur le slot 2 (scratch) sans toucher aux sauvegardes joueur.
         let debugZoneArgs = ["--combat-test", "--combat-multi", "--boss-test",
                              "--zone-forest", "--zone-shrine", "--zone-ruins",
-                             "--zone-village", "--zone-threshold"]
+                             "--zone-village", "--zone-threshold", "--interior"]
         if CommandLine.arguments.contains(where: debugZoneArgs.contains) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                 SaveManager.delete(slot: 2)
@@ -342,11 +342,15 @@ final class MainMenuScene: SKScene {
         addChild(moon)
         JuiceEngine.pulse(moon, scale: 1.04)
 
-        addBackdropSprite("house_haunted", at: CGPoint(x: w * 0.52, y: h * 0.56), scale: 0.52, alpha: 0.64, z: -12)
-        addBackdropSprite("tree_green_72", at: CGPoint(x: w * 0.15, y: h * 0.50), scale: 1.75, alpha: 0.54, z: -11)
-        addBackdropSprite("tree_green_100", at: CGPoint(x: w * 0.88, y: h * 0.48), scale: 1.70, alpha: 0.52, z: -11)
-        addBackdropSprite("tree_big", at: CGPoint(x: w * 0.03, y: h * 0.30), scale: 1.45, alpha: 0.70, z: -7)
-        addBackdropSprite("tree_big", at: CGPoint(x: w * 0.98, y: h * 0.28), scale: 1.55, alpha: 0.72, z: -7)
+        // La chapelle de la Source sous la lune, gardée par les anges —
+        // le lieu où tout se joue, en vitrine dès le titre.
+        addBackdropSprite("gy_chapel", at: CGPoint(x: w * 0.50, y: h * 0.34), scale: 0.62, alpha: 0.80, z: -12)
+        addBackdropSprite("me_statue_angel", at: CGPoint(x: w * 0.33, y: h * 0.30), scale: 0.22, alpha: 0.66, z: -11)
+        addBackdropSprite("me_statue_angel", at: CGPoint(x: w * 0.67, y: h * 0.30), scale: 0.22, alpha: 0.66, z: -11)
+        addBackdropSprite("gy_tree", at: CGPoint(x: w * 0.10, y: h * 0.26), scale: 0.60, alpha: 0.75, z: -8)
+        addBackdropSprite("gy_tree", at: CGPoint(x: w * 0.90, y: h * 0.24), scale: 0.64, alpha: 0.78, z: -8)
+        addBackdropSprite("gy_candle", at: CGPoint(x: w * 0.24, y: h * 0.22), scale: 0.50, alpha: 0.85, z: -6)
+        addBackdropSprite("gy_candle", at: CGPoint(x: w * 0.76, y: h * 0.22), scale: 0.50, alpha: 0.85, z: -6)
 
         let ground = SKShapeNode(rectOf: CGSize(width: w * 1.20, height: h * 0.36), cornerRadius: 0)
         ground.fillColor = SKColor(red: 0.025, green: 0.040, blue: 0.030, alpha: 0.92)

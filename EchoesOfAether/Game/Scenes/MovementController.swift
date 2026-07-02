@@ -53,9 +53,32 @@ final class MovementController {
                     .rotate(toAngle: -0.05, duration: 0.10, shortestUnitArc: true)])
         ]))
         sprite.run(bob, withKey: "walkBob")
+
+        // Petits nuages de poussière sous les pas
+        let dust = SKAction.repeatForever(.sequence([
+            .run { [weak node] in
+                guard let node, let parent = node.parent else { return }
+                let puff = SKShapeNode(circleOfRadius: CGFloat.random(in: 2.5...4))
+                puff.fillColor = SKColor(red: 0.62, green: 0.54, blue: 0.42, alpha: 0.35)
+                puff.strokeColor = .clear
+                puff.position = CGPoint(x: node.position.x + .random(in: -6...6),
+                                        y: node.position.y + .random(in: -2...2))
+                puff.zPosition = node.zPosition - 0.1
+                parent.addChild(puff)
+                puff.run(.sequence([
+                    .group([.scale(to: 1.8, duration: 0.35),
+                            .fadeOut(withDuration: 0.35),
+                            .moveBy(x: 0, y: 4, duration: 0.35)]),
+                    .removeFromParent()
+                ]))
+            },
+            .wait(forDuration: 0.18)
+        ]))
+        node.run(dust, withKey: "walkDust")
     }
 
     private static func stopWalkAnimation(on node: SKNode) {
+        node.removeAction(forKey: "walkDust")
         guard let sprite = node.childNode(withName: "kaelSprite") else { return }
         sprite.removeAction(forKey: "walkBob")
         // Repose le sprite à sa position/rotation d'origine (cf. WorldNode.kael)

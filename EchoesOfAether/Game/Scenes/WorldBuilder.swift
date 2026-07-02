@@ -762,24 +762,14 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : dalle craquelée pixel art mix 3 dirts teintée rouge
-        // sombre (ruines = pierre fragmentée corrompue par l'Aether).
-        if let stone = PixelArtSprites.tiledFloor(
-            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
-            in: CGSize(width: w + 32, height: h + 32),
-            tileScale: 2.0,
-            tint: SKColor(red: 0.28, green: 0.10, blue: 0.06, alpha: 1)) {
-            stone.position = CGPoint(x: -16, y: -16)
-            stone.zPosition = -10
-            add(stone, to: scene)
-        } else {
-            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-            ground.fillColor = SKColor(red: 0.06, green: 0.03, blue: 0.04, alpha: 1)
-            ground.strokeColor = .clear
-            ground.position = CGPoint(x: 500, y: 500)
-            ground.zPosition = -10
-            add(ground, to: scene)
-        }
+        // Sol : dalles de pierre teintées rouge-brun (la Source corrompue)
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_stone"],
+                      fallbackColor: SKColor(red: 0.07, green: 0.04, blue: 0.04, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.30, green: 0.14, blue: 0.10, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
 
         // Fissures d'Aether rouge dans le sol
         let crackPositions: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [
@@ -793,40 +783,39 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             add(crack, to: scene)
         }
 
-        // Piliers brisés : sprite pixel art (column natif 16×32 →
-        // scale dédié pour atteindre ~50pt iPhone, ~80pt iPad).
-        // Bordures gauche/droite + 1 au centre pour cadrer l'arène.
-        let columnScale = max(2.5, w / 200)   // 2.5 iPhone, 4.1 iPad
-        let bonesScale = max(1.8, w / 280)
-        let pillarData: [(CGFloat, CGFloat, Bool)] = [
-            (0.10, 0.75, false), (0.22, 0.55, true),
-            (0.78, 0.55, true),  (0.90, 0.75, false),
-            (0.50, 0.85, false)
+        // ── VESTIGES : chapelle effondrée, maison en ruine, portail brisé ──
+        addPixelProp("house_ruins_1", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.78), scale: 0.62)
+        addPixelProp("gy_gate_high", in: scene, at: CGPoint(x: w * 0.08, y: h * 0.76), scale: 0.48)
+        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.74), scale: 0.52, flipped: true)
+
+        // Colonnes brisées cadrant les zones de combat (échelle pixel : ×2
+        // sur du 16×32 natif → 32×64 pt, net, plus d'étirement flou)
+        for (px, py) in [(0.10, 0.42), (0.38, 0.50), (0.72, 0.52), (0.90, 0.40)] {
+            addPixelProp("column_broken_1", in: scene,
+                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 2.0)
+        }
+        addPixelProp("pillar_grey_1", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.30), scale: 1.8)
+        addPixelProp("pillar_grey_2", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.26), scale: 1.8)
+
+        // ── CIMETIÈRE PROFANÉ : tombes de bois, croix, chandeliers éteints ──
+        let relics: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("gy_grave_wood", 0.20, 0.36, 0.55), ("gy_cross_wood", 0.34, 0.28, 0.55),
+            ("gy_tomb_brown", 0.48, 0.34, 0.55), ("gy_grave_wood", 0.58, 0.26, 0.50),
+            ("gy_cross_wood", 0.76, 0.34, 0.55), ("gy_tomb_brown", 0.86, 0.28, 0.55),
+            ("gy_candle_off", 0.30, 0.58, 0.50), ("gy_candle_off", 0.56, 0.54, 0.50),
+            ("gy_stone_1", 0.42, 0.42, 0.50), ("gy_stone_3", 0.68, 0.44, 0.50),
+            ("gy_stone_2", 0.16, 0.30, 0.50)
         ]
-        for (px, py, fallen) in pillarData {
-            let pos = CGPoint(x: w * px, y: h * py)
-            if !fallen, let column = PixelArtSprites.still(
-                name: "column_broken_1", scale: columnScale,
-                anchor: CGPoint(x: 0.5, y: 0.0)) {
-                column.position = pos
-                column.zPosition = -3
-                add(column, to: scene)
-            } else {
-                let pillar = makeBrokenPillar(fallen: fallen)
-                pillar.position = pos
-                add(pillar, to: scene)
-            }
+        for (asset, x, y, s) in relics {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
         }
 
-        // Ossements éparpillés (ambiance "ruines mortes")
-        let bonesLayout: [(x: CGFloat, y: CGFloat)] = [
-            (0.30, 0.42), (0.65, 0.38), (0.45, 0.62), (0.55, 0.25)
-        ]
-        for p in bonesLayout {
+        // Ossements nets à l'échelle pixel (16×32 natif → ×2)
+        for p in [(0.30, 0.44), (0.65, 0.38), (0.45, 0.62)] {
             guard let bones = PixelArtSprites.still(
-                name: "bones_1", scale: bonesScale,
+                name: "bones_1", scale: 2.0,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            bones.position = CGPoint(x: w * p.x, y: h * p.y)
+            bones.position = CGPoint(x: w * p.0, y: h * p.1)
             bones.zPosition = -2
             bones.alpha = 0.9
             add(bones, to: scene)
@@ -904,48 +893,50 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        let statueScale = max(2.2, w / 220)
-        let pillarScale = max(2.5, w / 200)
-        let treeScale   = max(0.30, w / 1300)
-        let bonesScale  = max(1.8, w / 280)
-
-        // ── LE SEUIL : escalier central qui monte vers le Vide ──
+        // ── LE SEUIL : portail à orbe rouge au sommet de l'escalier ──
         addPixelProp("me_stairs", in: scene,
-                     at: CGPoint(x: w * 0.50, y: h * 0.84), scale: max(0.5, w / 760))
+                     at: CGPoint(x: w * 0.50, y: h * 0.70), scale: 0.60)
+        addPixelProp("gy_gate_big", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.84), scale: 0.55)
+        let voidGlow = SKShapeNode(circleOfRadius: 52)
+        voidGlow.fillColor = SKColor(red: 0.30, green: 0.08, blue: 0.45, alpha: 0.10)
+        voidGlow.strokeColor = SKColor(red: 0.55, green: 0.20, blue: 0.85, alpha: 0.30)
+        voidGlow.lineWidth = 1.5
+        voidGlow.glowWidth = 8
+        voidGlow.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        voidGlow.zPosition = -2
+        add(voidGlow, to: scene)
+        JuiceEngine.pulse(voidGlow, scale: 1.2)
 
-        // Statues d'anges gardiens flanquant le Seuil
+        // Statues d'anges gardiens flanquant le Seuil (échelle pixel nette)
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.34, y: h * 0.82), scale: statueScale)
+                     at: CGPoint(x: w * 0.36, y: h * 0.80), scale: 0.24)
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.66, y: h * 0.82), scale: statueScale, flipped: true)
+                     at: CGPoint(x: w * 0.64, y: h * 0.80), scale: 0.24, flipped: true)
 
-        // Allée de piliers (gauche / droite) cadrant l'arène
-        let pillarRows: [CGFloat] = [0.40, 0.55, 0.70]
-        for (i, py) in pillarRows.enumerated() {
-            let leftName = i % 2 == 0 ? "pillar_grey_1" : "column_broken_1"
-            let rightName = i % 2 == 0 ? "pillar_grey_2" : "column_broken_1"
-            addPixelProp(leftName, in: scene,
-                         at: CGPoint(x: w * 0.13, y: h * py), scale: pillarScale)
-            addPixelProp(rightName, in: scene,
-                         at: CGPoint(x: w * 0.87, y: h * py), scale: pillarScale)
+        // Allée de chandeliers spectraux + colonnes cadrant l'arène
+        for (i, py) in [CGFloat(0.40), 0.55, 0.70].enumerated() {
+            if i % 2 == 0 {
+                addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.14, y: h * py), scale: 0.55)
+                addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.86, y: h * py), scale: 0.55)
+            } else {
+                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.14, y: h * py), scale: 2.0)
+                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.86, y: h * py), scale: 2.0)
+            }
         }
 
-        // Lanternes spectrales près du Seuil
-        addPixelProp("village_lantern_1", in: scene,
-                     at: CGPoint(x: w * 0.42, y: h * 0.74), scale: max(0.4, w / 900))
-        addPixelProp("village_lantern_1", in: scene,
-                     at: CGPoint(x: w * 0.58, y: h * 0.74), scale: max(0.4, w / 900), flipped: true)
+        // Arches brisées + arbres morts (le Vide consume la vie)
+        addPixelProp("gy_gate_high", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.26), scale: 0.45)
+        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.26), scale: 0.50, flipped: true)
 
-        // Arbres morts dans les coins (le Vide consume la vie)
-        addPixelProp("mv_dead_tree", in: scene,
-                     at: CGPoint(x: w * 0.10, y: h * 0.28), scale: treeScale)
-        addPixelProp("mv_dark_tree", in: scene,
-                     at: CGPoint(x: w * 0.90, y: h * 0.30), scale: treeScale)
-
-        // Ossements épars (les âmes absorbées)
+        // Tombes des âmes absorbées + ossements nets
+        for (asset, px, py) in [("gy_tomb_black", 0.24, 0.34), ("gy_cross_black", 0.42, 0.26),
+                                ("gy_tomb_grey_2", 0.60, 0.32), ("gy_tomb_black", 0.76, 0.28)] {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 0.55)
+        }
         for p in [(0.30, 0.45), (0.66, 0.42), (0.48, 0.30)] {
             guard let bones = PixelArtSprites.still(
-                name: "bones_1", scale: bonesScale,
+                name: "bones_1", scale: 2.0,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             bones.position = CGPoint(x: w * p.0, y: h * p.1)
             bones.zPosition = -2
@@ -988,48 +979,6 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         crack.addChild(glowLine)
 
         return crack
-    }
-
-    private func makeBrokenPillar(fallen: Bool) -> SKNode {
-        let pillar = SKNode()
-        pillar.zPosition = -4
-
-        if fallen {
-            let body = SKShapeNode(rectOf: CGSize(width: 55, height: 12), cornerRadius: 3)
-            body.fillColor = SKColor(red: 0.20, green: 0.14, blue: 0.16, alpha: 1)
-            body.strokeColor = SKColor(red: 0.40, green: 0.20, blue: 0.22, alpha: 0.6)
-            body.lineWidth = 1.5
-            body.zRotation = CGFloat.random(in: -0.2...0.3)
-            pillar.addChild(body)
-
-            let crack = SKShapeNode(rectOf: CGSize(width: 3, height: 12), cornerRadius: 1)
-            crack.fillColor = SKColor(red: 0.70, green: 0.15, blue: 0.12, alpha: 0.5)
-            crack.strokeColor = .clear
-            crack.position = CGPoint(x: CGFloat.random(in: -15...15), y: 0)
-            pillar.addChild(crack)
-        } else {
-            let body = SKShapeNode(rectOf: CGSize(width: 14, height: 60), cornerRadius: 3)
-            body.fillColor = SKColor(red: 0.18, green: 0.12, blue: 0.14, alpha: 1)
-            body.strokeColor = SKColor(red: 0.40, green: 0.20, blue: 0.25, alpha: 0.5)
-            body.lineWidth = 1.5
-            pillar.addChild(body)
-
-            let top = SKShapeNode(rectOf: CGSize(width: 22, height: 8), cornerRadius: 2)
-            top.fillColor = SKColor(red: 0.25, green: 0.15, blue: 0.18, alpha: 1)
-            top.strokeColor = .clear
-            top.position = CGPoint(x: 0, y: 34)
-            pillar.addChild(top)
-
-            let redGlow = SKShapeNode(circleOfRadius: 4)
-            redGlow.fillColor = SKColor(red: 0.80, green: 0.20, blue: 0.10, alpha: 0.6)
-            redGlow.strokeColor = .clear
-            redGlow.glowWidth = 5
-            redGlow.position = CGPoint(x: 0, y: 38)
-            pillar.addChild(redGlow)
-            JuiceEngine.pulse(redGlow, scale: 1.5)
-        }
-
-        return pillar
     }
 
     private func makeInscriptionWall(at pos: CGPoint) -> SKNode {
@@ -1132,132 +1081,86 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     // MARK: - Sanctuaire
 
+    /// SANCTUAIRE DE LA SOURCE (Acte I) — parvis de dalles violettes,
+    /// allée de chandeliers vers la chapelle gothique à l'est, portail à
+    /// orbe rouge = seuil du boss (trigger gameplay : x > 0.55w).
     private func buildShrine(in scene: SKScene) {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : pierres sombres mix 3 dirts teintés violet pour casser
-        // la grille monotone (sanctuaire = pierre ancienne mystique).
-        if let stone = PixelArtSprites.tiledFloor(
-            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
-            in: CGSize(width: w + 32, height: h + 32),
-            tileScale: 2.0,
-            tint: SKColor(red: 0.22, green: 0.12, blue: 0.38, alpha: 1)) {
-            stone.position = CGPoint(x: -16, y: -16)
-            stone.zPosition = -10
-            add(stone, to: scene)
-        } else {
-            let ground = SKShapeNode(rectOf: CGSize(width: 2_000, height: 2_000))
-            ground.fillColor = SKColor(red: 0.04, green: 0.03, blue: 0.08, alpha: 1)
-            ground.strokeColor = .clear
-            ground.position = CGPoint(x: 500, y: 500)
-            ground.zPosition = -10
-            add(ground, to: scene)
-        }
+        // Sol : dalles de pierre teintées violet nuit
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_stone"],
+                      fallbackColor: SKColor(red: 0.05, green: 0.04, blue: 0.10, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.20, green: 0.12, blue: 0.34, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        let altar = SKShapeNode(rectOf: CGSize(width: 80, height: 50), cornerRadius: 6)
-        altar.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.18, alpha: 1)
-        altar.strokeColor = SKColor(red: 0.50, green: 0.30, blue: 0.80, alpha: 0.6)
-        altar.lineWidth = 2
-        altar.position = CGPoint(x: w * 0.70, y: h * 0.55)
-        altar.zPosition = -2
-        add(altar, to: scene)
-
-        let altarGlow = SKShapeNode(circleOfRadius: 50)
-        altarGlow.fillColor = SKColor(red: 0.30, green: 0.10, blue: 0.50, alpha: 0.08)
-        altarGlow.strokeColor = .clear
-        altarGlow.position = altar.position
-        altarGlow.zPosition = -3
-        add(altarGlow, to: scene)
-        JuiceEngine.pulse(altarGlow, scale: 1.3)
-
-        for i in 0..<4 {
-            let pillar = SKShapeNode(rectOf: CGSize(width: 10, height: 70), cornerRadius: 3)
-            pillar.fillColor = SKColor(red: 0.15, green: 0.10, blue: 0.22, alpha: 1)
-            pillar.strokeColor = SKColor(red: 0.45, green: 0.25, blue: 0.70, alpha: 0.4)
-            pillar.lineWidth = 1
-            let px = w * 0.25 + CGFloat(i) * w * 0.17
-            pillar.position = CGPoint(x: px, y: h * 0.60)
-            pillar.zPosition = -4
-            add(pillar, to: scene)
-
-            let orb = SKShapeNode(circleOfRadius: 4)
-            orb.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.90, alpha: 0.8)
-            orb.strokeColor = .clear
-            orb.glowWidth = 4
-            orb.position = CGPoint(x: px, y: h * 0.60 + 40)
-            orb.zPosition = -3
-            add(orb, to: scene)
-            JuiceEngine.pulse(orb, scale: 1.5)
-        }
-
-        // Statues anges pixel art encadrant l'autel — scale modéré pour
-        // ne pas écraser la composition (~80 pt de haut).
-        let statueScale = forestTreeScale(for: w) * 0.85
-        for (i, asset) in ["angel_statue_1", "angel_statue_2"].enumerated() {
-            if let statue = PixelArtSprites.still(name: asset, scale: statueScale,
-                                                   anchor: CGPoint(x: 0.5, y: 0.0)) {
-                let dx: CGFloat = i == 0 ? -70 : 70
-                statue.position = CGPoint(x: altar.position.x + dx, y: altar.position.y - 30)
-                statue.zPosition = -3
-                statue.alpha = 0.95
-                add(statue, to: scene)
+        // Allée processionnelle ouest→est (dalles plus claires vers le boss)
+        let tile: CGFloat = 24
+        for c in 0..<Int(ceil(w * 0.70 / tile)) {
+            for r in 0..<3 {
+                guard let t = PixelArtSprites.still(name: "a2_stone", scale: 0.5,
+                                                     anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+                t.position = CGPoint(x: (CGFloat(c) + 0.5) * tile,
+                                      y: h * 0.44 + (CGFloat(r) + 0.5) * tile)
+                t.zPosition = -9.5
+                t.forEachDescendantSprite { sprite in
+                    sprite.color = SKColor(red: 0.42, green: 0.34, blue: 0.58, alpha: 1)
+                    sprite.colorBlendFactor = 0.35
+                }
+                add(t, to: scene)
             }
         }
 
-        // Boss — Gardien de l'Aether
-        let boss = makeBossGuardian()
-        boss.position = CGPoint(x: w * 0.70, y: h * 0.45)
-        add(boss, to: scene)
+        // ── CHAPELLE DE LA SOURCE (fond est) + portail à orbe rouge ──
+        addPixelProp("gy_chapel", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.42), scale: 0.55)
+        addPixelProp("gy_gate_big", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.42), scale: 0.50)
+        // Halo rouge menaçant sur le portail (le Gardien attend derrière)
+        let menace = SKShapeNode(circleOfRadius: 46)
+        menace.fillColor = SKColor(red: 0.65, green: 0.10, blue: 0.12, alpha: 0.10)
+        menace.strokeColor = SKColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 0.30)
+        menace.lineWidth = 1.5
+        menace.glowWidth = 6
+        menace.position = CGPoint(x: w * 0.66, y: h * 0.53)
+        menace.zPosition = -2
+        add(menace, to: scene)
+        JuiceEngine.pulse(menace, scale: 1.25)
 
-        // Cristal de sauvegarde (bas gauche du sanctuaire)
+        // Statues anges gardant le portail
+        addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.30), scale: 0.22)
+        addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.58), scale: 0.22, flipped: true)
+
+        // ── ALLÉE DE CHANDELIERS (guident vers l'est) ──
+        for x in [0.16, 0.32, 0.48] {
+            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * CGFloat(x), y: h * 0.56), scale: 0.55)
+            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * CGFloat(x), y: h * 0.32), scale: 0.55)
+        }
+
+        // ── CIMETIÈRE ANCIEN (sud + nord du parvis) ──
+        let graves: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("gy_cross_grey", 0.10, 0.72, 0.55), ("gy_tomb_grey_1", 0.20, 0.78, 0.55),
+            ("gy_tomb_black", 0.30, 0.70, 0.55), ("gy_tomb_grey_2", 0.42, 0.76, 0.55),
+            ("gy_cross_black", 0.54, 0.72, 0.55), ("gy_tomb_grey_1", 0.66, 0.78, 0.55),
+            ("gy_tomb_grey_2", 0.12, 0.14, 0.55), ("gy_cross_grey", 0.26, 0.10, 0.55),
+            ("gy_tomb_black", 0.40, 0.14, 0.55), ("gy_tomb_grey_1", 0.52, 0.10, 0.55),
+            ("gy_stone_1", 0.35, 0.24, 0.50), ("gy_stone_2", 0.60, 0.68, 0.50),
+            ("gy_stone_3", 0.08, 0.40, 0.50)
+        ]
+        for (asset, x, y, s) in graves {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
+        }
+
+        // Arbres morts tordus (la Source se meurt)
+        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.06, y: h * 0.80), scale: 0.55)
+        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.86), scale: 0.48, flipped: true)
+        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.04), scale: 0.50)
+
+        // Cristal de sauvegarde (entrée ouest — safe spot avant le boss)
         addSaveCrystal(at: CGPoint(x: w * 0.18, y: h * 0.20), in: scene)
 
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
-    }
-
-    private func makeBossGuardian() -> SKNode {
-        let guardian = SKNode()
-        guardian.zPosition = 2
-
-        // Body — large dark shape
-        let body = SKShapeNode(rectOf: CGSize(width: 32, height: 48), cornerRadius: 6)
-        body.fillColor = SKColor(red: 0.08, green: 0.04, blue: 0.14, alpha: 1)
-        body.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.6)
-        body.lineWidth = 2
-        guardian.addChild(body)
-
-        // Head
-        let head = SKShapeNode(circleOfRadius: 14)
-        head.fillColor = SKColor(red: 0.12, green: 0.06, blue: 0.20, alpha: 1)
-        head.strokeColor = SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.5)
-        head.lineWidth = 1.5
-        head.position = CGPoint(x: 0, y: 32)
-        guardian.addChild(head)
-
-        // Eyes — glowing red
-        for dx: CGFloat in [-5, 5] {
-            let eye = SKShapeNode(circleOfRadius: 2.5)
-            eye.fillColor = SKColor(red: 0.90, green: 0.15, blue: 0.10, alpha: 1)
-            eye.strokeColor = .clear
-            eye.glowWidth = 4
-            eye.position = CGPoint(x: dx, y: 34)
-            guardian.addChild(eye)
-            JuiceEngine.pulse(eye, scale: 1.4)
-        }
-
-        // Aether aura
-        let aura = SKShapeNode(circleOfRadius: 38)
-        aura.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.55, alpha: 0.06)
-        aura.strokeColor = SKColor(red: 0.45, green: 0.15, blue: 0.70, alpha: 0.12)
-        aura.lineWidth = 1
-        guardian.addChild(aura)
-        JuiceEngine.pulse(aura, scale: 1.4)
-
-        // Float animation
-        JuiceEngine.float(guardian, distance: 5)
-
-        return guardian
     }
 
     // MARK: - Building Blocks

@@ -164,6 +164,13 @@ final class GameManager {
             transition(to: .exploration)
             return
         }
+        if CommandLine.arguments.contains("--zone-threshold") {
+            hud.goldValue = player.gold
+            phase = .act3
+            world.switchToThreshold(in: scene)
+            transition(to: .exploration)
+            return
+        }
         // Audit visuel du village : --zone-village [--cam-y 0.5] place Kael
         // à la fraction de hauteur demandée (la caméra le suit).
         if CommandLine.arguments.contains("--zone-village") {

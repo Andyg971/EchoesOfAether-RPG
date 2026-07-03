@@ -348,6 +348,12 @@ enum PrototypeContent {
     // MARK: - Forêt — après combat bosquet
 
     static let forestGroveDialogue: [DialogueStep] = [
+        // Les murmures éteints (scène ACT2_SC4 du scénario)
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.real.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.forest.real.2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.real.3")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.forest.real.4")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.forest.real.5")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.forest.grove.lyra1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.forest.grove.kael1")),
         .choice(
@@ -487,6 +493,8 @@ enum PrototypeContent {
 
     static let act2RuinsEnterDialogue: [DialogueStep] = [
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.enter.lyra1")),
+        // Les cristaux vidés (scène ACT2_SC6 du scénario)
+        .line(speaker: "Lyra", text: String(localized: "dialogue.ruins.real.1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.enter.kael1")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.enter.lyra2"))
     ]
@@ -586,6 +594,11 @@ enum PrototypeContent {
     // MARK: - Acte II — Vision 1 (entrée ruines, flash rouge)
 
     static let act2Vision1Dialogue: [DialogueStep] = [
+        // Fragment de mémoire : la voix qui a scellé (ACT2_SC6_FLASH)
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.vision.eran.1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.vision.eran.2")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.vision1.kael1")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.vision1.lyra1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.vision1.kael2")),
@@ -620,7 +633,23 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.archivist.post1")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.archivist.post2")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.archivist.post.vision")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.archivist.post3"))
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.archivist.post3")),
+        // Le lore des Gardiens (scène ACT3_SC8 du scénario, adaptée) :
+        // Eran, le Premier Gardien, l'ancrage — la clé de l'acte III.
+        .line(speaker: String(localized: "dialogue.act2.archivist.name"),
+              text: String(localized: "dialogue.lore.arch.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lore.kael.1")),
+        .line(speaker: String(localized: "dialogue.act2.archivist.name"),
+              text: String(localized: "dialogue.lore.arch.2")),
+        .line(speaker: String(localized: "dialogue.act2.archivist.name"),
+              text: String(localized: "dialogue.lore.arch.3")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.lore.lyra.1")),
+        .line(speaker: String(localized: "dialogue.act2.archivist.name"),
+              text: String(localized: "dialogue.lore.arch.4")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lore.kael.2")),
+        .line(speaker: String(localized: "dialogue.act2.archivist.name"),
+              text: String(localized: "dialogue.lore.arch.5")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lore.kael.3"))
     ]
 
     // MARK: - Acte II — Cadeau de Lyra (avant l'inscription principale)
@@ -756,10 +785,16 @@ enum PrototypeContent {
 
     /// Pré-combat : le Gardien du Seuil se dresse devant Kael.
     static let act3GuardianPreDialogue: [DialogueStep] = [
-        .line(speaker: "Eran",
-              text: String(localized: "dialogue.act3.guardianEran1")),
+        // La confrontation (scène ACT4_SC11 du scénario, adaptée à Eran)
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.finale.kael.1")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.2")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.3")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.act3.guardianVoice1")),
+              text: String(localized: "dialogue.finale.voice.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.finale.kael.2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.finale.voice.2")),
         .line(speaker: "Eran",
               text: String(localized: "dialogue.act3.guardianEran2")),
         .line(speaker: "Kael",
@@ -768,6 +803,12 @@ enum PrototypeContent {
 
     /// Post-combat : le Seuil cède.
     static let act3GuardianPostDialogue: [DialogueStep] = [
+        // Les aveux d'Eran (scène ACT4_SC12 du scénario, adaptée)
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.4")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.finale.kael.3")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.5")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.6")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.7")),
         .line(speaker: "Kael",
               text: String(localized: "dialogue.act3.guardianPost1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),

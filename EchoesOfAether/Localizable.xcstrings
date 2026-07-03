@@ -4446,6 +4446,198 @@
         }
       }
     },
+    "dialogue.finale.eran.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You... came back."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu es... revenu."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I do."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Moi, je sais."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I told you to run. I sealed your memory myself. So you would survive."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je t'ai dit de fuir. J'ai scellé ta mémoire moi-même. Pour que tu survives."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're... stronger than I thought. Or more desperate."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu es... plus fort que je ne pensais. Ou plus désespéré."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Because if I left, the corruption would spread. I held the seal for twenty years, Kael. Twenty years alone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parce que si je partais, la corruption se répandait. J'ai tenu le sceau vingt ans, Kael. Vingt ans seul."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.6": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I was waiting for you. I hoped you'd return with your memory. That you could... replace the seal."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je t'attendais. J'espérais que tu reviendrais avec ta mémoire. Que tu pourrais... remplacer le sceau."
+          }
+        }
+      }
+    },
+    "dialogue.finale.eran.7": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You don't need your memories. The blood of the Guardians knows. Lay your hand on the crystal. Your Aether will do the rest."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu n'as pas besoin de tes souvenirs. Le sang des Gardiens sait. Pose ta main sur le cristal. Ton Aether fera le reste."
+          }
+        }
+      }
+    },
+    "dialogue.finale.kael.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I have no memories, Eran. I don't know why I left."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je n'ai pas de souvenirs, Eran. Je ne sais pas pourquoi je suis parti."
+          }
+        }
+      }
+    },
+    "dialogue.finale.kael.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm not here to die."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne suis pas là pour mourir."
+          }
+        }
+      }
+    },
+    "dialogue.finale.kael.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Why didn't you run too? Why stay here, burning yourself away?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pourquoi tu n'as pas fui toi aussi ? Pourquoi rester ici à te consumer ?"
+          }
+        }
+      }
+    },
+    "dialogue.finale.voice.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "And now you've come back to die like the others."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Et maintenant tu es revenu mourir comme les autres."
+          }
+        }
+      }
+    },
+    "dialogue.finale.voice.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You are here to END."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu es là pour FINIR."
+          }
+        }
+      }
+    },
     "dialogue.forest.exit.kael1": {
       "localizations": {
         "en": {
@@ -4618,6 +4810,86 @@
           "stringUnit": {
             "state": "translated",
             "value": "Au moins tu es honnête. C'est bien. Continuons — il y a autre chose plus loin. Je le sens."
+          }
+        }
+      }
+    },
+    "dialogue.forest.real.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My father used to say this forest sang at night. The villagers called it the whispers of the Aether."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mon père disait que cette forêt chantait la nuit. Les gens du village appelaient ça les murmures de l'Aether."
+          }
+        }
+      }
+    },
+    "dialogue.forest.real.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It doesn't sing anymore."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elle ne chante plus."
+          }
+        }
+      }
+    },
+    "dialogue.forest.real.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non."
+          }
+        }
+      }
+    },
+    "dialogue.forest.real.4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do you feel anything? With your mark?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu ressens quelque chose ? Avec ta marque ?"
+          }
+        }
+      }
+    },
+    "dialogue.forest.real.5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something passed through here. Recently. And it came from the north."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quelque chose est passé par ici. Récemment. Et ça venait du nord."
           }
         }
       }
@@ -4842,6 +5114,150 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kael"
+          }
+        }
+      }
+    },
+    "dialogue.lore.arch.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The last time I saw that mark was twenty years ago. The day the Guardians disappeared."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La dernière fois que j'ai vu cette marque, c'était il y a vingt ans. Le jour où les Gardiens ont disparu."
+          }
+        }
+      }
+    },
+    "dialogue.lore.arch.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Some. Not all. Eran — the First Guardian — survived. He tried to seal the source of the corruption alone, beyond the Threshold."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Certains. Pas tous. Eran — le Premier Gardien — a survécu. Il a voulu sceller la source de la corruption seul, au-delà du Seuil."
+          }
+        }
+      }
+    },
+    "dialogue.lore.arch.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What awaits you there... is him. Or what he has become."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce qui t'attend là-bas... c'est lui. Ou ce qu'il est devenu."
+          }
+        }
+      }
+    },
+    "dialogue.lore.arch.4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Guardian who absorbs too much corrupted Aether without an anchor... yes. The anchor is the bond with the other Guardians."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un Gardien qui absorbe trop d'Aether corrompu sans ancrage... oui. L'ancrage, c'est le lien avec les autres Gardiens."
+          }
+        }
+      }
+    },
+    "dialogue.lore.arch.5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "He said he would stay. That he would wait."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il a dit qu'il resterait. Qu'il attendrait."
+          }
+        }
+      }
+    },
+    "dialogue.lore.kael.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Are they dead?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ils sont morts ?"
+          }
+        }
+      }
+    },
+    "dialogue.lore.kael.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then I have no anchor."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors je n'ai pas d'ancrage."
+          }
+        }
+      }
+    },
+    "dialogue.lore.kael.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "He waited twenty years."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il a attendu vingt ans."
+          }
+        }
+      }
+    },
+    "dialogue.lore.lyra.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A Guardian can become that?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un Gardien peut devenir ça ?"
           }
         }
       }
@@ -5566,6 +5982,22 @@
         }
       }
     },
+    "dialogue.ruins.real.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These crystals... they've been drained. The energy was torn out of them. That's why the forest is dying. Its source was stolen."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ces cristaux... ils ont été vidés. L'énergie en a été extraite de force. C'est pour ça que la forêt est mourante. On lui a volé sa source."
+          }
+        }
+      }
+    },
     "dialogue.sage.choice1": {
       "localizations": {
         "en": {
@@ -6090,6 +6522,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "La désolation aide pas. Mais... merci. Au moins toi, tu prétends pas que tout va bien."
+          }
+        }
+      }
+    },
+    "dialogue.vision.eran.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You must seal your memory, Kael."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu dois sceller ta mémoire, Kael."
+          }
+        }
+      }
+    },
+    "dialogue.vision.eran.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It's the only way to protect you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C'est le seul moyen de te protéger."
           }
         }
       }

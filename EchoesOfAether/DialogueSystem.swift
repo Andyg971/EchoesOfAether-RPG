@@ -20,9 +20,9 @@ final class DialogueSystem {
     private let portraitBack = SKShapeNode()       // cercle avatar
     private let portraitInitial = SKLabelNode(fontNamed: "AvenirNext-Heavy")
     private var portraitSprite: SKSpriteNode?     // portrait pixel (Kael)
-    private let speakerLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+    private let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let bodyLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
-    private let continueIndicator = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var choiceNodes: [SKShapeNode] = []
     private var steps: [DialogueStep] = []
     private var index = 0
@@ -111,17 +111,13 @@ final class DialogueSystem {
         let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
         let panelWidth = min(size.width - 32, 720)
 
-        panel.path = CGPath(
-            roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2,
-                                width: panelWidth, height: panelHeight),
-            cornerWidth: 18, cornerHeight: 18, transform: nil
-        )
+        // Cadre RPG pixel art (coins carrés, double bordure, crans dorés)
+        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight))
 
-        // Bande accent verticale (4pt) le long du bord gauche du panneau
-        let accentRect = CGRect(x: -panelWidth / 2, y: -panelHeight / 2,
-                                 width: 4, height: panelHeight)
-        panelAccent.path = CGPath(roundedRect: accentRect, cornerWidth: 2,
-                                   cornerHeight: 2, transform: nil)
+        // Bande accent verticale le long du bord gauche du panneau
+        let accentRect = CGRect(x: -panelWidth / 2 + 4, y: -panelHeight / 2 + 4,
+                                 width: 3, height: panelHeight - 8)
+        panelAccent.path = CGPath(rect: accentRect, transform: nil)
 
         let baseY = panelHeight / 2 + 20 + safeBottom
         root.position = CGPoint(x: size.width / 2, y: baseY)
@@ -327,10 +323,11 @@ final class DialogueSystem {
         let buttonHeight: CGFloat = 28
 
         for (offset, option) in options.enumerated() {
-            let button = SKShapeNode(rectOf: CGSize(width: buttonWidth, height: buttonHeight), cornerRadius: 8)
-            button.fillColor = SKColor(red: 0.12, green: 0.10, blue: 0.20, alpha: 1)
-            button.strokeColor = SKColor(red: 0.55, green: 0.42, blue: 0.92, alpha: 1)
-            button.lineWidth = 1.2
+            let button = SKShapeNode()
+            PixelUI.stylePanel(button,
+                               size: CGSize(width: buttonWidth, height: buttonHeight),
+                               fill: SKColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1),
+                               accent: SKColor(red: 0.62, green: 0.48, blue: 0.90, alpha: 1))
             button.userData = [
                 "title": option.title,
                 "responseSpeaker": option.responseSpeaker,

@@ -35,6 +35,8 @@ final class GameManager {
     private weak var scene: SKScene?
     private var resonanceTotal = 0
     private var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
+    private var prologueNode: SKNode?              // cinématique d'ouverture
+    private var prologueCompletion: (() -> Void)?
     private var hintUpdateTimer: TimeInterval = 0
     private var minimapTimer: TimeInterval = 0
     private var corruptionCinematicShown = false
@@ -294,6 +296,8 @@ final class GameManager {
         if death.handleTap(at: point, in: scene) { return }
         if options.handleTap(at: point, in: scene) { return }
         if lore.handleTap(at: point, in: scene) { return }
+        // Prologue : n'importe quel tap le passe.
+        if prologueNode != nil { endPrologue(); return }
         if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
         if TransitionManager.handleCreditsTap(at: point, in: scene) { return }
@@ -312,7 +316,15 @@ final class GameManager {
         transition(to: .dialogue)
         phase = .wake
         hud.objectiveText = String(localized: "hud.objective.lyra")
-        if let scene { world.placeLyraBesideKael(in: scene.size) }
+        if let scene {
+            world.placeLyraBesideKael(in: scene.size)
+            showPrologue(in: scene) { [weak self] in self?.startWakeDialogue() }
+        } else {
+            startWakeDialogue()
+        }
+    }
+
+    private func startWakeDialogue() {
         dialogue.start(PrototypeContent.wakeDialogue) { [weak self] in
             guard let self else { return }
             phase = .village
@@ -320,6 +332,71 @@ final class GameManager {
             transition(to: .exploration)
             maybeShowTutorial()
         }
+    }
+
+    // MARK: - Prologue (cinématique d'ouverture)
+
+    /// Écran noir + lore de la Source, ligne par ligne. Tap pour passer.
+    private func showPrologue(in scene: SKScene, completion: @escaping () -> Void) {
+        let overlay = SKNode()
+        overlay.zPosition = 3_000
+
+        let black = SKSpriteNode(color: .black, size: CGSize(width: scene.size.width + 4,
+                                                             height: scene.size.height + 4))
+        black.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        overlay.addChild(black)
+
+        let keys = ["prologue.line1", "prologue.line2", "prologue.line3",
+                    "prologue.line4", "prologue.line5"]
+        var delay: TimeInterval = 0.8
+        for key in keys {
+            let label = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+            label.text = String(localized: String.LocalizationValue(key))
+            label.fontSize = 15
+            label.fontColor = SKColor(red: 0.82, green: 0.76, blue: 0.92, alpha: 1)
+            label.numberOfLines = 3
+            label.preferredMaxLayoutWidth = min(scene.size.width - 96, 560)
+            label.horizontalAlignmentMode = .center
+            label.verticalAlignmentMode = .center
+            label.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.52)
+            label.alpha = 0
+            overlay.addChild(label)
+            label.run(.sequence([
+                .wait(forDuration: delay),
+                .fadeIn(withDuration: 0.8),
+                .wait(forDuration: 2.3),
+                .fadeOut(withDuration: 0.6)
+            ]))
+            delay += 3.8
+        }
+
+        let skip = SKLabelNode(fontNamed: PixelUI.uiFont)
+        skip.text = String(localized: "prologue.skip")
+        skip.fontSize = 9
+        skip.fontColor = SKColor(white: 0.5, alpha: 0.8)
+        skip.horizontalAlignmentMode = .center
+        skip.position = CGPoint(x: scene.size.width / 2, y: 26)
+        overlay.addChild(skip)
+        JuiceEngine.pulse(skip, scale: 1.06)
+
+        overlay.run(.sequence([
+            .wait(forDuration: delay + 0.4),
+            .run { [weak self] in self?.endPrologue() }
+        ]))
+
+        scene.addChild(overlay)
+        prologueNode = overlay
+        prologueCompletion = completion
+        AudioEngine.shared.playSelect()
+    }
+
+    private func endPrologue() {
+        guard let node = prologueNode else { return }
+        prologueNode = nil
+        let done = prologueCompletion
+        prologueCompletion = nil
+        node.run(.sequence([.fadeOut(withDuration: 0.5), .removeFromParent()]))
+        done?()
     }
 
     /// Affiche le tutoriel à la première partie (flag UserDefaults).

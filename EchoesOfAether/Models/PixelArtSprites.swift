@@ -1,6 +1,57 @@
 import SpriteKit
 import UIKit
 
+/// Habillage UI pixel art commun (cadres RPG rétro : coins carrés,
+/// double bordure, coins crantés dorés). Utilisé par les dialogues,
+/// les boutons de combat, les bulles et les panneaux.
+@MainActor
+enum PixelUI {
+    static let gold = SKColor(red: 0.86, green: 0.70, blue: 0.38, alpha: 1)
+    static let goldDim = SKColor(red: 0.55, green: 0.44, blue: 0.24, alpha: 0.45)
+    static let panelFill = SKColor(red: 0.075, green: 0.058, blue: 0.048, alpha: 0.97)
+    static let uiFont = "Menlo-Bold"
+
+    /// Applique le cadre pixel à un SKShapeNode existant (le path est
+    /// remplacé par un rectangle net). Ré-applicable : nettoie ses
+    /// anciennes décorations avant de les recréer.
+    static func stylePanel(_ shape: SKShapeNode, size: CGSize,
+                           fill: SKColor = panelFill,
+                           accent: SKColor = gold) {
+        shape.path = CGPath(rect: CGRect(x: -size.width / 2, y: -size.height / 2,
+                                         width: size.width, height: size.height),
+                            transform: nil)
+        shape.fillColor = fill
+        shape.strokeColor = accent
+        shape.lineWidth = 2
+        shape.glowWidth = 0
+
+        shape.childNode(withName: "pixelInner")?.removeFromParent()
+        let inner = SKShapeNode(rect: CGRect(x: -size.width / 2 + 4,
+                                             y: -size.height / 2 + 4,
+                                             width: size.width - 8,
+                                             height: size.height - 8))
+        inner.name = "pixelInner"
+        inner.fillColor = .clear
+        inner.strokeColor = accent.withAlphaComponent(0.35)
+        inner.lineWidth = 1
+        inner.zPosition = 0.5
+        shape.addChild(inner)
+
+        shape.childNode(withName: "pixelCorners")?.removeFromParent()
+        let corners = SKNode()
+        corners.name = "pixelCorners"
+        corners.zPosition = 0.6
+        for (sx, sy) in [(-1, -1), (1, -1), (-1, 1), (1, 1)] {
+            let c = SKSpriteNode(color: accent,
+                                 size: CGSize(width: 6, height: 6))
+            c.position = CGPoint(x: CGFloat(sx) * size.width / 2,
+                                 y: CGFloat(sy) * size.height / 2)
+            corners.addChild(c)
+        }
+        shape.addChild(corners)
+    }
+}
+
 extension SKNode {
     /// Parcourt récursivement les SKSpriteNode DESCENDANTS de ce node.
     /// ⚠️ Ne pas remplacer par `enumerateChildNodes(withName: "//*")` :

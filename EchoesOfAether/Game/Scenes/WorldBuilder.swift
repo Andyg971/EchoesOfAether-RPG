@@ -1478,13 +1478,13 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exit.name = "interiorExit"
         exit.zPosition = -1
 
-        let mat = SKShapeNode(ellipseOf: CGSize(width: 64, height: 18))
-        mat.fillColor = SKColor(red: 0.11, green: 0.075, blue: 0.045, alpha: 0.85)
-        mat.strokeColor = SKColor(red: 0.55, green: 0.42, blue: 0.25, alpha: 0.5)
-        mat.lineWidth = 1
+        let mat = SKShapeNode()
+        PixelUI.stylePanel(mat, size: CGSize(width: 66, height: 20),
+                           fill: SKColor(red: 0.11, green: 0.075, blue: 0.045, alpha: 0.90),
+                           accent: SKColor(red: 0.60, green: 0.46, blue: 0.26, alpha: 0.9))
         exit.addChild(mat)
 
-        let icon = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let icon = SKLabelNode(fontNamed: PixelUI.uiFont)
         icon.text = String(localized: "interior.exit")
         icon.fontSize = 9
         icon.fontColor = SKColor(red: 0.92, green: 0.78, blue: 0.48, alpha: 0.9)

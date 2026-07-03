@@ -2,10 +2,16 @@ import Foundation
 
 enum PrototypeContent {
 
-    // MARK: - Wake (Lyra trouve Kael inconscient)
+    // MARK: - Wake (scène ACT1_SC1 du scénario — réveil chez Lyra)
 
     static let wakeDialogue: [DialogueStep] = [
-        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra3")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael3")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra4")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra2")),
         .choice(
             prompt: String(localized: "dialogue.wake.prompt"),

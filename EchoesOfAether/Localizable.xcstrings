@@ -5854,6 +5854,118 @@
         }
       }
     },
+    "dialogue.wake.real.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael."
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I think."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je crois."
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.kael3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Were they right to be afraid?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ils ont eu raison d'avoir peur ?"
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.lyra1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're awake. Good. You caused me enough trouble unconscious."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu es réveillé. Bien. Tu m'as causé assez de problèmes inconscient."
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.lyra2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Do you at least know your name?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu sais comment tu t'appelles au moins ?"
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.lyra3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The village found you at the forest's edge. Unconscious. The mark on your hand was glowing. People were afraid. So was I, if you want to know."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le village t'a trouvé à la lisière de la forêt. Inconscient. La marque sur ta main brillait. Les gens avaient peur. Moi aussi, si tu veux savoir."
+          }
+        }
+      }
+    },
+    "dialogue.wake.real.lyra4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I don't know yet. Eat."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne sais pas encore. Mange."
+          }
+        }
+      }
+    },
     "dialogue.wake.response1": {
       "localizations": {
         "en": {
@@ -7824,6 +7936,102 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pause"
+          }
+        }
+      }
+    },
+    "prologue.line1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A thousand years ago, the Source sang at the heart of the world."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il y a mille ans, la Source chantait au cœur du monde."
+          }
+        }
+      }
+    },
+    "prologue.line2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Its Aether flowed through every stone, every tree, every living thing."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Son Aether coulait dans chaque pierre, chaque arbre, chaque être vivant."
+          }
+        }
+      }
+    },
+    "prologue.line3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then someone tried to claim it. And the Source fell silent."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Puis quelqu'un a voulu la posséder. Et la Source s'est tue."
+          }
+        }
+      }
+    },
+    "prologue.line4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Since then, black Aether gnaws at the land — and marks those it chooses."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Depuis, l'Aether noir ronge la terre — et marque ceux qu'il choisit."
+          }
+        }
+      }
+    },
+    "prologue.line5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A man awoke at the edge of the forest. No memory. Except for a name."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un homme s'est éveillé à la lisière de la forêt. Sans mémoire. Sauf d'un nom."
+          }
+        }
+      }
+    },
+    "prologue.skip": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap to skip"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Toucher pour passer"
           }
         }
       }

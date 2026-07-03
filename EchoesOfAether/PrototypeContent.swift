@@ -37,13 +37,26 @@ enum PrototypeContent {
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra3")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra4")),
         .line(speaker: "Kael", text: String(localized: "dialogue.wake.kael2")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra5"))
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra5")),
+        // Monologue intérieur — Kael observe la marque (ACT1_SC1_MARK)
+        .line(speaker: "Kael", text: String(localized: "dialogue.mark.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mark.kael2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mark.kael3"))
     ]
 
     // MARK: - Lyra (village, parle à Kael)
 
+    /// Le pacte (scène ACT1_SC3 du scénario) : Lyra et Kael s'associent,
+    /// chacun pour ses raisons.
     static let lyraVillageDialogue: [DialogueStep] = [
-        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.village1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.pact.2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.3")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.pact.4")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.5")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.pact.6")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.7")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.8")),
         .choice(
             prompt: String(localized: "dialogue.lyra.village.prompt"),
             options: [
@@ -59,15 +72,23 @@ enum PrototypeContent {
                 )
             ]
         ),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.village2"))
+        .line(speaker: "Kael", text: String(localized: "dialogue.pact.9")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.pact.10"))
     ]
 
     // MARK: - Dorin (méfiance + départ vers le nord)
 
+    /// Rencontre avec Dorin (scène ACT1_SC2 du scénario) : le nord, les
+    /// mines de Cendreval, la marque des Gardiens.
     static let dorinDialogue: [DialogueStep] = [
-        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.dorin1")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.dorin.lyra1")),
-        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.dorin2")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.real.1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.dorin.real.2")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.real.3")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.real.4")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.dorin.real.5")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.real.6")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.dorin.real.7")),
+        .line(speaker: "Dorin", text: String(localized: "dialogue.dorin.real.8")),
         .choice(
             prompt: String(localized: "dialogue.dorin.prompt"),
             options: [
@@ -149,6 +170,7 @@ enum PrototypeContent {
     // MARK: - Garen (garde de la porte)
 
     static let garenFirstDialogue: [DialogueStep] = [
+        .line(speaker: "Garen", text: String(localized: "dialogue.garen.real.1")),
         .line(speaker: "Garen", text: String(localized: "dialogue.garen.first1")),
         .line(speaker: "Garen", text: String(localized: "dialogue.garen.first2")),
         .choice(
@@ -280,7 +302,8 @@ enum PrototypeContent {
     // MARK: - Enfant (dialogue original)
 
     static let childDialogue: [DialogueStep] = [
-        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.line1")),
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.real.1")),
+        .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.real.2")),
         .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.line2")),
         .choice(
             prompt: String(localized: "dialogue.child.prompt"),
@@ -302,7 +325,8 @@ enum PrototypeContent {
     // MARK: - Villageois apeuré
 
     static let villagerDialogue: [DialogueStep] = [
-        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.villager.line1")),
+        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.1")),
+        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.2")),
         .choice(
             prompt: String(localized: "dialogue.villager.prompt"),
             options: [

@@ -4045,6 +4045,38 @@
         }
       }
     },
+    "dialogue.child.real.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mom says I'm not supposed to talk to you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maman dit que je dois pas te parler."
+          }
+        }
+      }
+    },
+    "dialogue.child.real.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "But your hand glows sometimes. I saw it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais ta main elle brille parfois. J'ai vu."
+          }
+        }
+      }
+    },
     "dialogue.child.response1": {
       "localizations": {
         "en": {
@@ -4234,6 +4266,134 @@
           "stringUnit": {
             "state": "translated",
             "value": "Répondre à Dorin"
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You walk around like you're looking for something."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu te promènes comme si tu cherchais quelque chose."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'm looking for what I lost."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je cherche ce que j'ai perdu."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your memories. Lyra told us."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tes souvenirs. Lyra nous a dit."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Things have been coming from the north for weeks. Corrupted animals. Dead trees. The Cendreval mines have gone silent. People are disappearing."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il y a des choses qui viennent du nord depuis des semaines. Des animaux corrompus. Des arbres morts. Les mines de Cendreval ne répondent plus. Les gens disparaissent."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "And you're telling me this because..."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Et tu me racontes ça parce que..."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.6": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Because of that mark on your hand — my father spoke of it. He said the Guardians bore that sign. And the Guardians were the only ones who could touch corrupted Aether without dying."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parce que cette marque sur ta main — mon père en parlait. Il disait que les Gardiens portaient ce signe. Et les Gardiens étaient les seuls à pouvoir toucher l'Aether corrompu sans mourir."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.7": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maybe your father was wrong."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ton père se trompait peut-être."
+          }
+        }
+      }
+    },
+    "dialogue.dorin.real.8": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maybe. But you're alive. And you came from the north."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Peut-être. Mais toi tu es vivant. Et tu viens du nord."
           }
         }
       }
@@ -4618,6 +4778,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Il n'y a aucune exception ?"
+          }
+        }
+      }
+    },
+    "dialogue.garen.real.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one's keeping you here. But if you come back with trouble on your heels... you keep walking."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "On ne vous retient pas. Mais si vous revenez avec des problèmes dans les pattes... vous continuez sans vous arrêter."
           }
         }
       }
@@ -5146,6 +5322,246 @@
           "stringUnit": {
             "state": "translated",
             "value": "De retour ! Qu'est-ce qu'il te faut aujourd'hui ?"
+          }
+        }
+      }
+    },
+    "dialogue.mark.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This scar..."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cette cicatrice..."
+          }
+        }
+      }
+    },
+    "dialogue.mark.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I don't know where it came from. But it's been there a long time. I can feel it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne sais pas d'où elle vient. Mais elle est là depuis longtemps. Je le sens."
+          }
+        }
+      }
+    },
+    "dialogue.mark.kael3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As if it were the only thing that truly belongs to me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Comme si c'était la seule chose qui m'appartient vraiment."
+          }
+        }
+      }
+    },
+    "dialogue.oldwoman.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My son left for the mines last month. He never came back."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mon fils est parti aux mines le mois dernier. Il n'est pas revenu."
+          }
+        }
+      }
+    },
+    "dialogue.oldwoman.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You're heading north? Bring him back. Please."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous allez vers le nord ? Ramenez-le. S'il vous plaît."
+          }
+        }
+      }
+    },
+    "dialogue.pact.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dorin told you about the disappearances."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dorin t'a parlé des disparitions."
+          }
+        }
+      }
+    },
+    "dialogue.pact.10": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I didn't ask you to."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne te l'ai pas demandé."
+          }
+        }
+      }
+    },
+    "dialogue.pact.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Yes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oui."
+          }
+        }
+      }
+    },
+    "dialogue.pact.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My father disappeared in the mines two years ago. Before anyone spoke of corruption."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mon père a disparu dans les mines il y a deux ans. Avant que quiconque parle de corruption."
+          }
+        }
+      }
+    },
+    "dialogue.pact.4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "And you think it's connected."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Et tu penses que c'est lié."
+          }
+        }
+      }
+    },
+    "dialogue.pact.5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I think I'm going to find out. With or without you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je pense que je vais aller voir. Avec ou sans toi."
+          }
+        }
+      }
+    },
+    "dialogue.pact.6": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This isn't my war."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce n'est pas ma guerre."
+          }
+        }
+      }
+    },
+    "dialogue.pact.7": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No. It's mine."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non. C'est la mienne."
+          }
+        }
+      }
+    },
+    "dialogue.pact.8": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "But you need to go north to find what you lost. And I need someone who can touch corrupted Aether. We can be of use to each other."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais toi tu as besoin d'aller vers le nord pour retrouver ce que tu as perdu. Et moi j'ai besoin de quelqu'un qui peut toucher l'Aether corrompu. On peut se rendre service mutuellement."
+          }
+        }
+      }
+    },
+    "dialogue.pact.9": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I won't protect you."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne te protègerai pas."
           }
         }
       }

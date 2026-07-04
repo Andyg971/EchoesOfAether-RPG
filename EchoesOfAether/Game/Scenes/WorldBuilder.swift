@@ -435,6 +435,13 @@ final class WorldBuilder {
         add(makeDangerZone(at: CGPoint(x: w * 0.70, y: h * 0.66), radius: 40,
                            color: SKColor(red: 0.40, green: 0.08, blue: 0.45, alpha: 1)),
             to: scene)
+        // Chasses optionnelles répétables (goules à l'ouest, ossements à l'est)
+        add(makeDangerZone(at: CGPoint(x: w * 0.20, y: h * 0.585), radius: 32,
+                           color: SKColor(red: 0.25, green: 0.42, blue: 0.12, alpha: 1)),
+            to: scene)
+        add(makeDangerZone(at: CGPoint(x: w * 0.82, y: h * 0.74), radius: 32,
+                           color: SKColor(red: 0.55, green: 0.52, blue: 0.42, alpha: 1)),
+            to: scene)
 
         // Campement : feu, bois, banc — havre au milieu du trek
         addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.52, y: h * 0.515), scale: 0.50)
@@ -714,6 +721,21 @@ private func decorateVillage(in scene: SKScene) {
     ]
     for (asset, x, y) in innerTrees {
         addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: 0.58)
+    }
+
+    // ═══ FIGURANTS — villageois qui peuplent les rues ═══
+    let extras: [(String, CGFloat, CGFloat)] = [
+        ("npc_extra", 0.60, 0.305),     // badaud près du verger
+        ("npc_garen", 0.385, 0.505),    // promeneur vers la place
+        ("npc_sage",  0.57, 0.115)      // paysanne près de la ferme
+    ]
+    for (asset, x, y) in extras {
+        guard let figurant = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.5,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+        figurant.position = CGPoint(x: w * x, y: h * y)
+        figurant.zPosition = propLayer(for: figurant.position.y, in: scene.size.height)
+        add(figurant, to: scene)
     }
 
     // ═══ FLEURS ÉPARSES (positions seedées, hors chemins/maisons) ═══
@@ -1412,34 +1434,49 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let h = scene.size.height
         let room = CGRect(x: w * 0.15, y: h * 0.16, width: w * 0.70, height: h * 0.66)
 
-        let outerShadow = SKShapeNode(rectOf: CGSize(width: room.width + 12, height: room.height + 12), cornerRadius: 8)
-        outerShadow.position = CGPoint(x: room.midX, y: room.midY - 4)
-        outerShadow.fillColor = SKColor(white: 0, alpha: 0.32)
-        outerShadow.strokeColor = .clear
-        outerShadow.zPosition = -10
-        add(outerShadow, to: scene)
-
-        let floor = SKShapeNode(rectOf: room.size, cornerRadius: 8)
-        floor.position = CGPoint(x: room.midX, y: room.midY)
-        floor.fillColor = interiorFloorColor(for: kind)
-        floor.strokeColor = SKColor(red: 0.42, green: 0.30, blue: 0.20, alpha: 0.75)
-        floor.lineWidth = 3
-        floor.zPosition = -9
-        add(floor, to: scene)
-
-        // Plancher en vraies tuiles (terre battue teintée par échoppe)
+        // Plancher : 100 % tuiles (aucune shape), teinté par échoppe
         if let boards = PixelArtSprites.tiledFloor(
             tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
-            in: CGSize(width: room.width - 8, height: room.height - 8),
+            in: room.size,
             tileScale: 1.0,
             tint: interiorFloorColor(for: kind)) {
-            boards.position = CGPoint(x: room.minX + 4, y: room.minY + 4)
-            boards.zPosition = -8.5
+            boards.position = CGPoint(x: room.minX, y: room.minY)
+            boards.zPosition = -9
             add(boards, to: scene)
         }
-        addInteriorWallBand(in: scene, room: room, kind: kind)
+
+        // Tapis central en tuiles re-teintées (accent par échoppe)
+        let rugTint: SKColor
+        switch kind {
+        case .armory:     rugTint = SKColor(red: 0.38, green: 0.14, blue: 0.10, alpha: 1)
+        case .apothecary: rugTint = SKColor(red: 0.14, green: 0.32, blue: 0.18, alpha: 1)
+        case .inn:        rugTint = SKColor(red: 0.36, green: 0.22, blue: 0.08, alpha: 1)
+        }
+        if let rug = PixelArtSprites.tiledFloor(
+            tileNames: ["tile_dirt_1", "tile_dirt_2"],
+            in: CGSize(width: 144, height: 96),
+            tileScale: 1.0,
+            tint: rugTint) {
+            rug.position = CGPoint(x: room.midX - 72, y: room.midY - 64)
+            rug.zPosition = -8.4
+            add(rug, to: scene)
+        }
+
+        addInteriorWalls(in: scene, room: room, kind: kind)
         addInteriorExitDoor(in: scene, room: room)
         addInteriorTitle(kind, in: scene, room: room)
+
+        // Lanternes aux quatre coins de la pièce
+        for (dx, dy) in [(36.0, 40.0), (-36.0, 40.0)] {
+            addInteriorSprite("village_lantern_1", in: scene,
+                              at: CGPoint(x: dx > 0 ? room.minX + dx : room.maxX + dx,
+                                          y: room.maxY - dy), scale: 0.42)
+        }
+        for (dx, dy) in [(36.0, 26.0), (-36.0, 26.0)] {
+            addInteriorSprite("village_lantern_2", in: scene,
+                              at: CGPoint(x: dx > 0 ? room.minX + dx : room.maxX + dx,
+                                          y: room.minY + dy), scale: 0.42)
+        }
 
         switch kind {
         case .armory:
@@ -1462,8 +1499,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
     }
 
-    private func addInteriorWallBand(in scene: SKScene, room: CGRect, kind: HouseInteriorKind) {
-        // Mur du fond en vraies tuiles de pierre ME, teintées par échoppe.
+    /// Murs de pierre sur TOUT le pourtour : 2 rangées au fond (relief),
+    /// 1 rangée sur les côtés et le bas — une vraie pièce fermée.
+    private func addInteriorWalls(in scene: SKScene, room: CGRect, kind: HouseInteriorKind) {
         let wallTint: SKColor
         switch kind {
         case .armory:
@@ -1475,21 +1513,34 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
         let tile: CGFloat = 24
         let cols = Int(ceil(room.width / tile))
+        let rows = Int(ceil(room.height / tile))
         let wallNames = ["me_wall_1", "me_wall_2", "me_wall_3", "me_wall_5"]
-        for r in 0..<2 {
-            for c in 0..<cols {
-                let name = wallNames[(c + r) % wallNames.count]
-                guard let t = PixelArtSprites.still(name: name, scale: 0.5,
-                                                     anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
-                t.position = CGPoint(x: room.minX + (CGFloat(c) + 0.5) * tile,
-                                      y: room.maxY - (CGFloat(r) + 0.5) * tile)
-                t.zPosition = -7
-                t.forEachDescendantSprite { sprite in
-                    sprite.color = wallTint
-                    sprite.colorBlendFactor = 0.40
-                }
-                add(t, to: scene)
+
+        func wallTile(_ idx: Int, at p: CGPoint) {
+            guard let t = PixelArtSprites.still(name: wallNames[idx % wallNames.count],
+                                                scale: 0.5,
+                                                anchor: CGPoint(x: 0.5, y: 0.5)) else { return }
+            t.position = p
+            t.zPosition = -7
+            t.forEachDescendantSprite { sprite in
+                sprite.color = wallTint
+                sprite.colorBlendFactor = 0.40
             }
+            add(t, to: scene)
+        }
+
+        // Fond (2 rangées) + bas (1 rangée)
+        for c in 0..<cols {
+            let x = room.minX + (CGFloat(c) + 0.5) * tile
+            wallTile(c, at: CGPoint(x: x, y: room.maxY - tile * 0.5))
+            wallTile(c + 1, at: CGPoint(x: x, y: room.maxY - tile * 1.5))
+            wallTile(c + 2, at: CGPoint(x: x, y: room.minY + tile * 0.5))
+        }
+        // Côtés
+        for r in 1..<(rows - 1) {
+            let y = room.minY + (CGFloat(r) + 0.5) * tile
+            wallTile(r, at: CGPoint(x: room.minX + tile * 0.5, y: y))
+            wallTile(r + 3, at: CGPoint(x: room.maxX - tile * 0.5, y: y))
         }
     }
 
@@ -1546,86 +1597,91 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     }
 
     private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
-        // Comptoir armurier (fond)
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 70), scale: 0.28)
+        // ── FOND : long comptoir + Bram derrière ──
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX - 44, y: room.maxY - 66), scale: 0.30)
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX + 44, y: room.maxY - 66), scale: 0.30)
 
-        // Tonneaux + caisses (assets)
-        addInteriorSprite("me_barrel_1", in: scene, at: CGPoint(x: room.minX + 32, y: room.maxY - 50), scale: 0.40)
-        addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.minX + 56, y: room.maxY - 52), scale: 0.36)
-        addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 32, y: room.maxY - 50), scale: 0.40)
-        addInteriorSprite("me_barrel_4", in: scene, at: CGPoint(x: room.maxX - 56, y: room.maxY - 52), scale: 0.36)
+        // ── FORGE (droite) : feu vivant + marmite + soufflet de bois ──
+        addInteriorSprite("me_campfire", in: scene, at: CGPoint(x: room.maxX - 52, y: room.maxY - 78), scale: 0.42)
+        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.maxX - 84, y: room.maxY - 70), scale: 0.40)
+        addInteriorSprite("me_cut_wood_bench", in: scene, at: CGPoint(x: room.maxX - 56, y: room.maxY - 116), scale: 0.42)
 
-        // Bois empilé + banc bois coupé
-        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 36, y: room.midY - 10), scale: 0.40)
-        addInteriorSprite("me_cut_wood_bench", in: scene, at: CGPoint(x: room.maxX - 36, y: room.midY - 10), scale: 0.40)
+        // ── RÂTELIER À BOIS (gauche) : réserve de la forge ──
+        addInteriorSprite("me_cut_wood", in: scene, at: CGPoint(x: room.minX + 46, y: room.maxY - 72), scale: 0.44)
+        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 78, y: room.maxY - 76), scale: 0.44)
+        addInteriorSprite("me_cut_wood", in: scene, at: CGPoint(x: room.minX + 46, y: room.maxY - 104), scale: 0.40)
 
-        // Établi central (asset bench_table)
-        addInteriorSprite("interior_bench_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 30), scale: 0.55)
+        // ── STOCK : tonneaux et caisses alignés sur les murs ──
+        addInteriorSprite("me_barrel_1", in: scene, at: CGPoint(x: room.minX + 40, y: room.midY + 6), scale: 0.42)
+        addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.minX + 40, y: room.midY - 28), scale: 0.42)
+        addInteriorSprite("village_crate_1", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 62), scale: 0.40)
+        addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 40, y: room.midY - 4), scale: 0.42)
+        addInteriorSprite("me_barrel_4", in: scene, at: CGPoint(x: room.maxX - 40, y: room.midY - 38), scale: 0.42)
+        addInteriorSprite("village_crate_2", in: scene, at: CGPoint(x: room.maxX - 42, y: room.midY - 70), scale: 0.40)
 
-        // Marmite (assimile à forge)
-        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 110), scale: 0.40)
+        // ── ÉTABLI sur le tapis central ──
+        addInteriorSprite("interior_bench_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 34), scale: 0.60)
+        addInteriorSprite("me_basket_2", in: scene, at: CGPoint(x: room.midX + 52, y: room.midY - 40), scale: 0.38)
 
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.armory.forge"))
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 96), text: String(localized: "interior.armory.forge"))
     }
 
     private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
-        // Comptoir herboriste
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 70), scale: 0.26)
+        // ── FOND : comptoir + étagère de fioles (rangée de vases) ──
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX - 30, y: room.maxY - 66), scale: 0.28)
+        addInteriorSprite("me_vase_red", in: scene, at: CGPoint(x: room.midX + 44, y: room.maxY - 62), scale: 0.40)
+        addInteriorSprite("me_vase_yellow", in: scene, at: CGPoint(x: room.midX + 70, y: room.maxY - 64), scale: 0.40)
+        addInteriorSprite("me_vase_pink", in: scene, at: CGPoint(x: room.midX + 96, y: room.maxY - 62), scale: 0.40)
+        addInteriorSprite("me_vase_sunflower", in: scene, at: CGPoint(x: room.midX + 122, y: room.maxY - 64), scale: 0.40)
 
-        // Plantes en pots assets
-        addInteriorSprite("me_vase_red", in: scene, at: CGPoint(x: room.minX + 30, y: room.maxY - 55), scale: 0.40)
-        addInteriorSprite("me_vase_pink", in: scene, at: CGPoint(x: room.maxX - 30, y: room.maxY - 55), scale: 0.40)
-        addInteriorSprite("me_vase_yellow", in: scene, at: CGPoint(x: room.minX + 30, y: room.midY + 5), scale: 0.40)
-        addInteriorSprite("me_vase_sunflower", in: scene, at: CGPoint(x: room.maxX - 30, y: room.midY + 5), scale: 0.40)
+        // ── SERRE (gauche) : plantes en pots et pousses ──
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 42, y: room.maxY - 72), scale: 0.44)
+        addInteriorSprite("me_big_sprout_4", in: scene, at: CGPoint(x: room.minX + 74, y: room.maxY - 78), scale: 0.42)
+        addInteriorSprite("me_big_sprout_5", in: scene, at: CGPoint(x: room.minX + 44, y: room.maxY - 108), scale: 0.42)
+        addInteriorSprite("me_big_sprout_6", in: scene, at: CGPoint(x: room.minX + 76, y: room.maxY - 112), scale: 0.40)
+        addInteriorSprite("me_vase_sunflower", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 6), scale: 0.42)
 
-        // Plantes assets
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.minX + 55, y: room.midY - 10), scale: 0.40)
-        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.maxX - 55, y: room.midY - 10), scale: 0.40, flipped: true)
+        // ── CULTURE : champignons et paniers le long du mur droit ──
+        addInteriorSprite("me_mushrooms_1", in: scene, at: CGPoint(x: room.maxX - 44, y: room.midY + 8), scale: 0.42)
+        addInteriorSprite("me_mushrooms_2", in: scene, at: CGPoint(x: room.maxX - 44, y: room.midY - 24), scale: 0.42)
+        addInteriorSprite("me_basket", in: scene, at: CGPoint(x: room.maxX - 46, y: room.midY - 56), scale: 0.42)
+        addInteriorSprite("me_apples", in: scene, at: CGPoint(x: room.maxX - 44, y: room.midY - 84), scale: 0.38)
 
-        // Table potions (asset)
-        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 25), scale: 0.42)
+        // ── TABLE D'ALCHIMIE sur le tapis ──
+        addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 30), scale: 0.48)
+        addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.midX - 58, y: room.midY - 40), scale: 0.40, flipped: true)
 
-        // Champignons assets (botaniste)
-        addInteriorSprite("me_mushrooms_1", in: scene, at: CGPoint(x: room.minX + 50, y: room.midY - 35), scale: 0.40)
-        addInteriorSprite("me_mushrooms_2", in: scene, at: CGPoint(x: room.maxX - 50, y: room.midY - 35), scale: 0.40)
-
-        // Pousses
-        addInteriorSprite("me_big_sprout_4", in: scene, at: CGPoint(x: room.midX - 30, y: room.midY - 50), scale: 0.40)
-        addInteriorSprite("me_big_sprout_5", in: scene, at: CGPoint(x: room.midX + 30, y: room.midY - 50), scale: 0.40)
-
-        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 130), text: String(localized: "interior.apothecary.potions"))
+        addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 96), text: String(localized: "interior.apothecary.potions"))
     }
 
     private func buildInnInterior(in scene: SKScene, room: CGRect) {
-        // Comptoir/bar (asset counter)
-        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.maxX - 60, y: room.maxY - 70), scale: 0.32)
+        // ── BAR (fond droit) : comptoir en L + tonneaux ──
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.maxX - 70, y: room.maxY - 66), scale: 0.30)
+        addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.maxX - 150, y: room.maxY - 66), scale: 0.30)
+        addInteriorSprite("me_barrel_1", in: scene, at: CGPoint(x: room.maxX - 44, y: room.maxY - 96), scale: 0.40)
+        addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.maxX - 44, y: room.maxY - 126), scale: 0.40)
+        addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 76, y: room.maxY - 100), scale: 0.38)
 
-        // Tonneaux derrière bar
-        addInteriorSprite("me_barrel_1", in: scene, at: CGPoint(x: room.maxX - 90, y: room.maxY - 50), scale: 0.36)
-        addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.maxX - 70, y: room.maxY - 50), scale: 0.36)
-        addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 30, y: room.maxY - 50), scale: 0.36)
+        // ── CHEMINÉE (fond gauche) : feu + réserve de bois + marmite ──
+        addInteriorSprite("me_campfire", in: scene, at: CGPoint(x: room.minX + 48, y: room.maxY - 76), scale: 0.42)
+        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.minX + 80, y: room.maxY - 70), scale: 0.42)
+        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 46, y: room.maxY - 112), scale: 0.38)
 
-        // Paniers + pommes (auberge nourriture)
-        addInteriorSprite("me_basket", in: scene, at: CGPoint(x: room.minX + 80, y: room.maxY - 65), scale: 0.40)
-        addInteriorSprite("me_apples", in: scene, at: CGPoint(x: room.minX + 105, y: room.maxY - 70), scale: 0.36)
+        // ── SALLE : deux tables dressées avec chaises ──
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX - 36, y: room.midY - 20), scale: 0.62)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 66, y: room.midY - 26), scale: 0.44)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 6, y: room.midY - 26), scale: 0.44, flipped: true)
+        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX + 74, y: room.midY + 10), scale: 0.62)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 44, y: room.midY + 4), scale: 0.44)
+        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 104, y: room.midY + 4), scale: 0.44, flipped: true)
+        addInteriorSprite("me_basket", in: scene, at: CGPoint(x: room.midX - 36, y: room.midY + 16), scale: 0.36)
 
-        // Cheminée — marmite suspendue + bois
-        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.minX + 44, y: room.maxY - 60), scale: 0.45)
-        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 44, y: room.maxY - 85), scale: 0.36)
+        // ── COIN NUIT (gauche) : deux lits et banc de voyageur ──
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.midY - 4), scale: 0.32)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.midY - 44), scale: 0.32)
+        addInteriorSprite("interior_wood_bench", in: scene, at: CGPoint(x: room.minX + 50, y: room.midY - 80), scale: 0.44)
 
-        // Table centrale + chaises
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX - 20, y: room.midY - 6), scale: 0.65)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 48, y: room.midY - 12), scale: 0.45)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 8, y: room.midY - 12), scale: 0.45, flipped: true)
-
-        // Lits (chambres)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 34), scale: 0.28)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 42, y: room.midY - 58), scale: 0.28)
-
-        // Banc bois
-        addInteriorSprite("interior_wood_bench", in: scene, at: CGPoint(x: room.maxX - 50, y: room.midY - 20), scale: 0.45)
-
-        addServiceMarker(in: scene, at: CGPoint(x: room.maxX - 60, y: room.maxY - 100), text: String(localized: "interior.inn.rest"))
+        addServiceMarker(in: scene, at: CGPoint(x: room.maxX - 110, y: room.maxY - 96), text: String(localized: "interior.inn.rest"))
     }
 
     private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {

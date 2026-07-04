@@ -963,7 +963,80 @@ final class GameManager {
             }
         }
 
+        // Chasses optionnelles (répétables — XP/or, ennemis coriaces)
+        let ghoulDen = CGPoint(x: w * 0.20, y: h * 0.585)
+        if point.distance(to: ghoulDen) < 75 {
+            startGhoulCombat()
+            return true
+        }
+        let boneTrail = CGPoint(x: w * 0.82, y: h * 0.74)
+        if point.distance(to: boneTrail) < 75 {
+            startBoneCombat()
+            return true
+        }
+
         return false
+    }
+
+    /// Chasse optionnelle : nid de goules (2 ennemis coriaces).
+    private func startGhoulCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startGhoulCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let name = String(localized: "combat.enemy.ghoul")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
+                          hp: 130, kind: .ghoul, baseDamage: 24),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
+                          hp: 130, kind: .ghoul, baseDamage: 24)
+            ],
+            goldReward: 40,
+            player: player
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            transition(to: .exploration)
+        }
+    }
+
+    /// Chasse optionnelle : squelette errant escorté d'une goule.
+    private func startBoneCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startBoneCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.bonewalker"),
+                          hp: 200, kind: .boneWalker, baseDamage: 28),
+                EnemySpec(name: String(localized: "combat.enemy.ghoul"),
+                          hp: 110, kind: .ghoul, baseDamage: 22)
+            ],
+            goldReward: 55,
+            player: player
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            transition(to: .exploration)
+        }
     }
 
     /// Ramasser le jouet perdu de l'enfant
@@ -1103,11 +1176,11 @@ final class GameManager {
             transition(to: .combat)
 
             let bossConfig = BossConfig(
-                enrageThreshold: 0.40,
+                enrageThreshold: 0.45,
                 enrageSpeedMult: 1.6,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 38,
+                specialDamage: 44,
                 specialName: String(localized: "combat.boss.specialName")
             )
 
@@ -1724,6 +1797,8 @@ final class GameManager {
             let checkpoints: [(CGPoint, String)] = [
                 (CGPoint(x: w*0.30, y: h*0.31), "hint.fight"),
                 (CGPoint(x: w*0.70, y: h*0.66), "hint.fight"),
+                (CGPoint(x: w*0.20, y: h*0.585), "hint.fight"),
+                (CGPoint(x: w*0.82, y: h*0.74), "hint.fight"),
                 (CGPoint(x: w*0.55, y: h*0.90), "hint.enter")
             ]
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
@@ -1918,12 +1993,14 @@ final class GameManager {
             guard let self, let scene = self.scene else { return }
             transition(to: .combat)
 
+            // Boss FINAL : le mur du jeu. Enrage tôt, spéciale fréquente
+            // et brutale — le joueur doit maîtriser break/boost/soin.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.45,
-                enrageSpeedMult: 1.7,
-                enrageDamageMult: 2,
-                specialAttackInterval: 3,
-                specialDamage: 46,
+                enrageThreshold: 0.60,
+                enrageSpeedMult: 1.8,
+                enrageDamageMult: 3,
+                specialAttackInterval: 2,
+                specialDamage: 62,
                 specialName: String(localized: "combat.thresholdGuardian.specialName")
             )
 
@@ -1931,7 +2008,7 @@ final class GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.thresholdGuardian"),
-                enemyHP: 460,
+                enemyHP: 950,
                 goldReward: 0,
                 player: player,
                 enemyKind: .guardian,

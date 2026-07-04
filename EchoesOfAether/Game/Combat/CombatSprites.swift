@@ -4,6 +4,8 @@ import SpriteKit
 enum CombatSpriteKind {
     case beast          // Bête corrompue (forêt 1)
     case wolf           // Loup d'ombre (forêt 2)
+    case ghoul          // Goule corrompue (forêt, optionnel)
+    case boneWalker     // Squelette errant (forêt, optionnel)
     case guardian       // Gardien de l'Aether — boss Acte I
     case ruinsGuardian  // Gardien des Ruines (Acte II)
     case archivist      // Archiviste — boss Acte II
@@ -75,8 +77,8 @@ enum CombatSprites {
         }
 
         switch kind {
-        case .beast:         buildBeast(into: root)
-        case .wolf:          buildWolf(into: root)
+        case .beast, .ghoul: buildBeast(into: root)
+        case .wolf, .boneWalker: buildWolf(into: root)
         case .guardian:      buildGuardian(into: root)
         case .ruinsGuardian: buildRuinsGuardian(into: root)
         case .archivist:     buildArchivist(into: root)
@@ -125,6 +127,14 @@ enum CombatSprites {
                     SKColor(red: 0.22, green: 0.10, blue: 0.38, alpha: 1))
         case .ruinsGuardian:
             return ("enemy_bone", nil)
+        case .ghoul:
+            // Goule : chair corrompue, teinte maladive
+            return ("enemy_ghoul",
+                    SKColor(red: 0.25, green: 0.38, blue: 0.16, alpha: 1))
+        case .boneWalker:
+            // Mêmes frames que le squelette des ruines, os bleuis d'usure
+            return ("enemy_bone",
+                    SKColor(red: 0.35, green: 0.42, blue: 0.58, alpha: 1))
         case .archivist:
             // Squelette érudit noyé d'Aether violet
             return ("enemy_archivist",
@@ -143,6 +153,8 @@ enum CombatSprites {
         case .guardian:      return 110
         case .ruinsGuardian: return 84
         case .archivist:     return 90
+        case .ghoul:         return 70
+        case .boneWalker:    return 70
         }
     }
 

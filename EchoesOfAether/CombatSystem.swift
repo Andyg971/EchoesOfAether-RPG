@@ -292,6 +292,8 @@ self.phase = .intro
         switch kind {
         case .beast:         weaknesses = [.fire, .aether];            shieldMax = 2
         case .wolf:          weaknesses = [.ice, .lightning];          shieldMax = 2
+        case .ghoul:         weaknesses = [.fire];                     shieldMax = 3
+        case .boneWalker:    weaknesses = [.lightning, .aether];       shieldMax = 3
         case .guardian:      weaknesses = [.ice, .aether];             shieldMax = 3
         case .ruinsGuardian: weaknesses = [.fire, .lightning];         shieldMax = 3
         case .archivist:     weaknesses = [.ice, .lightning, .aether]; shieldMax = 4
@@ -827,11 +829,16 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
 /// FEU : boule de feu qui vole de Kael vers la cible, puis explose.
 private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     let color = CombatElement.fire.color
-    let ball = SKShapeNode(circleOfRadius: boosted ? 11 : 8)
-    ball.fillColor = color
-    ball.strokeColor = SKColor(red: 1.0, green: 0.75, blue: 0.30, alpha: 1)
-    ball.lineWidth = 2
-    ball.glowWidth = boosted ? 12 : 8
+    // Boule de feu pixel : carrés concentriques nets (zéro glow lisse)
+    let ball = SKNode()
+    let core = SKSpriteNode(color: SKColor(red: 1.0, green: 0.92, blue: 0.55, alpha: 1),
+                            size: CGSize(width: boosted ? 10 : 8, height: boosted ? 10 : 8))
+    let mid = SKSpriteNode(color: color,
+                           size: CGSize(width: boosted ? 18 : 14, height: boosted ? 18 : 14))
+    let rim = SKSpriteNode(color: SKColor(red: 0.80, green: 0.25, blue: 0.08, alpha: 1),
+                           size: CGSize(width: boosted ? 24 : 18, height: boosted ? 24 : 18))
+    ball.addChild(rim); ball.addChild(mid); ball.addChild(core)
+    ball.zRotation = .pi / 4
     ball.position = CGPoint(x: kaelHomePosition.x + 30, y: kaelHomePosition.y + 40)
     ball.zPosition = 826
     root.addChild(ball)
@@ -840,9 +847,8 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     let trail = SKAction.repeatForever(.sequence([
         .run { [weak self, weak ball] in
             guard let self, let ball else { return }
-            let ember = SKShapeNode(circleOfRadius: 3)
-            ember.fillColor = color.withAlphaComponent(0.7)
-            ember.strokeColor = .clear
+            let ember = SKSpriteNode(color: color.withAlphaComponent(0.8),
+                                     size: CGSize(width: 5, height: 5))
             ember.position = ball.position
             ember.zPosition = 825
             self.root.addChild(ember)
@@ -865,11 +871,9 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
             self.root.addChild(ParticleFactory.impactSparks(at: foe.homePosition,
                                                             color: color,
                                                             count: boosted ? 26 : 16))
-            let blast = SKShapeNode(circleOfRadius: 6)
-            blast.fillColor = SKColor(red: 1.0, green: 0.80, blue: 0.40, alpha: 0.9)
-            blast.strokeColor = color
-            blast.lineWidth = 3
-            blast.glowWidth = 10
+            let blast = SKSpriteNode(color: SKColor(red: 1.0, green: 0.80, blue: 0.40, alpha: 0.9),
+                                      size: CGSize(width: 12, height: 12))
+            blast.zRotation = .pi / 4
             blast.position = foe.homePosition
             blast.zPosition = 826
             self.root.addChild(blast)
@@ -888,18 +892,20 @@ private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
     let color = CombatElement.ice.color
     let count = boosted ? 5 : 3
     for i in 0..<count {
-        let spikePath = CGMutablePath()
-        let w: CGFloat = 10
+        // Stalagmite pixel : rectangles empilés en escalier
         let h: CGFloat = CGFloat.random(in: 26...40) * (boosted ? 1.25 : 1.0)
-        spikePath.move(to: CGPoint(x: -w / 2, y: 0))
-        spikePath.addLine(to: CGPoint(x: 0, y: h))
-        spikePath.addLine(to: CGPoint(x: w / 2, y: 0))
-        spikePath.closeSubpath()
-        let spike = SKShapeNode(path: spikePath)
-        spike.fillColor = color.withAlphaComponent(0.85)
-        spike.strokeColor = SKColor(red: 0.80, green: 0.95, blue: 1.0, alpha: 1)
-        spike.lineWidth = 1.5
-        spike.glowWidth = 4
+        let spike = SKNode()
+        let steps = 4
+        for s in 0..<steps {
+            let f = CGFloat(s)
+            let seg = SKSpriteNode(
+                color: s == steps - 1
+                    ? SKColor(red: 0.85, green: 0.97, blue: 1.0, alpha: 1)
+                    : color.withAlphaComponent(0.9),
+                size: CGSize(width: 12 - f * 3, height: h / CGFloat(steps) + 1))
+            seg.position = CGPoint(x: 0, y: (f + 0.5) * h / CGFloat(steps))
+            spike.addChild(seg)
+        }
         spike.position = CGPoint(x: foe.homePosition.x + CGFloat(i - count / 2) * 16,
                                  y: foe.homePosition.y - 30)
         spike.zPosition = 826
@@ -937,9 +943,10 @@ private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
 
     let lightning = SKShapeNode(path: bolt)
     lightning.strokeColor = SKColor(red: 1.0, green: 0.98, blue: 0.75, alpha: 1)
-    lightning.lineWidth = boosted ? 5 : 3
-    lightning.glowWidth = boosted ? 14 : 9
-    lightning.lineCap = .round
+    lightning.lineWidth = boosted ? 6 : 4
+    lightning.glowWidth = 0
+    lightning.lineCap = .butt
+    lightning.lineJoin = .miter
     lightning.zPosition = 827
     lightning.alpha = 0
     root.addChild(lightning)
@@ -961,12 +968,11 @@ private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
 /// SOIN : colonne de lumière verte + étincelles montantes sur Kael.
 private func playMendEffect(boosted: Bool) {
     let color = SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1)
-    let column = SKShapeNode(rectOf: CGSize(width: boosted ? 54 : 40, height: 120),
-                             cornerRadius: 8)
+    let column = SKShapeNode(rectOf: CGSize(width: boosted ? 54 : 40, height: 120))
     column.fillColor = color.withAlphaComponent(0.16)
-    column.strokeColor = color.withAlphaComponent(0.35)
-    column.lineWidth = 1.5
-    column.glowWidth = 6
+    column.strokeColor = color.withAlphaComponent(0.45)
+    column.lineWidth = 2
+    column.glowWidth = 0
     column.position = CGPoint(x: kaelHomePosition.x, y: kaelHomePosition.y + 30)
     column.zPosition = 824
     column.yScale = 0.1
@@ -979,10 +985,8 @@ private func playMendEffect(boosted: Bool) {
     ]))
 
     for i in 0..<(boosted ? 10 : 6) {
-        let mote = SKShapeNode(circleOfRadius: CGFloat.random(in: 2...3.5))
-        mote.fillColor = color
-        mote.strokeColor = .clear
-        mote.glowWidth = 3
+        let side = CGFloat.random(in: 4...6)
+        let mote = SKSpriteNode(color: color, size: CGSize(width: side, height: side))
         mote.position = CGPoint(x: kaelHomePosition.x + CGFloat.random(in: -20...20),
                                 y: kaelHomePosition.y - 20)
         mote.zPosition = 826
@@ -1193,7 +1197,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     private func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
         switch kind {
-        case .beast, .wolf:
+        case .beast, .wolf, .ghoul, .boneWalker:
             // Forêt d'Ébène : verts très sombres
             return ArenaPalette(
                 skyColor: SKColor(red: 0.05, green: 0.09, blue: 0.07, alpha: 1),
@@ -1240,7 +1244,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let edgeColor = palette.stageStrokeColor.withAlphaComponent(0.25)
 
         switch kind {
-        case .beast, .wolf:
+        case .beast, .wolf, .ghoul, .boneWalker:
             // Forêt : 6 arbres répartis en profondeur (mix tree_medium_1/2/3/big)
             let treeAssets = ["tree_medium_1", "tree_medium_2", "tree_medium_3",
                                "tree_big", "tree_medium_1", "tree_medium_2"]

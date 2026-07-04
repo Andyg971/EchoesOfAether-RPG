@@ -19,6 +19,7 @@ final class WorldBuilder {
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
+    private var medallionMarker: SKNode?
     private var activeInterior: HouseInteriorKind?
     /// Vrai pendant la veille du réveil : Lyra reste au chevet de Kael
     /// même si `layout()` est rejoué (rotation, resize, premier layout).
@@ -573,6 +574,70 @@ final class WorldBuilder {
             backdropNodes.remove(at: idx)
         }
         toyMarker = nil
+    }
+
+    // MARK: - Talisman perdu (quête de la villageoise)
+
+    /// La croix de bois du fils, à moitié enterrée sur le sentier ouest.
+    func addMedallionMarker(in scene: SKScene) {
+        guard medallionMarker == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let marker = SKNode()
+        marker.position = CGPoint(x: w * 0.28, y: h * 0.72)
+        marker.zPosition = 3
+        if let cross = PixelArtSprites.still(name: "gy_cross_wood", scale: 0.30,
+                                             anchor: CGPoint(x: 0.5, y: 0.0)) {
+            marker.addChild(cross)
+        }
+        let glow = SKSpriteNode(color: SKColor(red: 1, green: 0.85, blue: 0.35, alpha: 0.30),
+                                size: CGSize(width: 30, height: 30))
+        glow.zRotation = .pi / 4
+        glow.position = CGPoint(x: 0, y: 10)
+        glow.zPosition = -0.5
+        marker.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.3)
+
+        worldNode.addChild(marker)
+        backdropNodes.append(marker)
+        medallionMarker = marker
+    }
+
+    func removeMedallionMarker() {
+        medallionMarker?.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+        if let m = medallionMarker, let idx = backdropNodes.firstIndex(where: { $0 === m }) {
+            backdropNodes.remove(at: idx)
+        }
+        medallionMarker = nil
+    }
+
+    // MARK: - Marqueurs de quête « ! » sur les PNJ
+
+    /// Point d'exclamation doré pulsant au-dessus d'un PNJ qui a une
+    /// quête à proposer. `visible: false` le retire.
+    func setQuestMarker(on npc: SKNode, visible: Bool) {
+        let markName = "questMark"
+        if !visible {
+            npc.childNode(withName: markName)?.removeFromParent()
+            return
+        }
+        guard npc.childNode(withName: markName) == nil else { return }
+        let mark = SKLabelNode(fontNamed: PixelUI.uiFont)
+        mark.name = markName
+        mark.text = "!"
+        mark.fontSize = 20
+        mark.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.25, alpha: 1)
+        mark.position = CGPoint(x: 0, y: 40)
+        mark.zPosition = 5
+        npc.addChild(mark)
+        mark.run(.repeatForever(.sequence([
+            .moveBy(x: 0, y: 5, duration: 0.4),
+            .moveBy(x: 0, y: -5, duration: 0.4)
+        ])))
     }
 
 private func decorateVillage(in scene: SKScene) {
@@ -1596,10 +1661,21 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         add(node, to: scene)
     }
 
+    /// Le marchand se tient derrière son comptoir (sprite animé).
+    private func addShopkeeper(_ asset: String, in scene: SKScene, at position: CGPoint) {
+        guard let keeper = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.5,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        keeper.position = position
+        keeper.zPosition = propLayer(for: position.y, in: scene.size.height) + 0.5
+        add(keeper, to: scene)
+    }
+
     private func buildArmoryInterior(in scene: SKScene, room: CGRect) {
         // ── FOND : long comptoir + Bram derrière ──
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX - 44, y: room.maxY - 66), scale: 0.30)
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX + 44, y: room.maxY - 66), scale: 0.30)
+        addShopkeeper("npc_bram", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 52))
 
         // ── FORGE (droite) : feu vivant + marmite + soufflet de bois ──
         addInteriorSprite("me_campfire", in: scene, at: CGPoint(x: room.maxX - 52, y: room.maxY - 78), scale: 0.42)
@@ -1629,6 +1705,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func buildApothecaryInterior(in scene: SKScene, room: CGRect) {
         // ── FOND : comptoir + étagère de fioles (rangée de vases) ──
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX - 30, y: room.maxY - 66), scale: 0.28)
+        addShopkeeper("npc_mara", in: scene, at: CGPoint(x: room.midX - 30, y: room.maxY - 52))
         addInteriorSprite("me_vase_red", in: scene, at: CGPoint(x: room.midX + 44, y: room.maxY - 62), scale: 0.40)
         addInteriorSprite("me_vase_yellow", in: scene, at: CGPoint(x: room.midX + 70, y: room.maxY - 64), scale: 0.40)
         addInteriorSprite("me_vase_pink", in: scene, at: CGPoint(x: room.midX + 96, y: room.maxY - 62), scale: 0.40)
@@ -1658,6 +1735,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // ── BAR (fond droit) : comptoir en L + tonneaux ──
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.maxX - 70, y: room.maxY - 66), scale: 0.30)
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.maxX - 150, y: room.maxY - 66), scale: 0.30)
+        addShopkeeper("npc_sage", in: scene, at: CGPoint(x: room.maxX - 110, y: room.maxY - 52))
         addInteriorSprite("me_barrel_1", in: scene, at: CGPoint(x: room.maxX - 44, y: room.maxY - 96), scale: 0.40)
         addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.maxX - 44, y: room.maxY - 126), scale: 0.40)
         addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 76, y: room.maxY - 100), scale: 0.38)

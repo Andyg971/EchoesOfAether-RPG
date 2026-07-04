@@ -9011,6 +9011,150 @@
         }
       }
     },
+    "quest.medallion.accept": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I'll keep an eye out."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je garderai l'œil ouvert."
+          }
+        }
+      }
+    },
+    "quest.medallion.active": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The wooden cross... it must be somewhere along the western trail. Where he liked to walk."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La croix de bois... elle doit être quelque part sur le sentier de l'ouest. Là où il aimait marcher."
+          }
+        }
+      }
+    },
+    "quest.medallion.decline": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The forest is vast. I promise nothing."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La forêt est grande. Je ne promets rien."
+          }
+        }
+      }
+    },
+    "quest.medallion.done1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You found it... His cross. He never would have left without it, had he known."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vous l'avez retrouvée... Sa croix. Il ne serait jamais parti sans elle s'il avait su."
+          }
+        }
+      }
+    },
+    "quest.medallion.done2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Thank you. Take this — he would have wanted it to help someone still searching."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merci. Prenez ceci — il aurait voulu que ça serve à quelqu'un qui cherche encore."
+          }
+        }
+      }
+    },
+    "quest.medallion.found": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A little wooden cross, half-buried. The villager's son's talisman."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une petite croix de bois, à moitié enterrée. Le talisman du fils de la villageoise."
+          }
+        }
+      }
+    },
+    "quest.medallion.hud": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quest: find the wooden cross (western forest)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quête: retrouver la croix de bois (ouest de la forêt)"
+          }
+        }
+      }
+    },
+    "quest.medallion.offer1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Before he left, he forgot his talisman — a little wooden cross. He said it kept him safe."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avant de partir, il a laissé son talisman — une petite croix de bois. Il disait qu'elle le protégeait."
+          }
+        }
+      }
+    },
+    "quest.medallion.offer2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "He must have lost it crossing the forest. If you find it... bring it back to me. It's all I have left of him."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il a dû la perdre en traversant la forêt. Si vous la retrouvez... rapportez-la-moi. C'est tout ce qui me reste de lui."
+          }
+        }
+      }
+    },
     "quest.state.active": {
       "localizations": {
         "en": {

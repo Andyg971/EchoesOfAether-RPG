@@ -324,6 +324,44 @@ enum PrototypeContent {
 
     // MARK: - Villageois apeuré
 
+    // MARK: - Quête secondaire : le talisman du fils (villageoise)
+
+    static let villagerQuestOfferDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.1")),
+        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "quest.medallion.offer1")),
+        .choice(
+            prompt: String(localized: "quest.medallion.offer2"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "quest.medallion.accept"),
+                    responseSpeaker: String(localized: "dialogue.villager.name"),
+                    response: String(localized: "dialogue.oldwoman.2")
+                ),
+                DialogueChoice(
+                    title: String(localized: "quest.medallion.decline"),
+                    responseSpeaker: String(localized: "dialogue.villager.name"),
+                    response: String(localized: "quest.medallion.offer2")
+                )
+            ]
+        )
+    ]
+
+    static let villagerQuestActiveDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.villager.name"),
+              text: String(localized: "quest.medallion.active"))
+    ]
+
+    static let villagerQuestDoneDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.villager.name"),
+              text: String(localized: "quest.medallion.done1")),
+        .line(speaker: String(localized: "dialogue.villager.name"),
+              text: String(localized: "quest.medallion.done2"))
+    ]
+
+    static let medallionFoundDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "quest.medallion.found"))
+    ]
+
     static let villagerDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.1")),
         .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.2")),

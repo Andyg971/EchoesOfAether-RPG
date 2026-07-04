@@ -757,6 +757,9 @@ final class GameManager {
                 if player.questChildToy == .active {
                     world.addToyMarker(in: scene)
                 }
+                if player.questMedallion == .active {
+                    world.addMedallionMarker(in: scene)
+                }
                 transition(to: .exploration)
                 // Spawn à l'orée sud, puis quelques pas d'entrée sur le sentier.
                 let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
@@ -913,8 +916,48 @@ final class GameManager {
 
     private func openVillagerDialogue() {
         transition(to: .dialogue)
-        dialogue.start(PrototypeContent.villagerDialogue) { [weak self] in
-            self?.player.talkedToVillager = true
+        switch player.questMedallion {
+        case .inactive:
+            // Propose la quête du talisman (choix 0 = accepter)
+            dialogue.start(PrototypeContent.villagerQuestOfferDialogue) { [weak self] in
+                guard let self else { return }
+                player.talkedToVillager = true
+                if dialogue.lastChoiceIndex == 0 {
+                    player.questMedallion = .active
+                    hud.questText = String(localized: "quest.medallion.hud")
+                    if phase == .forest, let scene {
+                        world.addMedallionMarker(in: scene)
+                    }
+                    refreshQuestMarkers()
+                }
+                transition(to: .exploration)
+            }
+        case .active:
+            dialogue.start(PrototypeContent.villagerQuestActiveDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        case .complete:
+            dialogue.start(PrototypeContent.villagerQuestDoneDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Ramassage du talisman (quête villageoise) — récompense immédiate.
+    private func pickupMedallion() {
+        guard let scene else { return }
+        player.questMedallion = .complete
+        player.gold += 60
+        syncGold()
+        hud.questText = ""
+        AudioEngine.shared.playQuestComplete()
+        world.removeMedallionMarker()
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spot = CGPoint(x: scene.size.width * 0.28, y: wh * 0.72)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.medallionFoundDialogue) { [weak self] in
             self?.transition(to: .exploration)
         }
     }
@@ -959,6 +1002,15 @@ final class GameManager {
             let toySpot = CGPoint(x: w * 0.80, y: h * 0.45)
             if point.distance(to: toySpot) < 60 {
                 pickupToy()
+                return true
+            }
+        }
+
+        // Talisman perdu (quête de la villageoise, sentier ouest)
+        if player.questMedallion == .active {
+            let crossSpot = CGPoint(x: w * 0.28, y: h * 0.72)
+            if point.distance(to: crossSpot) < 60 {
+                pickupMedallion()
                 return true
             }
         }
@@ -2111,6 +2163,19 @@ final class GameManager {
         } else if wasCombat {
             hud.setVisible(true)
         }
+        if newState == .exploration { refreshQuestMarkers() }
+    }
+
+    /// « ! » doré au-dessus des PNJ qui ont une quête à proposer.
+    private func refreshQuestMarkers() {
+        world.setQuestMarker(on: world.child,
+                             visible: phase == .village && player.questChildToy == .inactive)
+        world.setQuestMarker(on: world.villager,
+                             visible: phase == .village && player.questMedallion == .inactive)
+        world.setQuestMarker(on: world.mara,
+                             visible: phase == .village && player.questDelivery == .inactive)
+        world.setQuestMarker(on: world.lyra,
+                             visible: phase == .village && player.questLyraShards == .inactive)
     }
 
     private func syncGold() {
@@ -2143,6 +2208,9 @@ final class GameManager {
             world.switchToForest(in: scene)
             if player.questChildToy == .active {
                 world.addToyMarker(in: scene)
+            }
+            if player.questMedallion == .active {
+                world.addMedallionMarker(in: scene)
             }
             // Spawn à l'orée sud du trek (la forêt scrolle).
             world.kael.position = CGPoint(x: scene.size.width * 0.5,

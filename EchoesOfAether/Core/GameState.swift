@@ -77,6 +77,7 @@ final class PlayerState {
     var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
     var questLyraShards: QuestState = .inactive // Lyra demande 5 Aether Shards
     var questChildToy: QuestState = .inactive   // enfant a perdu jouet en forêt
+    var questMedallion: QuestState = .inactive  // talisman du fils de la villageoise
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -156,6 +157,7 @@ final class PlayerState {
             level: level, xp: xp,
             questDelivery: questDelivery, questMushroom: questMushroom,
             questLyraShards: questLyraShards, questChildToy: questChildToy,
+            questMedallion: questMedallion,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -189,6 +191,7 @@ final class PlayerState {
         questMushroom = data.questMushroom
         questLyraShards = data.questLyraShards
         questChildToy = data.questChildToy
+        questMedallion = data.questMedallion ?? .inactive
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -227,6 +230,8 @@ struct SaveData: Codable {
     let questMushroom: QuestState
     let questLyraShards: QuestState
     let questChildToy: QuestState
+    // Optionnel — saves antérieures à la quête du talisman
+    let questMedallion: QuestState?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

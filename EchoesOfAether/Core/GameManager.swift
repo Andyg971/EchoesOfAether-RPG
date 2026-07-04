@@ -21,6 +21,7 @@ final class GameManager {
     let death     = DeathOverlay()
     let options   = OptionsOverlay()
     let lore      = LoreOverlay()
+    let questLog  = QuestLogOverlay()
     let minimap   = MinimapOverlay()
     let levelUp   = LevelUpOverlay()
     let bubble    = InteractionBubble()
@@ -62,6 +63,7 @@ final class GameManager {
         death.attach(to: scene)
         options.attach(to: scene)
         lore.attach(to: scene)
+        questLog.attach(to: scene)
         minimap.attach(to: scene)
         levelUp.attach(to: scene)
         bubble.attach(to: scene)
@@ -71,6 +73,7 @@ final class GameManager {
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
         hud.onPauseTap     = { [weak self] in self?.openPause() }
         hud.onLoreTap      = { [weak self] in self?.openLore() }
+        hud.onQuestLogTap  = { [weak self] in self?.openQuestLog() }
 
         pause.onResume    = { [weak self] in self?.closePause() }
         pause.onSave      = { [weak self] in
@@ -245,6 +248,7 @@ final class GameManager {
         shop.layout(in: size, safeBottom: safeBottom)
         inventory.layout(in: size, safeBottom: safeBottom)
         lore.layout(in: size)
+        questLog.layout(in: size)
         minimap.layout(in: size, safeBottom: safeBottom, safeLeft: safeLeft)
         levelUp.layout(in: size)
     }
@@ -387,6 +391,7 @@ final class GameManager {
         if death.handleTap(at: point, in: scene) { return }
         if options.handleTap(at: point, in: scene) { return }
         if lore.handleTap(at: point, in: scene) { return }
+        if questLog.handleTap(at: point, in: scene) { return }
         // Prologue : n'importe quel tap le passe.
         if prologueNode != nil { endPrologue(); return }
         if pause.handleTap(at: point, in: scene) { return }
@@ -1761,6 +1766,32 @@ final class GameManager {
         let entries = PrototypeContent.buildLoreEntries(for: player)
         lore.open(entries: entries) { [weak self] in
             self?.transition(to: .exploration)
+        }
+    }
+
+    func openQuestLog() {
+        guard state == .exploration else { return }
+        transition(to: .inventory)
+        questLog.open(entries: buildQuestEntries()) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Compile les quêtes visibles (actives + terminées) pour le journal.
+    private func buildQuestEntries() -> [QuestEntry] {
+        let all: [(QuestState, String, String)] = [
+            (player.questChildToy,   "questlog.toy.title",       "questlog.toy.desc"),
+            (player.questDelivery,   "questlog.delivery.title",  "questlog.delivery.desc"),
+            (player.questMushroom,   "questlog.mushroom.title",  "questlog.mushroom.desc"),
+            (player.questLyraShards, "questlog.shards.title",    "questlog.shards.desc"),
+            (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc")
+        ]
+        let active = all.filter { $0.0 == .active }
+        let done   = all.filter { $0.0 == .complete }
+        return (active + done).map {
+            QuestEntry(title: String(localized: String.LocalizationValue($0.1)),
+                       desc: String(localized: String.LocalizationValue($0.2)),
+                       state: $0.0)
         }
     }
 

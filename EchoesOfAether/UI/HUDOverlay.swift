@@ -22,10 +22,12 @@ final class HUDOverlay {
     let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
     let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
     let loreButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
+    let questLogButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
 
     var onInventoryTap: (() -> Void)?
     var onPauseTap: (() -> Void)?
     var onLoreTap: (() -> Void)?
+    var onQuestLogTap: (() -> Void)?
 
     var objectiveText: String = "" {
         didSet { objectiveLabel.text = objectiveText }
@@ -160,6 +162,7 @@ final class HUDOverlay {
         setupInventoryButton()
         setupPauseButton()
         setupLoreButton()
+        setupQuestLogButton()
 
         scene.addChild(root)
         layout(in: scene.size)
@@ -177,6 +180,10 @@ final class HUDOverlay {
         }
         if loreButton.contains(local) {
             onLoreTap?()
+            return true
+        }
+        if questLogButton.contains(local) {
+            onQuestLogTap?()
             return true
         }
         return false
@@ -230,6 +237,8 @@ final class HUDOverlay {
         inventoryButton.position = CGPoint(x: rightEdge - buttonSize / 2, y: topY - 68 * s)
         setButton(loreButton, size: buttonSize)
         loreButton.position = CGPoint(x: rightEdge - buttonSize / 2, y: topY - 122 * s)
+        setButton(questLogButton, size: buttonSize)
+        questLogButton.position = CGPoint(x: leftEdge + buttonSize / 2, y: topY - 176 * s)
 
         let promptWidth = min(size.width - 48 * s, 300 * s)
         setPlate(interactionPlate, size: CGSize(width: promptWidth, height: 34 * s), radius: 8 * s)
@@ -317,6 +326,33 @@ final class HUDOverlay {
             loreButton.addChild(line)
         }
         root.addChild(loreButton)
+    }
+
+    private func setupQuestLogButton() {
+        styleButton(questLogButton)
+        // Icône parchemin : rouleau doré + lignes de texte + « ! »
+        let scroll = SKShapeNode(rectOf: CGSize(width: 18, height: 22), cornerRadius: 2)
+        scroll.fillColor = SKColor(red: 0.28, green: 0.22, blue: 0.12, alpha: 1)
+        scroll.strokeColor = PixelUI.gold.withAlphaComponent(0.9)
+        scroll.lineWidth = 1.4
+        questLogButton.addChild(scroll)
+
+        for dy in [4.0, 0.0, -4.0] {
+            let line = SKShapeNode(rectOf: CGSize(width: 11, height: 1.4))
+            line.fillColor = PixelUI.gold.withAlphaComponent(0.7)
+            line.strokeColor = .clear
+            line.position = CGPoint(x: 0, y: dy)
+            questLogButton.addChild(line)
+        }
+        // Rouleaux haut/bas
+        for dy in [11.0, -11.0] {
+            let roll = SKShapeNode(rectOf: CGSize(width: 20, height: 3), cornerRadius: 1.5)
+            roll.fillColor = PixelUI.gold
+            roll.strokeColor = .clear
+            roll.position = CGPoint(x: 0, y: dy)
+            questLogButton.addChild(roll)
+        }
+        root.addChild(questLogButton)
     }
 
     private func styleButton(_ button: SKShapeNode) {

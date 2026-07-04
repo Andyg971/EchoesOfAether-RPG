@@ -16,6 +16,7 @@ enum CombatAction {
     case attack
     case blackSlash
     case spell(CombatSpell)
+    case potion
 }
 
 enum CombatElement: Hashable {
@@ -132,6 +133,7 @@ private let iceButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerR
 private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+private let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let weaknessLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
 private let boostLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
 private let breakLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
@@ -507,6 +509,10 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         applyBoost()
         return true
     }
+    if potionButton.contains(localPoint), ready, (_player?.potions ?? 0) > 0 {
+        perform(.potion)
+        return true
+    }
     if attackButton.contains(localPoint), ready {
         perform(.attack)
         return true
@@ -676,6 +682,23 @@ private func perform(_ action: CombatAction) {
         root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
         showFloatingText("-" + String(finalDmg), at: enemyCenter, color: CombatElement.aether.color)
 
+    case .potion:
+        comboCount = 0
+        // Boire une potion : gros soin, consomme le tour et la fiole.
+        if let p = _player, p.potions > 0 {
+            p.potions -= 1
+            let heal = Int(CGFloat(kael.maxHP) * 0.40)
+            kael.hp = min(kael.maxHP, kael.hp + heal)
+            statusLabel.text = String(localized: "combat.status.potionUsed \(heal)")
+            AudioEngine.shared.playHit()
+            HapticsEngine.success()
+            playMendEffect(boosted: false)
+            showFloatingText("+" + String(heal), at: kaelHomePosition,
+                             color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+        }
+        endPlayerAction()
+        return
+
     case .spell(let spell):
         comboCount = 0
         if spell == .mend {
@@ -826,38 +849,103 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
     }
 }
 
-/// FEU : boule de feu qui vole de Kael vers la cible, puis explose.
+// MARK: - Moteur de particules pixel (carrés nets, zéro glow)
+
+/// Palettes pixel par élément (du plus clair au plus sombre).
+private static let firePalette: [SKColor] = [
+    SKColor(red: 1.00, green: 0.96, blue: 0.62, alpha: 1),
+    SKColor(red: 1.00, green: 0.58, blue: 0.16, alpha: 1),
+    SKColor(red: 0.88, green: 0.24, blue: 0.06, alpha: 1),
+    SKColor(red: 0.45, green: 0.10, blue: 0.05, alpha: 1)
+]
+private static let icePalette: [SKColor] = [
+    SKColor(red: 0.92, green: 0.99, blue: 1.00, alpha: 1),
+    SKColor(red: 0.56, green: 0.86, blue: 1.00, alpha: 1),
+    SKColor(red: 0.30, green: 0.60, blue: 0.95, alpha: 1),
+    SKColor(red: 0.16, green: 0.34, blue: 0.72, alpha: 1)
+]
+private static let boltPalette: [SKColor] = [
+    SKColor(red: 1.00, green: 1.00, blue: 0.88, alpha: 1),
+    SKColor(red: 1.00, green: 0.90, blue: 0.40, alpha: 1),
+    SKColor(red: 0.95, green: 0.72, blue: 0.18, alpha: 1)
+]
+private static let healPalette: [SKColor] = [
+    SKColor(red: 0.75, green: 1.00, blue: 0.78, alpha: 1),
+    SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1),
+    SKColor(red: 0.18, green: 0.70, blue: 0.42, alpha: 1)
+]
+
+/// Explosion de carrés pixel projetés radialement avec gravité et fondu.
+/// `spread` en radians autour de `baseAngle` (2π = tous azimuts).
+private func pixelBurst(at center: CGPoint, palette: [SKColor], count: Int,
+                        speed: ClosedRange<CGFloat>, gravity: CGFloat,
+                        pixel: ClosedRange<CGFloat> = 4...8,
+                        baseAngle: CGFloat = 0, spread: CGFloat = .pi * 2,
+                        z: CGFloat = 828) {
+    for _ in 0..<count {
+        let side = CGFloat.random(in: pixel).rounded()
+        let px = SKSpriteNode(color: palette.randomElement() ?? .white,
+                              size: CGSize(width: side, height: side))
+        px.position = center
+        px.zPosition = z
+        px.zRotation = CGFloat.random(in: 0...(.pi / 2))
+        root.addChild(px)
+
+        let ang = baseAngle + CGFloat.random(in: -spread / 2...spread / 2)
+        let spd = CGFloat.random(in: speed)
+        let vx = cos(ang) * spd
+        let vy = sin(ang) * spd
+        let dur = TimeInterval(CGFloat.random(in: 0.35...0.6))
+        // Parabole : dx linéaire, dy avec chute de gravité.
+        let dx = vx * CGFloat(dur)
+        let dy = vy * CGFloat(dur) - 0.5 * gravity * CGFloat(dur * dur)
+        px.run(.sequence([
+            .group([
+                .move(by: CGVector(dx: dx, dy: dy), duration: dur),
+                .sequence([.wait(forDuration: dur * 0.6),
+                           .fadeOut(withDuration: dur * 0.4)]),
+                .scale(to: 0.4, duration: dur)
+            ]),
+            .removeFromParent()
+        ]))
+    }
+}
+
+/// FEU : boule de feu massive qui vole, traînée épaisse, explosion pixel.
 private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
-    let color = CombatElement.fire.color
-    // Boule de feu pixel : carrés concentriques nets (zéro glow lisse)
+    let pal = Self.firePalette
+    // Noyau de la boule = carrés concentriques tournoyants
     let ball = SKNode()
-    let core = SKSpriteNode(color: SKColor(red: 1.0, green: 0.92, blue: 0.55, alpha: 1),
-                            size: CGSize(width: boosted ? 10 : 8, height: boosted ? 10 : 8))
-    let mid = SKSpriteNode(color: color,
-                           size: CGSize(width: boosted ? 18 : 14, height: boosted ? 18 : 14))
-    let rim = SKSpriteNode(color: SKColor(red: 0.80, green: 0.25, blue: 0.08, alpha: 1),
-                           size: CGSize(width: boosted ? 24 : 18, height: boosted ? 24 : 18))
-    ball.addChild(rim); ball.addChild(mid); ball.addChild(core)
-    ball.zRotation = .pi / 4
+    let sizes: [(CGFloat, Int)] = boosted
+        ? [(26, 3), (18, 1), (10, 0)] : [(20, 3), (14, 1), (8, 0)]
+    for (sz, ci) in sizes {
+        let sq = SKSpriteNode(color: pal[ci], size: CGSize(width: sz, height: sz))
+        ball.addChild(sq)
+    }
     ball.position = CGPoint(x: kaelHomePosition.x + 30, y: kaelHomePosition.y + 40)
     ball.zPosition = 826
+    ball.run(.repeatForever(.rotate(byAngle: .pi, duration: 0.3)))
     root.addChild(ball)
 
-    // Traînée de flammes
+    // Traînée : deux braises carrées par frame
     let trail = SKAction.repeatForever(.sequence([
         .run { [weak self, weak ball] in
             guard let self, let ball else { return }
-            let ember = SKSpriteNode(color: color.withAlphaComponent(0.8),
-                                     size: CGSize(width: 5, height: 5))
-            ember.position = ball.position
-            ember.zPosition = 825
-            self.root.addChild(ember)
-            ember.run(.sequence([
-                .group([.fadeOut(withDuration: 0.22), .scale(to: 0.3, duration: 0.22)]),
-                .removeFromParent()
-            ]))
+            for _ in 0..<2 {
+                let side = CGFloat.random(in: 4...7)
+                let ember = SKSpriteNode(color: pal.randomElement() ?? .orange,
+                                         size: CGSize(width: side, height: side))
+                ember.position = CGPoint(x: ball.position.x + .random(in: -6...6),
+                                         y: ball.position.y + .random(in: -6...6))
+                ember.zPosition = 825
+                self.root.addChild(ember)
+                ember.run(.sequence([
+                    .group([.fadeOut(withDuration: 0.28), .scale(to: 0.2, duration: 0.28)]),
+                    .removeFromParent()
+                ]))
+            }
         },
-        .wait(forDuration: 0.03)
+        .wait(forDuration: 0.025)
     ]))
     ball.run(trail, withKey: "trail")
 
@@ -868,136 +956,188 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
         fly,
         .run { [weak self] in
             guard let self else { return }
-            self.root.addChild(ParticleFactory.impactSparks(at: foe.homePosition,
-                                                            color: color,
-                                                            count: boosted ? 26 : 16))
-            let blast = SKSpriteNode(color: SKColor(red: 1.0, green: 0.80, blue: 0.40, alpha: 0.9),
-                                      size: CGSize(width: 12, height: 12))
-            blast.zRotation = .pi / 4
-            blast.position = foe.homePosition
-            blast.zPosition = 826
-            self.root.addChild(blast)
-            blast.run(.sequence([
-                .group([.scale(to: boosted ? 7 : 5, duration: 0.22),
-                        .fadeOut(withDuration: 0.24)]),
-                .removeFromParent()
-            ]))
+            ball.removeAction(forKey: "trail")
+            // Grande explosion radiale + colonne de fumée montante
+            self.pixelBurst(at: foe.homePosition, palette: pal,
+                            count: boosted ? 40 : 26, speed: 120...260,
+                            gravity: 380, pixel: 5...10)
+            self.pixelBurst(at: foe.homePosition, palette: pal,
+                            count: boosted ? 14 : 9, speed: 60...130,
+                            gravity: -120, pixel: 4...7,
+                            baseAngle: .pi / 2, spread: .pi * 0.6)
+            JuiceEngine.screenShake(self.root, intensity: boosted ? 9 : 6, duration: 0.22)
         },
         .removeFromParent()
     ]))
 }
 
-/// GLACE : pics de glace qui jaillissent du sol sous la cible.
+/// GLACE : éventail de stalactites cristallines + éclats à l'impact.
 private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
-    let color = CombatElement.ice.color
-    let count = boosted ? 5 : 3
+    let pal = Self.icePalette
+    let count = boosted ? 6 : 4
     for i in 0..<count {
-        // Stalagmite pixel : rectangles empilés en escalier
-        let h: CGFloat = CGFloat.random(in: 26...40) * (boosted ? 1.25 : 1.0)
+        let h: CGFloat = CGFloat.random(in: 30...46) * (boosted ? 1.25 : 1.0)
         let spike = SKNode()
-        let steps = 4
+        let steps = 5
         for s in 0..<steps {
             let f = CGFloat(s)
-            let seg = SKSpriteNode(
-                color: s == steps - 1
-                    ? SKColor(red: 0.85, green: 0.97, blue: 1.0, alpha: 1)
-                    : color.withAlphaComponent(0.9),
-                size: CGSize(width: 12 - f * 3, height: h / CGFloat(steps) + 1))
-            seg.position = CGPoint(x: 0, y: (f + 0.5) * h / CGFloat(steps))
-            spike.addChild(seg)
+            // Cristal : plus clair au sommet, arêtes latérales pixel
+            let core = SKSpriteNode(
+                color: s >= steps - 2 ? pal[0] : pal[1],
+                size: CGSize(width: max(2, 14 - f * 2.5), height: h / CGFloat(steps) + 1))
+            core.position = CGPoint(x: 0, y: (f + 0.5) * h / CGFloat(steps))
+            spike.addChild(core)
+            if s < steps - 1 {
+                let edge = SKSpriteNode(color: pal[2],
+                                        size: CGSize(width: 2, height: h / CGFloat(steps)))
+                edge.position = CGPoint(x: -(14 - f * 2.5) / 2, y: core.position.y)
+                spike.addChild(edge)
+            }
         }
-        spike.position = CGPoint(x: foe.homePosition.x + CGFloat(i - count / 2) * 16,
+        spike.position = CGPoint(x: foe.homePosition.x + CGFloat(i - count / 2) * 15,
                                  y: foe.homePosition.y - 30)
         spike.zPosition = 826
         spike.yScale = 0
         root.addChild(spike)
         spike.run(.sequence([
             .wait(forDuration: Double(i) * 0.05),
-            .scaleY(to: 1.0, duration: 0.10),
-            .wait(forDuration: 0.30),
-            .group([.fadeOut(withDuration: 0.25), .scaleY(to: 0.6, duration: 0.25)]),
+            .scaleY(to: 1.0, duration: 0.08),   // jaillit sec
+            .wait(forDuration: 0.28),
+            .run { [weak self] in
+                // Se brise en éclats pixel qui retombent
+                self?.pixelBurst(at: CGPoint(x: spike.position.x, y: spike.position.y + h * 0.5),
+                                 palette: pal, count: boosted ? 10 : 6,
+                                 speed: 80...170, gravity: 420, pixel: 3...6)
+            },
+            .group([.fadeOut(withDuration: 0.18), .scaleY(to: 0.5, duration: 0.18)]),
             .removeFromParent()
         ]))
     }
-    root.addChild(ParticleFactory.impactSparks(at: foe.homePosition,
-                                               color: color, count: boosted ? 18 : 10))
+    root.run(.sequence([.wait(forDuration: 0.12),
+                        .run { [weak self] in
+                            JuiceEngine.screenShake(self?.root ?? SKNode(),
+                                                    intensity: boosted ? 6 : 4, duration: 0.14)
+                        }]))
 }
 
-/// FOUDRE : éclair qui tombe du ciel sur la cible + flash.
+/// FOUDRE : triple éclair ramifié qui tombe + flash + éclats de sol.
 private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
     guard let scene = parentScene else { return }
-    let color = CombatElement.lightning.color
-    let top = CGPoint(x: foe.homePosition.x + CGFloat.random(in: -14...14),
-                      y: scene.size.height + 10)
+    let pal = Self.boltPalette
     let hit = CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 6)
 
-    let bolt = CGMutablePath()
-    bolt.move(to: top)
-    var p = top
-    while p.y > hit.y + 30 {
-        p = CGPoint(x: hit.x + CGFloat.random(in: -22...22),
-                    y: p.y - CGFloat.random(in: 34...58))
-        bolt.addLine(to: p)
-    }
-    bolt.addLine(to: hit)
-
-    let lightning = SKShapeNode(path: bolt)
-    lightning.strokeColor = SKColor(red: 1.0, green: 0.98, blue: 0.75, alpha: 1)
-    lightning.lineWidth = boosted ? 6 : 4
-    lightning.glowWidth = 0
-    lightning.lineCap = .butt
-    lightning.lineJoin = .miter
-    lightning.zPosition = 827
-    lightning.alpha = 0
-    root.addChild(lightning)
-    lightning.run(.sequence([
-        .fadeIn(withDuration: 0.03),
-        .wait(forDuration: 0.10),
-        .fadeAlpha(to: 0.4, duration: 0.05),
-        .fadeAlpha(to: 1.0, duration: 0.04),
-        .fadeOut(withDuration: 0.16),
-        .removeFromParent()
-    ]))
-    JuiceEngine.flashOverlay(in: root, size: scene.size,
-                             color: SKColor(red: 0.95, green: 0.90, blue: 0.55, alpha: 1),
-                             duration: 0.10)
-    root.addChild(ParticleFactory.impactSparks(at: foe.homePosition,
-                                               color: color, count: boosted ? 22 : 14))
-}
-
-/// SOIN : colonne de lumière verte + étincelles montantes sur Kael.
-private func playMendEffect(boosted: Bool) {
-    let color = SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1)
-    let column = SKShapeNode(rectOf: CGSize(width: boosted ? 54 : 40, height: 120))
-    column.fillColor = color.withAlphaComponent(0.16)
-    column.strokeColor = color.withAlphaComponent(0.45)
-    column.lineWidth = 2
-    column.glowWidth = 0
-    column.position = CGPoint(x: kaelHomePosition.x, y: kaelHomePosition.y + 30)
-    column.zPosition = 824
-    column.yScale = 0.1
-    root.addChild(column)
-    column.run(.sequence([
-        .scaleY(to: 1.0, duration: 0.15),
-        .wait(forDuration: 0.40),
-        .fadeOut(withDuration: 0.30),
-        .removeFromParent()
-    ]))
-
-    for i in 0..<(boosted ? 10 : 6) {
-        let side = CGFloat.random(in: 4...6)
-        let mote = SKSpriteNode(color: color, size: CGSize(width: side, height: side))
-        mote.position = CGPoint(x: kaelHomePosition.x + CGFloat.random(in: -20...20),
-                                y: kaelHomePosition.y - 20)
-        mote.zPosition = 826
-        root.addChild(mote)
-        mote.run(.sequence([
-            .wait(forDuration: Double(i) * 0.05),
-            .group([.moveBy(x: 0, y: CGFloat.random(in: 60...95), duration: 0.6),
-                    .fadeOut(withDuration: 0.6)]),
+    // 2-3 brins décalés pour un éclair épais et vivant
+    let strands = boosted ? 3 : 2
+    for strand in 0..<strands {
+        let offsetX = CGFloat(strand - strands / 2) * 6
+        let top = CGPoint(x: hit.x + offsetX + .random(in: -12...12), y: scene.size.height + 10)
+        let bolt = CGMutablePath()
+        bolt.move(to: top)
+        var p = top
+        while p.y > hit.y + 26 {
+            p = CGPoint(x: hit.x + offsetX + .random(in: -20...20),
+                        y: p.y - .random(in: 30...54))
+            bolt.addLine(to: p)
+        }
+        bolt.addLine(to: hit)
+        let ln = SKShapeNode(path: bolt)
+        ln.strokeColor = strand == 0 ? pal[0] : pal[1]
+        ln.lineWidth = strand == 0 ? (boosted ? 6 : 4) : 2
+        ln.glowWidth = 0
+        ln.lineCap = .butt
+        ln.lineJoin = .miter
+        ln.zPosition = 827
+        ln.alpha = 0
+        root.addChild(ln)
+        ln.run(.sequence([
+            .wait(forDuration: Double(strand) * 0.02),
+            .fadeIn(withDuration: 0.02),
+            .wait(forDuration: 0.08),
+            .fadeAlpha(to: 0.3, duration: 0.04),
+            .fadeAlpha(to: 1.0, duration: 0.03),
+            .fadeOut(withDuration: 0.14),
             .removeFromParent()
         ]))
     }
+    JuiceEngine.flashOverlay(in: root, size: scene.size,
+                             color: SKColor(red: 0.98, green: 0.94, blue: 0.60, alpha: 1),
+                             duration: 0.09)
+    JuiceEngine.screenShake(root, intensity: boosted ? 8 : 5, duration: 0.16)
+    // Éclats projetés horizontalement au point d'impact (rasants)
+    pixelBurst(at: hit, palette: pal, count: boosted ? 24 : 16,
+               speed: 140...300, gravity: 300, pixel: 3...6,
+               baseAngle: 0, spread: .pi * 0.5)
+    pixelBurst(at: hit, palette: pal, count: boosted ? 24 : 16,
+               speed: 140...300, gravity: 300, pixel: 3...6,
+               baseAngle: .pi, spread: .pi * 0.5)
+}
+
+/// SOIN : colonne de carrés translucides + spirale de pixels verts montants.
+private func playMendEffect(boosted: Bool) {
+    let pal = Self.healPalette
+    let base = CGPoint(x: kaelHomePosition.x, y: kaelHomePosition.y - 18)
+
+    // Colonne bâtie en carrés empilés (pixel, pas de rect lisse)
+    let colW: CGFloat = boosted ? 48 : 36
+    let column = SKNode()
+    let rows = 10
+    for r in 0..<rows {
+        for _ in 0..<3 {
+            let side = CGFloat.random(in: 5...9)
+            let sq = SKSpriteNode(color: pal[Int.random(in: 0...2)].withAlphaComponent(0.5),
+                                  size: CGSize(width: side, height: side))
+            sq.position = CGPoint(x: .random(in: -colW/2...colW/2),
+                                  y: CGFloat(r) * 13 + .random(in: -4...4))
+            column.addChild(sq)
+        }
+    }
+    column.position = base
+    column.zPosition = 824
+    column.alpha = 0
+    root.addChild(column)
+    column.run(.sequence([
+        .fadeIn(withDuration: 0.12),
+        .wait(forDuration: 0.35),
+        .fadeOut(withDuration: 0.3),
+        .removeFromParent()
+    ]))
+
+    // Spirale ascendante de pixels
+    for i in 0..<(boosted ? 16 : 10) {
+        let side = CGFloat.random(in: 4...7)
+        let mote = SKSpriteNode(color: pal.randomElement() ?? .green,
+                                size: CGSize(width: side, height: side))
+        let angle = CGFloat(i) * 0.7
+        mote.position = CGPoint(x: base.x + cos(angle) * 16, y: base.y)
+        mote.zPosition = 826
+        root.addChild(mote)
+        let rise: CGFloat = .random(in: 70...110)
+        mote.run(.sequence([
+            .wait(forDuration: Double(i) * 0.04),
+            .group([
+                .moveBy(x: -cos(angle) * 20, y: rise, duration: 0.6),
+                .fadeOut(withDuration: 0.6),
+                .scale(to: 0.4, duration: 0.6)
+            ]),
+            .removeFromParent()
+        ]))
+    }
+    // Croix de lumière brève au-dessus de Kael
+    let cross = SKNode()
+    let vBar = SKSpriteNode(color: pal[0], size: CGSize(width: 4, height: 18))
+    let hBar = SKSpriteNode(color: pal[0], size: CGSize(width: 14, height: 4))
+    hBar.position = CGPoint(x: 0, y: 4)
+    cross.addChild(vBar); cross.addChild(hBar)
+    cross.position = CGPoint(x: kaelHomePosition.x, y: kaelHomePosition.y + 70)
+    cross.zPosition = 830
+    cross.setScale(0.3); cross.alpha = 0
+    root.addChild(cross)
+    cross.run(.sequence([
+        .group([.scale(to: 1.0, duration: 0.15), .fadeIn(withDuration: 0.1)]),
+        .wait(forDuration: 0.2),
+        .fadeOut(withDuration: 0.25),
+        .removeFromParent()
+    ]))
     kaelSprite?.run(.sequence([.scale(to: 1.18, duration: 0.12), .scale(to: 1.10, duration: 0.18)]))
 }
 
@@ -1742,8 +1882,10 @@ private func setupButtons(scene: SKScene) {
     addButton(healButton, title: String(localized: "combat.button.heal"), at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
               fill: SKColor(red: 0.035, green: 0.26, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.40, green: 1.00, blue: 0.56, alpha: 1), fontSize: 11)
 
-    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2, y: panelY + 48), width: 88, height: 22,
-              fill: SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 1), stroke: SKColor(red: 0.86, green: 0.68, blue: 1.00, alpha: 1), fontSize: 9)
+    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 52, y: panelY + 48), width: 88, height: 22,
+              fill: SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 1), stroke: SKColor(red: 0.86, green: 0.68, blue: 1.00, alpha: 1), fontSize: 12)
+    addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 52, y: panelY + 48), width: 88, height: 22,
+              fill: SKColor(red: 0.08, green: 0.24, blue: 0.14, alpha: 1), stroke: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1), fontSize: 12)
 }
 
 // MARK: - Helpers
@@ -1849,6 +1991,11 @@ private func setupButtons(scene: SKScene) {
             button.alpha = ready ? 1 : 0.36
         }
         boostButton.alpha = (ready && playerBP > 0 && queuedBoost < 3) ? 1 : 0.34
+        let potionCount = _player?.potions ?? 0
+        potionButton.alpha = (ready && potionCount > 0) ? 1 : 0.34
+        if let label = potionButton.children.compactMap({ $0 as? SKLabelNode }).first {
+            label.text = String(localized: "combat.button.potion") + " ×" + String(potionCount)
+        }
 
         let bpPips = (0..<3).map { $0 < playerBP ? "●" : "○" }.joined()
         boostLabel.text = queuedBoost > 0 ? "BP " + bpPips + "   " + String(localized: "combat.status.boost \(queuedBoost + 1)") : "BP " + bpPips

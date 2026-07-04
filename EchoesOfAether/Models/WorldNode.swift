@@ -52,14 +52,31 @@ enum WorldNode {
 
     // MARK: - Lyra (alliée, nature, bâton)
 
-    static func lyra() -> SKNode {
-        // Tentative pixel art : dès que `lyra_idle_1..4` sont dans Assets,
-        // la shape ci-dessous est ignorée. Pas besoin de modifier le code.
-        if let sprite = PixelArtSprites.animated(name: "lyra", frames: 4,
-                                                  scale: 0.55, timePerFrame: 0.14) {
-            sprite.name = "lyra"
-            return sprite
+
+    /// PNJ pixel art (sprites ME 48×96, 6 frames idle) à l'échelle de
+    /// Kael. Fallback : la silhouette programmatique historique.
+    private static func pixelNPC(_ asset: String, nodeName: String) -> SKNode? {
+        guard let node = PixelArtSprites.animated(name: asset, frames: 6,
+                                                  scale: 0.5,
+                                                  timePerFrame: 0.16,
+                                                  anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
+        node.name = nodeName
+        // Même convention que Kael : sprite ancré aux pieds, décalé pour
+        // que la position du node reste le centre du personnage.
+        if let sprite = node.children.first as? SKSpriteNode {
+            sprite.position = CGPoint(x: 0, y: -16)
         }
+        let shadow = SKShapeNode(ellipseOf: CGSize(width: 24, height: 7))
+        shadow.fillColor = SKColor(white: 0, alpha: 0.25)
+        shadow.strokeColor = .clear
+        shadow.position = CGPoint(x: 0, y: -15)
+        shadow.zPosition = -1
+        node.addChild(shadow)
+        return node
+    }
+
+    static func lyra() -> SKNode {
+        if let n = pixelNPC("npc_lyra", nodeName: "lyra") { return n }
 
         let root = SKNode()
         root.name = "lyra"
@@ -105,11 +122,7 @@ enum WorldNode {
     // MARK: - Dorin (chef du village, armure dorée)
 
     static func dorin() -> SKNode {
-        if let sprite = PixelArtSprites.animated(name: "dorin", frames: 4,
-                                                  scale: 0.55, timePerFrame: 0.16) {
-            sprite.name = "dorin"
-            return sprite
-        }
+        if let n = pixelNPC("npc_dorin", nodeName: "dorin") { return n }
 
         let root = SKNode()
         root.name = "dorin"
@@ -160,6 +173,7 @@ enum WorldNode {
     // MARK: - Bram (armurier, massif, tablier)
 
     static func bram() -> SKNode {
+        if let n = pixelNPC("npc_bram", nodeName: "bram") { return n }
         let root = SKNode()
         root.name = "bram"
 
@@ -208,6 +222,7 @@ enum WorldNode {
     // MARK: - Mara (herboriste, mince, robes vertes)
 
     static func mara() -> SKNode {
+        if let n = pixelNPC("npc_mara", nodeName: "mara") { return n }
         let root = SKNode()
         root.name = "mara"
 
@@ -252,6 +267,7 @@ enum WorldNode {
     // MARK: - Garen (garde, porte nord, lance)
 
     static func garen() -> SKNode {
+        if let n = pixelNPC("npc_garen", nodeName: "garen") { return n }
         let root = SKNode()
         root.name = "garen"
 
@@ -307,6 +323,7 @@ enum WorldNode {
     // MARK: - Sage (vieux sage à l'auberge)
 
     static func sage() -> SKNode {
+        if let n = pixelNPC("npc_sage", nodeName: "sage") { return n }
         let root = SKNode()
         root.name = "sage"
 
@@ -348,6 +365,7 @@ enum WorldNode {
     // MARK: - Enfant (PNJ enfant, petit, curieux)
 
     static func child() -> SKNode {
+        if let n = pixelNPC("npc_child", nodeName: "child") { return n }
         let root = SKNode()
         root.name = "child"
 
@@ -377,6 +395,7 @@ enum WorldNode {
     // MARK: - Villageois effrayé
 
     static func scaredVillager() -> SKNode {
+        if let n = pixelNPC("npc_villager", nodeName: "villager") { return n }
         let root = SKNode()
         root.name = "villager"
 

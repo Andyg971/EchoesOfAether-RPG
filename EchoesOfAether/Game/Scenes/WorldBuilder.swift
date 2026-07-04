@@ -1245,27 +1245,18 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         gate.zPosition = propLayer(for: pos.y, in: scene.size.height)
         addGroundShadow(under: gate, width: width + 32, height: 14)
 
-        let pillarL = SKShapeNode(rectOf: CGSize(width: 14, height: 50), cornerRadius: 3)
-        pillarL.fillColor = SKColor(red: 0.28, green: 0.22, blue: 0.14, alpha: 1)
-        pillarL.strokeColor = SKColor(white: 0.30, alpha: 0.4)
-        pillarL.position = CGPoint(x: -width / 2, y: 0)
-        gate.addChild(pillarL)
+        // Portail en pierre du pack (fini les piliers programmatiques)
+        if let arch = PixelArtSprites.still(name: "gy_gate_big", scale: 0.55,
+                                            anchor: CGPoint(x: 0.5, y: 0.0)) {
+            arch.position = CGPoint(x: 0, y: -18)
+            gate.addChild(arch)
+        }
 
-        let pillarR = pillarL.copy() as! SKShapeNode
-        pillarR.position = CGPoint(x: width / 2, y: 0)
-        gate.addChild(pillarR)
-
-        let bar = SKShapeNode(rectOf: CGSize(width: width, height: 6), cornerRadius: 2)
-        bar.fillColor = SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1)
-        bar.strokeColor = SKColor(white: 0.25, alpha: 0.4)
-        bar.position = CGPoint(x: 0, y: 24)
-        gate.addChild(bar)
-
-        let northSign = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let northSign = SKLabelNode(fontNamed: PixelUI.uiFont)
         northSign.text = String(localized: "world.northGate")
-        northSign.fontSize = 11
-        northSign.fontColor = SKColor(white: 0.55, alpha: 1)
-        northSign.position = CGPoint(x: 0, y: 34)
+        northSign.fontSize = 13
+        northSign.fontColor = SKColor(red: 0.86, green: 0.80, blue: 0.62, alpha: 1)
+        northSign.position = CGPoint(x: 0, y: 118)
         gate.addChild(northSign)
 
         add(gate, to: scene)

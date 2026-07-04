@@ -384,9 +384,9 @@ final class WorldBuilder {
             // jitter déterministe pour casser l'alignement
             let jitter = CGFloat((side * 7) % 13) / 13.0
             plantTree(w * (0.040 + 0.020 * jitter), yCursor, scaleMult: 1.0)
-            plantTree(w * (0.125 + 0.025 * jitter), yCursor + h * 0.022, scaleMult: 0.85, dim: 0.92)
+            plantTree(w * (0.125 + 0.025 * jitter), yCursor + h * 0.022, scaleMult: 0.85)
             plantTree(w * (0.960 - 0.020 * jitter), yCursor + h * 0.012, scaleMult: 1.0)
-            plantTree(w * (0.875 - 0.025 * jitter), yCursor + h * 0.034, scaleMult: 0.85, dim: 0.92)
+            plantTree(w * (0.875 - 0.025 * jitter), yCursor + h * 0.034, scaleMult: 0.85)
             yCursor += h * 0.052
             side += 1
         }
@@ -405,7 +405,7 @@ final class WorldBuilder {
             (0.30, 0.84), (0.74, 0.92)
         ]
         for (x, y) in innerTrees {
-            plantTree(w * x, h * y, scaleMult: 0.82, dim: 0.94)
+            plantTree(w * x, h * y, scaleMult: 0.82)
         }
 
         // ── ARBRES MORTS CORROMPUS près des zones de danger (teinte Aether) ──
@@ -414,7 +414,9 @@ final class WorldBuilder {
             (0.61, 0.645, 0.80), (0.79, 0.695, 0.74)
         ]
         for (x, y, s) in corrupted {
-            guard let tree = PixelArtSprites.still(name: "mv_dead_tree", scale: treeScale * s,
+            // gy_tree = arbre mort ME complet (mv_dead_tree était une
+            // spritesheet entière → « troncs coupés à moitié » à l'écran)
+            guard let tree = PixelArtSprites.still(name: "gy_tree", scale: treeScale * s * 0.75,
                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * x, y: h * y)
             tree.zPosition = propLayer(for: tree.position.y, in: h)
@@ -500,7 +502,6 @@ final class WorldBuilder {
                                                     anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             node.position = p
             node.zPosition = -8.8
-            node.alpha = 0.92
             add(node, to: scene)
             placed += 1
         }

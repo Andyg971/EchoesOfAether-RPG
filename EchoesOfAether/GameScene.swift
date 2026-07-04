@@ -59,6 +59,22 @@ final class GameScene: SKScene {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let point = touches.first?.location(in: self) else { return }
+        // Le joystick flottant capture les touches du quart bas-gauche
+        // en exploration ; tout le reste passe au tap classique.
+        if manager.padTouchBegan(at: point, in: self) { return }
         manager.handleTap(at: point, in: self)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let point = touches.first?.location(in: self) else { return }
+        manager.padTouchMoved(to: point)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        manager.padTouchEnded()
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        manager.padTouchEnded()
     }
 }

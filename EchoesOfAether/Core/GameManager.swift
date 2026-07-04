@@ -37,6 +37,12 @@ final class GameManager {
     private var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
     private var prologueNode: SKNode?              // cinématique d'ouverture
     private var prologueCompletion: (() -> Void)?
+    // Joystick virtuel flottant
+    private let padBase = SKShapeNode(circleOfRadius: 34)
+    private let padKnob = SKShapeNode(circleOfRadius: 15)
+    private var padActive = false
+    private var padOrigin = CGPoint.zero
+    private var padVector = CGVector.zero
     private var hintUpdateTimer: TimeInterval = 0
     private var minimapTimer: TimeInterval = 0
     private var corruptionCinematicShown = false
@@ -281,9 +287,94 @@ final class GameManager {
             updateMinimap()
         }
 
+        // Déplacement continu au joystick virtuel
+        updatePadMovement(deltaTime: deltaTime)
+
+        // Lyra accompagne Kael dans les zones du pacte (tant qu'elle vit)
+        if state == .exploration || state == .dialogue,
+           [.forest, .shrine, .ruins].contains(phase),
+           !player.lyraDeceased {
+            if world.lyra.isHidden { world.showLyraCompanion() }
+            world.updateLyraFollow(deltaTime: deltaTime)
+        }
+
         if state == .exploration, let s = scene {
             world.updateCamera(in: s.size)
         }
+    }
+
+    // MARK: - Joystick virtuel (flottant, quart bas-gauche)
+
+    /// Le joueur pose le doigt en bas à gauche : le pad apparaît là.
+    /// Retourne true si le touch est capturé par le pad.
+    func padTouchBegan(at point: CGPoint, in scene: SKScene) -> Bool {
+        guard state == .exploration,
+              point.x < scene.size.width * 0.42,
+              point.y < scene.size.height * 0.60 else { return false }
+        if padBase.parent == nil {
+            padBase.fillColor = SKColor(white: 0.9, alpha: 0.10)
+            padBase.strokeColor = PixelUI.gold.withAlphaComponent(0.55)
+            padBase.lineWidth = 2
+            padBase.zPosition = 950
+            scene.addChild(padBase)
+            padKnob.fillColor = PixelUI.gold.withAlphaComponent(0.55)
+            padKnob.strokeColor = PixelUI.gold
+            padKnob.lineWidth = 1.5
+            padKnob.zPosition = 951
+            scene.addChild(padKnob)
+        }
+        padActive = true
+        padOrigin = point
+        padVector = .zero
+        padBase.position = point
+        padKnob.position = point
+        padBase.alpha = 1
+        padKnob.alpha = 1
+        return true
+    }
+
+    func padTouchMoved(to point: CGPoint) {
+        guard padActive else { return }
+        var dx = point.x - padOrigin.x
+        var dy = point.y - padOrigin.y
+        let len = (dx * dx + dy * dy).squareRoot()
+        let maxR: CGFloat = 34
+        if len > maxR {
+            dx = dx / len * maxR
+            dy = dy / len * maxR
+        }
+        padKnob.position = CGPoint(x: padOrigin.x + dx, y: padOrigin.y + dy)
+        let strength = min(1, len / maxR)
+        padVector = len > 6
+            ? CGVector(dx: dx / maxR * strength, dy: dy / maxR * strength)
+            : .zero
+    }
+
+    func padTouchEnded() {
+        guard padActive else { return }
+        padActive = false
+        padVector = .zero
+        padBase.run(.fadeOut(withDuration: 0.15))
+        padKnob.run(.fadeOut(withDuration: 0.15))
+        movement.setManualWalk(world.kael, dx: 0, active: false)
+    }
+
+    private func updatePadMovement(deltaTime: TimeInterval) {
+        guard padActive, state == .exploration, deltaTime > 0,
+              padVector != .zero, let scene else {
+            if padActive, state != .exploration { padTouchEnded() }
+            return
+        }
+        let speed: CGFloat = 215
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        var pos = world.kael.position
+        pos.x += padVector.dx * speed * CGFloat(deltaTime)
+        pos.y += padVector.dy * speed * CGFloat(deltaTime)
+        pos.x = min(max(pos.x, 34), scene.size.width - 34)
+        pos.y = min(max(pos.y, 86), wh - 44)
+        world.kael.position = pos
+        world.refreshKaelDepth()
+        movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {

@@ -8,6 +8,7 @@ final class EchoesOfAetherApp: UIResponder, UIApplicationDelegate {
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        PixelUI.registerPixelFont()
         let window = UIWindow(frame: UIScreen.main.bounds)
         window.rootViewController = GameViewController()
         window.makeKeyAndVisible()

@@ -260,7 +260,6 @@
 				B090FF8964809699D851868F /* PlayerStateTests.swift */,
 				4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */,
 			);
-			name = EchoesOfAetherTests;
 			path = EchoesOfAetherTests;
 			sourceTree = SOURCE_ROOT;
 		};
@@ -591,7 +590,7 @@
 				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5WUC3D8BMJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Echoes of Aether";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
@@ -622,7 +621,7 @@
 				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 5WUC3D8BMJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "Echoes of Aether";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;

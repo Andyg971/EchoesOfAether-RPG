@@ -9,7 +9,22 @@ enum PixelUI {
     static let gold = SKColor(red: 0.86, green: 0.70, blue: 0.38, alpha: 1)
     static let goldDim = SKColor(red: 0.55, green: 0.44, blue: 0.24, alpha: 0.45)
     static let panelFill = SKColor(red: 0.075, green: 0.058, blue: 0.048, alpha: 0.97)
-    static let uiFont = "Menlo-Bold"
+
+    /// Police pixel art (VT323, embarquée en DataAsset et enregistrée au
+    /// lancement par `registerPixelFont`). Fallback Menlo si absente.
+    static var uiFont: String {
+        UIFont(name: "VT323-Regular", size: 10) != nil ? "VT323-Regular" : "Menlo-Bold"
+    }
+
+    /// Enregistre la police pixel du bundle (DataAsset "PixelFont") —
+    /// aucun Info.plist requis. À appeler une fois au démarrage.
+    static func registerPixelFont() {
+        guard UIFont(name: "VT323-Regular", size: 10) == nil,
+              let asset = NSDataAsset(name: "PixelFont"),
+              let provider = CGDataProvider(data: asset.data as CFData),
+              let font = CGFont(provider) else { return }
+        CTFontManagerRegisterGraphicsFont(font, nil)
+    }
 
     /// Applique le cadre pixel à un SKShapeNode existant (le path est
     /// remplacé par un rectangle net). Ré-applicable : nettoie ses

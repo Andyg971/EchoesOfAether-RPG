@@ -21,7 +21,7 @@ final class DialogueSystem {
     private let portraitInitial = SKLabelNode(fontNamed: "AvenirNext-Heavy")
     private var portraitSprite: SKSpriteNode?     // portrait pixel (Kael)
     private let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let bodyLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+    private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var choiceNodes: [SKShapeNode] = []
     private var steps: [DialogueStep] = []
@@ -102,10 +102,11 @@ final class DialogueSystem {
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
         self.safeBottom = safeBottom
         // Accessibilité « gros texte » : agrandit les polices du dialogue.
+        // VT323 est étroite : tailles relevées pour garder la lisibilité.
         let ts = AccessibilitySettings.textScale
-        speakerLabel.fontSize = 11 * ts
-        bodyLabel.fontSize = 10 * ts
-        continueIndicator.fontSize = 9 * ts
+        speakerLabel.fontSize = 15 * ts
+        bodyLabel.fontSize = 14 * ts
+        continueIndicator.fontSize = 12 * ts
         portraitInitial.fontSize = 12 * ts
         let hasChoices = !choiceNodes.isEmpty
         let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
@@ -342,9 +343,9 @@ final class DialogueSystem {
             bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)
             button.addChild(bullet)
 
-            let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+            let label = SKLabelNode(fontNamed: PixelUI.uiFont)
             label.text = option.title
-            label.fontSize = 9 * AccessibilitySettings.textScale
+            label.fontSize = 12 * AccessibilitySettings.textScale
             label.fontColor = .white
             label.numberOfLines = 2
             label.preferredMaxLayoutWidth = buttonWidth - 32
@@ -353,7 +354,7 @@ final class DialogueSystem {
             label.position = CGPoint(x: -buttonWidth / 2 + 22, y: 0)
             button.addChild(label)
 
-            let chevron = SKLabelNode(fontNamed: "AvenirNext-Medium")
+            let chevron = SKLabelNode(fontNamed: PixelUI.uiFont)
             chevron.text = "›"
             chevron.fontSize = 13
             chevron.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 0.8)

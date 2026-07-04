@@ -34,6 +34,19 @@ final class MovementController {
         isMoving = false
     }
 
+    /// Marche manuelle (joystick) : démarre/arrête l'animation de pas.
+    /// Idempotent — appelable chaque frame pendant le drag.
+    func setManualWalk(_ node: SKNode, dx: CGFloat, active: Bool) {
+        if active {
+            node.removeAction(forKey: "move")   // le pad prime sur tap-to-move
+            startWalkAnimation(on: node,
+                               towards: CGPoint(x: node.position.x + dx * 100,
+                                                y: node.position.y))
+        } else {
+            Self.stopWalkAnimation(on: node)
+        }
+    }
+
     // MARK: - Animation de marche
 
     /// Pas d'assets de frames de marche pour Kael : on anime le sprite

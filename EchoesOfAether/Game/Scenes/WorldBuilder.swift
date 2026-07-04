@@ -84,6 +84,35 @@ final class WorldBuilder {
         lyraKeepsVigil = false
     }
 
+    // MARK: - Lyra compagne (forêt, sanctuaire, ruines)
+
+    /// Fait apparaître Lyra aux côtés de Kael (elle l'accompagne dans
+    /// les zones du pacte — le scénario la met à ses côtés).
+    func showLyraCompanion() {
+        lyra.isHidden = false
+        lyra.position = CGPoint(x: kael.position.x - 46, y: kael.position.y - 8)
+        lyra.zPosition = actorLayer(for: lyra.position.y)
+    }
+
+    /// Suivi doux : Lyra marche derrière Kael quand il s'éloigne.
+    func updateLyraFollow(deltaTime: TimeInterval) {
+        guard !lyra.isHidden, deltaTime > 0 else { return }
+        let target = CGPoint(x: kael.position.x - 40, y: kael.position.y - 6)
+        let dx = target.x - lyra.position.x
+        let dy = target.y - lyra.position.y
+        let dist = (dx * dx + dy * dy).squareRoot()
+        guard dist > 54 else { return }
+        let step = min(CGFloat(deltaTime) * 240, dist - 44)
+        lyra.position.x += dx / dist * step
+        lyra.position.y += dy / dist * step
+        lyra.zPosition = actorLayer(for: lyra.position.y)
+    }
+
+    /// Recalcule la profondeur de Kael (déplacement continu au pad).
+    func refreshKaelDepth() {
+        kael.zPosition = actorLayer(for: kael.position.y)
+    }
+
     // MARK: - Camera
 
     func updateCamera(in sceneSize: CGSize) {

@@ -147,6 +147,12 @@ final class DialogueSystem {
     }
 
     func start(_ steps: [DialogueStep], completion: (() -> Void)? = nil) {
+        // Audit visuel : --skip-dialogue court-circuite tout dialogue
+        // (utile avec --boss-test/--fx-demo pour filmer les effets).
+        if CommandLine.arguments.contains("--skip-dialogue") {
+            completion?()
+            return
+        }
         self.steps = steps
         self.index = 0
         self.pendingNPC = nil

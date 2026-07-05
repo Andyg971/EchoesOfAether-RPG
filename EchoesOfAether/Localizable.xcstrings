@@ -9236,7 +9236,6 @@
       }
     },
     "questlog.close" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9287,7 +9286,6 @@
       }
     },
     "questlog.empty" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9406,7 +9404,6 @@
       }
     },
     "questlog.state.active" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9423,7 +9420,6 @@
       }
     },
     "questlog.state.complete" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9440,7 +9436,6 @@
       }
     },
     "questlog.title" : {
-      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

@@ -144,9 +144,8 @@ final class HUDOverlay {
 
         let xpRect = CGRect(x: -xpBarWidth / 2, y: -xpBarHeight / 2,
                              width: xpBarWidth, height: xpBarHeight)
-        let xpPath = CGPath(roundedRect: xpRect,
-                             cornerWidth: xpBarHeight / 2,
-                             cornerHeight: xpBarHeight / 2, transform: nil)
+        // Barre rectangulaire nette : pas de bouts arrondis en pixel art.
+        let xpPath = CGPath(rect: xpRect, transform: nil)
         xpBarBack.path = xpPath
         xpBarBack.fillColor = SKColor(white: 0.10, alpha: 1)
         xpBarBack.strokeColor = SKColor(white: 0.45, alpha: 0.45)
@@ -249,22 +248,25 @@ final class HUDOverlay {
     // MARK: - Private
 
     private func configurePlate(_ node: SKShapeNode) {
-        node.fillColor = SKColor(red: 0.055, green: 0.045, blue: 0.07, alpha: 0.78)
-        node.strokeColor = SKColor(red: 0.55, green: 0.43, blue: 0.75, alpha: 0.42)
-        node.lineWidth = 1.2
-        node.glowWidth = 1.2
+        // Plaque pixel : fond sombre, fin liseré or discret, zéro glow.
+        node.fillColor = SKColor(red: 0.055, green: 0.048, blue: 0.055, alpha: 0.80)
+        node.strokeColor = PixelUI.goldDim
+        node.lineWidth = 1.5
+        node.glowWidth = 0
         node.zPosition = -1
     }
 
     private func setPlate(_ node: SKShapeNode, size: CGSize, radius: CGFloat) {
+        // Coins carrés — le pixel art ne connaît pas les angles arrondis.
+        _ = radius
         let rect = CGRect(x: -size.width / 2, y: -size.height / 2,
                           width: size.width, height: size.height)
-        node.path = CGPath(roundedRect: rect, cornerWidth: radius, cornerHeight: radius, transform: nil)
+        node.path = CGPath(rect: rect, transform: nil)
     }
 
     private func setButton(_ node: SKShapeNode, size: CGFloat) {
         let rect = CGRect(x: -size / 2, y: -size / 2, width: size, height: size)
-        node.path = CGPath(roundedRect: rect, cornerWidth: 10, cornerHeight: 10, transform: nil)
+        node.path = CGPath(rect: rect, transform: nil)
     }
 
     private func setupPauseButton() {
@@ -356,9 +358,9 @@ final class HUDOverlay {
     }
 
     private func styleButton(_ button: SKShapeNode) {
-        button.fillColor = SKColor(red: 0.08, green: 0.06, blue: 0.11, alpha: 0.88)
-        button.strokeColor = SKColor(red: 0.62, green: 0.50, blue: 0.85, alpha: 0.75)
+        button.fillColor = SKColor(red: 0.07, green: 0.06, blue: 0.07, alpha: 0.88)
+        button.strokeColor = PixelUI.goldDim
         button.lineWidth = 1.5
-        button.glowWidth = 1
+        button.glowWidth = 0
     }
 }

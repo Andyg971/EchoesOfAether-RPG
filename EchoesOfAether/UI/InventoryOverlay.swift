@@ -249,8 +249,8 @@ final class InventoryOverlay {
     // MARK: - Private
 
     private func setupCloseButton() {
-        closeButton.fillColor = SKColor(red: 0.12, green: 0.08, blue: 0.18, alpha: 1)
-        closeButton.strokeColor = SKColor(red: 0.50, green: 0.35, blue: 0.75, alpha: 0.8)
+        closeButton.fillColor = SKColor(red: 0.12, green: 0.10, blue: 0.07, alpha: 1)
+        closeButton.strokeColor = PixelUI.goldDim
         closeButton.lineWidth = 1.5
 
         let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")

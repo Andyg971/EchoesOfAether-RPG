@@ -71,12 +71,8 @@ final class TutorialOverlay {
         root.addChild(scrim)
 
         let panelW: CGFloat = 320, panelH: CGFloat = 320
-        let panel = SKShapeNode(path: CGPath(
-            roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
-            cornerWidth: 20, cornerHeight: 20, transform: nil))
-        panel.fillColor = SKColor(red: 0.06, green: 0.05, blue: 0.12, alpha: 0.98)
-        panel.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.85, alpha: 0.9)
-        panel.lineWidth = 2
+        let panel = SKShapeNode()
+        PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH))
         panel.position = CGPoint(x: cx, y: cy)
         root.addChild(panel)
 
@@ -86,7 +82,7 @@ final class TutorialOverlay {
         let stepLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
         stepLabel.text = String(localized: "tutorial.progress \(index + 1) \(panels.count)")
         stepLabel.fontSize = 12
-        stepLabel.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 1)
+        stepLabel.fontColor = PixelUI.gold
         stepLabel.horizontalAlignmentMode = .center
         stepLabel.verticalAlignmentMode = .center
         stepLabel.position = CGPoint(x: cx, y: top - 30)
@@ -117,8 +113,8 @@ final class TutorialOverlay {
         let isLast = index >= panels.count - 1
         let nextBtn = makeButton(
             isLast ? String(localized: "tutorial.finish") : String(localized: "tutorial.next"),
-            fill: SKColor(red: 0.16, green: 0.10, blue: 0.28, alpha: 1),
-            stroke: SKColor(red: 0.55, green: 0.42, blue: 0.92, alpha: 1),
+            fill: SKColor(red: 0.14, green: 0.11, blue: 0.07, alpha: 1),
+            stroke: PixelUI.gold,
             name: "tutorialNext", width: 200)
         nextBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 74)
         root.addChild(nextBtn)

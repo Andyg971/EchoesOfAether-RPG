@@ -1047,9 +1047,9 @@ final class GameManager {
             to: scene,
             enemySpecs: [
                 EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
-                          hp: 130, kind: .ghoul, baseDamage: 24),
+                          hp: 200, kind: .ghoul, baseDamage: 34),
                 EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
-                          hp: 130, kind: .ghoul, baseDamage: 24)
+                          hp: 200, kind: .ghoul, baseDamage: 34)
             ],
             goldReward: 40,
             player: player
@@ -1077,9 +1077,9 @@ final class GameManager {
             to: scene,
             enemySpecs: [
                 EnemySpec(name: String(localized: "combat.enemy.bonewalker"),
-                          hp: 200, kind: .boneWalker, baseDamage: 28),
+                          hp: 320, kind: .boneWalker, baseDamage: 42),
                 EnemySpec(name: String(localized: "combat.enemy.ghoul"),
-                          hp: 110, kind: .ghoul, baseDamage: 22)
+                          hp: 180, kind: .ghoul, baseDamage: 32)
             ],
             goldReward: 55,
             player: player
@@ -1131,7 +1131,7 @@ final class GameManager {
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.beast"),
-            enemyHP: 150,
+            enemyHP: 240,
             goldReward: 35,
             player: player,
             enemyKind: .beast
@@ -1167,9 +1167,9 @@ final class GameManager {
             to: scene,
             enemySpecs: [
                 EnemySpec(name: String(localized: "combat.enemy.numbered \(wolfName) \(1)"),
-                          hp: 110, kind: .wolf),
+                          hp: 175, kind: .wolf, baseDamage: 26),
                 EnemySpec(name: String(localized: "combat.enemy.numbered \(wolfName) \(2)"),
-                          hp: 110, kind: .wolf)
+                          hp: 175, kind: .wolf, baseDamage: 26)
             ],
             goldReward: 50,
             player: player
@@ -1237,7 +1237,7 @@ final class GameManager {
                 enrageSpeedMult: 1.6,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 44,
+                specialDamage: 68,
                 specialName: String(localized: "combat.boss.specialName")
             )
 
@@ -1245,7 +1245,7 @@ final class GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.guardian"),
-                enemyHP: 380,
+                enemyHP: 620,
                 goldReward: 120,
                 player: player,
                 enemyKind: .guardian,
@@ -1577,7 +1577,7 @@ final class GameManager {
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.ruinsGuardian"),
-            enemyHP: 220,
+            enemyHP: 360,
             goldReward: 30,
             player: player,
             enemyKind: .ruinsGuardian
@@ -1612,7 +1612,7 @@ final class GameManager {
                 enrageSpeedMult: 1.5,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 40,
+                specialDamage: 62,
                 specialName: String(localized: "combat.archivist.specialName")
             )
 
@@ -1620,7 +1620,7 @@ final class GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.archivist"),
-                enemyHP: 320,
+                enemyHP: 520,
                 goldReward: 55,
                 player: player,
                 enemyKind: .archivist,
@@ -2083,7 +2083,7 @@ final class GameManager {
                 enrageSpeedMult: 1.8,
                 enrageDamageMult: 3,
                 specialAttackInterval: 2,
-                specialDamage: 62,
+                specialDamage: 92,
                 specialName: String(localized: "combat.thresholdGuardian.specialName")
             )
 
@@ -2091,7 +2091,7 @@ final class GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.thresholdGuardian"),
-                enemyHP: 950,
+                enemyHP: 1400,
                 goldReward: 0,
                 player: player,
                 enemyKind: .guardian,

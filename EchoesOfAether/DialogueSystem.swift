@@ -15,11 +15,7 @@ enum DialogueStep {
 final class DialogueSystem {
     private let root = SKNode()
     private let panel = SKShapeNode()
-    private let panelAccent = SKShapeNode()        // bande accent à gauche
     private let separator = SKShapeNode()          // trait fin sous le nom
-    private let portraitBack = SKShapeNode()       // cercle avatar
-    private let portraitInitial = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-    private var portraitSprite: SKSpriteNode?     // portrait pixel (Kael)
     private let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -39,7 +35,6 @@ final class DialogueSystem {
     private let panelHeightLine: CGFloat = 76
     private let panelHeightChoices: CGFloat = 170
     private var safeBottom: CGFloat = 0
-    private let portraitRadius: CGFloat = 14
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -48,36 +43,17 @@ final class DialogueSystem {
         root.isHidden = true
         scene.addChild(root)
 
-        panel.fillColor = SKColor(red: 0.04, green: 0.04, blue: 0.07, alpha: 0.96)
-        panel.strokeColor = SKColor(red: 0.52, green: 0.48, blue: 0.86, alpha: 1)
+        panel.fillColor = PixelUI.panelFill
+        panel.strokeColor = PixelUI.gold
         panel.lineWidth = 2
         root.addChild(panel)
-
-        panelAccent.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.92, alpha: 0.85)
-        panelAccent.strokeColor = .clear
-        root.addChild(panelAccent)
-
-        portraitBack.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
-        portraitBack.strokeColor = SKColor(red: 0.55, green: 0.30, blue: 0.92, alpha: 0.9)
-        portraitBack.lineWidth = 2
-        portraitBack.path = CGPath(ellipseIn: CGRect(x: -portraitRadius, y: -portraitRadius,
-                                                       width: portraitRadius * 2,
-                                                       height: portraitRadius * 2),
-                                   transform: nil)
-        root.addChild(portraitBack)
-
-        portraitInitial.fontSize = 12
-        portraitInitial.fontColor = .white
-        portraitInitial.verticalAlignmentMode = .center
-        portraitInitial.horizontalAlignmentMode = .center
-        root.addChild(portraitInitial)
 
         speakerLabel.horizontalAlignmentMode = .left
         speakerLabel.fontSize = 11
         speakerLabel.fontColor = .white
         root.addChild(speakerLabel)
 
-        separator.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.70, alpha: 0.5)
+        separator.strokeColor = PixelUI.goldDim
         separator.lineWidth = 1
         root.addChild(separator)
 
@@ -90,7 +66,7 @@ final class DialogueSystem {
 
         continueIndicator.text = "▼"
         continueIndicator.fontSize = 9
-        continueIndicator.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 0.9)
+        continueIndicator.fontColor = PixelUI.gold
         continueIndicator.horizontalAlignmentMode = .right
         continueIndicator.isHidden = true
         root.addChild(continueIndicator)
@@ -107,29 +83,18 @@ final class DialogueSystem {
         speakerLabel.fontSize = 15 * ts
         bodyLabel.fontSize = 14 * ts
         continueIndicator.fontSize = 12 * ts
-        portraitInitial.fontSize = 12 * ts
         let hasChoices = !choiceNodes.isEmpty
         let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
         let panelWidth = min(size.width - 32, 720)
 
-        // Cadre RPG pixel art (coins carrés, double bordure, crans dorés)
+        // Cadre RPG pixel art (coins carrés, liseré sombre + bordure or)
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight))
-
-        // Bande accent verticale le long du bord gauche du panneau
-        let accentRect = CGRect(x: -panelWidth / 2 + 4, y: -panelHeight / 2 + 4,
-                                 width: 3, height: panelHeight - 8)
-        panelAccent.path = CGPath(rect: accentRect, transform: nil)
 
         let baseY = panelHeight / 2 + 20 + safeBottom
         root.position = CGPoint(x: size.width / 2, y: baseY)
 
-        // Portrait : coin haut-gauche, légèrement au-dessus du panneau
-        let portraitX = -panelWidth / 2 + portraitRadius + 16
-        let portraitY = panelHeight / 2 - portraitRadius - 8
-        portraitBack.position = CGPoint(x: portraitX, y: portraitY)
-        portraitInitial.position = CGPoint(x: portraitX, y: portraitY)
-
-        let textX = portraitX + portraitRadius + 8
+        // Nom du locuteur seul, teinté à sa couleur — pas d'avatar.
+        let textX = -panelWidth / 2 + 14
         speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 16)
 
         let sepY = panelHeight / 2 - 26
@@ -209,41 +174,15 @@ final class DialogueSystem {
         return SKColor(hue: hue, saturation: 0.55, brightness: 0.75, alpha: 1)
     }
 
+    /// Plus d'avatar : le prénom seul, teinté à la couleur du locuteur
+    /// (éclairci si besoin pour rester lisible sur le panneau sombre).
     private func applyPortrait(for speaker: String) {
         let color = portraitColor(for: speaker)
-        portraitBack.fillColor = color.withAlphaComponent(0.85)
-        portraitBack.strokeColor = color
-        // Kael a un portrait pixel art (tête du sprite) ; les autres
-        // gardent l'initiale colorée.
-        let isKael = speaker.trimmingCharacters(in: .whitespaces)
-            .compare("Kael", options: .caseInsensitive) == .orderedSame
-        if isKael, UIImage(named: "kael_portrait") != nil {
-            portraitInitial.text = ""
-            if portraitSprite == nil {
-                let tex = SKTexture(imageNamed: "kael_portrait")
-                tex.filteringMode = .nearest
-                let sprite = SKSpriteNode(texture: tex)
-                sprite.size = CGSize(width: portraitRadius * 1.8, height: portraitRadius * 1.8)
-                let mask = SKShapeNode(circleOfRadius: portraitRadius - 1.5)
-                mask.fillColor = .white
-                mask.strokeColor = .clear
-                let crop = SKCropNode()
-                crop.maskNode = mask
-                crop.addChild(sprite)
-                crop.zPosition = 1
-                portraitBack.addChild(crop)
-                portraitSprite = sprite
-            }
-            portraitSprite?.parent?.isHidden = false
-        } else {
-            portraitSprite?.parent?.isHidden = true
-            portraitInitial.text = String(speaker.trimmingCharacters(in: .whitespaces).prefix(1)).uppercased()
-        }
-        // Petit "pop" quand le speaker change
-        portraitBack.run(.sequence([
-            .scale(to: 1.15, duration: 0.08),
-            .scale(to: 1.0, duration: 0.14)
-        ]))
+        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
+        speakerLabel.fontColor = b < 0.6
+            ? SKColor(hue: h, saturation: min(s, 0.6), brightness: 0.80, alpha: 1)
+            : color
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {

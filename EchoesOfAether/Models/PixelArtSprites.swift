@@ -27,8 +27,10 @@ enum PixelUI {
     }
 
     /// Applique le cadre pixel à un SKShapeNode existant (le path est
-    /// remplacé par un rectangle net). Ré-applicable : nettoie ses
-    /// anciennes décorations avant de les recréer.
+    /// remplacé par un rectangle net). Style SNES : liseré sombre
+    /// extérieur + bordure accent — pas de coins crantés ni de double
+    /// trait intérieur. Ré-applicable : nettoie ses anciennes
+    /// décorations avant de les recréer.
     static func stylePanel(_ shape: SKShapeNode, size: CGSize,
                            fill: SKColor = panelFill,
                            accent: SKColor = gold) {
@@ -41,29 +43,18 @@ enum PixelUI {
         shape.glowWidth = 0
 
         shape.childNode(withName: "pixelInner")?.removeFromParent()
-        let inner = SKShapeNode(rect: CGRect(x: -size.width / 2 + 4,
-                                             y: -size.height / 2 + 4,
-                                             width: size.width - 8,
-                                             height: size.height - 8))
-        inner.name = "pixelInner"
-        inner.fillColor = .clear
-        inner.strokeColor = accent.withAlphaComponent(0.35)
-        inner.lineWidth = 1
-        inner.zPosition = 0.5
-        shape.addChild(inner)
-
         shape.childNode(withName: "pixelCorners")?.removeFromParent()
-        let corners = SKNode()
-        corners.name = "pixelCorners"
-        corners.zPosition = 0.6
-        for (sx, sy) in [(-1, -1), (1, -1), (-1, 1), (1, 1)] {
-            let c = SKSpriteNode(color: accent,
-                                 size: CGSize(width: 6, height: 6))
-            c.position = CGPoint(x: CGFloat(sx) * size.width / 2,
-                                 y: CGFloat(sy) * size.height / 2)
-            corners.addChild(c)
-        }
-        shape.addChild(corners)
+        shape.childNode(withName: "pixelOuter")?.removeFromParent()
+        let outer = SKShapeNode(rect: CGRect(x: -size.width / 2 - 2,
+                                             y: -size.height / 2 - 2,
+                                             width: size.width + 4,
+                                             height: size.height + 4))
+        outer.name = "pixelOuter"
+        outer.fillColor = .clear
+        outer.strokeColor = SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 0.9)
+        outer.lineWidth = 2
+        outer.zPosition = -0.1
+        shape.addChild(outer)
     }
 }
 

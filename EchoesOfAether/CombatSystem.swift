@@ -106,23 +106,23 @@ struct EnemySpec {
 @MainActor
 final class CombatSystem {
     private let root = SKNode()
-    private let statusLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+    private let statusLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // HP bars
     private let kaelHPBack = SKShapeNode()
     private let kaelHPFill = SKShapeNode()
-    private let kaelHPLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let enemyHPBack = SKShapeNode()
     private let enemyHPFill = SKShapeNode()
-    private let enemyHPLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
-    private let targetNameLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+    private let enemyHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let targetNameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Tour par tour
     private enum TurnPhase { case intro, playerTurn, playerActing, enemyTurn, finished }
     private enum TurnActor { case player, enemy }
     private var phase: TurnPhase = .intro
     private let turnBanner = SKShapeNode(rectOf: CGSize(width: 240, height: 30), cornerRadius: 15)
-    private let turnBannerLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    private let turnBannerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let turnPipsRoot = SKNode()
 
     // Buttons
@@ -134,9 +134,9 @@ private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), c
 private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let weaknessLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-private let boostLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-private let breakLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+private let weaknessLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+private let boostLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Sprites combattants (refonte UI : on doit voir les personnages se battre)
     private var kaelSprite: SKNode?
@@ -185,16 +185,16 @@ private var goldReward = 0
 
     // Combo
     private var comboCount = 0
-    private let comboLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    private let comboLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Status effect label
-    private let statusEffectLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let statusEffectLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Boss
     private var bossConfig: BossConfig?
     private var isEnraged = false
     private var enemyTurnCount = 0
-    private let enrageLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+    private let enrageLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     private let barWidth: CGFloat = 140
     private let barHeight: CGFloat = 14
@@ -215,7 +215,8 @@ private var goldReward = 0
                 enemyKind: CombatSpriteKind = .beast,
                 boss: BossConfig? = nil,
                 completion: @escaping (Int, Int) -> Void) {
-        let dmg = boss != nil ? 24 : 18
+        // Ennemis relevés : le joueur doit encaisser une vraie menace.
+        let dmg = boss != nil ? 38 : 28
         attach(to: scene,
                enemySpecs: [EnemySpec(name: enemyName, hp: enemyHP,
                                       kind: enemyKind, baseDamage: dmg)],
@@ -628,9 +629,9 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         plate.zPosition = 910
         root.addChild(plate)
 
-        let bossTitle = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let bossTitle = SKLabelNode(fontNamed: PixelUI.uiFont)
         bossTitle.text = "⚔ " + (enemies.first?.combatant.name ?? "") + " ⚔"
-        bossTitle.fontSize = 14
+        bossTitle.fontSize = 17
         bossTitle.fontColor = SKColor(red: 0.80, green: 0.55, blue: 1, alpha: 1)
         bossTitle.verticalAlignmentMode = .center
         bossTitle.position = plate.position
@@ -1205,9 +1206,9 @@ private func playMendEffect(boosted: Bool) {
 }
 
 private func showFloatingText(_ text: String, at position: CGPoint, color: SKColor) {
-    let label = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    let label = SKLabelNode(fontNamed: PixelUI.uiFont)
     label.text = text
-    label.fontSize = 22
+    label.fontSize = 25
     label.fontColor = color
     label.position = CGPoint(x: position.x, y: position.y + 72)
     label.zPosition = 940
@@ -1295,20 +1296,20 @@ private func setupComboAndStatusUI(scene: SKScene) {
     comboLabel.alpha = 0
     root.addChild(comboLabel)
 
-    statusEffectLabel.fontSize = 13
+    statusEffectLabel.fontSize = 16
     statusEffectLabel.fontColor = SKColor(red: 0.55, green: 0.90, blue: 0.55, alpha: 1)
     statusEffectLabel.position = CGPoint(x: scene.size.width * 0.72, y: scene.size.height * 0.32)
     statusEffectLabel.zPosition = 930
     statusEffectLabel.alpha = 0
     root.addChild(statusEffectLabel)
 
-    weaknessLabel.fontSize = 12
+    weaknessLabel.fontSize = 15
     weaknessLabel.fontColor = SKColor(red: 0.94, green: 0.86, blue: 0.62, alpha: 1)
     weaknessLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.695)
     weaknessLabel.zPosition = 920
     root.addChild(weaknessLabel)
 
-    boostLabel.fontSize = 13
+    boostLabel.fontSize = 16
     boostLabel.fontColor = SKColor(red: 0.72, green: 0.62, blue: 1.00, alpha: 1)
     boostLabel.position = CGPoint(x: scene.size.width / 2, y: 220)
     boostLabel.zPosition = 920
@@ -1731,7 +1732,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     private func setupStatus(scene: SKScene) {
         // Ligne de log dédiée au-dessus de l'arène : jamais en collision
         // avec les plaques de nom (h-72 chevauchait sur grands iPhone).
-        statusLabel.fontSize = 13
+        statusLabel.fontSize = 16
         statusLabel.fontColor = .white
         statusLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.645)
         root.addChild(statusLabel)
@@ -1750,18 +1751,18 @@ private func setupComboAndStatusUI(scene: SKScene) {
                      color: SKColor(red: 0.82, green: 0.22, blue: 0.24, alpha: 1),
                      at: CGPoint(x: enemyX, y: barY))
 
-        kaelHPLabel.fontSize = 12
+        kaelHPLabel.fontSize = 15
         kaelHPLabel.fontColor = .white
         kaelHPLabel.position = CGPoint(x: kaelX, y: barY - 18)
         root.addChild(kaelHPLabel)
 
-        enemyHPLabel.fontSize = 12
+        enemyHPLabel.fontSize = 15
         enemyHPLabel.fontColor = .white
         enemyHPLabel.position = CGPoint(x: enemyX, y: barY - 18)
         root.addChild(enemyHPLabel)
 
         addCombatantLabel("Kael", at: CGPoint(x: kaelX, y: barY + 16))
-        targetNameLabel.fontSize = 16
+        targetNameLabel.fontSize = 19
         targetNameLabel.fontColor = .white
         targetNameLabel.position = CGPoint(x: enemyX, y: barY + 16)
         root.addChild(targetNameLabel)
@@ -1782,9 +1783,10 @@ private func setupComboAndStatusUI(scene: SKScene) {
         chevron.addLine(to: CGPoint(x: 9, y: 9))
         targetMarker.path = chevron
         targetMarker.strokeColor = SKColor(red: 1.00, green: 0.85, blue: 0.30, alpha: 1)
-        targetMarker.lineWidth = 3.5
-        targetMarker.lineCap = .round
-        targetMarker.glowWidth = 2
+        targetMarker.lineWidth = 4
+        targetMarker.lineCap = .butt
+        targetMarker.lineJoin = .miter
+        targetMarker.glowWidth = 0
         targetMarker.zPosition = 870
         root.addChild(targetMarker)
         targetMarker.run(.repeatForever(.sequence([
@@ -1804,7 +1806,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         turnBanner.alpha = 0
         root.addChild(turnBanner)
 
-        turnBannerLabel.fontSize = 14
+        turnBannerLabel.fontSize = 17
         turnBannerLabel.fontColor = .white
         turnBannerLabel.verticalAlignmentMode = .center
         turnBannerLabel.position = turnBanner.position
@@ -1867,20 +1869,23 @@ private func setupComboAndStatusUI(scene: SKScene) {
                 if e.brokenTurns > 0 || e.combatant.stunned { skipped = true }
             }
 
-            let pip = SKShapeNode(circleOfRadius: isCurrent ? 12 : 9)
+            // Pip pixel : carré net, bord clair pour l'acteur courant.
+            let side: CGFloat = isCurrent ? 20 : 15
+            let pip = SKShapeNode(rect: CGRect(x: -side / 2, y: -side / 2,
+                                               width: side, height: side))
             pip.position = CGPoint(x: x0 + CGFloat(i) * spacing, y: 0)
             pip.fillColor = isEnemy
                 ? SKColor(red: 0.42, green: 0.12, blue: 0.14, alpha: 0.95)
                 : SKColor(red: 0.12, green: 0.26, blue: 0.42, alpha: 0.95)
             pip.strokeColor = isCurrent
                 ? SKColor(red: 1.00, green: 0.92, blue: 0.55, alpha: 1)
-                : SKColor(white: 0.55, alpha: 0.8)
+                : SKColor(white: 0.45, alpha: 0.8)
             pip.lineWidth = isCurrent ? 2 : 1
-            pip.glowWidth = isCurrent ? 3 : 0
+            pip.glowWidth = 0
             if skipped { pip.alpha = 0.35 }
             turnPipsRoot.addChild(pip)
 
-            let letter = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            let letter = SKLabelNode(fontNamed: PixelUI.uiFont)
             if skipped {
                 letter.text = "✕"
             } else if isEnemy {
@@ -1912,43 +1917,44 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
 private func setupButtons(scene: SKScene) {
-    let panelWidth = min(scene.size.width - 18, 320)
-    let panelHeight: CGFloat = 110
-    let panelY: CGFloat = 76
+    // Panneau compact façon menu SNES : cadre or discret, grille serrée.
+    let panelWidth = min(scene.size.width - 18, 264)
+    let panelHeight: CGFloat = 88
+    let panelY: CGFloat = 68
 
     let panel = SKShapeNode()
     PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
-                       fill: SKColor(red: 0.035, green: 0.030, blue: 0.060, alpha: 0.96),
-                       accent: SKColor(red: 0.72, green: 0.58, blue: 1.00, alpha: 0.8))
+                       fill: SKColor(red: 0.045, green: 0.038, blue: 0.045, alpha: 0.96),
+                       accent: PixelUI.goldDim)
     panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
     panel.zPosition = 850
     root.addChild(panel)
 
-    let buttonW = (panelWidth - 28) / 3
-    let buttonH: CGFloat = 32
-    let x0 = scene.size.width / 2 - buttonW - 4
+    let buttonW = (panelWidth - 24) / 3
+    let buttonH: CGFloat = 28
+    let x0 = scene.size.width / 2 - buttonW - 6
     let x1 = scene.size.width / 2
-    let x2 = scene.size.width / 2 + buttonW + 4
-    let topY = panelY + 16
-    let bottomY = panelY - 22
+    let x2 = scene.size.width / 2 + buttonW + 6
+    let topY = panelY + 18
+    let bottomY = panelY - 16
 
     addButton(attackButton, title: String(localized: "combat.button.attack"), at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.16, green: 0.16, blue: 0.20, alpha: 1), stroke: CombatElement.physical.color, fontSize: 10)
+              fill: SKColor(red: 0.13, green: 0.13, blue: 0.16, alpha: 1), stroke: SKColor(white: 0.62, alpha: 1), fontSize: 12)
     addButton(fireButton, title: String(localized: "combat.button.fire"), at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.32, green: 0.075, blue: 0.035, alpha: 1), stroke: CombatElement.fire.color, fontSize: 11)
+              fill: SKColor(red: 0.26, green: 0.07, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.85, green: 0.38, blue: 0.18, alpha: 1), fontSize: 13)
     addButton(iceButton, title: String(localized: "combat.button.ice"), at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.035, green: 0.18, blue: 0.28, alpha: 1), stroke: CombatElement.ice.color, fontSize: 11)
+              fill: SKColor(red: 0.03, green: 0.14, blue: 0.23, alpha: 1), stroke: SKColor(red: 0.42, green: 0.72, blue: 0.90, alpha: 1), fontSize: 13)
     addButton(blackSlashButton, title: String(localized: "combat.button.aether"), at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.22, green: 0.07, blue: 0.34, alpha: 1), stroke: CombatElement.aether.color, fontSize: 10)
+              fill: SKColor(red: 0.17, green: 0.06, blue: 0.26, alpha: 1), stroke: SKColor(red: 0.62, green: 0.40, blue: 0.85, alpha: 1), fontSize: 12)
     addButton(lightningButton, title: String(localized: "combat.button.lightning"), at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.30, green: 0.22, blue: 0.035, alpha: 1), stroke: CombatElement.lightning.color, fontSize: 10)
+              fill: SKColor(red: 0.24, green: 0.18, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.85, green: 0.70, blue: 0.25, alpha: 1), fontSize: 12)
     addButton(healButton, title: String(localized: "combat.button.heal"), at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
-              fill: SKColor(red: 0.035, green: 0.26, blue: 0.10, alpha: 1), stroke: SKColor(red: 0.40, green: 1.00, blue: 0.56, alpha: 1), fontSize: 11)
+              fill: SKColor(red: 0.03, green: 0.20, blue: 0.09, alpha: 1), stroke: SKColor(red: 0.38, green: 0.80, blue: 0.48, alpha: 1), fontSize: 13)
 
-    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 52, y: panelY + 48), width: 88, height: 22,
-              fill: SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 1), stroke: SKColor(red: 0.86, green: 0.68, blue: 1.00, alpha: 1), fontSize: 12)
-    addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 52, y: panelY + 48), width: 88, height: 22,
-              fill: SKColor(red: 0.08, green: 0.24, blue: 0.14, alpha: 1), stroke: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1), fontSize: 12)
+    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 46, y: panelY + 60), width: 80, height: 20,
+              fill: SKColor(red: 0.15, green: 0.09, blue: 0.24, alpha: 1), stroke: SKColor(red: 0.62, green: 0.48, blue: 0.82, alpha: 1), fontSize: 12)
+    addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 46, y: panelY + 60), width: 80, height: 20,
+              fill: SKColor(red: 0.06, green: 0.18, blue: 0.11, alpha: 1), stroke: SKColor(red: 0.38, green: 0.75, blue: 0.48, alpha: 1), fontSize: 12)
 }
 
 // MARK: - Helpers
@@ -1958,13 +1964,14 @@ private func setupButtons(scene: SKScene) {
     private func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,
                               width: CGFloat, height: CGFloat,
                               color: SKColor, at position: CGPoint) {
+        // Barres rectangulaires nettes — pas de bouts arrondis en pixel art.
         let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
-        let path = CGPath(roundedRect: rect, cornerWidth: height / 2, cornerHeight: height / 2, transform: nil)
+        let path = CGPath(rect: rect, transform: nil)
 
         back.path = path
-        back.fillColor = SKColor(white: 0.15, alpha: 1)
-        back.strokeColor = SKColor(white: 0.3, alpha: 1)
-        back.lineWidth = 1
+        back.fillColor = SKColor(white: 0.13, alpha: 1)
+        back.strokeColor = SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 0.9)
+        back.lineWidth = 2
         back.position = position
         root.addChild(back)
 
@@ -1977,18 +1984,18 @@ private func setupButtons(scene: SKScene) {
     }
 
     private func addCombatantLabel(_ text: String, at position: CGPoint) {
-        let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = text
-        label.fontSize = 16
+        label.fontSize = 19
         label.fontColor = .white
         label.position = position
         root.addChild(label)
     }
 
     private func addSmallLabel(_ text: String, at position: CGPoint) {
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = text
-        label.fontSize = 10
+        label.fontSize = 13
         label.fontColor = SKColor(white: 0.6, alpha: 1)
         label.position = position
         root.addChild(label)

@@ -16,6 +16,9 @@ final class WorldBuilder {
 
     let worldNode = SKNode()
     private(set) var worldHeight: CGFloat = 0
+    /// Empreintes au sol infranchissables (maisons, arbres, props solides).
+    /// En coordonnées monde ; vidées à chaque changement de zone.
+    private(set) var obstacles: [CGRect] = []
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
@@ -45,6 +48,63 @@ final class WorldBuilder {
             worldNode.addChild(node)
         }
         layout(in: scene.size)
+    }
+
+    // MARK: - Collisions
+
+    /// Le point (pieds de Kael) est-il dans une empreinte solide ?
+    func isBlocked(_ p: CGPoint) -> Bool {
+        obstacles.contains { $0.contains(p) }
+    }
+
+    /// Avance de `a` vers `b` et s'arrête juste avant le premier obstacle
+    /// (échantillonnage tous les 6 pt). Retourne la destination atteignable.
+    func clampDestination(from a: CGPoint, to b: CGPoint) -> CGPoint {
+        let dist = a.distance(to: b)
+        guard dist > 1 else { return b }
+        let steps = max(1, Int(dist / 6))
+        var last = a
+        for i in 1...steps {
+            let t = CGFloat(i) / CGFloat(steps)
+            let p = CGPoint(x: a.x + (b.x - a.x) * t,
+                            y: a.y + (b.y - a.y) * t)
+            if isBlocked(p) { return last }
+            last = p
+        }
+        return b
+    }
+
+    private func registerObstacle(_ rect: CGRect) {
+        obstacles.append(rect)
+    }
+
+    /// Audit visuel : --show-obstacles dessine les empreintes en rouge.
+    func debugDrawObstacles(in scene: SKScene) {
+        guard CommandLine.arguments.contains("--show-obstacles") else { return }
+        for rect in obstacles {
+            let box = SKShapeNode(rect: rect)
+            box.fillColor = SKColor(red: 1, green: 0, blue: 0, alpha: 0.30)
+            box.strokeColor = SKColor(red: 1, green: 0.2, blue: 0.2, alpha: 0.9)
+            box.lineWidth = 1
+            box.zPosition = 500
+            add(box, to: scene)
+        }
+    }
+
+    /// Empreinte au sol d'un node ancré aux pieds (anchor 0.5/0) : bande
+    /// horizontale à la base — on peut passer « derrière » (au nord),
+    /// jamais au travers.
+    private func registerFootprint(of node: SKNode,
+                                   widthRatio: CGFloat = 0.70,
+                                   depthRatio: CGFloat = 0.35,
+                                   maxDepth: CGFloat = 26) {
+        let f = node.calculateAccumulatedFrame()
+        let w = f.width * widthRatio
+        guard w > 4 else { return }
+        let d = min(f.height * depthRatio, maxDepth)
+        registerObstacle(CGRect(x: node.position.x - w / 2,
+                                y: node.position.y - 4,
+                                width: w, height: max(8, d)))
     }
 
     func layout(in size: CGSize) {
@@ -227,6 +287,9 @@ final class WorldBuilder {
                           radiusX: w * 0.058, radiusY: h * 0.027)
         renderTileMap(pond, fullTile: "me_water_full", edgePrefix: "me_shore_",
                       in: scene, z: -9.5)
+        // L'eau ne se marche pas.
+        registerObstacle(CGRect(x: w * 0.085 - w * 0.052, y: h * 0.46 - h * 0.024,
+                                width: w * 0.104, height: h * 0.048))
 
         decorateVillage(in: scene)
 
@@ -283,6 +346,7 @@ final class WorldBuilder {
         addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.52), in: scene)
 
         addAtmosphere(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)), to: scene)
+        debugDrawObstacles(in: scene)
     }
 
     /// Portes desservies par un sentier branché sur l'allée centrale
@@ -378,6 +442,8 @@ final class WorldBuilder {
             tree.alpha = dim
             addGroundShadow(under: tree, width: 18 * scaleMult, height: 6)
             add(tree, to: scene)
+            // Tronc infranchissable (la canopée reste traversable derrière)
+            registerFootprint(of: tree, widthRatio: 0.45, maxDepth: 22)
         }
         var yCursor = h * 0.03
         var side = 0
@@ -427,6 +493,7 @@ final class WorldBuilder {
             }
             addGroundShadow(under: tree, width: 46 * treeScale, height: 13 * treeScale)
             add(tree, to: scene)
+            registerFootprint(of: tree, widthRatio: 0.45, maxDepth: 22)
         }
 
         // ── POI : zones de danger, campement, seuil, statues ──
@@ -475,6 +542,7 @@ final class WorldBuilder {
         scatterForestProps(in: scene, w: w, h: h)
 
         addAtmosphere(ParticleFactory.forestFog(in: CGSize(width: w, height: h)), to: scene)
+        debugDrawObstacles(in: scene)
     }
 
     /// Sous-bois : champignons, rochers, souches, pousses et os dispersés
@@ -511,6 +579,10 @@ final class WorldBuilder {
             node.position = p
             node.zPosition = -8.8
             add(node, to: scene)
+            // Rochers, souches et ossements bloquent ; le reste se marche.
+            if !Self.walkablePropPrefixes.contains(where: name.hasPrefix) {
+                registerFootprint(of: node, widthRatio: 0.6, maxDepth: 16)
+            }
             placed += 1
         }
     }
@@ -1374,6 +1446,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         JuiceEngine.pulse(glow, scale: 1.3)
 
         add(well, to: scene)
+        registerObstacle(CGRect(x: pos.x - 15, y: pos.y - 15, width: 30, height: 30))
     }
 
     private func makeTorch() -> SKNode {
@@ -1928,6 +2001,13 @@ private func addTiledFloor(in scene: SKScene, tileNames: [String], fallbackColor
     }
 }
 
+/// Props plats/franchissables : fleurs, champignons, décorations murales.
+/// Tout le reste (arbres, statues, tonneaux, bancs…) bloque le passage.
+private static let walkablePropPrefixes = [
+    "me_flower", "me_mushrooms", "me_hanging", "me_apples",
+    "me_big_sprout", "forest_mushroom", "mushroom"
+]
+
 private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoint,
                           scale: CGFloat, flipped: Bool = false) {
     guard let node = PixelArtSprites.still(name: name, scale: scale,
@@ -1937,6 +2017,9 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
     node.zPosition = propLayer(for: position.y, in: scene.size.height)
     addGroundShadow(under: node, width: 34 * scale, height: 9 * scale)
     add(node, to: scene)
+    if !Self.walkablePropPrefixes.contains(where: name.hasPrefix) {
+        registerFootprint(of: node)
+    }
 }
 
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
@@ -2001,6 +2084,10 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
         node.position = position
         node.zPosition = propLayer(for: position.y, in: scene.size.height)
         add(node, to: scene)
+        // Corps du bâtiment infranchissable (la moitié basse du sprite :
+        // on peut passer derrière le toit, jamais à travers les murs).
+        registerFootprint(of: node, widthRatio: 0.86,
+                          depthRatio: 0.50, maxDepth: 400)
     }
 
     private func addGroundShadow(to node: SKNode, width: CGFloat, height: CGFloat, y: CGFloat) {
@@ -2026,6 +2113,7 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
 }
 
     private func clearBackdrop() {
+        obstacles.removeAll()
         backdropNodes.forEach { $0.removeFromParent() }
         backdropNodes.removeAll()
         atmosphereNode?.removeFromParent()
@@ -2064,6 +2152,16 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         let scale: CGFloat = 0.33
         let halfW = size.width / 2
         let halfH = size.height / 2
+
+        // Périmètre infranchissable (4 bandes fines sur les côtés)
+        registerObstacle(CGRect(x: center.x - halfW - 5, y: center.y + halfH - 5,
+                                width: size.width + 10, height: 10))
+        registerObstacle(CGRect(x: center.x - halfW - 5, y: center.y - halfH - 5,
+                                width: size.width + 10, height: 10))
+        registerObstacle(CGRect(x: center.x - halfW - 5, y: center.y - halfH,
+                                width: 10, height: size.height))
+        registerObstacle(CGRect(x: center.x + halfW - 5, y: center.y - halfH,
+                                width: 10, height: size.height))
         let cols = max(2, Int(size.width / tile))
         let rows = max(2, Int(size.height / tile))
 

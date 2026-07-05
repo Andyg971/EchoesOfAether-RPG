@@ -371,11 +371,29 @@ final class GameManager {
         }
         let speed: CGFloat = 215
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-        var pos = world.kael.position
+        let current = world.kael.position
+        var pos = current
         pos.x += padVector.dx * speed * CGFloat(deltaTime)
         pos.y += padVector.dy * speed * CGFloat(deltaTime)
         pos.x = min(max(pos.x, 34), scene.size.width - 34)
         pos.y = min(max(pos.y, 86), wh - 44)
+
+        // Collisions : on ne traverse ni maisons ni arbres. Glissement le
+        // long des murs (axe par axe) pour un contrôle agréable.
+        // Si Kael est déjà dans une empreinte (spawn/scénario), on le
+        // laisse sortir librement.
+        if world.isBlocked(pos), !world.isBlocked(current) {
+            let xOnly = CGPoint(x: pos.x, y: current.y)
+            let yOnly = CGPoint(x: current.x, y: pos.y)
+            if !world.isBlocked(xOnly) {
+                pos = xOnly
+            } else if !world.isBlocked(yOnly) {
+                pos = yOnly
+            } else {
+                movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
+                return
+            }
+        }
         world.kael.position = pos
         world.refreshKaelDepth()
         movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
@@ -2173,8 +2191,11 @@ final class GameManager {
     private func tapAndMove(_ point: CGPoint, in scene: SKScene) {
         let worldPoint = world.worldNode.convert(point, from: scene)
         let worldSize = CGSize(width: scene.size.width, height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
-        movement.move(world.kael, to: worldPoint, in: worldSize)
-        let marker = ParticleFactory.tapMarker(at: worldPoint)
+        // Trajet stoppé au premier obstacle (maison, arbre, eau…)
+        let reachable = world.clampDestination(from: world.kael.position,
+                                               to: worldPoint)
+        movement.move(world.kael, to: reachable, in: worldSize)
+        let marker = ParticleFactory.tapMarker(at: reachable)
         world.worldNode.addChild(marker)
     }
 

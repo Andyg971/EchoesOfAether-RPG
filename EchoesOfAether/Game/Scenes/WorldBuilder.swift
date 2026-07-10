@@ -23,6 +23,9 @@ final class WorldBuilder {
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
     private var medallionMarker: SKNode?
+    private var oreMarker: SKNode?
+    private var herbMarker: SKNode?
+    private var badgeMarker: SKNode?
     private var activeInterior: HouseInteriorKind?
     /// Vrai pendant la veille du réveil : Lyra reste au chevet de Kael
     /// même si `layout()` est rejoué (rotation, resize, premier layout).
@@ -685,6 +688,139 @@ final class WorldBuilder {
             backdropNodes.remove(at: idx)
         }
         medallionMarker = nil
+    }
+
+    // MARK: - Fer corrompu (quête de Bram)
+
+    /// Veine de fer noirci qui affleure à l'est du bosquet.
+    func addOreMarker(in scene: SKScene) {
+        guard oreMarker == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let marker = SKNode()
+        marker.position = CGPoint(x: w * 0.55, y: h * 0.52)
+        marker.zPosition = 3
+
+        // Bloc de minerai sombre (placeholder pixel)
+        let rock = SKShapeNode(rectOf: CGSize(width: 18, height: 12), cornerRadius: 3)
+        rock.fillColor = SKColor(red: 0.16, green: 0.15, blue: 0.20, alpha: 1)
+        rock.strokeColor = SKColor(red: 0.35, green: 0.30, blue: 0.45, alpha: 0.8)
+        rock.lineWidth = 1
+        marker.addChild(rock)
+
+        // Filons violets — le fer est corrompu
+        for dx in [-5, 1, 6] {
+            let vein = SKShapeNode(rectOf: CGSize(width: 2, height: 7))
+            vein.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.9)
+            vein.strokeColor = .clear
+            vein.position = CGPoint(x: CGFloat(dx), y: 0)
+            vein.zRotation = 0.3
+            marker.addChild(vein)
+        }
+
+        let glow = SKShapeNode(circleOfRadius: 18)
+        glow.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.08)
+        glow.strokeColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.20)
+        glow.lineWidth = 1
+        marker.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.4)
+
+        worldNode.addChild(marker)
+        backdropNodes.append(marker)
+        oreMarker = marker
+    }
+
+    func removeOreMarker() {
+        removeCollectMarker(&oreMarker)
+    }
+
+    // MARK: - Herbe lunaire (quête de Sage)
+
+    /// Herbe pâle qui luit entre les racines, à l'ouest du sentier.
+    func addHerbMarker(in scene: SKScene) {
+        guard herbMarker == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let marker = SKNode()
+        marker.position = CGPoint(x: w * 0.12, y: h * 0.40)
+        marker.zPosition = 3
+
+        // Brins luminescents
+        for (dx, height) in [(-4, 10), (0, 14), (4, 9)] {
+            let blade = SKShapeNode(rectOf: CGSize(width: 2, height: CGFloat(height)), cornerRadius: 1)
+            blade.fillColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.95)
+            blade.strokeColor = .clear
+            blade.position = CGPoint(x: CGFloat(dx), y: CGFloat(height) / 2)
+            blade.zRotation = CGFloat(dx) * 0.03
+            marker.addChild(blade)
+        }
+
+        let glow = SKShapeNode(circleOfRadius: 16)
+        glow.fillColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.10)
+        glow.strokeColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.25)
+        glow.lineWidth = 1
+        glow.position = CGPoint(x: 0, y: 6)
+        marker.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.5)
+
+        worldNode.addChild(marker)
+        backdropNodes.append(marker)
+        herbMarker = marker
+    }
+
+    func removeHerbMarker() {
+        removeCollectMarker(&herbMarker)
+    }
+
+    // MARK: - Insigne de l'éclaireur (quête de Garen)
+
+    /// L'insigne de Tomm, à moitié enfoui sur la sente est.
+    func addBadgeMarker(in scene: SKScene) {
+        guard badgeMarker == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let marker = SKNode()
+        marker.position = CGPoint(x: w * 0.68, y: h * 0.18)
+        marker.zPosition = 3
+
+        // Écusson métallique terni
+        let shield = SKShapeNode(rectOf: CGSize(width: 10, height: 12), cornerRadius: 4)
+        shield.fillColor = SKColor(red: 0.55, green: 0.55, blue: 0.60, alpha: 1)
+        shield.strokeColor = SKColor(red: 0.75, green: 0.75, blue: 0.80, alpha: 0.8)
+        shield.lineWidth = 1
+        shield.zRotation = 0.5   // à moitié planté dans le sol
+        marker.addChild(shield)
+
+        // Reflet froid
+        let glow = SKShapeNode(circleOfRadius: 15)
+        glow.fillColor = SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 0.08)
+        glow.strokeColor = SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 0.20)
+        glow.lineWidth = 1
+        marker.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.4)
+
+        worldNode.addChild(marker)
+        backdropNodes.append(marker)
+        badgeMarker = marker
+    }
+
+    func removeBadgeMarker() {
+        removeCollectMarker(&badgeMarker)
+    }
+
+    /// Fade + retrait d'un marqueur de collecte (factorisation commune).
+    private func removeCollectMarker(_ marker: inout SKNode?) {
+        marker?.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+        if let m = marker, let idx = backdropNodes.firstIndex(where: { $0 === m }) {
+            backdropNodes.remove(at: idx)
+        }
+        marker = nil
     }
 
     // MARK: - Marqueurs de quête « ! » sur les PNJ

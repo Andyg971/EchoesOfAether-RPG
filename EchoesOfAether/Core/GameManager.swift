@@ -783,6 +783,7 @@ final class GameManager {
                 if player.questMedallion == .active {
                     world.addMedallionMarker(in: scene)
                 }
+                addSideQuestMarkers(in: scene)
                 transition(to: .exploration)
                 // Spawn à l'orée sud, puis quelques pas d'entrée sur le sentier.
                 let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
@@ -797,8 +798,15 @@ final class GameManager {
 
     private func openBramShop() {
         transition(to: .dialogue)
-        dialogue.start(PrototypeContent.bramGreeting) { [weak self] in
+        dialogue.start(bramGreetingContent()) { [weak self] in
             guard let self else { return }
+            // Acceptation de la quête du fer (village, choix 0 = accepter)
+            if phase == .village, player.questBramOre == .inactive,
+               dialogue.lastChoiceIndex == 0 {
+                player.questBramOre = .active
+                hud.questText = String(localized: "quest.bramOre.hud")
+                refreshQuestMarkers()
+            }
             transition(to: .shop)
             shop.open(
                 title: String(localized: "shop.bram.title"),
@@ -811,11 +819,29 @@ final class GameManager {
         }
     }
 
+    /// Greeting de Bram selon la phase et l'état de sa quête.
+    private func bramGreetingContent() -> [DialogueStep] {
+        if phase == .act2 {
+            return player.questBramOre == .complete
+                ? PrototypeContent.bramOreDoneDialogue
+                : PrototypeContent.bramAct2Dialogue
+        }
+        switch player.questBramOre {
+        case .inactive: return PrototypeContent.bramGreeting
+                             + PrototypeContent.bramOreOfferDialogue
+        case .active:   return PrototypeContent.bramOreActiveDialogue
+        case .complete: return PrototypeContent.bramOreDoneDialogue
+        }
+    }
+
     private func openMaraInteraction(scene: SKScene) {
         transition(to: .dialogue)
         if player.questDelivery == .complete {
-            // Give colis to Garen — shouldn't reach Mara again but safe fallback
-            dialogue.start(PrototypeContent.maraShopGreeting) { [weak self] in
+            // Acte II : Mara sent l'Aether noir sur Kael. Sinon greeting boutique.
+            let greeting = phase == .act2
+                ? PrototypeContent.maraAct2Dialogue
+                : PrototypeContent.maraShopGreeting
+            dialogue.start(greeting) { [weak self] in
                 guard let self else { return }
                 transition(to: .shop)
                 shop.open(
@@ -863,8 +889,26 @@ final class GameManager {
     private func openGarenDialogue() {
         transition(to: .dialogue)
         if player.questDelivery == .complete {
-            dialogue.start(PrototypeContent.garenQuestDoneDialogue) { [weak self] in
-                self?.transition(to: .exploration)
+            // La confiance est gagnée : Garen parle de son éclaireur disparu.
+            switch player.questGarenScout {
+            case .inactive:
+                dialogue.start(PrototypeContent.garenScoutOfferDialogue) { [weak self] in
+                    guard let self else { return }
+                    if dialogue.lastChoiceIndex == 0 {
+                        player.questGarenScout = .active
+                        hud.questText = String(localized: "quest.garenScout.hud")
+                        refreshQuestMarkers()
+                    }
+                    transition(to: .exploration)
+                }
+            case .active:
+                dialogue.start(PrototypeContent.garenScoutActiveDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            case .complete:
+                dialogue.start(PrototypeContent.garenScoutDoneDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
             }
         } else if player.questDelivery == .active {
             // Deliver the package
@@ -886,11 +930,16 @@ final class GameManager {
 
     private func openSageDialogue() {
         transition(to: .dialogue)
-        let content = player.innRested
-            ? PrototypeContent.sageAfterRestDialogue
-            : PrototypeContent.sageFirstDialogue
-        dialogue.start(content) { [weak self] in
+        dialogue.start(sageGreetingContent()) { [weak self] in
             guard let self else { return }
+            // Acceptation de la quête de l'herbe lunaire (choix 0 = accepter)
+            if phase == .village, player.questSageHerb == .inactive,
+               dialogue.lastChoiceIndex == 0, player.talkedToSage {
+                player.questSageHerb = .active
+                hud.questText = String(localized: "quest.sageHerb.hud")
+                refreshQuestMarkers()
+            }
+            player.talkedToSage = true
             if !player.innRested {
                 // Offer inn rest for 10 gold
                 transition(to: .shop)
@@ -905,6 +954,21 @@ final class GameManager {
             } else {
                 transition(to: .exploration)
             }
+        }
+    }
+
+    /// Greeting de Sage : première visite, puis quête de l'herbe lunaire.
+    private func sageGreetingContent() -> [DialogueStep] {
+        let base = player.innRested
+            ? PrototypeContent.sageAfterRestDialogue
+            : PrototypeContent.sageFirstDialogue
+        // La quête ne s'offre qu'à partir de la 2e visite (et en Acte I) —
+        // la première rencontre garde son rythme d'origine.
+        guard player.talkedToSage, phase == .village else { return base }
+        switch player.questSageHerb {
+        case .inactive: return base + PrototypeContent.sageHerbOfferDialogue
+        case .active:   return PrototypeContent.sageHerbActiveDialogue
+        case .complete: return PrototypeContent.sageHerbDoneDialogue
         }
     }
 
@@ -985,6 +1049,64 @@ final class GameManager {
         }
     }
 
+    /// Ramassage du fer corrompu (quête de Bram) — récompense immédiate.
+    private func pickupOre() {
+        guard let scene else { return }
+        player.questBramOre = .complete
+        player.gold += 90
+        syncGold()
+        hud.questText = ""
+        AudioEngine.shared.playQuestComplete()
+        world.removeOreMarker()
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spot = CGPoint(x: scene.size.width * 0.55, y: wh * 0.52)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 1), count: 12))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.oreFoundDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Cueillette de l'herbe lunaire (quête de Sage) — or + soin complet.
+    private func pickupHerb() {
+        guard let scene else { return }
+        player.questSageHerb = .complete
+        player.gold += 50
+        player.currentHP = player.currentMaxHP   // son parfum seul redonne des forces
+        syncGold()
+        hud.questText = ""
+        AudioEngine.shared.playQuestComplete()
+        world.removeHerbMarker()
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spot = CGPoint(x: scene.size.width * 0.12, y: wh * 0.40)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 1), count: 12))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.herbFoundDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Découverte de l'insigne de Tomm (quête de Garen) — beat sombre.
+    private func pickupScoutBadge() {
+        guard let scene else { return }
+        player.questGarenScout = .complete
+        player.gold += 70
+        syncGold()
+        hud.questText = ""
+        AudioEngine.shared.playQuestComplete()
+        world.removeBadgeMarker()
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spot = CGPoint(x: scene.size.width * 0.68, y: wh * 0.18)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 1), count: 10))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.scoutBadgeFoundDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
     // MARK: - Forest Interactions
 
     private func tryForestInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
@@ -1034,6 +1156,33 @@ final class GameManager {
             let crossSpot = CGPoint(x: w * 0.28, y: h * 0.72)
             if point.distance(to: crossSpot) < 60 {
                 pickupMedallion()
+                return true
+            }
+        }
+
+        // Fer corrompu (quête de Bram, est du bosquet)
+        if player.questBramOre == .active {
+            let oreSpot = CGPoint(x: w * 0.55, y: h * 0.52)
+            if point.distance(to: oreSpot) < 60 {
+                pickupOre()
+                return true
+            }
+        }
+
+        // Herbe lunaire (quête de Sage, ouest du sentier)
+        if player.questSageHerb == .active {
+            let herbSpot = CGPoint(x: w * 0.12, y: h * 0.40)
+            if point.distance(to: herbSpot) < 60 {
+                pickupHerb()
+                return true
+            }
+        }
+
+        // Insigne de l'éclaireur (quête de Garen, sente est)
+        if player.questGarenScout == .active {
+            let badgeSpot = CGPoint(x: w * 0.68, y: h * 0.18)
+            if point.distance(to: badgeSpot) < 60 {
+                pickupScoutBadge()
                 return true
             }
         }
@@ -1411,11 +1560,13 @@ final class GameManager {
         // des candidats. On choisit le PNJ le plus proche dans le rayon pour
         // éviter un conflit de tap quand Dorin (porte nord) est proche d'un autre.
         let candidates: [(node: SKNode, action: () -> Void)] = [
-            (world.lyra,  { [weak self] in self?.openAct2LyraDialogue() }),
-            (world.dorin, { [weak self] in self?.handleAct2Dorin(scene: scene) }),
-            (world.sage,  { [weak self] in self?.handleAct2Sage(scene: scene) }),
-            (world.bram,  { [weak self] in self?.openBramShop() }),
-            (world.mara,  { [weak self] in self?.openMaraInteraction(scene: scene) })
+            (world.lyra,     { [weak self] in self?.openAct2LyraDialogue() }),
+            (world.dorin,    { [weak self] in self?.handleAct2Dorin(scene: scene) }),
+            (world.sage,     { [weak self] in self?.handleAct2Sage(scene: scene) }),
+            (world.bram,     { [weak self] in self?.openBramShop() }),
+            (world.mara,     { [weak self] in self?.openMaraInteraction(scene: scene) }),
+            (world.child,    { [weak self] in self?.openAct2ChildDialogue() }),
+            (world.villager, { [weak self] in self?.openAct2VillagerDialogue() })
         ]
         if let action = nearestInteraction(from: point, candidates: candidates, radius: radius) {
             action()
@@ -1427,6 +1578,22 @@ final class GameManager {
     private func openAct2LyraDialogue() {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.act2LyraAnalysisDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// L'enfant a peur de Kael maintenant — la corruption se voit.
+    private func openAct2ChildDialogue() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.childAct2Dialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// La villageoise avertit Kael : ne pas écouter la Voix.
+    private func openAct2VillagerDialogue() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.villagerAct2Dialogue) { [weak self] in
             self?.transition(to: .exploration)
         }
     }
@@ -1802,7 +1969,10 @@ final class GameManager {
             (player.questDelivery,   "questlog.delivery.title",  "questlog.delivery.desc"),
             (player.questMushroom,   "questlog.mushroom.title",  "questlog.mushroom.desc"),
             (player.questLyraShards, "questlog.shards.title",    "questlog.shards.desc"),
-            (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc")
+            (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc"),
+            (player.questBramOre,    "questlog.bramOre.title",   "questlog.bramOre.desc"),
+            (player.questSageHerb,   "questlog.sageHerb.title",  "questlog.sageHerb.desc"),
+            (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc")
         ]
         let active = all.filter { $0.0 == .active }
         let done   = all.filter { $0.0 == .complete }
@@ -2228,6 +2398,21 @@ final class GameManager {
                              visible: phase == .village && player.questDelivery == .inactive)
         world.setQuestMarker(on: world.lyra,
                              visible: phase == .village && player.questLyraShards == .inactive)
+        world.setQuestMarker(on: world.bram,
+                             visible: phase == .village && player.questBramOre == .inactive)
+        world.setQuestMarker(on: world.sage,
+                             visible: phase == .village && player.questSageHerb == .inactive
+                                      && player.talkedToSage)
+        world.setQuestMarker(on: world.garen,
+                             visible: phase == .village && player.questGarenScout == .inactive
+                                      && player.questDelivery == .complete)
+    }
+
+    /// Place les marqueurs de collecte des quêtes annexes actives (forêt).
+    private func addSideQuestMarkers(in scene: SKScene) {
+        if player.questBramOre == .active    { world.addOreMarker(in: scene) }
+        if player.questSageHerb == .active   { world.addHerbMarker(in: scene) }
+        if player.questGarenScout == .active { world.addBadgeMarker(in: scene) }
     }
 
     private func syncGold() {
@@ -2264,6 +2449,7 @@ final class GameManager {
             if player.questMedallion == .active {
                 world.addMedallionMarker(in: scene)
             }
+            addSideQuestMarkers(in: scene)
             // Spawn à l'orée sud du trek (la forêt scrolle).
             world.kael.position = CGPoint(x: scene.size.width * 0.5,
                                           y: world.worldHeight * 0.05)

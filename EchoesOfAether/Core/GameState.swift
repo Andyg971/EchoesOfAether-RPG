@@ -78,6 +78,9 @@ final class PlayerState {
     var questLyraShards: QuestState = .inactive // Lyra demande 5 Aether Shards
     var questChildToy: QuestState = .inactive   // enfant a perdu jouet en forêt
     var questMedallion: QuestState = .inactive  // talisman du fils de la villageoise
+    var questBramOre: QuestState = .inactive    // fer corrompu pour la forge de Bram
+    var questSageHerb: QuestState = .inactive   // herbe lunaire pour les tisanes de Sage
+    var questGarenScout: QuestState = .inactive // éclaireur disparu de Garen (Tomm)
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -158,6 +161,9 @@ final class PlayerState {
             questDelivery: questDelivery, questMushroom: questMushroom,
             questLyraShards: questLyraShards, questChildToy: questChildToy,
             questMedallion: questMedallion,
+            questBramOre: questBramOre,
+            questSageHerb: questSageHerb,
+            questGarenScout: questGarenScout,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -192,6 +198,9 @@ final class PlayerState {
         questLyraShards = data.questLyraShards
         questChildToy = data.questChildToy
         questMedallion = data.questMedallion ?? .inactive
+        questBramOre = data.questBramOre ?? .inactive
+        questSageHerb = data.questSageHerb ?? .inactive
+        questGarenScout = data.questGarenScout ?? .inactive
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -232,6 +241,10 @@ struct SaveData: Codable {
     let questChildToy: QuestState
     // Optionnel — saves antérieures à la quête du talisman
     let questMedallion: QuestState?
+    // Optionnels — saves antérieures aux quêtes annexes (Bram, Sage, Garen)
+    let questBramOre: QuestState?
+    let questSageHerb: QuestState?
+    let questGarenScout: QuestState?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

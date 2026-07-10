@@ -1501,6 +1501,86 @@
         }
       }
     },
+    "dialogue.act2.bram.1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael. They say you brought down the shrine's Guardian. …Is it true, what they say about your eyes?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kael. On raconte que t'as terrassé le Gardien du sanctuaire. …C'est vrai, ce qu'on dit sur tes yeux ?"
+          }
+        }
+      }
+    },
+    "dialogue.act2.bram.2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bah. As long as you're buying, the forge asks no questions."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bah. Tant que t'achètes, la forge pose pas de questions."
+          }
+        }
+      }
+    },
+    "dialogue.act2.child.1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…"
+          }
+        }
+      }
+    },
+    "dialogue.act2.child.2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mom says I'm not allowed to talk to you anymore. You're not the same, Kael. Your eyes… they're scary."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maman dit que je dois plus te parler. T'es plus pareil, Kael. Tes yeux… ils font peur."
+          }
+        }
+      }
+    },
+    "dialogue.act2.child.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…Maybe she's right, kid."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…Elle a peut-être raison, petit."
+          }
+        }
+      }
+    },
     "dialogue.act2.death.eran.kael1" : {
       "localizations" : {
         "en" : {
@@ -2285,6 +2365,38 @@
         }
       }
     },
+    "dialogue.act2.mara.1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come closer… Hmm. You smell of black Aether, Kael. It clings to the skin. None of my herbs will change that."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Approche… Hmm. Tu sens l'Aether noir, Kael. Ça colle à la peau. Aucune de mes herbes n'y changera rien."
+          }
+        }
+      }
+    },
+    "dialogue.act2.mara.2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Take what you need. And… look after Lyra."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prends ce qu'il te faut. Et… veille sur Lyra."
+          }
+        }
+      }
+    },
     "dialogue.act2.nightmare.kael1" : {
       "localizations" : {
         "en" : {
@@ -2697,6 +2809,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sois prudent. Et emmène Lyra. Elle saura lire les symboles."
+          }
+        }
+      }
+    },
+    "dialogue.act2.villager.1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The hero of Solis… We owe you so much. Then why does everyone shut their shutters when you walk by?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le héros de Solis… On te doit tant. Alors pourquoi tout le monde ferme ses volets quand tu passes ?"
+          }
+        }
+      }
+    },
+    "dialogue.act2.villager.2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The elders speak of a voice beneath the forest. Don't listen to it, my boy. Promise me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les anciens parlent d'une voix sous la forêt. Ne l'écoute pas, mon garçon. Promets-le."
           }
         }
       }
@@ -5910,6 +6054,22 @@
         }
       }
     },
+    "dialogue.pact.10" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I didn't ask you to."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne te l'ai pas demandé."
+          }
+        }
+      }
+    },
     "dialogue.pact.2" : {
       "localizations" : {
         "en" : {
@@ -6034,22 +6194,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Je ne te protègerai pas."
-          }
-        }
-      }
-    },
-    "dialogue.pact.10" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I didn't ask you to."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -8995,6 +9139,182 @@
         }
       }
     },
+    "quest.bramOre.accept" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'll bring some back."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J'en rapporterai."
+          }
+        }
+      }
+    },
+    "quest.bramOre.acceptResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look for the dark vein east of the grove. And don't linger out there."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherche la veine sombre à l'est du bosquet. Et ne traîne pas là-bas."
+          }
+        }
+      }
+    },
+    "quest.bramOre.active" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So, that iron? The dark vein, east of the grove."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors, ce fer ? La veine sombre, à l'est du bosquet."
+          }
+        }
+      }
+    },
+    "quest.bramOre.decline" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Not now."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pas maintenant."
+          }
+        }
+      }
+    },
+    "quest.bramOre.declineResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suit yourself. The forge will wait."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Comme tu veux. La forge attendra."
+          }
+        }
+      }
+    },
+    "quest.bramOre.done1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "By all the fires — look at that grain. Here, for your trouble."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Par tous les feux — regarde-moi ce grain. Tiens, pour ta peine."
+          }
+        }
+      }
+    },
+    "quest.bramOre.done2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Come back anytime. The forge owes you a favor."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Repasse quand tu veux. La forge te doit une faveur."
+          }
+        }
+      }
+    },
+    "quest.bramOre.found" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A vein of blackened iron. The metal is cold… colder than it should be."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une veine de fer noirci. Le métal est froid… plus froid qu'il ne devrait."
+          }
+        }
+      }
+    },
+    "quest.bramOre.hud" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the corrupted iron (forest)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trouver le fer corrompu (forêt)"
+          }
+        }
+      }
+    },
+    "quest.bramOre.offer1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forge is short on good iron. The forest veins are corrupted… but corrupted iron, properly purged, makes steel like no other."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La forge manque de bon fer. Les veines de la forêt sont corrompues… mais un fer corrompu, bien purgé, donne un acier sans pareil."
+          }
+        }
+      }
+    },
+    "quest.bramOre.offer2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bring corrupted iron back to Bram?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapporter du fer corrompu à Bram ?"
+          }
+        }
+      }
+    },
     "quest.childToy.name" : {
       "localizations" : {
         "en" : {
@@ -9023,6 +9343,182 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Colis pour Garen"
+          }
+        }
+      }
+    },
+    "quest.garenScout.accept" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'll keep an eye out."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je garderai l'œil ouvert."
+          }
+        }
+      }
+    },
+    "quest.garenScout.acceptResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "His badge. Bring me his badge at least, so I know."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son insigne. Rapporte-moi au moins son insigne, que je sache."
+          }
+        }
+      }
+    },
+    "quest.garenScout.active" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomm wore the guard's badge. Three days now."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomm portait l'insigne de la garde. Trois jours, déjà."
+          }
+        }
+      }
+    },
+    "quest.garenScout.decline" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I can't promise anything."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne peux rien promettre."
+          }
+        }
+      }
+    },
+    "quest.garenScout.declineResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…I understand. The forest takes more than it gives back."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…Je comprends. La forêt prend plus qu'elle ne rend."
+          }
+        }
+      }
+    },
+    "quest.garenScout.done1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "His badge… So that's it. Thank you, Kael. At least now I know."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Son insigne… C'est donc ça. Merci, Kael. Au moins, je sais."
+          }
+        }
+      }
+    },
+    "quest.garenScout.done2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "He used to say the forest sang, once. Nobody says that anymore."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Il aimait dire que la forêt chantait, avant. Plus personne ne dit ça."
+          }
+        }
+      }
+    },
+    "quest.garenScout.found" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A guard's badge, half buried. Dried blood on the metal. …I'm sorry, Tomm."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un insigne de la garde, à moitié enfoui. Du sang séché sur le métal. …Désolé, Tomm."
+          }
+        }
+      }
+    },
+    "quest.garenScout.hud" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find the missing scout (forest)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retrouver l'éclaireur disparu (forêt)"
+          }
+        }
+      }
+    },
+    "quest.garenScout.offer1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "One of my scouts hasn't come back. Tomm. Went into the forest three days ago."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Un de mes éclaireurs n'est pas rentré. Tomm. Parti vers la forêt il y a trois jours."
+          }
+        }
+      }
+    },
+    "quest.garenScout.offer2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search for traces of the scout?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chercher des traces de l'éclaireur ?"
           }
         }
       }
@@ -9187,6 +9683,182 @@
         }
       }
     },
+    "quest.sageHerb.accept" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'll pick some."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je vais en cueillir."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.acceptResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look for a pale glow between the roots, west of the trail. Thank you, Kael."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cherche une lueur pâle entre les racines, à l'ouest du sentier. Merci, Kael."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.active" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The moonherb — a pale glow between the roots, west of the trail."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'herbe lunaire — une lueur pâle entre les racines, à l'ouest du sentier."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.decline" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Another time."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une autre fois."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.declineResponse" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Of course. The teas will wait."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bien sûr. Les tisanes attendront."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.done1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You found it! Its scent alone restores your strength."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu l'as trouvée ! Son parfum seul redonne des forces."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.done2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Here — and the next tea is on me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tiens — et la prochaine tisane est pour moi."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.found" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An herb glowing softly… as if it held a little of the moon."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une herbe qui luit doucement… comme si elle retenait un peu de lune."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.hud" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick the moonherb (forest)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cueillir l'herbe lunaire (forêt)"
+          }
+        }
+      }
+    },
+    "quest.sageHerb.offer1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "My moonherb stores are empty. It only grows in the forest, where the moon touches the ground."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mes réserves d'herbe lunaire sont vides. Elle ne pousse que dans la forêt, là où la lune touche le sol."
+          }
+        }
+      }
+    },
+    "quest.sageHerb.offer2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gather moonherb for Sage?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chercher l'herbe lunaire pour Sage ?"
+          }
+        }
+      }
+    },
     "quest.state.active" : {
       "localizations" : {
         "en" : {
@@ -9231,6 +9903,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Non démarrée"
+          }
+        }
+      }
+    },
+    "questlog.bramOre.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bram needs corrupted iron to forge a rare steel. A dark vein surfaces east of the grove, in the Ebony Forest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bram cherche du fer corrompu pour forger un acier rare. Une veine sombre affleure à l'est du bosquet, dans la forêt d'Ébène."
+          }
+        }
+      }
+    },
+    "questlog.bramOre.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron for the Forge"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le fer de la forge"
           }
         }
       }
@@ -9301,6 +10005,38 @@
         }
       }
     },
+    "questlog.garenScout.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomm, Garen's scout, vanished in the Ebony Forest. Find his trail — or his badge."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tomm, éclaireur de Garen, a disparu dans la forêt d'Ébène. Retrouver sa trace — ou son insigne."
+          }
+        }
+      }
+    },
+    "questlog.garenScout.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Missing Scout"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'éclaireur disparu"
+          }
+        }
+      }
+    },
     "questlog.medallion.desc" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -9365,6 +10101,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Le champignon rare"
+          }
+        }
+      }
+    },
+    "questlog.sageHerb.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sage needs moonherb for her teas. It glows faintly between the roots, in the west of the Ebony Forest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sage a besoin d'herbe lunaire pour ses tisanes. Elle luit faiblement entre les racines, à l'ouest de la forêt d'Ébène."
+          }
+        }
+      }
+    },
+    "questlog.sageHerb.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Moonherb"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'herbe lunaire"
           }
         }
       }

@@ -702,7 +702,9 @@ final class WorldBuilder {
         let h = worldHeight > 0 ? worldHeight : scene.size.height
 
         let marker = SKNode()
-        marker.position = CGPoint(x: w * 0.55, y: h * 0.52)
+        // ATTENTION : loin du campement+cristal (0.52, 0.52) — le tap du
+        // cristal de save est prioritaire et volerait le ramassage.
+        marker.position = CGPoint(x: w * 0.40, y: h * 0.63)
         marker.zPosition = 3
 
         // Bloc de minerai sombre (placeholder pixel)

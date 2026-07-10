@@ -1059,7 +1059,7 @@ final class GameManager {
         AudioEngine.shared.playQuestComplete()
         world.removeOreMarker()
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-        let spot = CGPoint(x: scene.size.width * 0.55, y: wh * 0.52)
+        let spot = CGPoint(x: scene.size.width * 0.40, y: wh * 0.63)
         world.worldNode.addChild(ParticleFactory.impactSparks(
             at: spot, color: SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 1), count: 12))
         transition(to: .dialogue)
@@ -1160,9 +1160,9 @@ final class GameManager {
             }
         }
 
-        // Fer corrompu (quête de Bram, est du bosquet)
+        // Fer corrompu (quête de Bram, sentier ouest sous la clairière)
         if player.questBramOre == .active {
-            let oreSpot = CGPoint(x: w * 0.55, y: h * 0.52)
+            let oreSpot = CGPoint(x: w * 0.40, y: h * 0.63)
             if point.distance(to: oreSpot) < 60 {
                 pickupOre()
                 return true

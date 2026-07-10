@@ -9272,13 +9272,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Look for the dark vein east of the grove. And don't linger out there."
+            "value" : "Look for the dark vein on the west trail, below the clearing. And don't linger out there."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cherche la veine sombre à l'est du bosquet. Et ne traîne pas là-bas."
+            "value" : "Cherche la veine sombre sur le sentier ouest, sous la clairière. Et ne traîne pas là-bas."
           }
         }
       }
@@ -9288,13 +9288,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "So, that iron? The dark vein, east of the grove."
+            "value" : "So, that iron? The dark vein, west trail, below the clearing."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alors, ce fer ? La veine sombre, à l'est du bosquet."
+            "value" : "Alors, ce fer ? La veine sombre, sentier ouest, sous la clairière."
           }
         }
       }
@@ -10024,13 +10024,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bram needs corrupted iron to forge a rare steel. A dark vein surfaces east of the grove, in the Ebony Forest."
+            "value" : "Bram needs corrupted iron to forge a rare steel. A dark vein surfaces on the west trail of the Ebony Forest."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bram cherche du fer corrompu pour forger un acier rare. Une veine sombre affleure à l'est du bosquet, dans la forêt d'Ébène."
+            "value" : "Bram cherche du fer corrompu pour forger un acier rare. Une veine sombre affleure sur le sentier ouest de la forêt d'Ébène."
           }
         }
       }

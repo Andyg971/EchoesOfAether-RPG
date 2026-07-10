@@ -27,11 +27,11 @@ Kael comme Lame du Vide. Le Seuil. Eran Solace. Un règlement de comptes.
 | Système | Description |
 |---------|-------------|
 | **Exploration** | Tap-to-move avec marqueur visuel. Interactions NPC par proximité. Changement de zone avec transitions. |
-| **Combat ATB** | Active Time Battle — Kael et l'ennemi remplissent leurs jauges. Attaque ou Entaille Noire (signature). Boss avec seuil d'enragement et attaques spéciales. |
+| **Combat tour par tour** | Vrai tour par tour : le joueur choisit son action (attaque, sorts élémentaires, Entaille Noire, potion), puis chaque ennemi agit. Bannière de tour, file d'initiative, faiblesses, boucliers, BREAK, statuts, boss avec enragement. |
 | **Dialogues** | Système multi-lignes avec choix ramifiés. Les réponses affectent le ton, pas l'issue (couleur narrative). |
-| **Quêtes** | Livraison (Mara → Garen), Jouet perdu (enfant), Éclats d'Aether de Lyra. |
+| **Quêtes** | 8 quêtes : livraison (Mara → Garen), jouet perdu, Éclats d'Aether de Lyra, talisman de la villageoise, fer de Bram, herbe lunaire de Sage, éclaireur disparu de Garen, champignon de Mara. |
 | **Boutique / Inventaire** | Armes (Lame de Fer, Lame Runique), Armures (Cotte de Mailles, Armure Renforcée), Potions, Éclats d'Aether. |
-| **Sauvegarde** | Auto-save à chaque transition d'état + sauvegarde manuelle aux **Cristaux d'Aether** placés dans chaque zone. |
+| **Sauvegarde** | 3 slots + migration legacy. Auto-save à chaque transition d'état + sauvegarde manuelle aux **Cristaux d'Aether** placés dans chaque zone. |
 | **Corruption** | La corruption visuelle de Kael progresse sur 3 niveaux (aura → vrilles → yeux rouges) à mesure que l'Acte II se déroule. |
 
 ---
@@ -149,7 +149,7 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 | Acte II — La Chute de Kael | ✅ Complet |
 | Acte III — Le Seuil | ✅ Jouable (zone du Seuil dédiée + boss final + vraie fin) |
 | Menu principal / Pause / Options / Mort | ✅ Complet |
-| Combat ATB (sorts, statuts, combo, break, boss) | ✅ Complet |
+| Combat tour par tour (sorts, statuts, combo, break, boss) | ✅ Complet |
 | Journal de quêtes + Journal de lore | ✅ Complet |
 | Minimap / Indicateur d'interaction / Haptics | ✅ Complet |
 | GameCenter (auth + achievements) | ✅ Câblé |
@@ -172,10 +172,12 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 ### 🟡 Important
 
-- [ ] **Slots de sauvegarde multiples** — une seule save (`echoes_save.json`), écrasée en continu.
-- [ ] **Tutoriel / onboarding** — tap-to-move, combat ATB et sorts ne sont jamais expliqués.
+- [x] **Slots de sauvegarde multiples** — 3 slots + migration de l'ancienne save.
+- [x] **Tutoriel / onboarding** — 4 panneaux (déplacement, PNJ, combat tour par tour, cristaux), relançable depuis Options.
+- [x] **Zéro trace IA** — aucun tiret cadratin dans les dialogues, aucun emoji dans l'UI (fabrique PixelIcons, grilles 8x8).
 - [ ] **Support iPad adaptatif** — `TARGETED_DEVICE_FAMILY = 1,2` mais layout non adaptatif.
 - [ ] **Accessibilité** — Dynamic Type, option « réduire les animations » (flashs/screen shakes fréquents).
+- [ ] **Mines de Cendreval** — zone annexe évoquée par Dorin (hook narratif prêt).
 - [ ] **Fix proximité Dorin/Garen** — conflits de tap possibles en Acte II.
 
 ### 🟢 Nice-to-have

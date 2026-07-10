@@ -68,7 +68,7 @@ final class PlayerState {
     var weaponLevel: Int = 0      // 0=poings, 1=lame fer, 2=lame runique
     var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
     var potions: Int = 0          // max 3
-    var aetherShards: Int = 0     // recharge ATB
+    var aetherShards: Int = 0     // Éclats d'Aether (quête de Lyra, boutique)
 
     var level: Int = 1
     var xp: Int = 0               // XP cumulé dans le niveau courant

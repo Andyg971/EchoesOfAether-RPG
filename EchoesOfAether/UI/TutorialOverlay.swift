@@ -2,7 +2,7 @@ import SpriteKit
 
 /// Onboarding affiché à la première partie (flag UserDefaults "tutorialSeen").
 /// Explique les bases en 4 panneaux : déplacement, interactions PNJ, combat
-/// ATB, sauvegarde aux cristaux. Relançable depuis les Options.
+/// au tour par tour, sauvegarde aux cristaux. Relançable depuis les Options.
 @MainActor
 final class TutorialOverlay {
 

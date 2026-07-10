@@ -711,11 +711,11 @@ final class GameManager {
     private func interiorObjective(for kind: HouseInteriorKind) -> String {
         switch kind {
         case .armory:
-            return "Armurerie — équipe-toi ou ressors par la porte."
+            return String(localized: "hud.objective.interior.armory")
         case .apothecary:
-            return "Herboristerie — prépare potions et remèdes."
+            return String(localized: "hud.objective.interior.apothecary")
         case .inn:
-            return "Auberge — repose-toi avant la forêt."
+            return String(localized: "hud.objective.interior.inn")
         }
     }
 
@@ -2013,16 +2013,16 @@ final class GameManager {
         if let activeInterior {
             let exit = world.interiorExitPosition(in: scene.size)
             if kaelPos.distance(to: exit) < radius {
-                hint = "Sortir"
+                hint = String(localized: "hint.exit")
                 bubbleAction = .enter
                 bubbleAnchor = CGPoint(x: exit.x, y: exit.y + 34)
             } else {
                 let servicePoint = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.62)
                 if kaelPos.distance(to: servicePoint) < radius {
                     switch activeInterior {
-                    case .armory: hint = "Forger / Acheter"
-                    case .apothecary: hint = "Potions / Herbes"
-                    case .inn: hint = "Se reposer"
+                    case .armory: hint = String(localized: "hint.interior.armory")
+                    case .apothecary: hint = String(localized: "hint.interior.apothecary")
+                    case .inn: hint = String(localized: "hint.interior.inn")
                     }
                     bubbleAction = activeInterior == .inn ? .talk : .shop
                     bubbleAnchor = CGPoint(x: servicePoint.x, y: servicePoint.y + 42)

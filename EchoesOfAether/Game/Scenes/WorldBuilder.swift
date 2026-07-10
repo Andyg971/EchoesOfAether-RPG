@@ -628,12 +628,15 @@ final class WorldBuilder {
         toy.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.5)
 
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
-        label.text = "✦"
-        label.fontSize = 14
-        label.position = CGPoint(x: 0, y: 24)
-        toy.addChild(label)
-        JuiceEngine.float(label, distance: 4)
+        // Losange pixel doré flottant au-dessus du jouet
+        let sparkle = SKShapeNode(rectOf: CGSize(width: 8, height: 8))
+        sparkle.fillColor = SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1)
+        sparkle.strokeColor = SKColor(red: 1, green: 0.95, blue: 0.6, alpha: 0.9)
+        sparkle.lineWidth = 1
+        sparkle.zRotation = .pi / 4
+        sparkle.position = CGPoint(x: 0, y: 24)
+        toy.addChild(sparkle)
+        JuiceEngine.float(sparkle, distance: 4)
 
         worldNode.addChild(toy)
         backdropNodes.append(toy)
@@ -1071,10 +1074,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zone.addChild(circle)
         JuiceEngine.pulse(circle, scale: 1.2)
 
-        // Icône crâne (placeholder)
-        let icon = SKLabelNode(text: "☠")
-        icon.fontSize = 18
-        icon.position = CGPoint(x: 0, y: -6)
+        // Crâne pixel art (zone de chasse)
+        let icon = PixelIcons.node(.skull, pixel: 2.2)
+        icon.position = CGPoint(x: 0, y: 2)
         zone.addChild(icon)
         JuiceEngine.float(icon, distance: 4)
 

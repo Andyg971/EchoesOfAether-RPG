@@ -35,6 +35,7 @@
 		6D7EBB04B8A741B0A0000001 /* OptionsOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */; };
 		6D7EBB06B8A741B0A0000001 /* LoreOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */; };
 		6D7EBB06B8A741B0A0000101 /* QuestLogOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */; };
+		AA10C0DE0000000000000002 /* PixelIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10C0DE0000000000000001 /* PixelIcons.swift */; };
 		6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */; };
 		6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */; };
 		6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */; };
@@ -90,6 +91,7 @@
 		6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoreOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestLogOverlay.swift; sourceTree = "<group>"; };
+AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelIcons.swift; sourceTree = "<group>"; };
 		6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameCenterManager.swift; sourceTree = "<group>"; };
 		6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EchoesOfAether.entitlements; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				6D7EBB03B8A741B0A0000001 /* OptionsOverlay.swift */,
 				6D7EBB05B8A741B0A0000001 /* LoreOverlay.swift */,
 				6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */,
+				AA10C0DE0000000000000001 /* PixelIcons.swift */,
 				6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */,
 				6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */,
 				6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */,
@@ -414,6 +417,7 @@
 				6D7EBB04B8A741B0A0000001 /* OptionsOverlay.swift in Sources */,
 				6D7EBB06B8A741B0A0000001 /* LoreOverlay.swift in Sources */,
 				6D7EBB06B8A741B0A0000101 /* QuestLogOverlay.swift in Sources */,
+				AA10C0DE0000000000000002 /* PixelIcons.swift in Sources */,
 				6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */,
 				6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */,
 				6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */,

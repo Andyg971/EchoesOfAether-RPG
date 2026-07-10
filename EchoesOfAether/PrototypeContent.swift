@@ -1026,28 +1026,24 @@ enum PrototypeContent {
         var entries: [LoreEntry] = []
         if player.loreDiscovered.contains("eran") {
             entries.append(LoreEntry(
-                icon: "✦",
                 title: String(localized: "lore.eran.title"),
                 body: String(localized: "lore.eran.body")
             ))
         }
         if player.loreDiscovered.contains("archivist") {
             entries.append(LoreEntry(
-                icon: "📜",
                 title: String(localized: "lore.archivist.title"),
                 body: String(localized: "lore.archivist.body")
             ))
         }
         if player.loreDiscovered.contains("threshold") {
             entries.append(LoreEntry(
-                icon: "🌀",
                 title: String(localized: "lore.threshold.title"),
                 body: String(localized: "lore.threshold.body")
             ))
         }
         if player.loreDiscovered.contains("void") {
             entries.append(LoreEntry(
-                icon: "🌑",
                 title: String(localized: "lore.void.title"),
                 body: String(localized: "lore.void.body")
             ))

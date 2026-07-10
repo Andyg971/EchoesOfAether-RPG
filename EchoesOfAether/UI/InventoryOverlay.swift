@@ -7,7 +7,7 @@ final class InventoryOverlay {
     private let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
     private let closeButton = SKShapeNode(rectOf: CGSize(width: 100, height: 40), cornerRadius: 10)
 
-    private var statLabels: [SKLabelNode] = []
+    private var statLabels: [SKNode] = []
     private var playerState: PlayerState?
     private var completion: (() -> Void)?
 
@@ -85,35 +85,35 @@ final class InventoryOverlay {
 
         // Section : Équipement
         y = addSection(String(localized: "inventory.section.equipment"), y: y)
-        y = addRow(icon: "⚔", label: weaponName(player.weaponLevel),
+        y = addRow(icon: .sword, label: weaponName(player.weaponLevel),
                    detail: String(localized: "inventory.attack \(player.attackDamage)"), y: y, lineH: lineH)
-        y = addRow(icon: "🛡", label: armorName(player.armorLevel),
+        y = addRow(icon: .shield, label: armorName(player.armorLevel),
                    detail: String(localized: "inventory.defense \(player.armorLevel * 50)"), y: y, lineH: lineH)
 
         y -= 10 // spacer
 
         // Section : Consommables
         y = addSection(String(localized: "inventory.section.items"), y: y)
-        y = addRow(icon: "🧪", label: String(localized: "inventory.potions"),
+        y = addRow(icon: .potion, label: String(localized: "inventory.potions"),
                    detail: "\(player.potions)/3", y: y, lineH: lineH)
-        y = addRow(icon: "💎", label: String(localized: "inventory.shards"),
+        y = addRow(icon: .gem, label: String(localized: "inventory.shards"),
                    detail: "\(player.aetherShards)", y: y, lineH: lineH)
 
         y -= 10
 
         // Section : Stats
         y = addSection(String(localized: "inventory.section.stats"), y: y)
-        y = addRow(icon: "❤️", label: String(localized: "inventory.maxHP"),
+        y = addRow(icon: .heart, label: String(localized: "inventory.maxHP"),
                    detail: "\(player.currentMaxHP)", y: y, lineH: lineH)
-        y = addRow(icon: "⚡", label: String(localized: "inventory.attackDmg"),
+        y = addRow(icon: .bolt, label: String(localized: "inventory.attackDmg"),
                    detail: "\(player.attackDamage)", y: y, lineH: lineH)
-        y = addRow(icon: "🌑", label: String(localized: "inventory.blackSlashDmg"),
+        y = addRow(icon: .darkMoon, label: String(localized: "inventory.blackSlashDmg"),
                    detail: "\(player.blackSlashDamage)", y: y, lineH: lineH)
 
         y -= 10
 
         // Gold
-        y = addRow(icon: "🪙", label: String(localized: "inventory.gold"),
+        y = addRow(icon: .coin, label: String(localized: "inventory.gold"),
                    detail: "\(player.gold)", y: y, lineH: lineH,
                    color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
 
@@ -121,14 +121,11 @@ final class InventoryOverlay {
 
         // Section : Quêtes
         y = addSection(String(localized: "inventory.section.quests"), y: y)
-        y = addQuestRow(icon: questIcon(player.questDelivery),
-                        label: String(localized: "quest.delivery.name"),
+        y = addQuestRow(label: String(localized: "quest.delivery.name"),
                         state: player.questDelivery, y: y, lineH: lineH)
-        y = addQuestRow(icon: questIcon(player.questChildToy),
-                        label: String(localized: "quest.childToy.name"),
+        y = addQuestRow(label: String(localized: "quest.childToy.name"),
                         state: player.questChildToy, y: y, lineH: lineH)
-        y = addQuestRow(icon: questIcon(player.questLyraShards),
-                        label: String(localized: "quest.lyraShards.name"),
+        y = addQuestRow(label: String(localized: "quest.lyraShards.name"),
                         state: player.questLyraShards, y: y, lineH: lineH)
 
         // Animate
@@ -171,15 +168,21 @@ final class InventoryOverlay {
         return y - 28
     }
 
-    private func addRow(icon: String, label: String, detail: String,
+    private func addRow(icon: PixelIcons.Kind, label: String, detail: String,
                         y: CGFloat, lineH: CGFloat,
                         color: SKColor = .white) -> CGFloat {
-        let iconLabel = SKLabelNode(text: icon)
-        iconLabel.fontSize = 16
-        iconLabel.position = CGPoint(x: -panelWidth / 2 + 32, y: y - 4)
-        root.addChild(iconLabel)
-        statLabels.append(iconLabel)
+        let iconNode = PixelIcons.node(icon, pixel: 2)
+        iconNode.position = CGPoint(x: -panelWidth / 2 + 32, y: y + 2)
+        root.addChild(iconNode)
+        statLabels.append(iconNode)
+        return addLabels(label: label, detail: detail, y: y, lineH: lineH, color: color)
+    }
 
+    /// Libellé + valeur d'une ligne (sans icône) : partagé entre addRow
+    /// et addQuestRow.
+    private func addLabels(label: String, detail: String,
+                           y: CGFloat, lineH: CGFloat,
+                           color: SKColor) -> CGFloat {
         let nameLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
         nameLabel.text = label
         nameLabel.fontSize = 14
@@ -201,15 +204,7 @@ final class InventoryOverlay {
         return y - lineH
     }
 
-    private func questIcon(_ state: QuestState) -> String {
-        switch state {
-        case .inactive: return "○"
-        case .active:   return "◉"
-        case .complete: return "✓"
-        }
-    }
-
-    private func addQuestRow(icon: String, label: String,
+    private func addQuestRow(label: String,
                              state: QuestState, y: CGFloat, lineH: CGFloat) -> CGFloat {
         let color: SKColor
         switch state {
@@ -223,9 +218,14 @@ final class InventoryOverlay {
         case .active:   stateLabel = String(localized: "quest.state.active")
         case .complete: stateLabel = String(localized: "quest.state.complete")
         }
-        return addRow(icon: icon, label: label,
-                      detail: stateLabel,
-                      y: y, lineH: lineH, color: color)
+        // Puce d'état pixel : carré plein coloré selon l'état (cohérent
+        // avec le journal de quêtes).
+        let chip = SKSpriteNode(color: color, size: CGSize(width: 8, height: 8))
+        chip.position = CGPoint(x: -panelWidth / 2 + 32, y: y + 2)
+        root.addChild(chip)
+        statLabels.append(chip)
+        return addLabels(label: label, detail: stateLabel,
+                         y: y, lineH: lineH, color: color)
     }
 
     // MARK: - Equipment Names

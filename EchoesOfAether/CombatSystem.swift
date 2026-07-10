@@ -630,7 +630,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         root.addChild(plate)
 
         let bossTitle = SKLabelNode(fontNamed: PixelUI.uiFont)
-        bossTitle.text = "⚔ " + (enemies.first?.combatant.name ?? "") + " ⚔"
+        bossTitle.text = enemies.first?.combatant.name ?? ""
         bossTitle.fontSize = 17
         bossTitle.fontColor = SKColor(red: 0.80, green: 0.55, blue: 1, alpha: 1)
         bossTitle.verticalAlignmentMode = .center

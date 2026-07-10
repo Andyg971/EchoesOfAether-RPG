@@ -38,13 +38,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚡ ENRAGED ⚡"
+            "value" : "ENRAGED"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚡ ENRAGÉ ⚡"
+            "value" : "ENRAGÉ"
           }
         }
       }
@@ -943,13 +943,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Potion — +%lld HP"
+            "value" : "Potion: +%lld HP"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Potion — +%lld PV"
+            "value" : "Potion : +%lld PV"
           }
         }
       }
@@ -1058,13 +1058,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choose a technique — tap an enemy to target it."
+            "value" : "Choose a technique, then tap an enemy to target it."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Choisis une technique — touche un ennemi pour le cibler."
+            "value" : "Choisis une technique, puis touche un ennemi pour le cibler."
           }
         }
       }
@@ -1106,13 +1106,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚔ Your turn!"
+            "value" : "Your turn!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "⚔ À toi de jouer !"
+            "value" : "À toi de jouer !"
           }
         }
       }
@@ -1346,13 +1346,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "— FALLEN —"
+            "value" : "FALLEN"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "— TOMBÉ —"
+            "value" : "TOMBÉ"
           }
         }
       }
@@ -1394,13 +1394,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vision — The Source pulses. My blood... not my will."
+            "value" : "Vision. The Source pulses. My blood... not my will."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vision — La Source pulse. Mon sang... pas ma volonté."
+            "value" : "Vision. La Source pulse. Mon sang... pas ma volonté."
           }
         }
       }
@@ -1602,13 +1602,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eran was right... The Threshold can still—"
+            "value" : "Eran was right... The Threshold can still..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eran avait raison... Le Seuil peut encore—"
+            "value" : "Eran avait raison... Le Seuil peut encore..."
           }
         }
       }
@@ -1634,13 +1634,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kael— you're hurting me. Let go—"
+            "value" : "Kael... you're hurting me. Let go..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kael— tu me fais mal. Lâche-moi—"
+            "value" : "Kael... tu me fais mal. Lâche-moi..."
           }
         }
       }
@@ -2066,13 +2066,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«It's not too late. Seek the Threshold. — E.»"
+            "value" : "«It's not too late. Seek the Threshold. E.»"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "«Il n'est pas trop tard. Cherche le Seuil. — E.»"
+            "value" : "«Il n'est pas trop tard. Cherche le Seuil. E.»"
           }
         }
       }
@@ -2402,13 +2402,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Shut up. Shut up—"
+            "value" : "Shut up. Shut up..."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tais-toi. Tais-toi—"
+            "value" : "Tais-toi. Tais-toi..."
           }
         }
       }
@@ -2994,13 +2994,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I crossed once. I came back wrong. The Threshold doesn't open a door — it rewrites whoever walks through."
+            "value" : "I crossed once. I came back wrong. The Threshold doesn't open a door. It rewrites whoever walks through."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je l'ai franchi une fois. J'en suis revenue brisée. Le Seuil n'ouvre pas une porte — il réécrit celui qui le traverse."
+            "value" : "Je l'ai franchi une fois. J'en suis revenue brisée. Le Seuil n'ouvre pas une porte. Il réécrit celui qui le traverse."
           }
         }
       }
@@ -3204,13 +3204,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Threshold. Lyra was right — this place is alive."
+            "value" : "The Threshold. Lyra was right, this place is alive."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le Seuil. Lyra avait raison — cet endroit est vivant."
+            "value" : "Le Seuil. Lyra avait raison, cet endroit est vivant."
           }
         }
       }
@@ -3348,13 +3348,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "To carry the weight, awake — perhaps that was the harder courage."
+            "value" : "To carry the weight, awake. Perhaps that was the harder courage."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Porter le poids, lucide — c'était peut-être ça, le vrai courage."
+            "value" : "Porter le poids, lucide. C'était peut-être ça, le vrai courage."
           }
         }
       }
@@ -3444,7 +3444,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyra is gone. The Aether remains. And you — what remains of you?"
+            "value" : "Lyra is gone. The Aether remains. And you? What remains of you?"
           }
         },
         "fr" : {
@@ -3988,13 +3988,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Then you're in the right place. Iron, runic — everything you need to survive out there. Take a look."
+            "value" : "Then you're in the right place. Iron, runic, everything you need to survive out there. Take a look."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alors t'es au bon endroit. Du fer, du runique — tout ce qu'il faut pour survivre là-dehors. Regarde."
+            "value" : "Alors t'es au bon endroit. Du fer, du runique, tout ce qu'il faut pour survivre là-dehors. Regarde."
           }
         }
       }
@@ -4293,13 +4293,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Yeah! I want to be like you — a real warrior with powers!"
+            "value" : "Yeah! I want to be like you, a real warrior with powers!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ouais ! Je veux devenir comme toi — un vrai guerrier avec des pouvoirs !"
+            "value" : "Ouais ! Je veux devenir comme toi, un vrai guerrier avec des pouvoirs !"
           }
         }
       }
@@ -4457,13 +4457,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I'm coming with you. Not to protect you — to make sure your mark doesn't end up consuming you."
+            "value" : "I'm coming with you. Not to protect you. To make sure your mark doesn't end up consuming you."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je viens avec toi. Pas pour te protéger — pour m'assurer que ta marque ne finisse pas par te consumer."
+            "value" : "Je viens avec toi. Pas pour te protéger. Pour m'assurer que ta marque ne finisse pas par te consumer."
           }
         }
       }
@@ -4569,13 +4569,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Because of that mark on your hand — my father spoke of it. He said the Guardians bore that sign. And the Guardians were the only ones who could touch corrupted Aether without dying."
+            "value" : "Because of that mark on your hand... my father spoke of it. He said the Guardians bore that sign. And the Guardians were the only ones who could touch corrupted Aether without dying."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Parce que cette marque sur ta main — mon père en parlait. Il disait que les Gardiens portaient ce signe. Et les Gardiens étaient les seuls à pouvoir toucher l'Aether corrompu sans mourir."
+            "value" : "Parce que cette marque sur ta main... mon père en parlait. Il disait que les Gardiens portaient ce signe. Et les Gardiens étaient les seuls à pouvoir toucher l'Aether corrompu sans mourir."
           }
         }
       }
@@ -5017,13 +5017,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "At least you're honest. That's good. Let's keep going — there's something else ahead. I can feel it."
+            "value" : "At least you're honest. That's good. Let's keep going, there's something else ahead. I can feel it."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Au moins tu es honnête. C'est bien. Continuons — il y a autre chose plus loin. Je le sens."
+            "value" : "Au moins tu es honnête. C'est bien. Continuons, il y a autre chose plus loin. Je le sens."
           }
         }
       }
@@ -5209,13 +5209,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "All sorted. If you want to head north, talk to Dorin — he's the one who decides."
+            "value" : "All sorted. If you want to head north, talk to Dorin. He's the one who decides."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tout est en ordre. Si tu veux partir vers le nord, parle à Dorin — c'est lui qui décide."
+            "value" : "Tout est en ordre. Si tu veux partir vers le nord, parle à Dorin. C'est lui qui décide."
           }
         }
       }
@@ -5305,13 +5305,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wise choice. By the way — if you run into Mara the herbalist, she has something for me."
+            "value" : "Wise choice. By the way, if you run into Mara the herbalist, she has something for me."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sage décision. Au fait — si tu croises Mara l'herboriste, elle a quelque chose pour moi."
+            "value" : "Sage décision. Au fait, si tu croises Mara l'herboriste, elle a quelque chose pour moi."
           }
         }
       }
@@ -5353,13 +5353,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Some. Not all. Eran — the First Guardian — survived. He tried to seal the source of the corruption alone, beyond the Threshold."
+            "value" : "Some. Not all. Eran, the First Guardian, survived. He tried to seal the source of the corruption alone, beyond the Threshold."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Certains. Pas tous. Eran — le Premier Gardien — a survécu. Il a voulu sceller la source de la corruption seul, au-delà du Seuil."
+            "value" : "Certains. Pas tous. Eran, le Premier Gardien, a survécu. Il a voulu sceller la source de la corruption seul, au-delà du Seuil."
           }
         }
       }
@@ -5867,13 +5867,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oh! A new face! I'm Mara. Herbs, potions, remedies — I sell everything that heals."
+            "value" : "Oh! A new face! I'm Mara. Herbs, potions, remedies: I sell everything that heals."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Oh ! Un nouveau visage ! Je suis Mara. Herbes, potions, remèdes — je vends tout ce qui guérit."
+            "value" : "Oh ! Un nouveau visage ! Je suis Mara. Herbes, potions, remèdes : je vends tout ce qui guérit."
           }
         }
       }
@@ -6315,13 +6315,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Of course. 10 gold for the night. You'll leave in top shape — guaranteed."
+            "value" : "Of course. 10 gold for the night. You'll leave in top shape, guaranteed."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bien sûr. 10 pièces d'or pour la nuit. Tu repars en pleine forme — garanti."
+            "value" : "Bien sûr. 10 pièces d'or pour la nuit. Tu repars en pleine forme, garanti."
           }
         }
       }
@@ -6331,13 +6331,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Did you sleep well? The inn has a long memory — it keeps people alive longer than their swords do."
+            "value" : "Did you sleep well? The inn has a long memory: it keeps people alive longer than their swords do."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu t'es bien reposé ? L'auberge a bonne mémoire — elle garde les gens en vie plus longtemps que leurs épées."
+            "value" : "Tu t'es bien reposé ? L'auberge a bonne mémoire : elle garde les gens en vie plus longtemps que leurs épées."
           }
         }
       }
@@ -6893,13 +6893,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solis. A village on the edge of the corruption. And I'm Lyra — the only one here who didn't want to leave you dying in a ditch."
+            "value" : "Solis. A village on the edge of the corruption. And I'm Lyra, the only one here who didn't want to leave you dying in a ditch."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Solis. Un village au bord de la corruption. Et moi c'est Lyra — la seule personne ici qui a pas voulu te laisser mourir dans le fossé."
+            "value" : "Solis. Un village au bord de la corruption. Et moi c'est Lyra, la seule personne ici qui a pas voulu te laisser mourir dans le fossé."
           }
         }
       }
@@ -7085,7 +7085,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Charming. Amnesia with attitude — that's a first around here."
+            "value" : "Charming. Amnesia with attitude. That's a first around here."
           }
         },
         "fr" : {
@@ -7149,13 +7149,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Don't let the Void win.  — Eran"
+            "value" : "Don't let the Void win.  Eran"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ne laisse pas le Vide gagner.  — Eran"
+            "value" : "Ne laisse pas le Vide gagner.  Eran"
           }
         }
       }
@@ -7165,13 +7165,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyra — Light of Solis"
+            "value" : "Lyra, Light of Solis"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lyra — Lumière de Solis"
+            "value" : "Lyra, Lumière de Solis"
           }
         }
       }
@@ -7181,13 +7181,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Act II — Complete"
+            "value" : "Act II Complete"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Acte II — Terminé"
+            "value" : "Acte II terminé"
           }
         }
       }
@@ -7245,13 +7245,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Echoes of Aether — V1"
+            "value" : "Echoes of Aether V1"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Echoes of Aether — V1"
+            "value" : "Echoes of Aether V1"
           }
         }
       }
@@ -7277,13 +7277,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Tap to proceed"
+            "value" : "Tap to proceed"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Toucher pour continuer"
+            "value" : "Toucher pour continuer"
           }
         }
       }
@@ -7293,13 +7293,29 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Tap to examine"
+            "value" : "Tap to examine"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Toucher pour examiner"
+            "value" : "Toucher pour examiner"
+          }
+        }
+      }
+    },
+    "hint.exit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortir"
           }
         }
       }
@@ -7309,13 +7325,61 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Tap to fight"
+            "value" : "Tap to fight"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Toucher pour combattre"
+            "value" : "Toucher pour combattre"
+          }
+        }
+      }
+    },
+    "hint.interior.apothecary" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potions / Herbs"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Potions / Herbes"
+          }
+        }
+      }
+    },
+    "hint.interior.armory" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forge / Buy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Forger / Acheter"
+          }
+        }
+      }
+    },
+    "hint.interior.inn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rest"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se reposer"
           }
         }
       }
@@ -7325,13 +7389,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Save Crystal"
+            "value" : "Save Crystal"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Cristal de sauvegarde"
+            "value" : "Cristal de sauvegarde"
           }
         }
       }
@@ -7341,13 +7405,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Tap to open shop"
+            "value" : "Tap to open shop"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Toucher pour ouvrir la boutique"
+            "value" : "Toucher pour ouvrir la boutique"
           }
         }
       }
@@ -7357,13 +7421,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Tap to talk"
+            "value" : "Tap to talk"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Toucher pour parler"
+            "value" : "Toucher pour parler"
           }
         }
       }
@@ -7423,13 +7487,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Threshold — face your own shadow"
+            "value" : "The Threshold: face your own shadow"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le Seuil — affronter sa propre ombre"
+            "value" : "Le Seuil : affronter sa propre ombre"
           }
         }
       }
@@ -7594,6 +7658,54 @@
         }
       }
     },
+    "hud.objective.interior.apothecary" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Apothecary: stock up on potions and remedies."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Herboristerie : prépare potions et remèdes."
+          }
+        }
+      }
+    },
+    "hud.objective.interior.armory" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armory: gear up or head back out the door."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Armurerie : équipe-toi ou ressors par la porte."
+          }
+        }
+      }
+    },
+    "hud.objective.interior.inn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inn: rest up before the forest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auberge : repose-toi avant la forêt."
+          }
+        }
+      }
+    },
     "hud.objective.lyra" : {
       "localizations" : {
         "en" : {
@@ -7663,13 +7775,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "☆ Find the child's toy in the forest"
+            "value" : "Find the child's toy in the forest"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "☆ Retrouver le jouet de l'enfant dans la forêt"
+            "value" : "Retrouver le jouet de l'enfant dans la forêt"
           }
         }
       }
@@ -7695,13 +7807,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "☆ Find 5 Aether Shards for Lyra"
+            "value" : "Find 5 Aether Shards for Lyra"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "☆ Trouver 5 Éclats d'Aether pour Lyra"
+            "value" : "Trouver 5 Éclats d'Aether pour Lyra"
           }
         }
       }
@@ -8271,13 +8383,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Source is a mirror. It amplifies. It does not corrupt — it shows."
+            "value" : "The Source is a mirror. It amplifies. It does not corrupt. It shows."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La Source est un miroir. Elle amplifie. Elle ne corrompt pas — elle montre."
+            "value" : "La Source est un miroir. Elle amplifie. Elle ne corrompt pas. Elle montre."
           }
         }
       }
@@ -8335,13 +8447,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aether does not choose — it reveals what was already there."
+            "value" : "Aether does not choose. It reveals what was already there."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'Aether ne choisit pas — il révèle ce qui était déjà là."
+            "value" : "L'Aether ne choisit pas. Il révèle ce qui était déjà là."
           }
         }
       }
@@ -8720,13 +8832,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "v0.2 — Act I & II"
+            "value" : "v0.2 (Act I & II)"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "v0.2 — Acte I & II"
+            "value" : "v0.2 (Acte I & II)"
           }
         }
       }
@@ -8881,13 +8993,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confirm — all progress lost!"
+            "value" : "Confirm: all progress lost!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Confirmer — tout sera perdu !"
+            "value" : "Confirmer : tout sera perdu !"
           }
         }
       }
@@ -9095,13 +9207,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Since then, black Aether gnaws at the land — and marks those it chooses."
+            "value" : "Since then, black Aether gnaws at the land and marks those it chooses."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Depuis, l'Aether noir ronge la terre — et marque ceux qu'il choisit."
+            "value" : "Depuis, l'Aether noir ronge la terre et marque ceux qu'il choisit."
           }
         }
       }
@@ -9224,13 +9336,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "By all the fires — look at that grain. Here, for your trouble."
+            "value" : "By all the fires... look at that grain. Here, for your trouble."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Par tous les feux — regarde-moi ce grain. Tiens, pour ta peine."
+            "value" : "Par tous les feux... regarde-moi ce grain. Tiens, pour ta peine."
           }
         }
       }
@@ -9608,13 +9720,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Thank you. Take this — he would have wanted it to help someone still searching."
+            "value" : "Thank you. Take this, he would have wanted it to help someone still searching."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Merci. Prenez ceci — il aurait voulu que ça serve à quelqu'un qui cherche encore."
+            "value" : "Merci. Prenez ceci, il aurait voulu que ça serve à quelqu'un qui cherche encore."
           }
         }
       }
@@ -9656,13 +9768,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Before he left, he forgot his talisman — a little wooden cross. He said it kept him safe."
+            "value" : "Before he left, he forgot his talisman, a little wooden cross. He said it kept him safe."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Avant de partir, il a laissé son talisman — une petite croix de bois. Il disait qu'elle le protégeait."
+            "value" : "Avant de partir, il a laissé son talisman, une petite croix de bois. Il disait qu'elle le protégeait."
           }
         }
       }
@@ -9720,13 +9832,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The moonherb — a pale glow between the roots, west of the trail."
+            "value" : "The moonherb... a pale glow between the roots, west of the trail."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'herbe lunaire — une lueur pâle entre les racines, à l'ouest du sentier."
+            "value" : "L'herbe lunaire... une lueur pâle entre les racines, à l'ouest du sentier."
           }
         }
       }
@@ -9784,13 +9896,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Here — and the next tea is on me."
+            "value" : "Here. And the next tea is on me."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tiens — et la prochaine tisane est pour moi."
+            "value" : "Tiens. Et la prochaine tisane est pour moi."
           }
         }
       }
@@ -10010,13 +10122,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomm, Garen's scout, vanished in the Ebony Forest. Find his trail — or his badge."
+            "value" : "Tomm, Garen's scout, vanished in the Ebony Forest. Find his trail, or his badge."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomm, éclaireur de Garen, a disparu dans la forêt d'Ébène. Retrouver sa trace — ou son insigne."
+            "value" : "Tomm, éclaireur de Garen, a disparu dans la forêt d'Ébène. Retrouver sa trace, ou son insigne."
           }
         }
       }
@@ -10486,13 +10598,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aether shard — Lyra seeks five"
+            "value" : "Aether shard. Lyra seeks five"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fragment d'Éther — Lyra en cherche cinq"
+            "value" : "Fragment d'Éther. Lyra en cherche cinq"
           }
         }
       }
@@ -10810,13 +10922,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Scratched inscription"
+            "value" : "Scratched inscription"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Inscription griffonnée"
+            "value" : "Inscription griffonnée"
           }
         }
       }
@@ -10826,13 +10938,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Ancient inscription"
+            "value" : "Ancient inscription"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Inscription ancienne"
+            "value" : "Inscription ancienne"
           }
         }
       }
@@ -10858,13 +10970,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Aether Crystal"
+            "value" : "Aether Crystal"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "✦ Cristal d'Aether"
+            "value" : "Cristal d'Aether"
           }
         }
       }

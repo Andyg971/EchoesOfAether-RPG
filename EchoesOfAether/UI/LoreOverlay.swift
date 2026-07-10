@@ -75,10 +75,13 @@ final class LoreOverlay {
         } else {
             var y = panelHeight/2 - 72
             for entry in entries {
-                let icon = makeLabel(entry.icon, font: "AvenirNext-Medium", size: 16,
-                                     color: SKColor(red: 0.55, green: 0.75, blue: 1, alpha: 1))
-                icon.horizontalAlignmentMode = .left
-                icon.position = CGPoint(x: -panelWidth/2 + 20, y: y)
+                // Losange pixel art (carré tourné) en guise de puce
+                let icon = SKShapeNode(rectOf: CGSize(width: 9, height: 9))
+                icon.fillColor = SKColor(red: 0.55, green: 0.75, blue: 1, alpha: 1)
+                icon.strokeColor = SKColor(red: 0.75, green: 0.88, blue: 1, alpha: 0.8)
+                icon.lineWidth = 1
+                icon.zRotation = .pi / 4
+                icon.position = CGPoint(x: -panelWidth/2 + 26, y: y + 5)
                 root.addChild(icon)
                 entryLabels.append(icon)
 
@@ -152,7 +155,6 @@ final class LoreOverlay {
 // MARK: - LoreEntry
 
 struct LoreEntry {
-    let icon: String
     let title: String
     let body: String
 }

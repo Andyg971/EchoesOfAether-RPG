@@ -11,18 +11,20 @@ final class InteractionBubble {
     private let root = SKNode()
     private let bg = SKShapeNode(circleOfRadius: 18)
     private let bgGlow = SKShapeNode(circleOfRadius: 22)
-    private let icon = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+    private let iconHolder = SKNode()
+    private var currentAction: Action?
 
     enum Action: String {
         case talk, shop, fight, examine, enter
 
-        var emoji: String {
+        /// Icône pixel art correspondante (aucun emoji dans l'UI).
+        var pixelIcon: PixelIcons.Kind {
             switch self {
-            case .talk:    return "💬"
-            case .shop:    return "🛒"
-            case .fight:   return "⚔"
-            case .examine: return "🔍"
-            case .enter:   return "🚪"
+            case .talk:    return .chat
+            case .shop:    return .bag
+            case .fight:   return .sword
+            case .examine: return .magnifier
+            case .enter:   return .door
             }
         }
 
@@ -59,11 +61,8 @@ final class InteractionBubble {
         bg.glowWidth = 3
         root.addChild(bg)
 
-        // Icône emoji centrée
-        icon.fontSize = 18
-        icon.verticalAlignmentMode = .center
-        icon.horizontalAlignmentMode = .center
-        root.addChild(icon)
+        // Icône pixel art centrée
+        root.addChild(iconHolder)
 
         // Animation idle : float vertical + halo pulse
         let float = SKAction.repeatForever(.sequence([
@@ -79,13 +78,14 @@ final class InteractionBubble {
     /// tête d'un PNJ : `node.position + offset Y`). `action` pilote l'icône.
     /// Idempotent : appels successifs avec mêmes args ne re-anime pas.
     func show(at worldPosition: CGPoint, action: Action) {
-        let newEmoji = action.emoji
         let positionChanged = abs(root.position.x - worldPosition.x) > 0.5
             || abs(root.position.y - worldPosition.y) > 0.5
-        let emojiChanged = icon.text != newEmoji
+        let iconChanged = currentAction != action
 
-        if emojiChanged {
-            icon.text = newEmoji
+        if iconChanged {
+            currentAction = action
+            iconHolder.removeAllChildren()
+            iconHolder.addChild(PixelIcons.node(action.pixelIcon, pixel: 2.4))
             // Petit pop quand l'action change
             root.run(.sequence([
                 .scale(to: 1.2, duration: 0.08),

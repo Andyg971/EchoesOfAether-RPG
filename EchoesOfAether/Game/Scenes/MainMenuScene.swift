@@ -63,57 +63,67 @@ final class MainMenuScene: SKScene {
         buildRPGBackdrop(w: w, h: h)
         addChild(ParticleFactory.ambientDust(in: size))
 
-        let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
+        // Layout top-down : en paysage (h courte) tout se compacte pour
+        // que titre, sous-titre et slots ne se chevauchent jamais.
+        let compact = h < 500
+
+        // Titre pixel : VT323 + ombre dure décalée (pas de glow flou).
+        let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         titleLabel.text = String(localized: "menu.title")
-        titleLabel.fontSize = min(38, w * 0.095)
+        titleLabel.fontSize = compact ? min(40, w * 0.06) : min(50, w * 0.125)
         titleLabel.fontColor = SKColor(red: 0.86, green: 0.78, blue: 1, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         titleLabel.verticalAlignmentMode = .center
-        titleLabel.position = CGPoint(x: w / 2, y: min(h - safeTop - h * 0.18, contentTop - 56))
+        titleLabel.position = CGPoint(
+            x: w / 2,
+            y: compact ? contentTop - 14 : min(h - safeTop - h * 0.18, contentTop - 56))
         titleLabel.zPosition = 20
         addChild(titleLabel)
         JuiceEngine.float(titleLabel, distance: 4)
 
-        let titleGlow = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-        titleGlow.text = titleLabel.text
-        titleGlow.fontSize = titleLabel.fontSize
-        titleGlow.fontColor = SKColor(red: 0.42, green: 0.20, blue: 0.75, alpha: 0.32)
-        titleGlow.horizontalAlignmentMode = .center
-        titleGlow.position = CGPoint(x: titleLabel.position.x, y: titleLabel.position.y - 2)
-        titleGlow.zPosition = 19
-        addChild(titleGlow)
+        let titleShadow = SKLabelNode(fontNamed: PixelUI.uiFont)
+        titleShadow.text = titleLabel.text
+        titleShadow.fontSize = titleLabel.fontSize
+        titleShadow.fontColor = SKColor(red: 0.22, green: 0.10, blue: 0.40, alpha: 0.9)
+        titleShadow.horizontalAlignmentMode = .center
+        titleShadow.verticalAlignmentMode = .center
+        titleShadow.position = CGPoint(x: titleLabel.position.x + 3, y: titleLabel.position.y - 3)
+        titleShadow.zPosition = 19
+        addChild(titleShadow)
+        JuiceEngine.float(titleShadow, distance: 4)
 
-        let sub = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+        let sub = SKLabelNode(fontNamed: PixelUI.uiFont)
         sub.text = String(localized: "menu.subtitle")
-        sub.fontSize = 13
-        sub.fontColor = SKColor(red: 0.74, green: 0.70, blue: 0.82, alpha: 0.78)
+        sub.fontSize = compact ? 15 : 17
+        sub.fontColor = SKColor(red: 0.74, green: 0.70, blue: 0.82, alpha: 0.85)
         sub.horizontalAlignmentMode = .center
         sub.verticalAlignmentMode = .center
-        sub.preferredMaxLayoutWidth = min(w - 48, 360)
+        sub.preferredMaxLayoutWidth = min(w - 48, 380)
         sub.numberOfLines = 2
-        sub.position = CGPoint(x: w / 2, y: titleLabel.position.y - 40)
+        sub.position = CGPoint(x: w / 2, y: titleLabel.position.y - (compact ? 30 : 40))
         sub.zPosition = 20
         addChild(sub)
 
         // En-tête « Choisis un emplacement »
-        let slotsTitle = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let slotsTitle = SKLabelNode(fontNamed: PixelUI.uiFont)
         slotsTitle.text = String(localized: "menu.chooseSlot")
-        slotsTitle.fontSize = 13
-        slotsTitle.fontColor = SKColor(white: 0.62, alpha: 1)
+        slotsTitle.fontSize = compact ? 14 : 17
+        slotsTitle.fontColor = SKColor(white: 0.68, alpha: 1)
         slotsTitle.horizontalAlignmentMode = .center
         slotsTitle.verticalAlignmentMode = .center
         slotsTitle.zPosition = 20
-
-        // Empilement vertical des slots, centré dans la zone disponible.
-        let rowHeight: CGFloat = 66
-        let spacing: CGFloat = 16
-        let count = SaveManager.slotCount
-        let blockHeight = CGFloat(count) * rowHeight + CGFloat(count - 1) * spacing
-        let centerY = max(contentBottom + blockHeight / 2 + 40, h * 0.42)
-        let topRowY = centerY + blockHeight / 2 - rowHeight / 2
-
-        slotsTitle.position = CGPoint(x: w / 2, y: centerY + blockHeight / 2 + 26)
+        slotsTitle.position = CGPoint(x: w / 2, y: sub.position.y - (compact ? 26 : 36))
         addChild(slotsTitle)
+
+        // Empilement vertical des slots sous l'en-tête ; la hauteur des
+        // lignes se réduit pour tenir dans l'espace restant (paysage).
+        let count = SaveManager.slotCount
+        let spacing: CGFloat = compact ? 10 : 16
+        let zoneTop = slotsTitle.position.y - 20
+        let zoneBottom = contentBottom + 14
+        let availH = max(zoneTop - zoneBottom, 120)
+        let rowHeight = min(66, max(48, (availH - CGFloat(count - 1) * spacing) / CGFloat(count)))
+        let topRowY = zoneTop - rowHeight / 2
 
         for i in 0..<count {
             let slot = i + 1
@@ -125,9 +135,9 @@ final class MainMenuScene: SKScene {
             JuiceEngine.popIn(row, delay: 0.1 + Double(i) * 0.08)
         }
 
-        let version = SKLabelNode(fontNamed: "AvenirNext-Regular")
+        let version = SKLabelNode(fontNamed: PixelUI.uiFont)
         version.text = String(localized: "menu.version")
-        version.fontSize = 10
+        version.fontSize = 13
         version.fontColor = SKColor(white: 0.46, alpha: 0.9)
         version.horizontalAlignmentMode = .center
         version.verticalAlignmentMode = .center
@@ -226,31 +236,31 @@ final class MainMenuScene: SKScene {
         let width = min(max(size.width - 56, 268), 360)
         let hasSave = SaveManager.hasSave(slot: slot)
 
-        let row = SKShapeNode(rectOf: CGSize(width: width, height: height), cornerRadius: 14)
-        row.fillColor = hasSave
-            ? SKColor(red: 0.07, green: 0.12, blue: 0.18, alpha: 0.94)
-            : SKColor(red: 0.13, green: 0.09, blue: 0.20, alpha: 0.92)
-        row.strokeColor = hasSave
-            ? SKColor(red: 0.38, green: 0.68, blue: 0.95, alpha: 0.9)
-            : SKColor(red: 0.62, green: 0.46, blue: 0.92, alpha: 0.85)
-        row.lineWidth = 2
-        row.glowWidth = 1.2
+        // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
+        let row = SKShapeNode()
+        PixelUI.stylePanel(row, size: CGSize(width: width, height: height),
+                           fill: hasSave
+                               ? SKColor(red: 0.07, green: 0.12, blue: 0.18, alpha: 0.97)
+                               : SKColor(red: 0.13, green: 0.09, blue: 0.20, alpha: 0.97),
+                           accent: hasSave
+                               ? SKColor(red: 0.38, green: 0.68, blue: 0.95, alpha: 0.9)
+                               : SKColor(red: 0.62, green: 0.46, blue: 0.92, alpha: 0.85))
         row.name = "slotRow\(slot)"
         row.userData = ["slot": slot]
 
         let leftX = -width / 2 + 18
 
-        let titleL = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let titleL = SKLabelNode(fontNamed: PixelUI.uiFont)
         titleL.text = String(localized: "menu.slot \(slot)")
-        titleL.fontSize = 17
+        titleL.fontSize = 22
         titleL.fontColor = .white
         titleL.horizontalAlignmentMode = .left
         titleL.verticalAlignmentMode = .center
-        titleL.position = CGPoint(x: leftX, y: hasSave ? 11 : 0)
+        titleL.position = CGPoint(x: leftX, y: 11)
         titleL.isUserInteractionEnabled = false
         row.addChild(titleL)
 
-        let subL = SKLabelNode(fontNamed: "AvenirNext-Regular")
+        let subL = SKLabelNode(fontNamed: PixelUI.uiFont)
         if hasSave, let meta = SaveManager.metadata(slot: slot) {
             subL.text = String(localized: "menu.slot.meta \(phaseDisplayName(meta.phase)) \(meta.level) \(meta.gold)")
             subL.fontColor = SKColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 0.95)
@@ -258,34 +268,33 @@ final class MainMenuScene: SKScene {
             subL.text = String(localized: "menu.newGame")
             subL.fontColor = SKColor(red: 0.80, green: 0.72, blue: 0.95, alpha: 0.9)
         }
-        subL.fontSize = 11
+        subL.fontSize = 15
         subL.horizontalAlignmentMode = .left
         subL.verticalAlignmentMode = .center
         subL.position = CGPoint(x: leftX, y: -12)
         subL.isUserInteractionEnabled = false
-        if hasSave { row.addChild(subL) } else {
-            subL.position = CGPoint(x: leftX, y: 0)
-            row.addChild(subL)
-        }
+        row.addChild(subL)
 
         // Bouton suppression (uniquement si une sauvegarde existe)
         if hasSave {
             let confirming = confirmDeleteSlot == slot
-            let delBtn = SKShapeNode(circleOfRadius: 16)
+            // Carré pixel (pas de cercle : le rond casse le style rétro).
+            let delBtn = SKShapeNode(rect: CGRect(x: -15, y: -15, width: 30, height: 30))
             delBtn.fillColor = confirming
                 ? SKColor(red: 0.55, green: 0.10, blue: 0.10, alpha: 1)
                 : SKColor(red: 0.16, green: 0.08, blue: 0.10, alpha: 1)
             delBtn.strokeColor = confirming
                 ? SKColor(red: 1.0, green: 0.30, blue: 0.25, alpha: 1)
                 : SKColor(red: 0.65, green: 0.25, blue: 0.25, alpha: 0.9)
-            delBtn.lineWidth = 1.5
+            delBtn.lineWidth = 2
+            delBtn.glowWidth = 0
             delBtn.name = "slotDelete\(slot)"
             delBtn.userData = ["slot": slot]
             delBtn.position = CGPoint(x: width / 2 - 26, y: 0)
 
-            let delLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+            let delLbl = SKLabelNode(fontNamed: PixelUI.uiFont)
             delLbl.text = confirming ? "?" : "✕"
-            delLbl.fontSize = confirming ? 16 : 14
+            delLbl.fontSize = confirming ? 20 : 17
             delLbl.fontColor = .white
             delLbl.verticalAlignmentMode = .center
             delLbl.horizontalAlignmentMode = .center
@@ -294,9 +303,9 @@ final class MainMenuScene: SKScene {
             row.addChild(delBtn)
 
             if confirming {
-                let hint = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+                let hint = SKLabelNode(fontNamed: PixelUI.uiFont)
                 hint.text = String(localized: "menu.slot.deleteConfirm")
-                hint.fontSize = 9
+                hint.fontSize = 12
                 hint.fontColor = SKColor(red: 1.0, green: 0.45, blue: 0.40, alpha: 1)
                 hint.horizontalAlignmentMode = .right
                 hint.verticalAlignmentMode = .center
@@ -334,10 +343,12 @@ final class MainMenuScene: SKScene {
         sky.zPosition = -20
         addChild(sky)
 
-        let moon = SKShapeNode(circleOfRadius: min(w, h) * 0.105)
-        moon.fillColor = SKColor(red: 0.62, green: 0.58, blue: 0.78, alpha: 0.20)
-        moon.strokeColor = SKColor(red: 0.82, green: 0.75, blue: 1, alpha: 0.16)
-        moon.glowWidth = 12
+        // Lune pixelisée : cercle rendu en 16 px puis agrandi en .nearest
+        // → gros pixels nets, cohérents avec le reste du jeu.
+        let moon = pixelCircleSprite(pixels: 16,
+                                     fill: SKColor(red: 0.62, green: 0.58, blue: 0.78, alpha: 0.34),
+                                     rim: SKColor(red: 0.82, green: 0.75, blue: 1, alpha: 0.30))
+        moon.size = CGSize(width: min(w, h) * 0.21, height: min(w, h) * 0.21)
         moon.position = CGPoint(x: w * 0.74, y: h * 0.80)
         moon.zPosition = -18
         addChild(moon)
@@ -360,14 +371,43 @@ final class MainMenuScene: SKScene {
         ground.zPosition = -6
         addChild(ground)
 
-        let aether = SKShapeNode(ellipseOf: CGSize(width: w * 0.72, height: 34))
-        aether.fillColor = SKColor(red: 0.25, green: 0.10, blue: 0.44, alpha: 0.12)
-        aether.strokeColor = SKColor(red: 0.68, green: 0.42, blue: 1, alpha: 0.20)
-        aether.glowWidth = 8
+        // Halo d'Éther : bandes horizontales plates façon dithering rétro
+        // (remplace l'ellipse floue à glow).
+        let aether = SKNode()
+        let bandHeights: [(CGFloat, CGFloat, CGFloat)] = [
+            (0.72, 8, 0.10), (0.58, 8, 0.16), (0.42, 8, 0.22)
+        ]
+        for (i, band) in bandHeights.enumerated() {
+            let strip = SKSpriteNode(color: SKColor(red: 0.55, green: 0.34, blue: 0.95, alpha: band.2),
+                                     size: CGSize(width: w * band.0, height: band.1))
+            strip.position = CGPoint(x: 0, y: CGFloat(i) * 8 - 8)
+            aether.addChild(strip)
+        }
         aether.position = CGPoint(x: w / 2, y: h * 0.24)
         aether.zPosition = -4
         addChild(aether)
         JuiceEngine.pulse(aether, scale: 1.08)
+    }
+
+    /// Sprite cercle pixel art : dessiné à `pixels` px de côté puis
+    /// upscalé en `.nearest` — chaque pixel source devient un gros bloc.
+    private func pixelCircleSprite(pixels: Int, fill: SKColor, rim: SKColor) -> SKSpriteNode {
+        let side = CGFloat(pixels)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: side, height: side),
+                                               format: {
+            let f = UIGraphicsImageRendererFormat()
+            f.scale = 1
+            return f
+        }())
+        let image = renderer.image { ctx in
+            rim.setFill()
+            ctx.cgContext.fillEllipse(in: CGRect(x: 0, y: 0, width: side, height: side))
+            fill.setFill()
+            ctx.cgContext.fillEllipse(in: CGRect(x: 1, y: 1, width: side - 2, height: side - 2))
+        }
+        let texture = SKTexture(image: image)
+        texture.filteringMode = .nearest
+        return SKSpriteNode(texture: texture)
     }
 
     private func addBackdropSprite(_ name: String, at position: CGPoint,

@@ -177,6 +177,66 @@ final class WorldBuilder {
         kael.zPosition = actorLayer(for: kael.position.y)
     }
 
+    // MARK: - PNJ errants (village)
+
+    /// Vrai si on est à l'intérieur d'une maison.
+    var isInsideInterior: Bool { activeInterior != nil }
+
+    /// Lance la promenade libre des PNJ du village : chacun flâne autour
+    /// de son poste (large rayon), en évitant maisons et obstacles.
+    /// Garen (sentinelle) fait les cent pas près de la porte nord.
+    /// Idempotent : ne relance pas un PNJ déjà en promenade.
+    func startVillageWander(in size: CGSize) {
+        var walkers: [(SKNode, CGFloat)] = [
+            (dorin, 220), (bram, 200), (mara, 200), (sage, 200),
+            (child, 240), (villager, 240), (garen, 46)
+        ]
+        if !lyraKeepsVigil { walkers.append((lyra, 220)) }
+        for (npc, radius) in walkers where npc.action(forKey: "wander") == nil {
+            scheduleWander(npc, home: npc.position, radius: radius, sceneWidth: size.width)
+        }
+    }
+
+    /// Stoppe toute promenade (dialogue, combat, intérieur, cinématique).
+    func stopVillageWander() {
+        for npc in [lyra, dorin, bram, mara, sage, garen, child, villager] {
+            npc.removeAction(forKey: "wander")
+        }
+    }
+
+    /// Un pas de promenade : pause aléatoire, puis marche lente vers un
+    /// point libre autour du poste d'origine — et on recommence.
+    private func scheduleWander(_ npc: SKNode, home: CGPoint,
+                                radius: CGFloat, sceneWidth: CGFloat) {
+        let wh = worldHeight > 0 ? worldHeight : 402
+        let target = CGPoint(
+            x: min(max(home.x + .random(in: -radius...radius), 40), sceneWidth - 40),
+            y: min(max(home.y + .random(in: -radius...radius), 72), wh - 52))
+        let dest = clampDestination(from: npc.position, to: target)
+        let dist = npc.position.distance(to: dest)
+
+        var steps: [SKAction] = [.wait(forDuration: .random(in: 0.8...3.6))]
+        if dist > 14, !isBlocked(dest) {
+            let facing: CGFloat = dest.x < npc.position.x ? -1 : 1
+            steps.append(.run { [weak npc] in
+                npc?.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+            })
+            let duration = TimeInterval(dist / 46)   // flânerie lente
+            steps.append(.group([
+                .move(to: dest, duration: duration),
+                .customAction(withDuration: duration) { [weak self] node, _ in
+                    guard let self else { return }
+                    node.zPosition = self.actorLayer(for: node.position.y)
+                }
+            ]))
+        }
+        steps.append(.run { [weak self, weak npc] in
+            guard let self, let npc, !npc.isHidden else { return }
+            self.scheduleWander(npc, home: home, radius: radius, sceneWidth: sceneWidth)
+        })
+        npc.run(.sequence(steps), withKey: "wander")
+    }
+
     // MARK: - Camera
 
     func updateCamera(in sceneSize: CGSize) {
@@ -534,9 +594,9 @@ final class WorldBuilder {
         add(deepPath, to: scene)
         JuiceEngine.pulse(deepPath, scale: 1.15)
 
-        let pathLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let pathLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         pathLabel.text = String(localized: "world.deepPath")
-        pathLabel.fontSize = 11
+        pathLabel.fontSize = 14
         pathLabel.fontColor = SKColor(red: 0.60, green: 0.40, blue: 0.85, alpha: 0.8)
         pathLabel.position = CGPoint(x: w * 0.55, y: h * 0.925)
         pathLabel.zPosition = -1
@@ -1133,9 +1193,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         JuiceEngine.pulse(glow, scale: 1.4)
 
         // Panneau : nom de la galerie
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.mines.entrance")
-        label.fontSize = 9
+        label.fontSize = 12
         label.fontColor = SKColor(white: 0.75, alpha: 0.75)
         label.position = CGPoint(x: 0, y: 54)
         entrance.addChild(label)
@@ -1170,9 +1230,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
         // Titre de zone
-        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.mines.title")
-        zoneLabel.fontSize = 11
+        zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.60, green: 0.58, blue: 0.52, alpha: 0.6)
         zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.92)
         zoneLabel.zPosition = -1
@@ -1262,9 +1322,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exitGlow.position = CGPoint(x: w * 0.50, y: h * 0.08)
         add(exitGlow, to: scene)
         JuiceEngine.pulse(exitGlow, scale: 1.15)
-        let exitLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let exitLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         exitLabel.text = String(localized: "world.mines.exit")
-        exitLabel.fontSize = 9
+        exitLabel.fontSize = 12
         exitLabel.fontColor = SKColor(white: 0.70, alpha: 0.7)
         exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
         add(exitLabel, to: scene)
@@ -1300,9 +1360,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         node.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.08)
 
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.mines.inscription")
-        label.fontSize = 9
+        label.fontSize = 12
         label.fontColor = SKColor(white: 0.65, alpha: 0.8)
         label.position = CGPoint(x: 0, y: -36)
         node.addChild(label)
@@ -1413,9 +1473,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
 
         // Titre de zone
-        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.ruins.title")
-        zoneLabel.fontSize = 11
+        zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.70, green: 0.25, blue: 0.25, alpha: 0.60)
         zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
         zoneLabel.zPosition = -1
@@ -1476,9 +1536,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
         // Titre de zone
-        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.threshold.title")
-        zoneLabel.fontSize = 11
+        zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.55, green: 0.45, blue: 0.85, alpha: 0.65)
         zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.93)
         zoneLabel.zPosition = -1
@@ -1599,9 +1659,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             wall.addChild(rune)
         }
 
-        let labelNode = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let labelNode = SKLabelNode(fontNamed: PixelUI.uiFont)
         labelNode.text = String(localized: "world.ruins.inscription")
-        labelNode.fontSize = 9
+        labelNode.fontSize = 12
         labelNode.fontColor = SKColor(red: 0.70, green: 0.30, blue: 0.25, alpha: 0.70)
         labelNode.position = CGPoint(x: 0, y: -38)
         wall.addChild(labelNode)
@@ -1639,9 +1699,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             wall.addChild(line)
         }
 
-        let labelNode = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+        let labelNode = SKLabelNode(fontNamed: PixelUI.uiFont)
         labelNode.text = String(localized: "world.ruins.eranInscription")
-        labelNode.fontSize = 8
+        labelNode.fontSize = 11
         labelNode.fontColor = SKColor(red: 0.50, green: 0.68, blue: 0.90, alpha: 0.70)
         labelNode.position = CGPoint(x: 0, y: -26)
         wall.addChild(labelNode)
@@ -1944,6 +2004,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     func switchToInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
         activeInterior = kind
+        stopVillageWander()
         clearBackdrop()
         worldHeight = scene.size.height
         worldNode.position = .zero
@@ -1967,6 +2028,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             kael.position = CGPoint(x: door.x, y: max(58, door.y - 58))
             kael.zPosition = actorLayer(for: kael.position.y)
         }
+        // De retour dehors : les villageois reprennent leur promenade.
+        startVillageWander(in: scene.size)
     }
 
     private func buildInterior(_ kind: HouseInteriorKind, in scene: SKScene) {
@@ -2098,7 +2161,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         let icon = SKLabelNode(fontNamed: PixelUI.uiFont)
         icon.text = String(localized: "interior.exit")
-        icon.fontSize = 9
+        icon.fontSize = 12
         icon.fontColor = SKColor(red: 0.92, green: 0.78, blue: 0.48, alpha: 0.9)
         icon.verticalAlignmentMode = .center
         icon.horizontalAlignmentMode = .center
@@ -2110,13 +2173,13 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     }
 
     private func addInteriorTitle(_ kind: HouseInteriorKind, in scene: SKScene, room: CGRect) {
-        let title = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         switch kind {
         case .armory: title.text = String(localized: "interior.armory.title")
         case .apothecary: title.text = String(localized: "interior.apothecary.title")
         case .inn: title.text = String(localized: "interior.inn.title")
         }
-        title.fontSize = 11
+        title.fontSize = 15
         title.fontColor = SKColor(red: 0.88, green: 0.78, blue: 0.58, alpha: 0.95)
         title.horizontalAlignmentMode = .center
         title.position = CGPoint(x: room.midX, y: room.maxY - 36)
@@ -2238,9 +2301,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     }
 
     private func addServiceMarker(in scene: SKScene, at position: CGPoint, text: String) {
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = text
-        label.fontSize = 9
+        label.fontSize = 12
         label.fontColor = SKColor(red: 0.96, green: 0.84, blue: 0.52, alpha: 0.9)
         label.horizontalAlignmentMode = .center
         label.position = position
@@ -2272,7 +2335,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         gem.fillColor = SKColor(red: 0.50, green: 0.80, blue: 1.0, alpha: 0.85)
         gem.strokeColor = SKColor(red: 0.70, green: 0.90, blue: 1.0, alpha: 1.0)
         gem.lineWidth = 1.5
-        gem.glowWidth = 6
+        gem.glowWidth = 0
         crystal.addChild(gem)
         JuiceEngine.pulse(gem, scale: 1.12)
 
@@ -2285,9 +2348,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         JuiceEngine.pulse(aura, scale: 1.25)
 
         // Label
-        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.saveCrystal.label")
-        label.fontSize = 9
+        label.fontSize = 12
         label.fontColor = SKColor(red: 0.65, green: 0.88, blue: 1.0, alpha: 0.80)
         label.position = CGPoint(x: 0, y: -26)
         crystal.addChild(label)
@@ -2470,8 +2533,9 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
             addGroundShadow(to: node, width: 160 * scale, height: 20 * scale, y: 4 * scale)
             // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {
-                let sign = SKLabelNode(text: label)
-                sign.fontSize = max(8, 14 * scale)
+                let sign = SKLabelNode(fontNamed: PixelUI.uiFont)
+                sign.text = label
+                sign.fontSize = max(11, 18 * scale)
                 sign.verticalAlignmentMode = .center
                 sign.position = CGPoint(x: 0, y: 120 * scale)
                 sign.zPosition = 3
@@ -2486,10 +2550,11 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
         node.position = position
         node.zPosition = propLayer(for: position.y, in: scene.size.height)
         add(node, to: scene)
-        // Corps du bâtiment infranchissable (la moitié basse du sprite :
-        // on peut passer derrière le toit, jamais à travers les murs).
+        // Bâtiment ENTIÈREMENT infranchissable. Les acteurs (z 20-40)
+        // sont toujours dessinés au-dessus des props (z -2/-8) : si on
+        // laissait passer « derrière », Kael apparaissait SUR le toit.
         registerFootprint(of: node, widthRatio: 0.86,
-                          depthRatio: 0.50, maxDepth: 400)
+                          depthRatio: 0.96, maxDepth: 400)
     }
 
     private func addGroundShadow(to node: SKNode, width: CGFloat, height: CGFloat, y: CGFloat) {

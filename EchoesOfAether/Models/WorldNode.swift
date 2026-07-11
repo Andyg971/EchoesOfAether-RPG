@@ -27,26 +27,8 @@ enum WorldNode {
                                            resize: false, restore: true)))
         root.addChild(sprite)
 
-        // Marque Aether — conservée au-dessus du sprite
-        let mark = SKShapeNode(circleOfRadius: 3)
-        mark.fillColor = SKColor(red: 0.58, green: 0.20, blue: 0.90, alpha: 1)
-        mark.strokeColor = .clear
-        mark.glowWidth = 5
-        mark.position = CGPoint(x: 10, y: 2)
-        mark.zPosition = 2
-        root.addChild(mark)
-        JuiceEngine.pulse(mark, scale: 1.6)
-
-        // Aura Aether (zPosition=-1 pour passer derrière le sprite)
-        let aura = SKShapeNode(circleOfRadius: 28)
-        aura.fillColor = SKColor(red: 0.20, green: 0.05, blue: 0.35, alpha: 0.12)
-        aura.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.15)
-        aura.lineWidth = 1
-        aura.zPosition = -1
-        aura.position = CGPoint(x: 0, y: 10)
-        root.addChild(aura)
-        JuiceEngine.pulse(aura, scale: 1.2)
-
+        // Pas d'aura ni de marque lumineuse : le sprite pixel reste pur
+        // (l'aura scintillante cassait le rendu pixel art).
         return root
     }
 

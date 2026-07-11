@@ -9,8 +9,8 @@ import SpriteKit
 @MainActor
 final class InteractionBubble {
     private let root = SKNode()
-    private let bg = SKShapeNode(circleOfRadius: 18)
-    private let bgGlow = SKShapeNode(circleOfRadius: 22)
+    private let bg = SKShapeNode(rect: CGRect(x: -16, y: -16, width: 32, height: 32))
+    private let bgOuter = SKShapeNode(rect: CGRect(x: -19, y: -19, width: 38, height: 38))
     private let iconHolder = SKNode()
     private var currentAction: Action?
 
@@ -50,16 +50,17 @@ final class InteractionBubble {
         root.isHidden = true
         scene.addChild(root)
 
-        // Halo extérieur diffus
-        bgGlow.fillColor = SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.25)
-        bgGlow.strokeColor = .clear
-        root.addChild(bgGlow)
+        // Cadre pixel : carré sombre + double bordure nette (zéro glow,
+        // zéro cercle lissé — style SNES comme le reste de l'UI).
+        bgOuter.fillColor = .clear
+        bgOuter.strokeColor = SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 0.9)
+        bgOuter.lineWidth = 2
+        root.addChild(bgOuter)
 
-        // Cercle principal
-        bg.fillColor = SKColor(red: 0.18, green: 0.10, blue: 0.30, alpha: 0.95)
+        bg.fillColor = SKColor(red: 0.18, green: 0.10, blue: 0.30, alpha: 0.97)
         bg.strokeColor = SKColor(red: 0.85, green: 0.50, blue: 1, alpha: 1)
         bg.lineWidth = 2
-        bg.glowWidth = 3
+        bg.glowWidth = 0
         root.addChild(bg)
 
         // Icône pixel art centrée
@@ -72,7 +73,7 @@ final class InteractionBubble {
         ]))
         float.timingMode = .easeInEaseOut
         root.run(float, withKey: "float")
-        JuiceEngine.pulse(bgGlow, scale: 1.25)
+        JuiceEngine.pulse(bgOuter, scale: 1.10)
     }
 
     /// Affiche la bulle au-dessus d'une position cible (typiquement la

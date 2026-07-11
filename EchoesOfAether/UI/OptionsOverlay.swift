@@ -44,12 +44,11 @@ final class OptionsOverlay {
         root.addChild(scrim)
 
         let panelW: CGFloat = 304, panelH: CGFloat = 624
-        let panel = SKShapeNode(path: CGPath(
-            roundedRect: CGRect(x: -panelW/2, y: -panelH/2, width: panelW, height: panelH),
-            cornerWidth: 20, cornerHeight: 20, transform: nil))
-        panel.fillColor = SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.97)
-        panel.strokeColor = SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.8)
-        panel.lineWidth = 2
+        // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
+        let panel = SKShapeNode()
+        PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
+                           fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.97),
+                           accent: SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.8))
         panel.position = CGPoint(x: w/2, y: h/2)
         root.addChild(panel)
 
@@ -57,20 +56,20 @@ final class OptionsOverlay {
         let top = h / 2 + panelH / 2   // bord haut du panneau en coords écran
 
         // Titre
-        let title = label(String(localized: "options.title"), size: 22,
+        let title = label(String(localized: "options.title"), size: 28,
                           color: SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1))
         title.position = CGPoint(x: cx, y: top - 34)
         root.addChild(title)
 
         // Section Volume musique
-        let musicTitle = label(String(localized: "options.music"), size: 14,
+        let musicTitle = label(String(localized: "options.music"), size: 18,
                                color: SKColor(white: 0.65, alpha: 1))
         musicTitle.position = CGPoint(x: cx, y: top - 70)
         root.addChild(musicTitle)
         root.addChild(makeVolumeRow(value: musicVolume, at: CGPoint(x: cx, y: top - 98), kind: .music))
 
         // Section Volume SFX
-        let sfxTitle = label(String(localized: "options.sfx"), size: 14,
+        let sfxTitle = label(String(localized: "options.sfx"), size: 18,
                              color: SKColor(white: 0.65, alpha: 1))
         sfxTitle.position = CGPoint(x: cx, y: top - 134)
         root.addChild(sfxTitle)
@@ -91,7 +90,7 @@ final class OptionsOverlay {
         addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 286))
 
         // Section Langue — sélecteur FR / EN
-        let langTitle = label(String(localized: "options.language"), size: 14,
+        let langTitle = label(String(localized: "options.language"), size: 18,
                               color: SKColor(white: 0.65, alpha: 1))
         langTitle.position = CGPoint(x: cx, y: top - 310)
         root.addChild(langTitle)
@@ -108,7 +107,7 @@ final class OptionsOverlay {
         root.addChild(enBtn)
 
         // Note redémarrage — cachée jusqu'au changement
-        let restart = label(String(localized: "options.language.restart"), size: 11,
+        let restart = label(String(localized: "options.language.restart"), size: 14,
                             color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
         restart.position = CGPoint(x: cx, y: top - 370)
         restart.name = "langRestart"
@@ -147,8 +146,13 @@ final class OptionsOverlay {
             JuiceEngine.popIn(child, delay: Double(i) * 0.03)
         }
 
-        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
-        UIScale.apply(to: root, sceneSize: scene.size)
+        // iPad : agrandit l'overlay. iPhone paysage : RÉDUIT pour que le
+        // panneau (624 pt) tienne en hauteur — sinon titre et bouton Fermer
+        // sortent de l'écran. Le scrim est contre-scalé pour couvrir tout.
+        let s = UIScale.fittingFactor(for: scene.size, contentHeight: panelH + 16)
+        root.setScale(s)
+        root.position = CGPoint(x: w / 2 * (1 - s), y: h / 2 * (1 - s))
+        scrim.setScale(1 / s)
     }
 
     private func addSeparator(width: CGFloat, at pos: CGPoint) {
@@ -265,11 +269,12 @@ final class OptionsOverlay {
 
     private func makeLangButton(_ text: String, code: String,
                                 selected: Bool, name: String) -> SKShapeNode {
-        let btn = SKShapeNode(rectOf: CGSize(width: 112, height: 40), cornerRadius: 12)
+        let btn = SKShapeNode(rectOf: CGSize(width: 112, height: 40))
+        btn.glowWidth = 0
         btn.name = name
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = text
-        lbl.fontSize = 14
+        lbl.fontSize = 18
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center
         lbl.isUserInteractionEnabled = false
@@ -332,17 +337,17 @@ final class OptionsOverlay {
         let downName = kind == .sfx ? "sfxDown" : "musicDown"
         let upName   = kind == .sfx ? "sfxUp" : "musicUp"
 
-        let downBtn = makeSmallButton("◀", name: downName)
+        let downBtn = makeSmallButton("<", name: downName)
         downBtn.position = CGPoint(x: -70, y: 0)
         container.addChild(downBtn)
 
-        let upBtn = makeSmallButton("▶", name: upName)
+        let upBtn = makeSmallButton(">", name: upName)
         upBtn.position = CGPoint(x: 70, y: 0)
         container.addChild(upBtn)
 
-        let volLabel = SKLabelNode(fontNamed: "Courier-Bold")
+        let volLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         volLabel.text = volumeString(value)
-        volLabel.fontSize = 18
+        volLabel.fontSize = 23
         volLabel.fontColor = SKColor(red: 0.55, green: 0.80, blue: 0.55, alpha: 1)
         volLabel.horizontalAlignmentMode = .center
         volLabel.verticalAlignmentMode = .center
@@ -356,14 +361,16 @@ final class OptionsOverlay {
     }
 
     private func makeSmallButton(_ text: String, name: String) -> SKShapeNode {
-        let btn = SKShapeNode(circleOfRadius: 18)
+        // Carré pixel (pas de cercle : le rond casse le style rétro).
+        let btn = SKShapeNode(rectOf: CGSize(width: 36, height: 36))
         btn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
         btn.strokeColor = SKColor(red: 0.45, green: 0.35, blue: 0.70, alpha: 0.8)
-        btn.lineWidth = 1.5
+        btn.lineWidth = 2
+        btn.glowWidth = 0
         btn.name = name
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = text
-        lbl.fontSize = 14
+        lbl.fontSize = 20
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center
@@ -383,16 +390,17 @@ final class OptionsOverlay {
     /// Ligne « libellé … [ON/OFF] » tappable (toute la ligne est la zone).
     private func makeToggleRow(_ text: String, isOn: Bool, name: String,
                                at pos: CGPoint, width: CGFloat) -> SKShapeNode {
-        let row = SKShapeNode(rectOf: CGSize(width: width, height: 30), cornerRadius: 8)
+        let row = SKShapeNode(rectOf: CGSize(width: width, height: 30))
         row.fillColor = SKColor(red: 0.09, green: 0.08, blue: 0.15, alpha: 1)
         row.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.5)
         row.lineWidth = 1
+        row.glowWidth = 0
         row.name = name
         row.position = pos
 
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = text
-        lbl.fontSize = 12
+        lbl.fontSize = 15
         lbl.fontColor = SKColor(white: 0.85, alpha: 1)
         lbl.horizontalAlignmentMode = .left
         lbl.verticalAlignmentMode = .center
@@ -400,7 +408,9 @@ final class OptionsOverlay {
         lbl.isUserInteractionEnabled = false
         row.addChild(lbl)
 
-        let pill = SKShapeNode(rectOf: CGSize(width: 46, height: 20), cornerRadius: 10)
+        // Badge ON/OFF carré (pas de pilule arrondie en pixel art).
+        let pill = SKShapeNode(rectOf: CGSize(width: 46, height: 20))
+        pill.glowWidth = 0
         pill.fillColor = isOn
             ? SKColor(red: 0.20, green: 0.55, blue: 0.32, alpha: 1)
             : SKColor(red: 0.20, green: 0.18, blue: 0.26, alpha: 1)
@@ -412,10 +422,10 @@ final class OptionsOverlay {
         pill.isUserInteractionEnabled = false
         row.addChild(pill)
 
-        let pillLbl = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let pillLbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         pillLbl.text = isOn ? String(localized: "options.toggle.on")
                             : String(localized: "options.toggle.off")
-        pillLbl.fontSize = 10
+        pillLbl.fontSize = 13
         pillLbl.fontColor = .white
         pillLbl.verticalAlignmentMode = .center
         pillLbl.horizontalAlignmentMode = .center
@@ -427,14 +437,16 @@ final class OptionsOverlay {
     }
 
     private func makeButton(_ text: String, fill: SKColor, stroke: SKColor, name: String) -> SKShapeNode {
-        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 46), cornerRadius: 14)
+        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
+        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 46))
         btn.fillColor = fill
         btn.strokeColor = stroke
-        btn.lineWidth = 1.8
+        btn.lineWidth = 2
+        btn.glowWidth = 0
         btn.name = name
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = text
-        lbl.fontSize = 14
+        lbl.fontSize = 18
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center
@@ -444,7 +456,7 @@ final class OptionsOverlay {
     }
 
     private func label(_ text: String, size: CGFloat, color: SKColor) -> SKLabelNode {
-        let l = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let l = SKLabelNode(fontNamed: PixelUI.uiFont)
         l.text = text
         l.fontSize = size
         l.fontColor = color

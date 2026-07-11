@@ -27,9 +27,9 @@ final class DeathOverlay {
         root.addChild(scrim)
 
         // Titre — TOMBÉ —
-        let title = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         title.text = String(localized: "death.title")
-        title.fontSize = 36
+        title.fontSize = 46
         title.fontColor = SKColor(red: 0.75, green: 0.15, blue: 0.15, alpha: 1)
         title.horizontalAlignmentMode = .center
         title.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.62)
@@ -37,9 +37,9 @@ final class DeathOverlay {
         root.addChild(title)
 
         // Sous-titre
-        let sub = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let sub = SKLabelNode(fontNamed: PixelUI.uiFont)
         sub.text = String(localized: "death.subtitle")
-        sub.fontSize = 14
+        sub.fontSize = 18
         sub.fontColor = SKColor(white: 0.55, alpha: 1)
         sub.horizontalAlignmentMode = .center
         sub.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.55)
@@ -105,15 +105,17 @@ final class DeathOverlay {
 
     private func makeButton(label: String, fill: SKColor,
                             stroke: SKColor, name: String) -> SKShapeNode {
-        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 50), cornerRadius: 14)
+        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
+        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 50))
         btn.fillColor = fill
         btn.strokeColor = stroke
-        btn.lineWidth = 1.8
+        btn.lineWidth = 2
+        btn.glowWidth = 0
         btn.name = name
 
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = label
-        lbl.fontSize = 16
+        lbl.fontSize = 21
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center

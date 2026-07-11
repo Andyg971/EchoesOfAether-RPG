@@ -46,6 +46,14 @@ enum UIScale {
     static func scaleCentered(_ root: SKNode, sceneSize: CGSize) {
         root.setScale(factor(for: sceneSize))
     }
+
+    /// Facteur qui garantit qu'un panneau de `contentHeight` pt tient dans
+    /// la hauteur de l'écran (marge comprise). Contrairement à `factor`,
+    /// il peut descendre SOUS 1.0 — indispensable en paysage iPhone où les
+    /// grands panneaux (Options, Inventaire) débordent sinon.
+    static func fittingFactor(for size: CGSize, contentHeight: CGFloat) -> CGFloat {
+        min(factor(for: size), max(0.5, (size.height - 12) / contentHeight))
+    }
 }
 
 @MainActor

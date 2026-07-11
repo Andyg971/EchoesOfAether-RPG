@@ -4,8 +4,8 @@ import SpriteKit
 final class InventoryOverlay {
     private let root = SKNode()
     private let panel = SKShapeNode()
-    private let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-    private let closeButton = SKShapeNode(rectOf: CGSize(width: 100, height: 40), cornerRadius: 10)
+    private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let closeButton = SKShapeNode(rectOf: CGSize(width: 100, height: 40))
 
     private var statLabels: [SKNode] = []
     private var playerState: PlayerState?
@@ -21,12 +21,9 @@ final class InventoryOverlay {
         root.isHidden = true
         scene.addChild(root)
 
-        panel.fillColor = SKColor(red: 0.04, green: 0.04, blue: 0.07, alpha: 0.97)
-        panel.strokeColor = SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 1)
-        panel.lineWidth = 2
         root.addChild(panel)
 
-        titleLabel.fontSize = 20
+        titleLabel.fontSize = 26
         titleLabel.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         root.addChild(titleLabel)
@@ -36,20 +33,22 @@ final class InventoryOverlay {
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
         panelWidth = min(340, max(280, size.width - 32))
-        panelHeight = min(580, max(440, size.height - safeBottom - 80))
+        // Hauteur FIXE calée sur le contenu (4 sections + 11 lignes) ;
+        // le fittingFactor réduit ensuite le tout pour tenir à l'écran.
+        panelHeight = 520
         root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
-        panel.path = CGPath(
-            roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2,
-                                width: panelWidth, height: panelHeight),
-            cornerWidth: 18, cornerHeight: 18, transform: nil
-        )
+        // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
+        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
+                           fill: SKColor(red: 0.04, green: 0.04, blue: 0.07, alpha: 0.97),
+                           accent: SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 1))
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 36)
         closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 34)
 
-        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
-        UIScale.scaleCentered(root, sceneSize: size)
+        // iPad : agrandit. iPhone paysage : réduit pour que le panneau
+        // (440 pt min) tienne en hauteur (root déjà centré → simple échelle).
+        root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
     }
 
     func open(player: PlayerState, completion: @escaping () -> Void) {
@@ -79,8 +78,8 @@ final class InventoryOverlay {
         statLabels.forEach { $0.removeFromParent() }
         statLabels.removeAll()
 
-        let startY = panelHeight / 2 - 70
-        let lineH: CGFloat = 30
+        let startY = panelHeight / 2 - 60
+        let lineH: CGFloat = 26
         var y = startY
 
         // Section : Équipement
@@ -90,7 +89,7 @@ final class InventoryOverlay {
         y = addRow(icon: .shield, label: armorName(player.armorLevel),
                    detail: String(localized: "inventory.defense \(player.armorLevel * 50)"), y: y, lineH: lineH)
 
-        y -= 10 // spacer
+        y -= 6 // spacer
 
         // Section : Consommables
         y = addSection(String(localized: "inventory.section.items"), y: y)
@@ -99,7 +98,7 @@ final class InventoryOverlay {
         y = addRow(icon: .gem, label: String(localized: "inventory.shards"),
                    detail: "\(player.aetherShards)", y: y, lineH: lineH)
 
-        y -= 10
+        y -= 6
 
         // Section : Stats
         y = addSection(String(localized: "inventory.section.stats"), y: y)
@@ -110,14 +109,14 @@ final class InventoryOverlay {
         y = addRow(icon: .darkMoon, label: String(localized: "inventory.blackSlashDmg"),
                    detail: "\(player.blackSlashDamage)", y: y, lineH: lineH)
 
-        y -= 10
+        y -= 6
 
         // Gold
         y = addRow(icon: .coin, label: String(localized: "inventory.gold"),
                    detail: "\(player.gold)", y: y, lineH: lineH,
                    color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
 
-        y -= 10
+        y -= 6
 
         // Section : Quêtes
         y = addSection(String(localized: "inventory.section.quests"), y: y)
@@ -137,22 +136,9 @@ final class InventoryOverlay {
     // MARK: - Row Builders
 
     private func addSection(_ text: String, y: CGFloat) -> CGFloat {
-        let divider = SKShapeNode(rectOf: CGSize(width: panelWidth - 48, height: 1))
-        divider.fillColor = SKColor(white: 0.20, alpha: 0.6)
-        divider.strokeColor = .clear
-        divider.position = CGPoint(x: 0, y: y - 4)
-        root.addChild(divider)
-        // Reuse statLabels for cleanup
-        let wrapper = SKLabelNode()
-        wrapper.position = divider.position
-        wrapper.addChild(divider)
-        // Actually just track divider via a label trick — simpler: track as SKNode
-        // Let's just use a separate approach: put divider as child of a label
-        divider.removeFromParent()
-
-        let sectionLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let sectionLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         sectionLabel.text = text
-        sectionLabel.fontSize = 13
+        sectionLabel.fontSize = 17
         sectionLabel.fontColor = SKColor(red: 0.60, green: 0.50, blue: 0.85, alpha: 0.8)
         sectionLabel.horizontalAlignmentMode = .left
         sectionLabel.position = CGPoint(x: -panelWidth / 2 + 24, y: y - 6)
@@ -183,18 +169,18 @@ final class InventoryOverlay {
     private func addLabels(label: String, detail: String,
                            y: CGFloat, lineH: CGFloat,
                            color: SKColor) -> CGFloat {
-        let nameLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        let nameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         nameLabel.text = label
-        nameLabel.fontSize = 14
+        nameLabel.fontSize = 18
         nameLabel.fontColor = SKColor(white: 0.85, alpha: 1)
         nameLabel.horizontalAlignmentMode = .left
         nameLabel.position = CGPoint(x: -panelWidth / 2 + 52, y: y - 4)
         root.addChild(nameLabel)
         statLabels.append(nameLabel)
 
-        let detailLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let detailLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         detailLabel.text = detail
-        detailLabel.fontSize = 14
+        detailLabel.fontSize = 18
         detailLabel.fontColor = color
         detailLabel.horizontalAlignmentMode = .right
         detailLabel.position = CGPoint(x: panelWidth / 2 - 24, y: y - 4)
@@ -251,11 +237,12 @@ final class InventoryOverlay {
     private func setupCloseButton() {
         closeButton.fillColor = SKColor(red: 0.12, green: 0.10, blue: 0.07, alpha: 1)
         closeButton.strokeColor = PixelUI.goldDim
-        closeButton.lineWidth = 1.5
+        closeButton.lineWidth = 2
+        closeButton.glowWidth = 0
 
-        let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "inventory.close")
-        label.fontSize = 14
+        label.fontSize = 18
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         closeButton.addChild(label)

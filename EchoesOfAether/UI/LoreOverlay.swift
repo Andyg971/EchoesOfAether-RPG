@@ -21,8 +21,9 @@ final class LoreOverlay {
         panelHeight = min(500, max(420, size.height - 104))
         root.position = CGPoint(x: size.width / 2, y: size.height / 2)
 
-        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
-        UIScale.scaleCentered(root, sceneSize: size)
+        // iPad : agrandit. iPhone paysage : réduit pour tenir en hauteur
+        // (root déjà centré → simple mise à l'échelle).
+        root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
     }
 
     func open(entries: [LoreEntry], completion: @escaping () -> Void) {
@@ -48,27 +49,24 @@ final class LoreOverlay {
         entryLabels.forEach { $0.removeFromParent() }
         entryLabels.removeAll()
 
-        // Panel
-        let panel = SKShapeNode(path: CGPath(
-            roundedRect: CGRect(x: -panelWidth/2, y: -panelHeight/2,
-                                width: panelWidth, height: panelHeight),
-            cornerWidth: 18, cornerHeight: 18, transform: nil))
-        panel.fillColor = SKColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 0.97)
-        panel.strokeColor = SKColor(red: 0.35, green: 0.55, blue: 0.80, alpha: 0.8)
-        panel.lineWidth = 2
+        // Panel — cadre pixel SNES (coins carrés, double bordure, zéro glow)
+        let panel = SKShapeNode()
+        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
+                           fill: SKColor(red: 0.04, green: 0.04, blue: 0.08, alpha: 0.97),
+                           accent: SKColor(red: 0.35, green: 0.55, blue: 0.80, alpha: 0.8))
         root.addChild(panel)
         entryLabels.append(panel)
 
         // Titre
-        let title = makeLabel(String(localized: "lore.title"), font: "AvenirNext-Bold",
-                              size: 20, color: SKColor(red: 0.60, green: 0.78, blue: 1, alpha: 1))
+        let title = makeLabel(String(localized: "lore.title"),
+                              size: 26, color: SKColor(red: 0.60, green: 0.78, blue: 1, alpha: 1))
         title.position = CGPoint(x: 0, y: panelHeight/2 - 36)
         root.addChild(title)
         entryLabels.append(title)
 
         if entries.isEmpty {
-            let empty = makeLabel(String(localized: "lore.empty"), font: "AvenirNext-MediumItalic",
-                                  size: 13, color: SKColor(white: 0.40, alpha: 1))
+            let empty = makeLabel(String(localized: "lore.empty"),
+                                  size: 17, color: SKColor(white: 0.40, alpha: 1))
             empty.position = CGPoint(x: 0, y: 20)
             root.addChild(empty)
             entryLabels.append(empty)
@@ -85,14 +83,14 @@ final class LoreOverlay {
                 root.addChild(icon)
                 entryLabels.append(icon)
 
-                let titleL = makeLabel(entry.title, font: "AvenirNext-DemiBold", size: 13,
+                let titleL = makeLabel(entry.title, size: 17,
                                        color: SKColor(white: 0.90, alpha: 1))
                 titleL.horizontalAlignmentMode = .left
                 titleL.position = CGPoint(x: -panelWidth/2 + 44, y: y)
                 root.addChild(titleL)
                 entryLabels.append(titleL)
 
-                let bodyL = makeLabel(entry.body, font: "AvenirNext-Regular", size: 11,
+                let bodyL = makeLabel(entry.body, size: 14,
                                       color: SKColor(white: 0.55, alpha: 1))
                 bodyL.horizontalAlignmentMode = .left
                 bodyL.position = CGPoint(x: -panelWidth/2 + 44, y: y - 18)
@@ -113,15 +111,16 @@ final class LoreOverlay {
             }
         }
 
-        // Close button
-        let closeBtn = SKShapeNode(rectOf: CGSize(width: 100, height: 38), cornerRadius: 10)
+        // Close button — carré pixel, zéro glow
+        let closeBtn = SKShapeNode(rectOf: CGSize(width: 100, height: 38))
         closeBtn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
         closeBtn.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8)
-        closeBtn.lineWidth = 1.5
+        closeBtn.lineWidth = 2
+        closeBtn.glowWidth = 0
         closeBtn.name = "loreClose"
         closeBtn.position = CGPoint(x: 0, y: -panelHeight/2 + 28)
-        let closeLbl = makeLabel(String(localized: "lore.close"), font: "AvenirNext-DemiBold",
-                                  size: 13, color: .white)
+        let closeLbl = makeLabel(String(localized: "lore.close"),
+                                  size: 17, color: .white)
         closeLbl.verticalAlignmentMode = .center
         closeLbl.isUserInteractionEnabled = false
         closeBtn.addChild(closeLbl)
@@ -141,8 +140,8 @@ final class LoreOverlay {
         onClose = nil
     }
 
-    private func makeLabel(_ text: String, font: String, size: CGFloat, color: SKColor) -> SKLabelNode {
-        let l = SKLabelNode(fontNamed: font)
+    private func makeLabel(_ text: String, size: CGFloat, color: SKColor) -> SKLabelNode {
+        let l = SKLabelNode(fontNamed: PixelUI.uiFont)
         l.text = text
         l.fontSize = size
         l.fontColor = color

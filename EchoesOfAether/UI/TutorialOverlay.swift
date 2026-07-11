@@ -79,18 +79,18 @@ final class TutorialOverlay {
         let currentPanel = self.panels[min(index, panels.count - 1)]
         let top = cy + panelH / 2
 
-        let stepLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let stepLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         stepLabel.text = String(localized: "tutorial.progress \(index + 1) \(panels.count)")
-        stepLabel.fontSize = 12
+        stepLabel.fontSize = 15
         stepLabel.fontColor = PixelUI.gold
         stepLabel.horizontalAlignmentMode = .center
         stepLabel.verticalAlignmentMode = .center
         stepLabel.position = CGPoint(x: cx, y: top - 30)
         root.addChild(stepLabel)
 
-        let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         titleLabel.text = currentPanel.title
-        titleLabel.fontSize = 19
+        titleLabel.fontSize = 25
         titleLabel.fontColor = .white
         titleLabel.horizontalAlignmentMode = .center
         titleLabel.verticalAlignmentMode = .center
@@ -99,9 +99,9 @@ final class TutorialOverlay {
         titleLabel.position = CGPoint(x: cx, y: top - 64)
         root.addChild(titleLabel)
 
-        let bodyLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+        let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         bodyLabel.text = currentPanel.body
-        bodyLabel.fontSize = 13
+        bodyLabel.fontSize = 17
         bodyLabel.fontColor = SKColor(white: 0.86, alpha: 1)
         bodyLabel.horizontalAlignmentMode = .center
         bodyLabel.verticalAlignmentMode = .top
@@ -175,14 +175,16 @@ final class TutorialOverlay {
 
     private func makeButton(_ text: String, fill: SKColor, stroke: SKColor,
                             name: String, width: CGFloat) -> SKShapeNode {
-        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 44), cornerRadius: 12)
+        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
+        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 44))
         btn.fillColor = fill
         btn.strokeColor = stroke
-        btn.lineWidth = 1.8
+        btn.lineWidth = 2
+        btn.glowWidth = 0
         btn.name = name
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = text
-        lbl.fontSize = 15
+        lbl.fontSize = 20
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center

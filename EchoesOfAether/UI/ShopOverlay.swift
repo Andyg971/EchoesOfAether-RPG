@@ -12,9 +12,9 @@ struct ShopItem {
 final class ShopOverlay {
     private let root = SKNode()
     private let panel = SKShapeNode()
-    private let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Bold")
-    private let goldLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-    private let closeButton = SKShapeNode(rectOf: CGSize(width: 72, height: 28), cornerRadius: 8)
+    private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let goldLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let closeButton = SKShapeNode(rectOf: CGSize(width: 72, height: 28))
     private var itemNodes: [SKNode] = []
 
     private var items: [ShopItem] = []
@@ -32,17 +32,14 @@ final class ShopOverlay {
         root.isHidden = true
         scene.addChild(root)
 
-        panel.fillColor = SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.97)
-        panel.strokeColor = SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1)
-        panel.lineWidth = 2
         root.addChild(panel)
 
-        titleLabel.fontSize = 14
+        titleLabel.fontSize = 18
         titleLabel.fontColor = SKColor(red: 0.90, green: 0.75, blue: 0.35, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         root.addChild(titleLabel)
 
-        goldLabel.fontSize = 10
+        goldLabel.fontSize = 13
         goldLabel.fontColor = SKColor(red: 0.90, green: 0.80, blue: 0.30, alpha: 1)
         goldLabel.horizontalAlignmentMode = .center
         root.addChild(goldLabel)
@@ -56,10 +53,10 @@ final class ShopOverlay {
         panelHeight = min(320, max(220, size.height * 0.65))
         root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
-        panel.path = CGPath(
-            roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2, width: panelWidth, height: panelHeight),
-            cornerWidth: 18, cornerHeight: 18, transform: nil
-        )
+        // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
+        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
+                           fill: SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.97),
+                           accent: SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1))
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 24)
         goldLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 42)
@@ -110,11 +107,12 @@ final class ShopOverlay {
     private func setupCloseButton() {
         closeButton.fillColor = SKColor(red: 0.20, green: 0.12, blue: 0.08, alpha: 1)
         closeButton.strokeColor = SKColor(red: 0.60, green: 0.45, blue: 0.20, alpha: 0.8)
-        closeButton.lineWidth = 1.5
+        closeButton.lineWidth = 2
+        closeButton.glowWidth = 0
 
-        let label = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "shop.close")
-        label.fontSize = 10
+        label.fontSize = 13
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         closeButton.addChild(label)
@@ -144,7 +142,7 @@ final class ShopOverlay {
     }
 
     private func makeItemRow(item: ShopItem, index: Int, player: PlayerState) -> SKNode {
-        let row = SKShapeNode(rectOf: CGSize(width: panelWidth - 24, height: 40), cornerRadius: 8)
+        let row = SKShapeNode(rectOf: CGSize(width: panelWidth - 24, height: 40))
         let affordable = player.gold >= item.price && item.canBuy(player)
         row.fillColor = affordable
             ? SKColor(red: 0.12, green: 0.10, blue: 0.05, alpha: 1)
@@ -153,32 +151,33 @@ final class ShopOverlay {
             ? SKColor(red: 0.65, green: 0.50, blue: 0.20, alpha: 0.7)
             : SKColor(white: 0.25, alpha: 0.5)
         row.lineWidth = 1.5
+        row.glowWidth = 0
         row.userData = ["index": index]
 
-        let nameLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let nameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         nameLabel.text = String(localized: item.nameKey)
-        nameLabel.fontSize = 10
+        nameLabel.fontSize = 13
         nameLabel.fontColor = affordable ? .white : SKColor(white: 0.4, alpha: 1)
         nameLabel.horizontalAlignmentMode = .left
-        nameLabel.position = CGPoint(x: -(panelWidth / 2 - 24) / 2 + 8, y: 6)
+        nameLabel.position = CGPoint(x: -(panelWidth - 24) / 2 + 10, y: 6)
         row.addChild(nameLabel)
 
-        let descLabel = SKLabelNode(fontNamed: "AvenirNext-Regular")
+        let descLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         descLabel.text = String(localized: item.descKey)
-        descLabel.fontSize = 8
+        descLabel.fontSize = 10
         descLabel.fontColor = SKColor(white: 0.55, alpha: 1)
         descLabel.horizontalAlignmentMode = .left
-        descLabel.position = CGPoint(x: -(panelWidth / 2 - 24) / 2 + 8, y: -6)
+        descLabel.position = CGPoint(x: -(panelWidth - 24) / 2 + 10, y: -8)
         row.addChild(descLabel)
 
-        let priceLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let priceLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         priceLabel.text = String(localized: "shop.price \(item.price)")
-        priceLabel.fontSize = 10
+        priceLabel.fontSize = 13
         priceLabel.fontColor = affordable
             ? SKColor(red: 0.90, green: 0.75, blue: 0.25, alpha: 1)
             : SKColor(red: 0.60, green: 0.30, blue: 0.20, alpha: 1)
         priceLabel.horizontalAlignmentMode = .right
-        priceLabel.position = CGPoint(x: (panelWidth / 2 - 24) / 2 - 8, y: 0)
+        priceLabel.position = CGPoint(x: (panelWidth - 24) / 2 - 10, y: 0)
         row.addChild(priceLabel)
 
         return row

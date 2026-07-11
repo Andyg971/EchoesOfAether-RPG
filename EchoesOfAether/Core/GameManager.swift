@@ -114,6 +114,18 @@ final class GameManager {
             self?.onReturnToMenu?()
         }
 
+        // Debug : --overlay-test <nom> ouvre l'overlay demandé après le
+        // chargement (à combiner avec --zone-*) pour audit visuel de l'UI.
+        // Noms : pause, options, inventory, questlog, lore, tutorial,
+        // levelup, death, shop.
+        if let idx = CommandLine.arguments.firstIndex(of: "--overlay-test"),
+           CommandLine.arguments.indices.contains(idx + 1) {
+            let name = CommandLine.arguments[idx + 1]
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
+                self?.debugShowOverlay(named: name)
+            }
+        }
+
         // Debug : --combat-test / --boss-test démarre directement un combat
         // pour capturer le rendu de l'arène (skip wake/save).
         if CommandLine.arguments.contains("--combat-test") {
@@ -479,9 +491,9 @@ final class GameManager {
                     "prologue.line4", "prologue.line5"]
         var delay: TimeInterval = 0.8
         for key in keys {
-            let label = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
+            let label = SKLabelNode(fontNamed: PixelUI.uiFont)
             label.text = String(localized: String.LocalizationValue(key))
-            label.fontSize = 15
+            label.fontSize = 19
             label.fontColor = SKColor(red: 0.82, green: 0.76, blue: 0.92, alpha: 1)
             label.numberOfLines = 3
             label.preferredMaxLayoutWidth = min(scene.size.width - 96, 560)
@@ -501,7 +513,7 @@ final class GameManager {
 
         let skip = SKLabelNode(fontNamed: PixelUI.uiFont)
         skip.text = String(localized: "prologue.skip")
-        skip.fontSize = 9
+        skip.fontSize = 12
         skip.fontColor = SKColor(white: 0.5, alpha: 0.8)
         skip.horizontalAlignmentMode = .center
         skip.position = CGPoint(x: scene.size.width / 2, y: 26)
@@ -2408,6 +2420,28 @@ final class GameManager {
 
     // MARK: - Helpers
 
+    /// Ouvre un overlay par son nom (hook debug --overlay-test).
+    private func debugShowOverlay(named name: String) {
+        guard let scene else { return }
+        switch name {
+        case "pause":     openPause()
+        case "options":   openOptions()
+        case "inventory": openInventory()
+        case "questlog":  openQuestLog()
+        case "lore":      openLore()
+        case "tutorial":  tutorial.show(in: scene)
+        case "levelup":   levelUp.show(newLevel: 5, isMax: false) {}
+        case "death":     death.show(in: scene)
+        case "shop":
+            transition(to: .shop)
+            shop.open(title: String(localized: "shop.bram.title"),
+                      items: bramItems(), player: player) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        default: break
+        }
+    }
+
     private func tapAndMove(_ point: CGPoint, in scene: SKScene) {
         let worldPoint = world.worldNode.convert(point, from: scene)
         let worldSize = CGSize(width: scene.size.width, height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
@@ -2436,6 +2470,14 @@ final class GameManager {
             hud.setVisible(true)
         }
         if newState == .exploration { refreshQuestMarkers() }
+        // Les PNJ flânent librement dans le village pendant l'exploration ;
+        // ils s'arrêtent net dès qu'un dialogue/combat/menu s'ouvre.
+        if newState == .exploration, phase == .village,
+           !world.isInsideInterior, let scene {
+            world.startVillageWander(in: scene.size)
+        } else if newState != .exploration {
+            world.stopVillageWander()
+        }
     }
 
     /// « ! » doré au-dessus des PNJ qui ont une quête à proposer.

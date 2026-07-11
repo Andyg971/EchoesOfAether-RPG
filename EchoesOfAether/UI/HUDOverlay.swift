@@ -19,10 +19,10 @@ final class HUDOverlay {
     private let xpBarFill = SKShapeNode()
     private let xpBarWidth: CGFloat = 88
     private let xpBarHeight: CGFloat = 4
-    let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
-    let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
-    let loreButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
-    let questLogButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44), cornerRadius: 10)
+    let inventoryButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44))
+    let pauseButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44))
+    let loreButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44))
+    let questLogButton = SKShapeNode(rectOf: CGSize(width: 44, height: 44))
 
     var onInventoryTap: (() -> Void)?
     var onPauseTap: (() -> Void)?
@@ -272,7 +272,7 @@ final class HUDOverlay {
     private func setupPauseButton() {
         styleButton(pauseButton)
         for x in [-5.0, 5.0] {
-            let bar = SKShapeNode(rectOf: CGSize(width: 4, height: 18), cornerRadius: 1)
+            let bar = SKShapeNode(rectOf: CGSize(width: 4, height: 18))
             bar.fillColor = SKColor(red: 0.92, green: 0.86, blue: 1, alpha: 1)
             bar.strokeColor = .clear
             bar.position = CGPoint(x: x, y: 0)
@@ -283,22 +283,25 @@ final class HUDOverlay {
 
     private func setupInventoryButton() {
         styleButton(inventoryButton)
-        let pack = SKShapeNode(rectOf: CGSize(width: 20, height: 20), cornerRadius: 5)
+        let pack = SKShapeNode(rectOf: CGSize(width: 20, height: 20))
         pack.fillColor = SKColor(red: 0.42, green: 0.28, blue: 0.14, alpha: 1)
         pack.strokeColor = SKColor(red: 0.90, green: 0.72, blue: 0.38, alpha: 0.9)
         pack.lineWidth = 1.4
+        pack.glowWidth = 0
         inventoryButton.addChild(pack)
 
-        let flap = SKShapeNode(rectOf: CGSize(width: 14, height: 5), cornerRadius: 2)
+        let flap = SKShapeNode(rectOf: CGSize(width: 14, height: 5))
         flap.fillColor = SKColor(red: 0.25, green: 0.16, blue: 0.08, alpha: 1)
         flap.strokeColor = .clear
         flap.position = CGPoint(x: 0, y: 3)
         inventoryButton.addChild(flap)
 
-        let handle = SKShapeNode(ellipseOf: CGSize(width: 12, height: 7))
+        // Anse carrée (pas d'ellipse en pixel art)
+        let handle = SKShapeNode(rectOf: CGSize(width: 12, height: 6))
         handle.fillColor = .clear
         handle.strokeColor = SKColor(red: 0.90, green: 0.72, blue: 0.38, alpha: 0.85)
         handle.lineWidth = 1.3
+        handle.glowWidth = 0
         handle.position = CGPoint(x: 0, y: 12)
         inventoryButton.addChild(handle)
 
@@ -308,10 +311,11 @@ final class HUDOverlay {
     private func setupLoreButton() {
         styleButton(loreButton)
         // Icône livre : couverture + tranche + ligne de reliure
-        let cover = SKShapeNode(rectOf: CGSize(width: 20, height: 22), cornerRadius: 3)
+        let cover = SKShapeNode(rectOf: CGSize(width: 20, height: 22))
         cover.fillColor = SKColor(red: 0.16, green: 0.20, blue: 0.34, alpha: 1)
         cover.strokeColor = SKColor(red: 0.55, green: 0.72, blue: 1.0, alpha: 0.9)
         cover.lineWidth = 1.4
+        cover.glowWidth = 0
         loreButton.addChild(cover)
 
         let spine = SKShapeNode(rectOf: CGSize(width: 3, height: 22))
@@ -333,10 +337,11 @@ final class HUDOverlay {
     private func setupQuestLogButton() {
         styleButton(questLogButton)
         // Icône parchemin : rouleau doré + lignes de texte + « ! »
-        let scroll = SKShapeNode(rectOf: CGSize(width: 18, height: 22), cornerRadius: 2)
+        let scroll = SKShapeNode(rectOf: CGSize(width: 18, height: 22))
         scroll.fillColor = SKColor(red: 0.28, green: 0.22, blue: 0.12, alpha: 1)
         scroll.strokeColor = PixelUI.gold.withAlphaComponent(0.9)
         scroll.lineWidth = 1.4
+        scroll.glowWidth = 0
         questLogButton.addChild(scroll)
 
         for dy in [4.0, 0.0, -4.0] {
@@ -348,7 +353,7 @@ final class HUDOverlay {
         }
         // Rouleaux haut/bas
         for dy in [11.0, -11.0] {
-            let roll = SKShapeNode(rectOf: CGSize(width: 20, height: 3), cornerRadius: 1.5)
+            let roll = SKShapeNode(rectOf: CGSize(width: 20, height: 3))
             roll.fillColor = PixelUI.gold
             roll.strokeColor = .clear
             roll.position = CGPoint(x: 0, y: dy)

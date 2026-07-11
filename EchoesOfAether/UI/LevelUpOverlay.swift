@@ -7,10 +7,10 @@ final class LevelUpOverlay {
     private let root = SKNode()
     private let scrim = SKShapeNode()
     private let panel = SKShapeNode()
-    private let titleLabel = SKLabelNode(fontNamed: "AvenirNext-Heavy")
-    private let subtitleLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
-    private let statsLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
-    private let hintLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+    private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let subtitleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let statsLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let hintLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var onDismiss: (() -> Void)?
 
     var isVisible: Bool { root.parent != nil && !root.isHidden }
@@ -24,30 +24,27 @@ final class LevelUpOverlay {
         scrim.strokeColor = .clear
         root.addChild(scrim)
 
-        panel.fillColor = SKColor(red: 0.10, green: 0.06, blue: 0.18, alpha: 0.98)
-        panel.strokeColor = SKColor(red: 0.75, green: 0.45, blue: 1, alpha: 1)
-        panel.lineWidth = 3
         root.addChild(panel)
 
-        titleLabel.fontSize = 36
+        titleLabel.fontSize = 46
         titleLabel.fontColor = SKColor(red: 0.95, green: 0.70, blue: 1, alpha: 1)
         titleLabel.verticalAlignmentMode = .center
         titleLabel.horizontalAlignmentMode = .center
         root.addChild(titleLabel)
 
-        subtitleLabel.fontSize = 15
+        subtitleLabel.fontSize = 19
         subtitleLabel.fontColor = SKColor(white: 0.85, alpha: 1)
         subtitleLabel.verticalAlignmentMode = .center
         subtitleLabel.horizontalAlignmentMode = .center
         root.addChild(subtitleLabel)
 
-        statsLabel.fontSize = 14
+        statsLabel.fontSize = 18
         statsLabel.fontColor = SKColor(red: 0.55, green: 0.85, blue: 0.65, alpha: 1)
         statsLabel.verticalAlignmentMode = .center
         statsLabel.horizontalAlignmentMode = .center
         root.addChild(statsLabel)
 
-        hintLabel.fontSize = 12
+        hintLabel.fontSize = 15
         hintLabel.fontColor = SKColor(white: 0.55, alpha: 1)
         hintLabel.verticalAlignmentMode = .center
         hintLabel.horizontalAlignmentMode = .center
@@ -65,11 +62,10 @@ final class LevelUpOverlay {
 
         let panelWidth = min(size.width - 48, 380)
         let panelHeight: CGFloat = 220
-        panel.path = CGPath(
-            roundedRect: CGRect(x: -panelWidth / 2, y: -panelHeight / 2,
-                                width: panelWidth, height: panelHeight),
-            cornerWidth: 20, cornerHeight: 20, transform: nil
-        )
+        // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
+        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
+                           fill: SKColor(red: 0.10, green: 0.06, blue: 0.18, alpha: 0.98),
+                           accent: SKColor(red: 0.75, green: 0.45, blue: 1, alpha: 1))
         panel.position = CGPoint(x: size.width / 2, y: size.height / 2)
 
         titleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 60)

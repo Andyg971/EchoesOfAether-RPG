@@ -29,7 +29,8 @@ final class QuestLogOverlay {
         panelWidth = min(360, max(300, size.width - 36))
         panelHeight = min(500, max(420, size.height - 104))
         root.position = CGPoint(x: size.width / 2, y: size.height / 2)
-        UIScale.scaleCentered(root, sceneSize: size)
+        // iPad : agrandit. iPhone paysage : réduit pour tenir en hauteur.
+        root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
     }
 
     func open(entries: [QuestEntry], completion: @escaping () -> Void) {

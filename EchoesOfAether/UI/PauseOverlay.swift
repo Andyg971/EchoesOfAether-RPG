@@ -30,25 +30,21 @@ final class PauseOverlay {
         scrim.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         root.addChild(scrim)
 
-        // Panel central
+        // Panel central — cadre pixel SNES (coins carrés, double bordure)
         let panelW: CGFloat = 280
         let panelH: CGFloat = 360
-        let panel = SKShapeNode(
-            path: CGPath(roundedRect: CGRect(x: -panelW/2, y: -panelH/2,
-                                            width: panelW, height: panelH),
-                         cornerWidth: 20, cornerHeight: 20, transform: nil)
-        )
-        panel.fillColor = SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.96)
-        panel.strokeColor = SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.8)
-        panel.lineWidth = 2
+        let panel = SKShapeNode()
+        PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
+                           fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.96),
+                           accent: SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.8))
         panel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         panel.alpha = 0
         root.addChild(panel)
 
         // Titre
-        let title = SKLabelNode(fontNamed: "AvenirNext-Bold")
+        let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         title.text = String(localized: "pause.title")
-        title.fontSize = 22
+        title.fontSize = 28
         title.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
         title.horizontalAlignmentMode = .center
         title.verticalAlignmentMode = .center
@@ -143,15 +139,17 @@ final class PauseOverlay {
 
     private func makeButton(_ label: String, fill: SKColor,
                             stroke: SKColor, name: String) -> SKShapeNode {
-        let btn = SKShapeNode(rectOf: CGSize(width: 200, height: 48), cornerRadius: 14)
+        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
+        let btn = SKShapeNode(rectOf: CGSize(width: 200, height: 48))
         btn.fillColor = fill
         btn.strokeColor = stroke
-        btn.lineWidth = 1.8
+        btn.lineWidth = 2
+        btn.glowWidth = 0
         btn.name = name
 
-        let lbl = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
         lbl.text = label
-        lbl.fontSize = 15
+        lbl.fontSize = 20
         lbl.fontColor = .white
         lbl.verticalAlignmentMode = .center
         lbl.horizontalAlignmentMode = .center

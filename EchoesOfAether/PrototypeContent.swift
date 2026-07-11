@@ -292,6 +292,47 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.child.name"), text: String(localized: "dialogue.child.quest.done1"))
     ]
 
+    // MARK: - Mines de Cendreval (excursion optionnelle)
+
+    /// Entrée des mines : Lyra reste dehors, Kael descend seul.
+    static let minesEnterDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.enter.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.mines.enter.lyra1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.enter.kael2"))
+    ]
+
+    /// Après le premier combat : ce qui reste des équipes.
+    static let minesCombat1PostDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.combat1.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.combat1.kael2"))
+    ]
+
+    /// Avant le golem : le fond de la galerie tremble.
+    static let minesBossPreDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.boss.pre1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.boss.pre2"))
+    ]
+
+    /// Après le golem : les mines se taisent pour de bon.
+    static let minesBossPostDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.boss.post1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.boss.post2"))
+    ]
+
+    /// Plaque des mineurs : le lore de Cendreval.
+    static let minesInscriptionDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.mines.plaqueName"),
+              text: String(localized: "dialogue.mines.inscription.1")),
+        .line(speaker: String(localized: "dialogue.mines.plaqueName"),
+              text: String(localized: "dialogue.mines.inscription.2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.inscription.kael1"))
+    ]
+
+    /// Veine d'or intacte.
+    static let minesGoldDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.mines.gold.kael1"))
+    ]
+
     // MARK: - Forêt — jouet trouvé
 
     static let toyFoundDialogue: [DialogueStep] = [
@@ -1046,6 +1087,12 @@ enum PrototypeContent {
             entries.append(LoreEntry(
                 title: String(localized: "lore.void.title"),
                 body: String(localized: "lore.void.body")
+            ))
+        }
+        if player.loreDiscovered.contains("cendreval") {
+            entries.append(LoreEntry(
+                title: String(localized: "lore.cendreval.title"),
+                body: String(localized: "lore.cendreval.body")
             ))
         }
         return entries

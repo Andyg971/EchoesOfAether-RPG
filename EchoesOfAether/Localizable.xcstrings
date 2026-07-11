@@ -486,6 +486,38 @@
         }
       }
     },
+    "combat.enemy.ashGolem" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cinder Golem"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Golem de cendre"
+          }
+        }
+      }
+    },
+    "combat.enemy.ashMiner" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ash Miner"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mineur cendreux"
+          }
+        }
+      }
+    },
     "combat.enemy.beast" : {
       "localizations" : {
         "en" : {
@@ -6006,6 +6038,230 @@
         }
       }
     },
+    "dialogue.mines.boss.post1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ash. It was made of nothing but ash and Aether."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "De la cendre. Il n'était fait que de cendre et d'Aether."
+          }
+        }
+      }
+    },
+    "dialogue.mines.boss.post2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The mines are silent. For good, this time."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mines sont silencieuses. Cette fois pour de bon."
+          }
+        }
+      }
+    },
+    "dialogue.mines.boss.pre1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The ground shakes. Dust falls from the beams."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le sol tremble. La poussière tombe des étais."
+          }
+        }
+      }
+    },
+    "dialogue.mines.boss.pre2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something is climbing up from the depths. Something heavy."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quelque chose remonte des profondeurs. Quelque chose de lourd."
+          }
+        }
+      }
+    },
+    "dialogue.mines.combat1.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They were miners. Men, before the ash took them."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "C'était des mineurs. Des hommes, avant que la cendre les prenne."
+          }
+        }
+      }
+    },
+    "dialogue.mines.combat1.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The tunnel goes deeper. And something is breathing down there."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La galerie descend encore. Et quelque chose respire, en bas."
+          }
+        }
+      }
+    },
+    "dialogue.mines.enter.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Cendreval mines. Dorin said no one ever comes back from here."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mines de Cendreval. Dorin disait que plus personne n'en revenait."
+          }
+        }
+      }
+    },
+    "dialogue.mines.enter.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Promise. Let's see what silences the picks."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Promis. Voyons ce qui fait taire les pioches."
+          }
+        }
+      }
+    },
+    "dialogue.mines.enter.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I'll watch the entrance. If it goes wrong, you shout. Promise?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je garde l'entrée. Si ça tourne mal, tu cries. Promis ?"
+          }
+        }
+      }
+    },
+    "dialogue.mines.gold.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An untouched gold vein. The miners won't be coming back for it."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Une veine d'or intacte. Les mineurs ne reviendront pas la chercher."
+          }
+        }
+      }
+    },
+    "dialogue.mines.inscription.1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Crew 7. The vein sings at night. We keep digging.\""
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Équipe 7. La veine chante la nuit. On continue de creuser.»"
+          }
+        }
+      }
+    },
+    "dialogue.mines.inscription.2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "\"Crew 7. Last entry. The singing stopped.\""
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "«Équipe 7. Dernier relevé. Le chant s'est arrêté.»"
+          }
+        }
+      }
+    },
+    "dialogue.mines.inscription.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "They dug all the way to the Source. Nobody warned them."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ils ont creusé jusqu'à la Source. Personne ne les avait prévenus."
+          }
+        }
+      }
+    },
+    "dialogue.mines.plaqueName" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carved plaque"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plaque gravée"
+          }
+        }
+      }
+    },
     "dialogue.oldwoman.1" : {
       "localizations" : {
         "en" : {
@@ -7722,6 +7978,22 @@
         }
       }
     },
+    "hud.objective.mines" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cendreval Mines: explore the dead tunnels"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mines de Cendreval : explorer les galeries mortes"
+          }
+        }
+      }
+    },
     "hud.objective.ruins" : {
       "localizations" : {
         "en" : {
@@ -8406,6 +8678,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Notes de l'Archiviste"
+          }
+        }
+      }
+    },
+    "lore.cendreval.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The vein sang at night. They dug deeper, until they touched the Source. The ash did the rest."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La veine chantait la nuit. Ils ont creusé plus profond, jusqu'à toucher la Source. La cendre a fait le reste."
+          }
+        }
+      }
+    },
+    "lore.cendreval.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Cendreval Mines"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mines de Cendreval"
           }
         }
       }
@@ -9795,6 +10099,22 @@
         }
       }
     },
+    "quest.mines.hud" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Find out what silenced the mines"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Découvrir ce qui a tué les mines"
+          }
+        }
+      }
+    },
     "quest.sageHerb.accept" : {
       "localizations" : {
         "en" : {
@@ -10179,6 +10499,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La croix de bois"
+          }
+        }
+      }
+    },
+    "questlog.mines.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Cendreval mines fell silent years ago. No one ever came back. Find out what waits at the bottom of the tunnels."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mines de Cendreval se sont tues il y a des années. Personne n'en est revenu. Découvrir ce qui attend au fond des galeries."
+          }
+        }
+      }
+    },
+    "questlog.mines.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Silent Mines"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les mines silencieuses"
           }
         }
       }
@@ -10895,6 +11247,70 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sentier profond →"
+          }
+        }
+      }
+    },
+    "world.mines.entrance" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Collapsed gallery"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Galerie effondrée"
+          }
+        }
+      }
+    },
+    "world.mines.exit" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Exit"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sortie"
+          }
+        }
+      }
+    },
+    "world.mines.inscription" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Miners' plaque"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Plaque des mineurs"
+          }
+        }
+      }
+    },
+    "world.mines.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cendreval Mines"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mines de Cendreval"
           }
         }
       }

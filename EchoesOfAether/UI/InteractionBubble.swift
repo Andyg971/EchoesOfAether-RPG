@@ -37,6 +37,7 @@ final class InteractionBubble {
             case "hint.fight":   self = .fight
             case "hint.examine": self = .examine
             case "hint.enter":   self = .enter
+            case "hint.exit":    self = .enter
             default: return nil
             }
         }

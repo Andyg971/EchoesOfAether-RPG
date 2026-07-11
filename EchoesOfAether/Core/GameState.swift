@@ -81,6 +81,9 @@ final class PlayerState {
     var questBramOre: QuestState = .inactive    // fer corrompu pour la forge de Bram
     var questSageHerb: QuestState = .inactive   // herbe lunaire pour les tisanes de Sage
     var questGarenScout: QuestState = .inactive // éclaireur disparu de Garen (Tomm)
+    var questMines: QuestState = .inactive      // les mines silencieuses (Cendreval)
+    var minesProgress: Int = 0                  // 0=intact, 1=mineurs vaincus, 2=golem vaincu
+    var minesGoldTaken: Bool = false            // veine d'or ramassée (une fois)
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -164,6 +167,9 @@ final class PlayerState {
             questBramOre: questBramOre,
             questSageHerb: questSageHerb,
             questGarenScout: questGarenScout,
+            questMines: questMines,
+            minesProgress: minesProgress,
+            minesGoldTaken: minesGoldTaken,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -201,6 +207,9 @@ final class PlayerState {
         questBramOre = data.questBramOre ?? .inactive
         questSageHerb = data.questSageHerb ?? .inactive
         questGarenScout = data.questGarenScout ?? .inactive
+        questMines = data.questMines ?? .inactive
+        minesProgress = data.minesProgress ?? 0
+        minesGoldTaken = data.minesGoldTaken ?? false
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -245,6 +254,10 @@ struct SaveData: Codable {
     let questBramOre: QuestState?
     let questSageHerb: QuestState?
     let questGarenScout: QuestState?
+    // Optionnels — saves antérieures aux mines de Cendreval
+    let questMines: QuestState?
+    let minesProgress: Int?
+    let minesGoldTaken: Bool?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

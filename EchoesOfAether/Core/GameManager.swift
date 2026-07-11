@@ -48,6 +48,9 @@ final class GameManager {
     private var minimapTimer: TimeInterval = 0
     private var corruptionCinematicShown = false
     private var activeInterior: HouseInteriorKind?
+    /// Vrai quand Kael est dans les mines de Cendreval (excursion depuis
+    /// la forêt — pas une GamePhase : la save garde phase = .forest).
+    private var inMines = false
 
     // MARK: - Setup
 
@@ -148,6 +151,7 @@ final class GameManager {
             hud.goldValue = player.gold
             phase = .forest
             world.switchToForest(in: scene)
+            addSideQuestMarkers(in: scene)
             transition(to: .exploration)
             let frac: Double
             if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
@@ -159,6 +163,17 @@ final class GameManager {
             }
             world.kael.position = CGPoint(x: scene.size.width * 0.5,
                                           y: world.worldHeight * CGFloat(frac))
+            return
+        }
+        if CommandLine.arguments.contains("--zone-mines") {
+            hud.goldValue = player.gold
+            phase = .forest
+            inMines = true
+            hud.objectiveText = String(localized: "hud.objective.mines")
+            world.switchToMines(in: scene)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+            transition(to: .exploration)
             return
         }
         if CommandLine.arguments.contains("--zone-shrine") {
@@ -546,6 +561,12 @@ final class GameManager {
 
         if activeInterior != nil {
             if tryInteriorInteraction(wp, in: scene) { return }
+            tapAndMove(point, in: scene)
+            return
+        }
+
+        if inMines {
+            if tryMinesInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
             return
         }
@@ -1185,6 +1206,13 @@ final class GameManager {
                 pickupScoutBadge()
                 return true
             }
+        }
+
+        // Entrée des mines de Cendreval (flanc est)
+        let mineEntrance = CGPoint(x: w * 0.88, y: h * 0.30)
+        if point.distance(to: mineEntrance) < 65 {
+            enterMines()
+            return true
         }
 
         // Chasses optionnelles (répétables — XP/or, ennemis coriaces)
@@ -1972,7 +2000,8 @@ final class GameManager {
             (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc"),
             (player.questBramOre,    "questlog.bramOre.title",   "questlog.bramOre.desc"),
             (player.questSageHerb,   "questlog.sageHerb.title",  "questlog.sageHerb.desc"),
-            (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc")
+            (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc"),
+            (player.questMines,      "questlog.mines.title",      "questlog.mines.desc")
         ]
         let active = all.filter { $0.0 == .active }
         let done   = all.filter { $0.0 == .complete }
@@ -2028,6 +2057,26 @@ final class GameManager {
                     bubbleAnchor = CGPoint(x: servicePoint.x, y: servicePoint.y + 42)
                 }
             }
+        } else if inMines {
+            // POI des mines : combats, plaque, veine, sortie
+            let w = scene.size.width, h = scene.size.height
+            var checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.18, y: h*0.68), "hint.examine"),
+                (CGPoint(x: w*0.50, y: h*0.08), "hint.exit")
+            ]
+            if player.minesProgress < 1 {
+                checkpoints.append((CGPoint(x: w*0.30, y: h*0.48), "hint.fight"))
+            } else if player.minesProgress == 1 {
+                checkpoints.append((CGPoint(x: w*0.62, y: h*0.68), "hint.fight"))
+            }
+            if !player.minesGoldTaken {
+                checkpoints.append((CGPoint(x: w*0.80, y: h*0.40), "hint.examine"))
+            }
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+            }
         } else {
             switch phase {
             case .village, .act2:
@@ -2070,6 +2119,7 @@ final class GameManager {
                 (CGPoint(x: w*0.70, y: h*0.66), "hint.fight"),
                 (CGPoint(x: w*0.20, y: h*0.585), "hint.fight"),
                 (CGPoint(x: w*0.82, y: h*0.74), "hint.fight"),
+                (CGPoint(x: w*0.88, y: h*0.30), "hint.enter"),
                 (CGPoint(x: w*0.55, y: h*0.90), "hint.enter")
             ]
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
@@ -2408,11 +2458,209 @@ final class GameManager {
                                       && player.questDelivery == .complete)
     }
 
-    /// Place les marqueurs de collecte des quêtes annexes actives (forêt).
+    /// Place les marqueurs de collecte des quêtes annexes actives (forêt)
+    /// et l'entrée des mines de Cendreval (toujours visible).
     private func addSideQuestMarkers(in scene: SKScene) {
         if player.questBramOre == .active    { world.addOreMarker(in: scene) }
         if player.questSageHerb == .active   { world.addHerbMarker(in: scene) }
         if player.questGarenScout == .active { world.addBadgeMarker(in: scene) }
+        world.addMineEntrance(in: scene)
+    }
+
+    // MARK: - Mines de Cendreval
+
+    /// Descente dans les mines : zone plein écran, Lyra reste à l'entrée.
+    private func enterMines() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inMines = true
+            hud.objectiveText = String(localized: "hud.objective.mines")
+            world.switchToMines(in: scene)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+        } completion: { [weak self] in
+            guard let self else { return }
+            if player.questMines == .inactive {
+                player.questMines = .active
+                hud.questText = String(localized: "quest.mines.hud")
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.minesEnterDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            } else {
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Remonte à la forêt, respawn devant la galerie.
+    private func exitMines() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inMines = false
+            hud.objectiveText = String(localized: "hud.objective.forest")
+            world.switchToForest(in: scene)
+        } completion: { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            if player.questChildToy == .active { world.addToyMarker(in: scene) }
+            if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
+            addSideQuestMarkers(in: scene)
+            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            world.kael.position = CGPoint(x: scene.size.width * 0.80, y: wh * 0.28)
+            transition(to: .exploration)
+        }
+    }
+
+    private func tryMinesInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sortie (halo sud)
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.08)) < 60 {
+            exitMines()
+            return true
+        }
+
+        // Zone 1 : mineurs cendreux
+        if player.minesProgress < 1,
+           point.distance(to: CGPoint(x: w * 0.30, y: h * 0.48)) < 75 {
+            startMinesCombat1()
+            return true
+        }
+
+        // Zone 2 : golem de cendre (après les mineurs)
+        if player.minesProgress == 1,
+           point.distance(to: CGPoint(x: w * 0.62, y: h * 0.68)) < 75 {
+            startMinesBossSequence()
+            return true
+        }
+
+        // Plaque des mineurs : lore de Cendreval
+        if point.distance(to: CGPoint(x: w * 0.18, y: h * 0.68)) < 60 {
+            openMinesInscription()
+            return true
+        }
+
+        // Veine d'or (une seule fois)
+        if !player.minesGoldTaken,
+           point.distance(to: CGPoint(x: w * 0.80, y: h * 0.40)) < 60 {
+            pickupGoldVein()
+            return true
+        }
+
+        return false
+    }
+
+    /// Combat 1 : deux mineurs cendreux (goules recouvertes de cendre).
+    private func startMinesCombat1() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startMinesCombat1() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let name = String(localized: "combat.enemy.ashMiner")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
+                          hp: 230, kind: .ghoul, baseDamage: 36),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
+                          hp: 230, kind: .ghoul, baseDamage: 36)
+            ],
+            goldReward: 55,
+            player: player
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.minesProgress = 1
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.mines")
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.minesCombat1PostDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Boss des mines : dialogue d'approche puis golem de cendre.
+    private func startMinesBossSequence() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.minesBossPreDialogue) { [weak self] in
+            self?.startMinesBossCombat()
+        }
+    }
+
+    private func startMinesBossCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startMinesBossCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.ashGolem"),
+                          hp: 560, kind: .ruinsGuardian, baseDamage: 48)
+            ],
+            goldReward: 150,
+            player: player
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.minesProgress = 2
+            player.questMines = .complete
+            syncGold()
+            hud.questText = ""
+            AudioEngine.shared.playQuestComplete()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.mines")
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.minesBossPostDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Plaque des mineurs : débloque l'entrée de lore « cendreval ».
+    private func openMinesInscription() {
+        guard let scene else { return }
+        transition(to: .dialogue)
+        JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                 color: SKColor(red: 0.55, green: 0.42, blue: 0.20, alpha: 1),
+                                 duration: 0.3)
+        player.loreDiscovered.insert("cendreval")
+        dialogue.start(PrototypeContent.minesInscriptionDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Veine d'or : +80 or, une seule fois.
+    private func pickupGoldVein() {
+        guard let scene else { return }
+        player.minesGoldTaken = true
+        player.gold += 80
+        syncGold()
+        AudioEngine.shared.playGoldGain()
+        world.removeGoldVein()
+        let spot = CGPoint(x: scene.size.width * 0.80, y: scene.size.height * 0.40)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.minesGoldDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
     }
 
     private func syncGold() {
@@ -2430,6 +2678,7 @@ final class GameManager {
         player.load(from: save)
         resonanceTotal = save.resonanceTotal
         phase = save.phase
+        inMines = false   // la save ne stocke jamais l'excursion aux mines
 
         hud.goldValue = player.gold
         hud.resonanceValue = resonanceTotal
@@ -2508,6 +2757,7 @@ final class GameManager {
         case "hint.fight":   return String(localized: "hint.fight")
         case "hint.examine": return String(localized: "hint.examine")
         case "hint.enter":   return String(localized: "hint.enter")
+        case "hint.exit":    return String(localized: "hint.exit")
         default:             return key
         }
     }

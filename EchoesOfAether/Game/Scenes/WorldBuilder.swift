@@ -1085,6 +1085,268 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         return zone
     }
 
+    // MARK: - Mines de Cendreval (excursion optionnelle, forêt)
+
+    /// Bouche de mine effondrée dans le flanc est de la forêt : ouverture
+    /// sombre, poutres de bois, lanterne éteinte. Tap → entrer.
+    func addMineEntrance(in scene: SKScene) {
+        guard worldNode.childNode(withName: "mineEntrance") == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let entrance = SKNode()
+        entrance.name = "mineEntrance"
+        entrance.position = CGPoint(x: w * 0.88, y: h * 0.30)
+        entrance.zPosition = 2
+
+        // Ouverture sombre (bouche de galerie)
+        let mouth = SKShapeNode(rect: CGRect(x: -26, y: 0, width: 52, height: 40),
+                                cornerRadius: 14)
+        mouth.fillColor = SKColor(red: 0.03, green: 0.02, blue: 0.04, alpha: 1)
+        mouth.strokeColor = SKColor(red: 0.18, green: 0.14, blue: 0.10, alpha: 1)
+        mouth.lineWidth = 3
+        entrance.addChild(mouth)
+
+        // Poutres de soutènement en bois
+        for (x, rot) in [(-24, 0.06), (24, -0.06)] {
+            let beam = SKShapeNode(rectOf: CGSize(width: 7, height: 46), cornerRadius: 2)
+            beam.fillColor = SKColor(red: 0.38, green: 0.26, blue: 0.14, alpha: 1)
+            beam.strokeColor = SKColor(red: 0.22, green: 0.14, blue: 0.08, alpha: 1)
+            beam.lineWidth = 1
+            beam.position = CGPoint(x: CGFloat(x), y: 22)
+            beam.zRotation = CGFloat(rot)
+            entrance.addChild(beam)
+        }
+        let lintel = SKShapeNode(rectOf: CGSize(width: 62, height: 8), cornerRadius: 2)
+        lintel.fillColor = SKColor(red: 0.34, green: 0.23, blue: 0.12, alpha: 1)
+        lintel.strokeColor = SKColor(red: 0.20, green: 0.13, blue: 0.07, alpha: 1)
+        lintel.lineWidth = 1
+        lintel.position = CGPoint(x: 0, y: 44)
+        entrance.addChild(lintel)
+
+        // Lueur de lanterne faible pour attirer l'oeil
+        let glow = SKShapeNode(circleOfRadius: 8)
+        glow.fillColor = SKColor(red: 1.0, green: 0.72, blue: 0.30, alpha: 0.35)
+        glow.strokeColor = .clear
+        glow.position = CGPoint(x: 30, y: 40)
+        entrance.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.4)
+
+        // Panneau : nom de la galerie
+        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        label.text = String(localized: "world.mines.entrance")
+        label.fontSize = 9
+        label.fontColor = SKColor(white: 0.75, alpha: 0.75)
+        label.position = CGPoint(x: 0, y: 54)
+        entrance.addChild(label)
+
+        worldNode.addChild(entrance)
+        backdropNodes.append(entrance)
+    }
+
+    func switchToMines(in scene: SKScene) {
+        clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.03, green: 0.03, blue: 0.04, alpha: 1)
+        buildMines(in: scene)
+    }
+
+    /// Galeries mortes de Cendreval : pierre grise cendrée, étais de bois,
+    /// éboulis, deux zones de danger, plaque des mineurs, veine d'or,
+    /// sortie au sud. Une seule hauteur d'écran (pas de scroll).
+    private func buildMines(in scene: SKScene) {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sol : pierre teintée gris cendre
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_stone"],
+                      fallbackColor: SKColor(red: 0.05, green: 0.05, blue: 0.06, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.16, green: 0.16, blue: 0.19, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
+
+        // Titre de zone
+        let zoneLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        zoneLabel.text = String(localized: "world.mines.title")
+        zoneLabel.fontSize = 11
+        zoneLabel.fontColor = SKColor(red: 0.60, green: 0.58, blue: 0.52, alpha: 0.6)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.92)
+        zoneLabel.zPosition = -1
+        add(zoneLabel, to: scene)
+
+        // Piliers naturels + colonnes brisées : la voûte fatiguée
+        addPixelProp("pillar_grey_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.74), scale: 1.8)
+        addPixelProp("pillar_grey_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.78), scale: 1.8)
+        for (px, py) in [(0.32, 0.80), (0.70, 0.84)] {
+            addPixelProp("column_broken_1", in: scene,
+                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 2.0)
+        }
+
+        // Étais de bois le long des parois
+        for (x, y) in [(0.06, 0.35), (0.06, 0.55), (0.94, 0.38), (0.94, 0.58)] {
+            let beam = SKShapeNode(rectOf: CGSize(width: 8, height: 52), cornerRadius: 2)
+            beam.fillColor = SKColor(red: 0.30, green: 0.21, blue: 0.11, alpha: 1)
+            beam.strokeColor = SKColor(red: 0.18, green: 0.12, blue: 0.06, alpha: 1)
+            beam.lineWidth = 1
+            beam.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
+            beam.zPosition = -2
+            add(beam, to: scene)
+        }
+
+        // Éboulis, pierres et ossements des équipes disparues
+        let debris: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("gy_stone_1", 0.22, 0.42, 0.55), ("gy_stone_3", 0.48, 0.30, 0.55),
+            ("gy_stone_2", 0.74, 0.50, 0.55), ("gy_stone_1", 0.58, 0.74, 0.50),
+            ("gy_stone_3", 0.15, 0.26, 0.50)
+        ]
+        for (asset, x, y, s) in debris {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
+        }
+        for p in [(0.38, 0.40), (0.66, 0.32), (0.26, 0.60)] {
+            guard let bones = PixelArtSprites.still(
+                name: "bones_1", scale: 2.0,
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            bones.position = CGPoint(x: w * p.0, y: h * p.1)
+            bones.zPosition = -2
+            bones.alpha = 0.85
+            add(bones, to: scene)
+        }
+
+        // Chariots abandonnés : simples caisses de bois sur rails esquissés
+        for (x, y) in [(0.80, 0.62), (0.20, 0.76)] {
+            let cart = SKShapeNode(rectOf: CGSize(width: 34, height: 20), cornerRadius: 3)
+            cart.fillColor = SKColor(red: 0.26, green: 0.18, blue: 0.10, alpha: 1)
+            cart.strokeColor = SKColor(red: 0.40, green: 0.28, blue: 0.15, alpha: 0.8)
+            cart.lineWidth = 2
+            cart.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
+            cart.zPosition = -2
+            add(cart, to: scene)
+        }
+
+        // Zone combat 1 : mineurs cendreux (centre-gauche)
+        let zone1 = makeDangerZone(
+            at: CGPoint(x: w * 0.30, y: h * 0.48),
+            radius: 38,
+            color: SKColor(red: 0.55, green: 0.50, blue: 0.40, alpha: 1)
+        )
+        zone1.name = "minesZone1"
+        add(zone1, to: scene)
+
+        // Zone combat 2 : le golem de cendre (fond de galerie, haut-droite)
+        let zone2 = makeDangerZone(
+            at: CGPoint(x: w * 0.62, y: h * 0.68),
+            radius: 40,
+            color: SKColor(red: 0.75, green: 0.35, blue: 0.15, alpha: 1)
+        )
+        zone2.name = "minesZone2"
+        add(zone2, to: scene)
+
+        // Plaque des mineurs (bas-gauche) : le lore de Cendreval
+        let plaque = makeMinersPlaque(at: CGPoint(x: w * 0.18, y: h * 0.68))
+        add(plaque, to: scene)
+
+        // Veine d'or : reflets dorés dans la paroi (haut-gauche)
+        let vein = makeGoldVein(at: CGPoint(x: w * 0.80, y: h * 0.40))
+        vein.name = "minesGoldVein"
+        add(vein, to: scene)
+
+        // Sortie au sud : halo de lumière du jour
+        let exitGlow = SKShapeNode(circleOfRadius: 34)
+        exitGlow.fillColor = SKColor(red: 0.55, green: 0.65, blue: 0.75, alpha: 0.10)
+        exitGlow.strokeColor = SKColor(red: 0.70, green: 0.80, blue: 0.90, alpha: 0.25)
+        exitGlow.lineWidth = 1.5
+        exitGlow.position = CGPoint(x: w * 0.50, y: h * 0.08)
+        add(exitGlow, to: scene)
+        JuiceEngine.pulse(exitGlow, scale: 1.15)
+        let exitLabel = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        exitLabel.text = String(localized: "world.mines.exit")
+        exitLabel.fontSize = 9
+        exitLabel.fontColor = SKColor(white: 0.70, alpha: 0.7)
+        exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
+        add(exitLabel, to: scene)
+
+        // Cendre en suspension : même atmosphère que les ruines
+        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+    }
+
+    /// Plaque de bois gravée par les équipes de mineurs.
+    private func makeMinersPlaque(at pos: CGPoint) -> SKNode {
+        let node = SKNode()
+        node.position = pos
+        node.zPosition = 1
+
+        let board = SKShapeNode(rectOf: CGSize(width: 64, height: 42), cornerRadius: 4)
+        board.fillColor = SKColor(red: 0.24, green: 0.17, blue: 0.09, alpha: 1)
+        board.strokeColor = SKColor(red: 0.45, green: 0.33, blue: 0.18, alpha: 0.9)
+        board.lineWidth = 2
+        node.addChild(board)
+
+        for (y, width) in [(10, 40), (0, 46), (-10, 34)] {
+            let line = SKShapeNode(rectOf: CGSize(width: CGFloat(width), height: 2), cornerRadius: 1)
+            line.fillColor = SKColor(red: 0.60, green: 0.48, blue: 0.28, alpha: 0.7)
+            line.strokeColor = .clear
+            line.position = CGPoint(x: 0, y: CGFloat(y))
+            node.addChild(line)
+        }
+
+        let glow = SKShapeNode(rectOf: CGSize(width: 72, height: 50), cornerRadius: 6)
+        glow.fillColor = .clear
+        glow.strokeColor = SKColor(red: 0.85, green: 0.65, blue: 0.30, alpha: 0.15)
+        glow.lineWidth = 4
+        node.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.08)
+
+        let label = SKLabelNode(fontNamed: "AvenirNext-Medium")
+        label.text = String(localized: "world.mines.inscription")
+        label.fontSize = 9
+        label.fontColor = SKColor(white: 0.65, alpha: 0.8)
+        label.position = CGPoint(x: 0, y: -36)
+        node.addChild(label)
+        return node
+    }
+
+    /// Veine d'or scintillante dans la paroi.
+    private func makeGoldVein(at pos: CGPoint) -> SKNode {
+        let node = SKNode()
+        node.position = pos
+        node.zPosition = 1
+
+        let rock = SKShapeNode(rectOf: CGSize(width: 40, height: 26), cornerRadius: 6)
+        rock.fillColor = SKColor(red: 0.14, green: 0.14, blue: 0.17, alpha: 1)
+        rock.strokeColor = SKColor(red: 0.30, green: 0.30, blue: 0.35, alpha: 0.8)
+        rock.lineWidth = 1.5
+        node.addChild(rock)
+
+        for (dx, dy) in [(-11, 4), (-2, -5), (7, 3), (13, -2)] {
+            let fleck = SKSpriteNode(color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+                                     size: CGSize(width: 4, height: 4))
+            fleck.position = CGPoint(x: CGFloat(dx), y: CGFloat(dy))
+            fleck.zRotation = .pi / 4
+            node.addChild(fleck)
+        }
+
+        let glow = SKShapeNode(circleOfRadius: 24)
+        glow.fillColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.06)
+        glow.strokeColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.18)
+        glow.lineWidth = 1
+        node.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.3)
+        return node
+    }
+
+    /// Retire la veine d'or (après ramassage).
+    func removeGoldVein() {
+        guard let vein = worldNode.childNode(withName: "minesGoldVein") else { return }
+        vein.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+    }
+
     // MARK: - Ruines de la Source (Acte II)
 
     private func buildRuins(in scene: SKScene) {

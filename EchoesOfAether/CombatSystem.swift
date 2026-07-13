@@ -574,6 +574,17 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     }
 
     let victimHome = hitsLyra ? lyraHomePosition : kaelHomePosition
+
+    // Esquive : 10 % de chance d'éviter un coup normal (jamais un spécial).
+    if !isSpecial, Double.random(in: 0...1) < 0.10 {
+        statusLabel.text = String(localized: "combat.status.dodged")
+        playEnemyAttackAnimation(e, isSpecial: false, onLyra: hitsLyra, dodged: true)
+        playDodgeEffect(sprite: hitsLyra ? lyraSprite : kaelSprite, home: victimHome)
+        updateVisuals()
+        proceed()
+        return
+    }
+
     if hitsLyra, var l = lyra {
         l.hp = max(0, l.hp - dmg)
         lyra = l
@@ -791,7 +802,9 @@ private func perform(_ action: CombatAction) {
     case .attack:
         comboCount += 1
         let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
-        let finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
+        var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
+        let isCrit = Double.random(in: 0...1) < 0.12
+        if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         if boost > 0 {
             statusLabel.text = String(localized: "combat.status.attackBoosted \(boost + 1) \(finalDmg)")
@@ -807,13 +820,19 @@ private func perform(_ action: CombatAction) {
         playActorAttackAnimation(on: foe, strong: boost > 0)
         spawnSlashArc(at: enemyCenter, color: .white, strong: boost > 0)
         root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8 + boost * 4))
-        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: .white)
+        if isCrit {
+            playCritEffect(at: enemyCenter, damage: finalDmg)
+        } else {
+            showFloatingText("-" + String(finalDmg), at: enemyCenter, color: .white)
+        }
         showComboIfNeeded()
 
     case .blackSlash:
         comboCount = 0
         resonance += 1
-        let finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
+        var finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
+        let isCrit = Double.random(in: 0...1) < 0.12
+        if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         let broke = hitWeakness(on: foe, with: .aether)
         if resonance == 3 {
             foe.combatant.stunned = true
@@ -841,7 +860,11 @@ private func perform(_ action: CombatAction) {
         playActorAttackAnimation(on: foe, strong: true)
         spawnSlashArc(at: enemyCenter, color: CombatElement.aether.color, strong: true)
         root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
-        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: CombatElement.aether.color)
+        if isCrit {
+            playCritEffect(at: enemyCenter, damage: finalDmg)
+        } else {
+            showFloatingText("-" + String(finalDmg), at: enemyCenter, color: CombatElement.aether.color)
+        }
 
     case .potion:
         comboCount = 0
@@ -1388,6 +1411,48 @@ private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
     ]))
 }
 
+/// CRITIQUE : dégâts dorés en gros, éclat d'étincelles, punch caméra.
+private func playCritEffect(at position: CGPoint, damage: Int) {
+    let gold = SKColor(red: 1.00, green: 0.84, blue: 0.25, alpha: 1)
+    showEffect(String(localized: "combat.effect.crit"), color: gold)
+    root.addChild(ParticleFactory.impactSparks(at: position, color: gold, count: 12))
+    JuiceEngine.zoomPunch(root, around: position, scale: 1.05)
+    HapticsEngine.heavy()
+
+    let label = SKLabelNode(fontNamed: PixelUI.uiFont)
+    label.text = "-" + String(damage)
+    label.fontSize = 33
+    label.fontColor = gold
+    label.position = CGPoint(x: position.x, y: position.y + 72)
+    label.zPosition = 940
+    label.setScale(0.4)
+    root.addChild(label)
+    label.run(.sequence([
+        .group([.scale(to: 1.25, duration: 0.12), .fadeIn(withDuration: 0.06)]),
+        .scale(to: 1.0, duration: 0.08),
+        .group([.moveBy(x: 0, y: 36, duration: 0.5), .fadeOut(withDuration: 0.5)]),
+        .removeFromParent()
+    ]))
+}
+
+/// ESQUIVE : pas de côté vif du sprite, aucun dégât.
+private func playDodgeEffect(sprite: SKNode?, home: CGPoint) {
+    showEffect(String(localized: "combat.effect.dodge"),
+               color: SKColor(red: 0.65, green: 0.95, blue: 1.00, alpha: 1))
+    showFloatingText(String(localized: "combat.effect.dodge"), at: home,
+                     color: SKColor(red: 0.65, green: 0.95, blue: 1.00, alpha: 1))
+    guard let sprite else { return }
+    let dash = SKAction.sequence([
+        .moveBy(x: -30, y: 0, duration: 0.08),
+        .wait(forDuration: 0.16),
+        .moveBy(x: 30, y: 0, duration: 0.12)
+    ])
+    dash.timingMode = .easeOut
+    sprite.run(dash)
+    AudioEngine.shared.playStep()
+    HapticsEngine.light()
+}
+
 private func showFloatingText(_ text: String, at position: CGPoint, color: SKColor) {
     let label = SKLabelNode(fontNamed: PixelUI.uiFont)
     label.text = text
@@ -1921,7 +1986,8 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
     private func playEnemyAttackAnimation(_ foe: EnemyState, isSpecial: Bool,
-                                          onLyra: Bool = false) {
+                                          onLyra: Bool = false,
+                                          dodged: Bool = false) {
         guard let e = foe.sprite else { return }
         CombatSprites.playAttackFrames(on: e, kind: foe.kind)
         let dx: CGFloat = isSpecial ? -130 : -80
@@ -1932,7 +1998,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let lungeOut = SKAction.move(to: foe.homePosition, duration: 0.22)
         lungeOut.timingMode = .easeOut
         e.run(.sequence([lungeIn, lungeOut]))
-        playAllyHitReact(onLyra: onLyra)
+        if !dodged { playAllyHitReact(onLyra: onLyra) }
     }
 
     private func playAllyHitReact(onLyra: Bool = false) {

@@ -326,6 +326,38 @@
         }
       }
     },
+    "combat.effect.crit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CRITICAL!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "CRITIQUE !"
+          }
+        }
+      }
+    },
+    "combat.effect.dodge": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dodged!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esquive !"
+          }
+        }
+      }
+    },
     "combat.effect.frozen": {
       "localizations": {
         "en": {
@@ -949,6 +981,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ vaincu !"
+          }
+        }
+      }
+    },
+    "combat.status.dodged": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The blow cuts through empty air!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le coup passe dans le vide !"
           }
         }
       }

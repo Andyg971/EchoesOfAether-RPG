@@ -82,7 +82,7 @@ final class PlayerState {
     var questSageHerb: QuestState = .inactive   // herbe lunaire pour les tisanes de Sage
     var questGarenScout: QuestState = .inactive // éclaireur disparu de Garen (Tomm)
     var questMines: QuestState = .inactive      // les mines silencieuses (Cendreval)
-    var minesProgress: Int = 0                  // 0=intact, 1=mineurs vaincus, 2=golem vaincu
+    var minesProgress: Int = 0                  // 0=intact, 1=mineurs, 2=spectres, 3=golem vaincu
     var minesGoldTaken: Bool = false            // veine d'or ramassée (une fois)
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false

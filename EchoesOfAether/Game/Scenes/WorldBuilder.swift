@@ -1204,69 +1204,96 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         backdropNodes.append(entrance)
     }
 
-    func switchToMines(in scene: SKScene) {
+    func switchToMines(in scene: SKScene, progress: Int = 0, goldTaken: Bool = false) {
         clearBackdrop()
         worldHeight = scene.size.height
         worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
-        scene.backgroundColor = SKColor(red: 0.03, green: 0.03, blue: 0.04, alpha: 1)
-        buildMines(in: scene)
+        scene.backgroundColor = SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 1)
+        buildMines(in: scene, progress: progress, goldTaken: goldTaken)
     }
 
-    /// Galeries mortes de Cendreval : pierre grise cendrée, étais de bois,
-    /// éboulis, deux zones de danger, plaque des mineurs, veine d'or,
-    /// sortie au sud. Une seule hauteur d'écran (pas de scroll).
-    private func buildMines(in scene: SKScene) {
+    /// Galeries mortes de Cendreval : voûte de pierre, rails et chariots,
+    /// étais de bois, lanternes, champignons luisants, monstres visibles
+    /// aux zones de danger. Une seule hauteur d'écran (pas de scroll).
+    private func buildMines(in scene: SKScene, progress: Int, goldTaken: Bool) {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Sol : pierre teintée gris cendre
+        // Sol : pierre gris cendre, plus sombre qu'avant
         addTiledFloor(in: scene,
                       tileNames: ["a2_stone"],
-                      fallbackColor: SKColor(red: 0.05, green: 0.05, blue: 0.06, alpha: 1),
+                      fallbackColor: SKColor(red: 0.04, green: 0.04, blue: 0.05, alpha: 1),
                       tileScale: 1.0,
-                      tint: SKColor(red: 0.16, green: 0.16, blue: 0.19, alpha: 1),
+                      tint: SKColor(red: 0.13, green: 0.13, blue: 0.16, alpha: 1),
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
+
+        // Voûte : deux rangées de pierre taillée en haut de la galerie
+        let wallTile: CGFloat = 24
+        let wallCols = Int(ceil(w / wallTile)) + 1
+        for c in 0..<wallCols {
+            for r in 0..<2 {
+                guard let t = PixelArtSprites.still(
+                    name: ["me_wall_1", "me_wall_2", "me_wall_3", "me_wall_5"][(c + r) % 4],
+                    scale: 0.5, anchor: CGPoint(x: 0.5, y: 0.5)) else { continue }
+                t.position = CGPoint(x: CGFloat(c) * wallTile + wallTile / 2,
+                                     y: h - CGFloat(r) * wallTile - wallTile / 2)
+                t.zPosition = -6
+                t.forEachDescendantSprite { s in
+                    s.color = SKColor(red: 0.16, green: 0.16, blue: 0.20, alpha: 1)
+                    s.colorBlendFactor = 0.55
+                }
+                add(t, to: scene)
+            }
+        }
 
         // Titre de zone
         let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.mines.title")
         zoneLabel.fontSize = 14
-        zoneLabel.fontColor = SKColor(red: 0.60, green: 0.58, blue: 0.52, alpha: 0.6)
-        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.92)
+        zoneLabel.fontColor = SKColor(red: 0.60, green: 0.58, blue: 0.52, alpha: 0.7)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
+        // Rails : de la sortie (sud) vers le fond de la galerie
+        addMineRails(in: scene, from: CGPoint(x: w * 0.50, y: h * 0.10),
+                     to: CGPoint(x: w * 0.50, y: h * 0.62))
+        addMineRails(in: scene, from: CGPoint(x: w * 0.50, y: h * 0.62),
+                     to: CGPoint(x: w * 0.86, y: h * 0.62), horizontal: true)
+
+        // Chariots de mine sur les rails
+        addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.40), scale: 0.55)
+        addPixelProp("me_cart_empty", in: scene, at: CGPoint(x: w * 0.74, y: h * 0.60), scale: 0.55)
+
         // Piliers naturels + colonnes brisées : la voûte fatiguée
-        addPixelProp("pillar_grey_1", in: scene, at: CGPoint(x: w * 0.12, y: h * 0.74), scale: 1.8)
-        addPixelProp("pillar_grey_2", in: scene, at: CGPoint(x: w * 0.88, y: h * 0.78), scale: 1.8)
-        for (px, py) in [(0.32, 0.80), (0.70, 0.84)] {
-            addPixelProp("column_broken_1", in: scene,
-                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 2.0)
+        addPixelProp("pillar_grey_1", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.72), scale: 1.8)
+        addPixelProp("pillar_grey_2", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.76), scale: 1.8)
+        addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.30, y: h * 0.80), scale: 2.0)
+        addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.70, y: h * 0.84), scale: 1.8)
+
+        // Étais de bois : montants + traverse, style charpente de mine
+        for x in [0.07, 0.93] {
+            for y in [0.32, 0.54] {
+                addMineStrut(in: scene, at: CGPoint(x: w * CGFloat(x), y: h * CGFloat(y)))
+            }
         }
 
-        // Étais de bois le long des parois
-        for (x, y) in [(0.06, 0.35), (0.06, 0.55), (0.94, 0.38), (0.94, 0.58)] {
-            let beam = SKShapeNode(rectOf: CGSize(width: 8, height: 52), cornerRadius: 2)
-            beam.fillColor = SKColor(red: 0.30, green: 0.21, blue: 0.11, alpha: 1)
-            beam.strokeColor = SKColor(red: 0.18, green: 0.12, blue: 0.06, alpha: 1)
-            beam.lineWidth = 1
-            beam.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
-            beam.zPosition = -2
-            add(beam, to: scene)
-        }
-
-        // Éboulis, pierres et ossements des équipes disparues
-        let debris: [(String, CGFloat, CGFloat, CGFloat)] = [
-            ("gy_stone_1", 0.22, 0.42, 0.55), ("gy_stone_3", 0.48, 0.30, 0.55),
-            ("gy_stone_2", 0.74, 0.50, 0.55), ("gy_stone_1", 0.58, 0.74, 0.50),
-            ("gy_stone_3", 0.15, 0.26, 0.50)
+        // Éboulis et rochers
+        let rocks: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("rock_7", 0.20, 0.40, 0.60), ("rock_3", 0.48, 0.28, 0.55),
+            ("rock_9", 0.76, 0.48, 0.60), ("rock_1", 0.58, 0.76, 0.50),
+            ("rock_5", 0.14, 0.24, 0.50), ("gy_stone_1", 0.36, 0.68, 0.50),
+            ("gy_stone_3", 0.88, 0.34, 0.50), ("ext_pebbles", 0.42, 0.50, 0.8),
+            ("ext_pebbles", 0.68, 0.24, 0.8), ("ext_pebbles", 0.24, 0.80, 0.8)
         ]
-        for (asset, x, y, s) in debris {
+        for (asset, x, y, s) in rocks {
             addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
         }
-        for p in [(0.38, 0.40), (0.66, 0.32), (0.26, 0.60)] {
+
+        // Ossements des équipes disparues
+        for p in [(0.38, 0.40), (0.66, 0.32), (0.26, 0.60), (0.82, 0.72)] {
             guard let bones = PixelArtSprites.still(
                 name: "bones_1", scale: 2.0,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
@@ -1276,43 +1303,73 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             add(bones, to: scene)
         }
 
-        // Chariots abandonnés : simples caisses de bois sur rails esquissés
-        for (x, y) in [(0.80, 0.62), (0.20, 0.76)] {
-            let cart = SKShapeNode(rectOf: CGSize(width: 34, height: 20), cornerRadius: 3)
-            cart.fillColor = SKColor(red: 0.26, green: 0.18, blue: 0.10, alpha: 1)
-            cart.strokeColor = SKColor(red: 0.40, green: 0.28, blue: 0.15, alpha: 0.8)
-            cart.lineWidth = 2
-            cart.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
-            cart.zPosition = -2
-            add(cart, to: scene)
+        // Lanternes des mineurs : points de lumière chaude dans le noir
+        for (x, y) in [(0.14, 0.66), (0.44, 0.14), (0.56, 0.14), (0.86, 0.52)] {
+            addMineLantern(in: scene, at: CGPoint(x: w * CGFloat(x), y: h * CGFloat(y)))
+        }
+        // Bougies fondues près de la plaque
+        addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.14, y: h * 0.62), scale: 0.5)
+        addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.23, y: h * 0.64), scale: 0.45)
+
+        // Champignons luisants : la seule vie qui reste ici
+        for (x, y, s) in [(0.34, 0.24, 0.9), (0.60, 0.44, 0.8), (0.18, 0.50, 0.85),
+                          (0.78, 0.80, 0.9), (0.52, 0.66, 0.75)] {
+            guard let shroom = PixelArtSprites.still(
+                name: Bool.random() ? "mushroom_1" : "mushroom_3",
+                scale: CGFloat(s), anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            shroom.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
+            shroom.zPosition = -3
+            shroom.forEachDescendantSprite { sp in
+                sp.color = SKColor(red: 0.35, green: 0.85, blue: 0.75, alpha: 1)
+                sp.colorBlendFactor = 0.35
+            }
+            add(shroom, to: scene)
+            JuiceEngine.pulse(shroom, scale: 1.05)
         }
 
-        // Zone combat 1 : mineurs cendreux (centre-gauche)
-        let zone1 = makeDangerZone(
-            at: CGPoint(x: w * 0.30, y: h * 0.48),
-            radius: 38,
-            color: SKColor(red: 0.55, green: 0.50, blue: 0.40, alpha: 1)
-        )
-        zone1.name = "minesZone1"
-        add(zone1, to: scene)
-
-        // Zone combat 2 : le golem de cendre (fond de galerie, haut-droite)
-        let zone2 = makeDangerZone(
-            at: CGPoint(x: w * 0.62, y: h * 0.68),
-            radius: 40,
-            color: SKColor(red: 0.75, green: 0.35, blue: 0.15, alpha: 1)
-        )
-        zone2.name = "minesZone2"
-        add(zone2, to: scene)
+        // ── Monstres visibles aux zones de combat restantes ──
+        if progress < 1 {
+            let zone1 = makeDangerZone(
+                at: CGPoint(x: w * 0.30, y: h * 0.48),
+                radius: 38,
+                color: SKColor(red: 0.55, green: 0.50, blue: 0.40, alpha: 1))
+            zone1.name = "minesZone1"
+            add(zone1, to: scene)
+            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.27, y: h * 0.50))
+            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.45), flipped: true)
+        }
+        if progress == 1 {
+            let zone2 = makeDangerZone(
+                at: CGPoint(x: w * 0.46, y: h * 0.64),
+                radius: 38,
+                color: SKColor(red: 0.45, green: 0.55, blue: 0.65, alpha: 1))
+            zone2.name = "minesZone2"
+            add(zone2, to: scene)
+            addMineMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.66))
+            addMineMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.61), flipped: true)
+            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.46, y: h * 0.70))
+        }
+        if progress == 2 {
+            let bossZone = makeDangerZone(
+                at: CGPoint(x: w * 0.62, y: h * 0.68),
+                radius: 40,
+                color: SKColor(red: 0.75, green: 0.35, blue: 0.15, alpha: 1))
+            bossZone.name = "minesZone3"
+            add(bossZone, to: scene)
+            // Silhouette du golem : masse sombre aux yeux de braise
+            addMineGolemSilhouette(in: scene, at: CGPoint(x: w * 0.62, y: h * 0.70))
+        }
 
         // Plaque des mineurs (bas-gauche) : le lore de Cendreval
         let plaque = makeMinersPlaque(at: CGPoint(x: w * 0.18, y: h * 0.68))
         add(plaque, to: scene)
 
-        // Veine d'or : reflets dorés dans la paroi (haut-gauche)
-        let vein = makeGoldVein(at: CGPoint(x: w * 0.80, y: h * 0.40))
-        vein.name = "minesGoldVein"
-        add(vein, to: scene)
+        // Veine d'or : reflets dorés dans la paroi (déjà ramassée = absente)
+        if !goldTaken {
+            let vein = makeGoldVein(at: CGPoint(x: w * 0.80, y: h * 0.40))
+            vein.name = "minesGoldVein"
+            add(vein, to: scene)
+        }
 
         // Sortie au sud : halo de lumière du jour
         let exitGlow = SKShapeNode(circleOfRadius: 34)
@@ -1331,6 +1388,120 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         // Cendre en suspension : même atmosphère que les ruines
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+    }
+
+    /// Rails de mine : deux longerons métalliques + traverses de bois.
+    /// 100 % SKSpriteNode — carrés nets, zéro shape lissée.
+    private func addMineRails(in scene: SKScene, from: CGPoint, to: CGPoint,
+                              horizontal: Bool = false) {
+        let rails = SKNode()
+        rails.zPosition = -7
+        let railColor = SKColor(red: 0.28, green: 0.28, blue: 0.33, alpha: 1)
+        let tieColor = SKColor(red: 0.24, green: 0.16, blue: 0.09, alpha: 1)
+        let length = horizontal ? abs(to.x - from.x) : abs(to.y - from.y)
+        let gauge: CGFloat = 14
+
+        for offset in [-gauge / 2, gauge / 2] {
+            let rail = SKSpriteNode(color: railColor,
+                                    size: horizontal
+                                        ? CGSize(width: length, height: 3)
+                                        : CGSize(width: 3, height: length))
+            rail.position = horizontal
+                ? CGPoint(x: (from.x + to.x) / 2, y: from.y + offset)
+                : CGPoint(x: from.x + offset, y: (from.y + to.y) / 2)
+            rails.addChild(rail)
+        }
+        let tieCount = Int(length / 26)
+        for i in 0...tieCount {
+            let d = CGFloat(i) * 26
+            let tie = SKSpriteNode(color: tieColor,
+                                   size: horizontal
+                                       ? CGSize(width: 5, height: gauge + 8)
+                                       : CGSize(width: gauge + 8, height: 5))
+            tie.position = horizontal
+                ? CGPoint(x: min(from.x, to.x) + d, y: from.y)
+                : CGPoint(x: from.x, y: min(from.y, to.y) + d)
+            tie.zPosition = -0.1
+            rails.addChild(tie)
+        }
+        add(rails, to: scene)
+    }
+
+    /// Étai de mine : deux montants + traverse, brun sombre, pixel net.
+    private func addMineStrut(in scene: SKScene, at pos: CGPoint) {
+        let strut = SKNode()
+        strut.zPosition = -2
+        let wood = SKColor(red: 0.30, green: 0.21, blue: 0.11, alpha: 1)
+        let dark = SKColor(red: 0.16, green: 0.11, blue: 0.06, alpha: 1)
+        for dx: CGFloat in [-14, 14] {
+            let post = SKSpriteNode(color: wood, size: CGSize(width: 7, height: 54))
+            post.position = CGPoint(x: dx, y: 0)
+            strut.addChild(post)
+            let edge = SKSpriteNode(color: dark, size: CGSize(width: 2, height: 54))
+            edge.position = CGPoint(x: dx + 3, y: 0)
+            strut.addChild(edge)
+        }
+        let beam = SKSpriteNode(color: wood, size: CGSize(width: 42, height: 7))
+        beam.position = CGPoint(x: 0, y: 28)
+        strut.addChild(beam)
+        let beamEdge = SKSpriteNode(color: dark, size: CGSize(width: 42, height: 2))
+        beamEdge.position = CGPoint(x: 0, y: 25)
+        strut.addChild(beamEdge)
+        strut.position = pos
+        add(strut, to: scene)
+    }
+
+    /// Lanterne de mineur : sprite + nappe de lumière chaude au sol.
+    private func addMineLantern(in scene: SKScene, at pos: CGPoint) {
+        let pool = SKShapeNode(ellipseOf: CGSize(width: 110, height: 54))
+        pool.fillColor = SKColor(red: 0.95, green: 0.70, blue: 0.30, alpha: 0.07)
+        pool.strokeColor = .clear
+        pool.position = CGPoint(x: pos.x, y: pos.y + 4)
+        pool.zPosition = -5
+        add(pool, to: scene)
+        JuiceEngine.pulse(pool, scale: 1.08)
+        addPixelProp("village_lantern_1", in: scene, at: pos, scale: 0.5)
+    }
+
+    /// Monstre visible dans la galerie : sprite ennemi idle, teinté cendre.
+    private func addMineMonster(_ asset: String, in scene: SKScene,
+                                at pos: CGPoint, flipped: Bool = false) {
+        guard let monster = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.55,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        monster.position = pos
+        monster.zPosition = actorLayer(for: pos.y)
+        if flipped { monster.xScale = -abs(monster.xScale) }
+        monster.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.45, green: 0.42, blue: 0.40, alpha: 1)
+            s.colorBlendFactor = 0.25
+        }
+        addGroundShadow(under: monster, width: 26, height: 7)
+        add(monster, to: scene)
+    }
+
+    /// Silhouette du golem de cendre endormi : masse de pierre sombre,
+    /// deux braises pour les yeux.
+    private func addMineGolemSilhouette(in scene: SKScene, at pos: CGPoint) {
+        let golem = SKNode()
+        golem.zPosition = actorLayer(for: pos.y)
+        let body = SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1)
+        for (dx, dy, sw, sh) in [(0.0, 18.0, 46.0, 38.0), (-20.0, 4.0, 22.0, 22.0),
+                                 (20.0, 4.0, 22.0, 22.0), (0.0, 44.0, 30.0, 22.0)] {
+            let block = SKSpriteNode(color: body, size: CGSize(width: sw, height: sh))
+            block.position = CGPoint(x: dx, y: dy)
+            golem.addChild(block)
+        }
+        for dx: CGFloat in [-7, 7] {
+            let eye = SKSpriteNode(color: SKColor(red: 1.0, green: 0.45, blue: 0.15, alpha: 1),
+                                   size: CGSize(width: 5, height: 5))
+            eye.position = CGPoint(x: dx, y: 46)
+            golem.addChild(eye)
+            JuiceEngine.pulse(eye, scale: 1.3)
+        }
+        golem.position = pos
+        addGroundShadow(under: golem, width: 52, height: 12)
+        add(golem, to: scene)
     }
 
     /// Plaque de bois gravée par les équipes de mineurs.

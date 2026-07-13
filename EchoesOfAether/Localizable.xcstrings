@@ -518,6 +518,22 @@
         }
       }
     },
+    "combat.enemy.ashWraith": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gallery Wraith"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Spectre des galeries"
+          }
+        }
+      }
+    },
     "combat.enemy.beast": {
       "localizations": {
         "en": {

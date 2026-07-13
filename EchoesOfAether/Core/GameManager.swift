@@ -193,7 +193,8 @@ final class GameManager {
             phase = .forest
             inMines = true
             hud.objectiveText = String(localized: "hud.objective.mines")
-            world.switchToMines(in: scene)
+            world.switchToMines(in: scene, progress: player.minesProgress,
+                                goldTaken: player.minesGoldTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
             transition(to: .exploration)
@@ -2166,6 +2167,8 @@ final class GameManager {
             if player.minesProgress < 1 {
                 checkpoints.append((CGPoint(x: w*0.30, y: h*0.48), "hint.fight"))
             } else if player.minesProgress == 1 {
+                checkpoints.append((CGPoint(x: w*0.46, y: h*0.64), "hint.fight"))
+            } else if player.minesProgress == 2 {
                 checkpoints.append((CGPoint(x: w*0.62, y: h*0.68), "hint.fight"))
             }
             if !player.minesGoldTaken {
@@ -2544,6 +2547,20 @@ final class GameManager {
                       items: bramItems(), player: player) { [weak self] in
                 self?.transition(to: .exploration)
             }
+        case "dialogue":
+            // Audit des portraits : un locuteur de chaque famille.
+            transition(to: .dialogue)
+            dialogue.start([
+                .line(speaker: "Kael", text: "Audit portrait Kael."),
+                .line(speaker: "Lyra", text: "Audit portrait Lyra."),
+                .line(speaker: "Dorin", text: "Audit portrait Dorin."),
+                .line(speaker: "Sage", text: "Audit portrait Sage."),
+                .line(speaker: String(localized: "dialogue.boss.guardianName"),
+                      text: "Audit portrait Gardien."),
+                .line(speaker: "Eran", text: "Audit portrait Eran."),
+                .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+                      text: "Audit sans portrait (voix).")
+            ]) { [weak self] in self?.transition(to: .exploration) }
         default: break
         }
     }
@@ -2625,7 +2642,8 @@ final class GameManager {
             guard let self else { return }
             inMines = true
             hud.objectiveText = String(localized: "hud.objective.mines")
-            world.switchToMines(in: scene)
+            world.switchToMines(in: scene, progress: player.minesProgress,
+                                goldTaken: player.minesGoldTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
         } completion: { [weak self] in
@@ -2680,8 +2698,17 @@ final class GameManager {
             return true
         }
 
-        // Zone 2 : golem de cendre (après les mineurs)
+        // Zone 2 : spectres des galeries (après les mineurs)
         if player.minesProgress == 1,
+           point.distance(to: CGPoint(x: w * 0.46, y: h * 0.64)) < 75 {
+            startMinesCombat2()
+            return true
+        }
+
+        // Zone 3 : golem de cendre (fond de galerie).
+        // Garde questMines : les anciennes sauvegardes avaient progress==2
+        // pour « golem vaincu » — pas de re-fight.
+        if player.minesProgress == 2, player.questMines != .complete,
            point.distance(to: CGPoint(x: w * 0.62, y: h * 0.68)) < 75 {
             startMinesBossSequence()
             return true
@@ -2733,11 +2760,59 @@ final class GameManager {
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
             hud.objectiveText = String(localized: "hud.objective.mines")
+            refreshMinesBackdrop()
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.minesCombat1PostDialogue) { [weak self] in
                 self?.transition(to: .exploration)
             }
         }
+    }
+
+    /// Combat 2 : les spectres des galeries — trois morts qui creusent encore.
+    private func startMinesCombat2() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startMinesCombat2() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let wraith = String(localized: "combat.enemy.ashWraith")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(wraith) \(1)"),
+                          hp: 250, kind: .boneWalker, baseDamage: 38),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(wraith) \(2)"),
+                          hp: 250, kind: .boneWalker, baseDamage: 38),
+                EnemySpec(name: String(localized: "combat.enemy.ashMiner"),
+                          hp: 210, kind: .ghoul, baseDamage: 34)
+            ],
+            goldReward: 70,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.minesProgress = 2
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.mines")
+            refreshMinesBackdrop()
+            transition(to: .exploration)
+        }
+    }
+
+    /// Reconstruit le décor des mines après un combat (les monstres
+    /// vaincus disparaissent, la zone suivante s'allume).
+    private func refreshMinesBackdrop() {
+        guard let scene, inMines else { return }
+        let kaelPos = world.kael.position
+        world.switchToMines(in: scene, progress: player.minesProgress,
+                            goldTaken: player.minesGoldTaken)
+        world.kael.position = kaelPos
     }
 
     /// Boss des mines : dialogue d'approche puis golem de cendre.
@@ -2769,13 +2844,14 @@ final class GameManager {
             grantLevelUpDisplay(from: levelBefore)
             resonanceTotal += resonance
             player.gold += gold
-            player.minesProgress = 2
+            player.minesProgress = 3
             player.questMines = .complete
             syncGold()
             hud.questText = ""
             AudioEngine.shared.playQuestComplete()
             hud.resonanceValue = resonanceTotal
             hud.objectiveText = String(localized: "hud.objective.mines")
+            refreshMinesBackdrop()
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.minesBossPostDialogue) { [weak self] in
                 self?.transition(to: .exploration)

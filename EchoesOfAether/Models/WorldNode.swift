@@ -18,8 +18,9 @@ enum WorldNode {
         let sprite = SKSpriteNode(texture: textures[0])
         sprite.name = "kaelSprite"
         // Frames 108×60px @1x → 108×60pt dans SpriteKit.
-        // Scale 0.55 → ~59×33pt (cadre), personnage visible ~30×32pt.
-        sprite.setScale(0.55)
+        // Scale 0.85 → personnage visible ~46×50pt, à hauteur des PNJ
+        // chibi (48pt) — à 0.55 Kael paraissait plus petit qu'eux.
+        sprite.setScale(0.85)
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)   // ancre aux pieds
         sprite.position = CGPoint(x: 0, y: -16)        // centre vertical du node
         sprite.zPosition = 1

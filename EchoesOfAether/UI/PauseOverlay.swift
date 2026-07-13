@@ -108,6 +108,9 @@ final class PauseOverlay {
         buttonsReady = false
     }
 
+    /// Bouton B : reprendre la partie (équivalent de « Reprendre »).
+    func dismiss() { onResume?() }
+
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive, buttonsReady else { return isActive }
         let local = root.convert(point, from: scene)

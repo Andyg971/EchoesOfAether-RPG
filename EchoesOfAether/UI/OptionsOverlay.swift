@@ -169,6 +169,12 @@ final class OptionsOverlay {
         confirmDelete = false
     }
 
+    /// Bouton B : retour (équivalent du bouton Fermer).
+    func dismiss() {
+        AudioEngine.shared.playTap()
+        onClose?()
+    }
+
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive else { return false }
         let local = root.convert(point, from: scene)

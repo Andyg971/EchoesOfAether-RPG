@@ -141,6 +141,9 @@ final class QuestLogOverlay {
         }
     }
 
+    /// Bouton B : fermeture programmée (contrôles classiques).
+    func dismiss() { close() }
+
     private func close() {
         root.isHidden = true
         nodes.forEach { $0.removeFromParent() }

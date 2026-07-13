@@ -50,6 +50,9 @@ final class GameManager {
     // Plus fiable que taper précisément sur le PNJ/POI.
     private let actionButton = SKShapeNode()
     private let actionButtonLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    // Bouton « B » : annuler / passer / fermer (contrôles classiques).
+    private let bButton = SKShapeNode()
+    private let bButtonLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var nearbyActionPoint: CGPoint?   // POI courant (coords monde)
     private var padActive = false
     private var padOrigin = CGPoint.zero
@@ -324,10 +327,20 @@ final class GameManager {
             updateInteractionHint()
         }
 
-        // Bouton A visible uniquement en exploration
-        let showActionButton = state == .exploration && actionButton.parent != nil
+        // Bouton A : exploration (interagir) + dialogue (avancer).
+        // Bouton B : dialogue (passer) + overlays fermables.
+        let showActionButton = actionButton.parent != nil
+            && (state == .exploration || state == .dialogue)
         if actionButton.isHidden == showActionButton {
             actionButton.isHidden = !showActionButton
+        }
+        if state == .dialogue, actionButton.alpha < 0.99 {
+            actionButton.alpha = 1
+        }
+        let showBButton = bButton.parent != nil
+            && (dialogue.isActive || dismissableOverlayActive)
+        if bButton.isHidden == showBButton {
+            bButton.isHidden = !showBButton
         }
 
         minimapTimer += deltaTime
@@ -361,7 +374,7 @@ final class GameManager {
                            fill: SKColor(red: 0.10, green: 0.07, blue: 0.14, alpha: 0.88),
                            accent: PixelUI.gold)
         actionButton.position = CGPoint(x: scene.size.width - 58, y: 66)
-        actionButton.zPosition = 950
+        actionButton.zPosition = 1_950   // au-dessus des panneaux (dialogue 1000+)
         actionButton.isHidden = true
         scene.addChild(actionButton)
 
@@ -373,6 +386,48 @@ final class GameManager {
         actionButtonLabel.position = CGPoint(x: 0, y: -1)
         actionButtonLabel.zPosition = 951
         actionButton.addChild(actionButtonLabel)
+
+        // Bouton B : en dessous-gauche de A, accent cuivré (annuler/passer)
+        let bAccent = SKColor(red: 0.80, green: 0.42, blue: 0.30, alpha: 1)
+        PixelUI.stylePanel(bButton, size: CGSize(width: 46, height: 46),
+                           fill: SKColor(red: 0.13, green: 0.07, blue: 0.08, alpha: 0.88),
+                           accent: bAccent)
+        bButton.position = CGPoint(x: scene.size.width - 58, y: 128)
+        bButton.zPosition = 1_950
+        bButton.isHidden = true
+        scene.addChild(bButton)
+
+        bButtonLabel.text = "B"
+        bButtonLabel.fontSize = 27
+        bButtonLabel.fontColor = bAccent
+        bButtonLabel.verticalAlignmentMode = .center
+        bButtonLabel.horizontalAlignmentMode = .center
+        bButtonLabel.position = CGPoint(x: 0, y: -1)
+        bButtonLabel.zPosition = 951
+        bButton.addChild(bButtonLabel)
+    }
+
+    /// Un overlay fermable par B est-il ouvert ?
+    private var dismissableOverlayActive: Bool {
+        inventory.isActive || shop.isActive || lore.isActive
+            || questLog.isActive || pause.isActive || options.isActive
+    }
+
+    /// Bouton B : annule / passe / ferme selon le contexte.
+    private func handleBPress() {
+        HapticsEngine.light()
+        bButton.run(.sequence([
+            .scale(to: 0.90, duration: 0.06),
+            .scale(to: 1.0, duration: 0.10)
+        ]))
+        // Ordre : options au-dessus de pause ; dialogue en dernier.
+        if options.isActive { options.dismiss(); return }
+        if pause.isActive { pause.dismiss(); return }
+        if shop.isActive { shop.dismiss(); syncGold(); return }
+        if lore.isActive { lore.dismiss(); return }
+        if questLog.isActive { questLog.dismiss(); return }
+        if inventory.isActive { inventory.dismiss(); return }
+        if dialogue.isActive { dialogue.skipToEnd(); return }
     }
 
     /// Rafraîchit l'état visuel du bouton A selon le POI à portée.
@@ -513,19 +568,31 @@ final class GameManager {
         if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
         if TransitionManager.handleCreditsTap(at: point, in: scene) { return }
+        // Boutons A/B : prioritaires sur les panneaux (ils vivent au-dessus)
+        if !bButton.isHidden, point.distance(to: bButton.position) < 38 {
+            handleBPress()
+            return
+        }
+        if !actionButton.isHidden, point.distance(to: actionButton.position) < 42 {
+            actionButton.run(.sequence([
+                .scale(to: 0.90, duration: 0.06),
+                .scale(to: 1.0, duration: 0.10)
+            ]))
+            if state == .dialogue {
+                dialogue.advance()
+            } else if state == .exploration {
+                triggerNearbyAction(in: scene)
+            }
+            return
+        }
         if state == .inventory, inventory.handleTap(at: point, in: scene) { return }
         if state == .shop,      shop.handleTap(at: point, in: scene) { syncGold(); return }
         if state == .dialogue,   dialogue.handleTap(at: point, in: scene) { return }
         if state == .combat,     combat.handleTap(at: point, in: scene) { return }
         guard state == .exploration else { return }
         if hud.handleTap(at: point, in: scene) { return }
-        // Bouton A : zone de touch élargie (60×60 min Apple HIG déjà couvert)
-        if !actionButton.isHidden,
-           point.distance(to: actionButton.position) < 42 {
-            triggerNearbyAction(in: scene)
-            return
-        }
-        handleExplorationTap(point, in: scene)
+        // Contrôles classiques : le monde ne réagit plus au toucher.
+        // Interactions = bouton A uniquement ; déplacement = joystick.
     }
 
     // MARK: - Story Flow
@@ -2186,6 +2253,17 @@ final class GameManager {
             }
         } else {
             switch phase {
+            case .shrine:
+                if !player.bossDefeated {
+                    let gate = CGPoint(x: scene.size.width * 0.72,
+                                       y: scene.size.height * 0.50)
+                    if kaelPos.distance(to: gate) < 130 {
+                        hint = localizedHint("hint.fight")
+                        bubbleAction = .fight
+                        bubbleAnchor = CGPoint(x: gate.x, y: gate.y + 40)
+                        actionPoint = gate
+                    }
+                }
             case .village, .act2:
             let npcs: [(SKNode, String)] = [
                 (world.lyra,     "hint.talk"),
@@ -2271,11 +2349,12 @@ final class GameManager {
             }
         }
 
-        // Save crystal — affichage texte uniquement (icône cristal déjà visible)
+        // Save crystal — accessible via A (icône cristal déjà visible)
         if hint.isEmpty, let crystal = world.worldNode.childNode(withName: "saveCrystal")
                                         ?? scene.childNode(withName: "saveCrystal"),
            kaelPos.distance(to: crystal.position) < radius {
             hint = String(localized: "hint.saveCrystal")
+            actionPoint = crystal.position
         }
 
         hud.interactionHint = hint

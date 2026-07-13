@@ -278,6 +278,9 @@ final class LoreOverlay {
         }
     }
 
+    /// Bouton B : fermeture programmée (contrôles classiques).
+    func dismiss() { close() }
+
     private func close() {
         root.isHidden = true
         entryLabels.forEach { $0.removeFromParent() }

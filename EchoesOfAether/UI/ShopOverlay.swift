@@ -183,6 +183,9 @@ final class ShopOverlay {
         return row
     }
 
+    /// Bouton B : fermeture programmée (contrôles classiques).
+    func dismiss() { close() }
+
     private func close() {
         root.isHidden = true
         completion?()

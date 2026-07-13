@@ -7805,13 +7805,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap to proceed"
+            "value": "A · Enter"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toucher pour continuer"
+            "value": "A · Entrer"
           }
         }
       }
@@ -7821,13 +7821,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap to examine"
+            "value": "A · Examine"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toucher pour examiner"
+            "value": "A · Examiner"
           }
         }
       }
@@ -7837,13 +7837,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Exit"
+            "value": "A · Exit"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sortir"
+            "value": "A · Sortir"
           }
         }
       }
@@ -7853,13 +7853,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap to fight"
+            "value": "A · Fight"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toucher pour combattre"
+            "value": "A · Combattre"
           }
         }
       }
@@ -7869,13 +7869,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Potions / Herbs"
+            "value": "A · Potions / Herbs"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Potions / Herbes"
+            "value": "A · Potions / Herbes"
           }
         }
       }
@@ -7885,13 +7885,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Forge / Buy"
+            "value": "A · Forge / Buy"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Forger / Acheter"
+            "value": "A · Forger / Acheter"
           }
         }
       }
@@ -7901,13 +7901,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Rest"
+            "value": "A · Rest"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Se reposer"
+            "value": "A · Se reposer"
           }
         }
       }
@@ -7917,13 +7917,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Save Crystal"
+            "value": "A · Save"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cristal de sauvegarde"
+            "value": "A · Sauvegarder"
           }
         }
       }
@@ -7933,13 +7933,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap to open shop"
+            "value": "A · Shop"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toucher pour ouvrir la boutique"
+            "value": "A · Boutique"
           }
         }
       }
@@ -7949,13 +7949,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap to talk"
+            "value": "A · Talk"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Toucher pour parler"
+            "value": "A · Parler"
           }
         }
       }
@@ -9195,6 +9195,7 @@
       }
     },
     "menu.chooseSlot": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -11504,13 +11505,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap the ground to move Kael. He walks to the spot you tapped."
+            "value": "Use the joystick (bottom-left of the screen) to move Kael around the world."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touche le sol pour déplacer Kael. Il marche jusqu'au point indiqué."
+            "value": "Utilise le joystick (bas-gauche de l'écran) pour déplacer Kael dans le monde."
           }
         }
       }
@@ -11552,13 +11553,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Get close to a character: a bubble appears above them. Tap to talk, trade, or move the story forward."
+            "value": "Walk up to a character: a bubble appears above them. Press A to talk, trade or advance the story. B cancels or skips a conversation."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Approche-toi d'un personnage : une bulle apparaît au-dessus de lui. Touche-le pour discuter, commercer ou avancer l'histoire."
+            "value": "Approche-toi d'un personnage : une bulle apparaît au-dessus de lui. Appuie sur A pour discuter, commercer ou avancer l'histoire. B annule ou passe une conversation."
           }
         }
       }
@@ -11600,13 +11601,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tap a save crystal to record your progress and fully restore your HP."
+            "value": "Walk up to a save crystal and press A to record your progress and restore all your HP."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Touche un cristal de sauvegarde pour enregistrer ta progression et restaurer tous tes PV."
+            "value": "Approche-toi d'un cristal de sauvegarde et appuie sur A pour enregistrer ta progression et restaurer tous tes PV."
           }
         }
       }

@@ -74,7 +74,7 @@ final class DialogueSystem {
         bodyLabel.numberOfLines = 0
         root.addChild(bodyLabel)
 
-        continueIndicator.text = "▼"
+        continueIndicator.text = "A ▼"
         continueIndicator.fontSize = 9
         continueIndicator.fontColor = PixelUI.gold
         continueIndicator.horizontalAlignmentMode = .right
@@ -254,12 +254,15 @@ final class DialogueSystem {
         }
     }
 
+    /// Contrôles classiques : seuls les BOUTONS de choix répondent au
+    /// toucher. Le reste du panneau absorbe le tap sans rien faire —
+    /// l'avancée passe par le bouton A (`advance`), le skip par B.
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive, !root.isHidden else { return false }
 
         let localPoint = root.convert(point, from: scene)
 
-        // Phase 1 : joueur tape un choix → Kael parle
+        // Joueur tape un choix → Kael parle
         for node in choiceNodes where node.contains(localPoint) {
             guard let title = node.userData?["title"] as? String,
                   let npcSpeaker = node.userData?["responseSpeaker"] as? String,
@@ -280,7 +283,14 @@ final class DialogueSystem {
             return true
         }
 
-        // Phase 2 : Kael a parlé → NPC réagit
+        return true   // absorbe le tap : pas d'avancée tactile
+    }
+
+    /// Bouton A : avance d'une réplique (ou affiche la réaction du PNJ
+    /// après un choix). Sans effet quand des choix sont à l'écran.
+    func advance() {
+        guard isActive, choiceNodes.isEmpty else { return }
+
         if let npc = pendingNPC {
             pendingNPC = nil
             speakerLabel.text = npc.speaker
@@ -288,19 +298,35 @@ final class DialogueSystem {
             bodyLabel.text = npc.text
             continueIndicator.isHidden = false
             AudioEngine.shared.playTap()
-            layout(in: scene.size, safeBottom: safeBottom)
+            if let sceneRef = root.scene {
+                layout(in: sceneRef.size, safeBottom: safeBottom)
+            }
             index += 1
-            return true
+            return
         }
 
-        // Phase normale : avancer
         AudioEngine.shared.playTap()
         index += 1
         showCurrentStep()
         if let sceneRef = root.scene {
             layout(in: sceneRef.size, safeBottom: safeBottom)
         }
-        return true
+    }
+
+    /// Bouton B : passe les répliques jusqu'au prochain CHOIX (qui exige
+    /// une décision du joueur) ou jusqu'à la fin de la conversation.
+    func skipToEnd() {
+        guard isActive, choiceNodes.isEmpty else { return }
+        AudioEngine.shared.playTap()
+        pendingNPC = nil
+        while index < steps.count {
+            if case .choice = steps[index] { break }
+            index += 1
+        }
+        showCurrentStep()
+        if let sceneRef = root.scene {
+            layout(in: sceneRef.size, safeBottom: safeBottom)
+        }
     }
 
     private func showCurrentStep() {

@@ -23,6 +23,7 @@ final class DialogueSystem {
     private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var choiceNodes: [SKShapeNode] = []
+    private var choiceSelection = 0   // curseur sur les choix (A valide)
     private var steps: [DialogueStep] = []
     private var index = 0
     private var pendingNPC: (speaker: String, text: String)?
@@ -254,42 +255,66 @@ final class DialogueSystem {
         }
     }
 
-    /// Contrôles classiques : seuls les BOUTONS de choix répondent au
-    /// toucher. Le reste du panneau absorbe le tap sans rien faire —
-    /// l'avancée passe par le bouton A (`advance`), le skip par B.
+    /// Contrôles classiques : le panneau absorbe tout tap. Les choix se
+    /// naviguent au joystick (`moveChoiceSelection`) et se valident au
+    /// bouton A (`advance`/`confirmChoice`), B passe (`skipToEnd`).
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
-        guard isActive, !root.isHidden else { return false }
-
-        let localPoint = root.convert(point, from: scene)
-
-        // Joueur tape un choix → Kael parle
-        for node in choiceNodes where node.contains(localPoint) {
-            guard let title = node.userData?["title"] as? String,
-                  let npcSpeaker = node.userData?["responseSpeaker"] as? String,
-                  let npcText = node.userData?["response"] as? String else { continue }
-            if let chosenIndex = node.userData?["index"] as? Int {
-                lastChoiceIndex = chosenIndex
-                onChoiceSelected?(chosenIndex)
-            }
-            pendingNPC = (speaker: npcSpeaker, text: npcText)
-            clearChoices()
-            let kaelName = String(localized: "dialogue.kael")
-            speakerLabel.text = kaelName
-            applyPortrait(for: kaelName)
-            bodyLabel.text = title
-            continueIndicator.isHidden = false
-            AudioEngine.shared.playSelect()
-            layout(in: scene.size, safeBottom: safeBottom)
-            return true
-        }
-
-        return true   // absorbe le tap : pas d'avancée tactile
+        isActive && !root.isHidden
     }
 
-    /// Bouton A : avance d'une réplique (ou affiche la réaction du PNJ
-    /// après un choix). Sans effet quand des choix sont à l'écran.
+    /// Joystick haut/bas : déplace le curseur sur les choix.
+    func moveChoiceSelection(_ dy: Int) {
+        guard isActive, !choiceNodes.isEmpty else { return }
+        let count = choiceNodes.count
+        choiceSelection = (choiceSelection - dy + count) % count
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        refreshChoiceHighlight()
+    }
+
+    /// Le choix sélectionné est encadré d'or, les autres estompés.
+    private func refreshChoiceHighlight() {
+        for (i, node) in choiceNodes.enumerated() {
+            let selected = i == choiceSelection
+            node.strokeColor = selected
+                ? PixelUI.gold
+                : SKColor(red: 0.62, green: 0.48, blue: 0.90, alpha: 0.5)
+            node.alpha = selected ? 1.0 : 0.72
+            node.setScale(selected ? 1.02 : 1.0)
+        }
+    }
+
+    /// Bouton A pendant un choix : valide le choix sélectionné.
+    func confirmChoice() {
+        guard isActive, choiceNodes.indices.contains(choiceSelection) else { return }
+        let node = choiceNodes[choiceSelection]
+        guard let title = node.userData?["title"] as? String,
+              let npcSpeaker = node.userData?["responseSpeaker"] as? String,
+              let npcText = node.userData?["response"] as? String else { return }
+        if let chosenIndex = node.userData?["index"] as? Int {
+            lastChoiceIndex = chosenIndex
+            onChoiceSelected?(chosenIndex)
+        }
+        pendingNPC = (speaker: npcSpeaker, text: npcText)
+        clearChoices()
+        let kaelName = String(localized: "dialogue.kael")
+        speakerLabel.text = kaelName
+        applyPortrait(for: kaelName)
+        bodyLabel.text = title
+        continueIndicator.isHidden = false
+        AudioEngine.shared.playSelect()
+        if let sceneRef = root.scene {
+            layout(in: sceneRef.size, safeBottom: safeBottom)
+        }
+    }
+
+    var hasChoicesOnScreen: Bool { !choiceNodes.isEmpty }
+
+    /// Bouton A : valide le choix sélectionné s'il y en a, sinon avance
+    /// d'une réplique (ou affiche la réaction du PNJ après un choix).
     func advance() {
-        guard isActive, choiceNodes.isEmpty else { return }
+        guard isActive else { return }
+        guard choiceNodes.isEmpty else { confirmChoice(); return }
 
         if let npc = pendingNPC {
             pendingNPC = nil
@@ -416,6 +441,8 @@ final class DialogueSystem {
 
             JuiceEngine.popIn(button, delay: Double(offset) * 0.06)
         }
+        choiceSelection = 0
+        refreshChoiceHighlight()
     }
 
     private func layoutChoices(panelWidth: CGFloat, panelHeight: CGFloat) {

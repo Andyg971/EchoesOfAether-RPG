@@ -1330,13 +1330,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose a technique."
+            "value": "Stick: choose · A: confirm."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisis une technique."
+            "value": "Joystick : choisir · A : valider."
           }
         }
       }
@@ -1346,13 +1346,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choose a technique, then tap an enemy to target it."
+            "value": "Stick: choose · up: switch target · A: confirm."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Choisis une technique, puis touche un ennemi pour le cibler."
+            "value": "Joystick : choisir · haut : changer de cible · A : valider."
           }
         }
       }

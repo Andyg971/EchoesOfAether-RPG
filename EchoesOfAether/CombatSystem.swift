@@ -166,6 +166,11 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let actorTagLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let actionPanel = SKShapeNode()
     private var actionPanelWidth: CGFloat = 288
+    // Curseur de sélection (contrôles classiques, zéro tactile) :
+    // rangée 0 = techniques, rangée 1 = BOOST/POTION, rangée 2 = cible.
+    private var menuRow = 0
+    private var menuCol = 0
+    private let selectionCursor = SKShapeNode()
 
     /// État complet par ennemi : stats, tactique (faiblesses/bouclier)
     /// et nœuds UI (sprite, minibar HP).
@@ -408,6 +413,9 @@ private func startPlayerTurn() {
                    color: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 1))
     refreshTurnOrder(currentEnemyIndex: nil)
     layoutActionMenu()
+    menuRow = 0
+    menuCol = 0
+    updateSelectionCursor()
     pulseActionPanel()
     updateVisuals()
     runFXDemoIfNeeded()
@@ -426,6 +434,9 @@ private func startLyraTurn() {
                    color: SKColor(red: 0.50, green: 0.95, blue: 0.72, alpha: 1))
     refreshTurnOrder(currentEnemyIndex: nil)
     layoutActionMenu()
+    menuRow = 0
+    menuCol = 0
+    updateSelectionCursor()
     pulseActionPanel()
     updateVisuals()
     runFXDemoIfNeeded()
@@ -646,59 +657,11 @@ private func handleEnemyDeath(_ e: EnemyState) {
     retargetIfNeeded()
 }
 
+/// Contrôles classiques : le combat ne réagit plus au toucher.
+/// Navigation au joystick (`menuNav`), validation au bouton A
+/// (`menuConfirm`). Le tap est absorbé pour ne pas fuir au monde.
 func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
     guard isActive else { return false }
-    let localPoint = root.convert(point, from: scene)
-    let ready = phase == .playerTurn
-
-    // Sélection de cible : toucher un ennemi vivant le cible.
-    if ready, enemies.count > 1 {
-        for (i, e) in enemies.enumerated()
-        where e.combatant.isAlive && i != targetIndex {
-            if localPoint.distance(to: e.homePosition) < 70 {
-                targetIndex = i
-                HapticsEngine.light()
-                AudioEngine.shared.playStep()
-                updateVisuals()
-                return true
-            }
-        }
-    }
-
-    if boostButton.contains(localPoint), ready {
-        applyBoost()
-        return true
-    }
-    if potionButton.contains(localPoint), ready, (_player?.potions ?? 0) > 0 {
-        perform(.potion)
-        return true
-    }
-    // Seuls les boutons du kit de l'acteur courant sont actifs.
-    if attackButton.contains(localPoint), ready, !attackButton.isHidden {
-        perform(.attack)
-        return true
-    }
-    if blackSlashButton.contains(localPoint), ready, !blackSlashButton.isHidden {
-        perform(.blackSlash)
-        return true
-    }
-    if fireButton.contains(localPoint), ready, !fireButton.isHidden {
-        perform(.spell(.ember))
-        return true
-    }
-    if iceButton.contains(localPoint), ready, !iceButton.isHidden {
-        perform(.spell(.frost))
-        return true
-    }
-    if lightningButton.contains(localPoint), ready, !lightningButton.isHidden {
-        perform(.spell(.thunder))
-        return true
-    }
-    if healButton.contains(localPoint), ready, !healButton.isHidden {
-        perform(.spell(.mend))
-        return true
-    }
-
     return true
 }
 
@@ -2305,6 +2268,93 @@ private func setupButtons(scene: SKScene) {
               fill: SKColor(red: 0.06, green: 0.18, blue: 0.11, alpha: 1), stroke: SKColor(red: 0.38, green: 0.75, blue: 0.48, alpha: 1), fontSize: 12)
 
     layoutActionMenu()
+
+    // Curseur : cadre doré posé sur le bouton sélectionné
+    PixelUI.stylePanel(selectionCursor, size: CGSize(width: 84, height: 36),
+                       fill: .clear, accent: PixelUI.gold)
+    selectionCursor.zPosition = 866
+    root.addChild(selectionCursor)
+    updateSelectionCursor()
+}
+
+/// Boutons de la rangée courante du curseur.
+private var currentMenuRowButtons: [SKShapeNode] {
+    menuRow == 1 ? [boostButton, potionButton] : currentActorButtons
+}
+
+/// Replace le cadre doré sur le bouton sélectionné (rangée cible :
+/// le chevron au-dessus de l'ennemi sert déjà de curseur).
+private func updateSelectionCursor() {
+    if menuRow == 2 {
+        selectionCursor.isHidden = true
+        return
+    }
+    let row = currentMenuRowButtons
+    guard !row.isEmpty else { selectionCursor.isHidden = true; return }
+    menuCol = min(menuCol, row.count - 1)
+    let button = row[menuCol]
+    let size = button.frame.size
+    PixelUI.stylePanel(selectionCursor,
+                       size: CGSize(width: size.width + 6, height: size.height + 6),
+                       fill: .clear, accent: PixelUI.gold)
+    selectionCursor.position = button.position
+    selectionCursor.isHidden = phase != .playerTurn
+    selectionCursor.removeAllActions()
+    JuiceEngine.pulse(selectionCursor, scale: 1.04)
+}
+
+/// Navigation joystick dans le menu de combat.
+/// dy : +1 monte (techniques → BOOST → cible), -1 descend.
+func menuNav(dx: Int, dy: Int) {
+    guard phase == .playerTurn else { return }
+    if dy != 0 {
+        let maxRow = aliveEnemies.count > 1 ? 2 : 1
+        menuRow = min(max(menuRow + dy, 0), maxRow)
+        menuCol = min(menuCol, currentMenuRowButtons.count - 1)
+    } else if dx != 0 {
+        if menuRow == 2 {
+            cycleTarget(direction: dx)
+        } else {
+            let count = currentMenuRowButtons.count
+            menuCol = (menuCol + dx + count) % count
+        }
+    }
+    HapticsEngine.light()
+    AudioEngine.shared.playStep()
+    updateSelectionCursor()
+    updateVisuals()
+}
+
+/// Bouton A : active le bouton sélectionné (ou valide la cible).
+func menuConfirm() {
+    guard phase == .playerTurn else { return }
+    if menuRow == 2 {
+        // Cible choisie : redescend sur les techniques
+        menuRow = 0
+        updateSelectionCursor()
+        return
+    }
+    let row = currentMenuRowButtons
+    guard row.indices.contains(menuCol) else { return }
+    let button = row[menuCol]
+    if button === boostButton { applyBoost(); return }
+    if button === potionButton {
+        if (_player?.potions ?? 0) > 0 { perform(.potion) }
+        return
+    }
+    if button === attackButton { perform(.attack); return }
+    if button === blackSlashButton { perform(.blackSlash); return }
+    if button === fireButton { perform(.spell(.ember)); return }
+    if button === iceButton { perform(.spell(.frost)); return }
+    if button === lightningButton { perform(.spell(.thunder)); return }
+    if button === healButton { perform(.spell(.mend)); return }
+}
+
+/// Fait tourner la cible parmi les ennemis vivants.
+private func cycleTarget(direction: Int) {
+    let alive = enemies.indices.filter { enemies[$0].combatant.isAlive }
+    guard alive.count > 1, let cur = alive.firstIndex(of: targetIndex) else { return }
+    targetIndex = alive[(cur + direction + alive.count) % alive.count]
 }
 
 /// Boutons de techniques de l'acteur courant.
@@ -2523,6 +2573,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         for button in [attackButton, blackSlashButton, fireButton, iceButton, lightningButton, healButton] {
             button.alpha = ready ? 1 : 0.36
         }
+        selectionCursor.isHidden = !ready || menuRow == 2
         boostButton.alpha = (ready && playerBP > 0 && queuedBoost < 3) ? 1 : 0.34
         let potionCount = _player?.potions ?? 0
         potionButton.alpha = (ready && potionCount > 0) ? 1 : 0.34

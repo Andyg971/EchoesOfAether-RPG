@@ -111,6 +111,55 @@ final class PauseOverlay {
     /// Bouton B : reprendre la partie (équivalent de « Reprendre »).
     func dismiss() { onResume?() }
 
+    // Curseur (contrôles classiques) sur les 4 boutons du menu pause.
+    private var selection = 0
+    private let buttonNames = ["pauseResume", "pauseSave", "pauseOptions", "pauseMenu"]
+
+    /// Joystick haut/bas : déplace le curseur.
+    func moveSelection(_ dy: Int) {
+        guard isActive, buttonsReady else { return }
+        selection = (selection - dy + buttonNames.count) % buttonNames.count
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        refreshSelectionHighlight()
+    }
+
+    /// Bouton A : active le bouton sélectionné.
+    func confirmSelection() {
+        guard isActive, buttonsReady else { return }
+        switch buttonNames[selection] {
+        case "pauseResume": onResume?()
+        case "pauseSave": onSave?()
+        case "pauseOptions": onOptions?()
+        case "pauseMenu": onMainMenu?()
+        default: break
+        }
+    }
+
+    func resetSelection() {
+        selection = 0
+        refreshSelectionHighlight()
+    }
+
+    private func refreshSelectionHighlight() {
+        for (i, name) in buttonNames.enumerated() {
+            guard let btn = root.childNode(withName: name) as? SKShapeNode else { continue }
+            // Mémorise la bordure d'origine pour la restaurer à la désélection
+            if btn.userData?["origStroke"] == nil {
+                btn.userData = btn.userData ?? [:]
+                btn.userData?["origStroke"] = btn.strokeColor
+            }
+            let selected = i == selection
+            btn.lineWidth = selected ? 3 : 2
+            btn.setScale(selected ? 1.04 : 1.0)
+            if selected {
+                btn.strokeColor = PixelUI.gold
+            } else if let orig = btn.userData?["origStroke"] as? SKColor {
+                btn.strokeColor = orig
+            }
+        }
+    }
+
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive, buttonsReady else { return isActive }
         let local = root.convert(point, from: scene)

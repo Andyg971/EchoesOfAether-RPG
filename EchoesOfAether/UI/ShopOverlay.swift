@@ -18,6 +18,7 @@ final class ShopOverlay {
     private var itemNodes: [SKNode] = []
 
     private var items: [ShopItem] = []
+    private var selection = 0          // curseur (contrôles classiques)
     private var playerState: PlayerState?
     private var completion: (() -> Void)?
 
@@ -71,35 +72,55 @@ final class ShopOverlay {
         self.playerState = player
         self.completion = completion
         titleLabel.text = title
+        selection = 0
         root.isHidden = false
         AudioEngine.shared.playShopOpen()
         refresh()
     }
 
-    func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
-        guard isActive else { return false }
-        let local = root.convert(point, from: scene)
+    /// Joystick haut/bas : déplace le curseur sur les articles.
+    func moveSelection(_ dy: Int) {
+        guard isActive, !items.isEmpty else { return }
+        selection = (selection - dy + items.count) % items.count
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        refreshSelectionHighlight()
+    }
 
-        if closeButton.contains(local) {
-            close()
-            return true
+    /// Bouton A : achète l'article sélectionné (si achetable).
+    func confirmSelection() {
+        guard isActive, items.indices.contains(selection),
+              let player = playerState else { return }
+        let item = items[selection]
+        guard item.canBuy(player), player.gold >= item.price else {
+            HapticsEngine.error()
+            return
         }
+        player.gold -= item.price
+        item.onBuy(player)
+        AudioEngine.shared.playPurchase()
+        refresh()
+    }
 
+    private func refreshSelectionHighlight() {
         for node in itemNodes {
-            guard node.contains(local),
-                  let idx = node.userData?["index"] as? Int,
-                  let player = playerState else { continue }
-            let item = items[idx]
-            if item.canBuy(player) && player.gold >= item.price {
-                player.gold -= item.price
-                item.onBuy(player)
-                AudioEngine.shared.playPurchase()
-                refresh()
+            guard let row = node as? SKShapeNode,
+                  let idx = row.userData?["index"] as? Int else { continue }
+            let selected = idx == selection
+            row.lineWidth = selected ? 2.5 : 1.5
+            if selected {
+                row.strokeColor = PixelUI.gold
+                row.setScale(1.02)
+            } else {
+                row.setScale(1.0)
             }
-            return true
         }
+    }
 
-        return true
+    /// Contrôles classiques : le panneau absorbe le tap. Navigation au
+    /// joystick, achat au bouton A, fermeture au bouton B.
+    func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
+        isActive
     }
 
     // MARK: - Private
@@ -123,6 +144,8 @@ final class ShopOverlay {
         guard let player = playerState else { return }
         goldLabel.text = String(localized: "shop.gold \(player.gold)")
         buildItemList(player: player)
+        selection = min(selection, max(0, items.count - 1))
+        refreshSelectionHighlight()
     }
 
     private func buildItemList(player: PlayerState) {

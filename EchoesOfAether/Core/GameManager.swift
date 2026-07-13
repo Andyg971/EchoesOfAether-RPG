@@ -327,14 +327,16 @@ final class GameManager {
             updateInteractionHint()
         }
 
-        // Bouton A : exploration (interagir) + dialogue (avancer).
+        // Bouton A : exploration (interagir), dialogue (avancer/valider),
+        // combat (activer la sélection), boutique et pause (valider).
         // Bouton B : dialogue (passer) + overlays fermables.
         let showActionButton = actionButton.parent != nil
-            && (state == .exploration || state == .dialogue)
+            && (state == .exploration || state == .dialogue
+                || state == .combat || state == .shop || pause.isActive)
         if actionButton.isHidden == showActionButton {
             actionButton.isHidden = !showActionButton
         }
-        if state == .dialogue, actionButton.alpha < 0.99 {
+        if state != .exploration, actionButton.alpha < 0.99 {
             actionButton.alpha = 1
         }
         let showBButton = bButton.parent != nil
@@ -349,8 +351,12 @@ final class GameManager {
             updateMinimap()
         }
 
-        // Déplacement continu au joystick virtuel
-        updatePadMovement(deltaTime: deltaTime)
+        // Déplacement continu au joystick virtuel (exploration)
+        if state == .exploration {
+            updatePadMovement(deltaTime: deltaTime)
+        } else {
+            updateMenuNavigation()
+        }
 
         // Lyra accompagne Kael dans les zones du pacte (tant qu'elle vit)
         if state == .exploration || state == .dialogue,
@@ -460,12 +466,43 @@ final class GameManager {
         handleExplorationTap(screenPoint, in: scene)
     }
 
+    // MARK: - Navigation curseur (joystick → menus)
+
+    private var menuNavLatched = false
+
+    /// Convertit le joystick en pas discrets (haut/bas/gauche/droite)
+    /// et les route vers le menu actif. Un « flick » = un pas.
+    private func updateMenuNavigation() {
+        let v = padVector
+        let magnitude = max(abs(v.dx), abs(v.dy))
+        if menuNavLatched {
+            if magnitude < 0.30 { menuNavLatched = false }
+            return
+        }
+        guard magnitude > 0.60 else { return }
+        menuNavLatched = true
+        let dx = abs(v.dx) > abs(v.dy) ? (v.dx > 0 ? 1 : -1) : 0
+        let dy = dx == 0 ? (v.dy > 0 ? 1 : -1) : 0
+        routeMenuNav(dx: dx, dy: dy)
+    }
+
+    private func routeMenuNav(dx: Int, dy: Int) {
+        if options.isActive { return }              // sliders : tactile assumé
+        if pause.isActive { pause.moveSelection(dy); return }
+        if shop.isActive { shop.moveSelection(dy); return }
+        if lore.isActive { if dx != 0 { lore.navigateTabs(dx) }; return }
+        if state == .combat { combat.menuNav(dx: dx, dy: dy); return }
+        if dialogue.isActive { dialogue.moveChoiceSelection(dy); return }
+    }
+
     // MARK: - Joystick virtuel (flottant, quart bas-gauche)
 
     /// Le joueur pose le doigt en bas à gauche : le pad apparaît là.
     /// Retourne true si le touch est capturé par le pad.
     func padTouchBegan(at point: CGPoint, in scene: SKScene) -> Bool {
-        guard state == .exploration,
+        // Exploration : déplacement. Menus (combat, dialogue, boutique,
+        // pause…) : le même joystick navigue le curseur de sélection.
+        guard state != .transition,
               point.x < scene.size.width * 0.42,
               point.y < scene.size.height * 0.60 else { return false }
         if padBase.parent == nil {
@@ -518,10 +555,7 @@ final class GameManager {
 
     private func updatePadMovement(deltaTime: TimeInterval) {
         guard padActive, state == .exploration, deltaTime > 0,
-              padVector != .zero, let scene else {
-            if padActive, state != .exploration { padTouchEnded() }
-            return
-        }
+              padVector != .zero, let scene else { return }
         let speed: CGFloat = 215
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let current = world.kael.position
@@ -578,7 +612,14 @@ final class GameManager {
                 .scale(to: 0.90, duration: 0.06),
                 .scale(to: 1.0, duration: 0.10)
             ]))
-            if state == .dialogue {
+            if pause.isActive {
+                pause.confirmSelection()
+            } else if shop.isActive {
+                shop.confirmSelection()
+                syncGold()
+            } else if state == .combat {
+                combat.menuConfirm()
+            } else if dialogue.isActive {
                 dialogue.advance()
             } else if state == .exploration {
                 triggerNearbyAction(in: scene)
@@ -2122,6 +2163,7 @@ final class GameManager {
         guard state == .exploration || state == .dialogue else { return }
         guard let scene else { return }
         pause.show(in: scene)
+        pause.resetSelection()
     }
 
     private func closePause() {

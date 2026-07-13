@@ -281,6 +281,17 @@ final class LoreOverlay {
     /// Bouton B : fermeture programmée (contrôles classiques).
     func dismiss() { close() }
 
+    /// Joystick gauche/droite : bascule Chroniques ↔ Bestiaire.
+    func navigateTabs(_ dx: Int) {
+        guard isActive else { return }
+        let target: Tab = dx > 0 ? .bestiary : .chronicles
+        guard tab != target else { return }
+        tab = target
+        HapticsEngine.light()
+        AudioEngine.shared.playSelect()
+        buildContent()
+    }
+
     private func close() {
         root.isHidden = true
         entryLabels.forEach { $0.removeFromParent() }

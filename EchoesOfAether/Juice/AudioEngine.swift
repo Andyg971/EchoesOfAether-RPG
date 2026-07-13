@@ -66,11 +66,16 @@ final class AudioEngine {
     /// Ambiance musicale par zone. Chaque cas a sa propre boucle pré-rendue
     /// (drone + harmoniques + battement). Aucune dépendance audio externe.
     enum MusicMood: CaseIterable {
-        case calm        // village / éveil — la mineur doux, apaisé
-        case tense       // forêt corrompue — plus grave, dissonance légère
-        case sacred      // sanctuaire — quinte ouverte, lumineux
-        case ruins       // ruines / Acte II / Kael déchu — sombre, lent
-        case voidThreshold // Acte III, le Seuil — très grave, throb inquiétant
+        case calm        // village / éveil
+        case tense       // forêt corrompue
+        case sacred      // sanctuaire
+        case ruins       // ruines / Acte II / Kael déchu
+        case voidThreshold // Acte III, le Seuil
+        case mines       // galeries de Cendreval
+        case inn         // intérieurs (auberge, échoppes)
+        case combat      // combat standard
+        case boss        // combat de boss
+        case title       // écran-titre
 
         /// Ambiance associée à une phase de jeu.
         static func forPhase(_ phase: GamePhase) -> MusicMood {
@@ -80,6 +85,34 @@ final class AudioEngine {
             case .shrine:                    return .sacred
             case .act2, .ruins, .fallen:     return .ruins
             case .act3:                      return .voidThreshold
+            }
+        }
+
+        /// Piste CC0 embarquée (OpenGameArt) ; nil = boucle synthétisée.
+        var fileName: String? {
+            switch self {
+            case .calm:          return "music_village"
+            case .tense:         return "music_forest"
+            case .sacred:        return "music_title"
+            case .ruins:         return "music_mines"
+            case .voidThreshold: return nil
+            case .mines:         return "music_mines"
+            case .inn:           return "music_inn"
+            case .combat:        return "music_combat"
+            case .boss:          return "music_boss"
+            case .title:         return "music_title"
+            }
+        }
+
+        /// Mood de repli pour la synthèse des cas sans piste dédiée.
+        var synthFallback: MusicMood {
+            switch self {
+            case .mines: return .ruins
+            case .inn: return .calm
+            case .combat: return .tense
+            case .boss: return .voidThreshold
+            case .title: return .sacred
+            default: return self
             }
         }
     }
@@ -248,8 +281,46 @@ final class AudioEngine {
             buffers[sound] = renderSFX(sound)
         }
         for mood in MusicMood.allCases {
-            musicBuffers[mood] = renderMusicLoop(mood)
+            // Vraie musique CC0 embarquée quand disponible ; sinon la
+            // boucle synthétisée historique.
+            musicBuffers[mood] = loadMusicFile(for: mood)
+                ?? renderMusicLoop(mood.synthFallback)
         }
+    }
+
+    /// Charge une piste embarquée dans un buffer PCM au format du moteur
+    /// (conversion AVAudioConverter si le fichier diffère).
+    private func loadMusicFile(for mood: MusicMood) -> AVAudioPCMBuffer? {
+        guard let name = mood.fileName,
+              let url = Bundle.main.url(forResource: name, withExtension: "m4a"),
+              let file = try? AVAudioFile(forReading: url) else { return nil }
+
+        let inFormat = file.processingFormat
+        let frames = AVAudioFrameCount(file.length)
+        guard frames > 0,
+              let inBuffer = AVAudioPCMBuffer(pcmFormat: inFormat,
+                                              frameCapacity: frames) else { return nil }
+        do { try file.read(into: inBuffer) } catch { return nil }
+
+        if inFormat == format { return inBuffer }
+
+        guard let converter = AVAudioConverter(from: inFormat, to: format) else { return nil }
+        let ratio = format.sampleRate / inFormat.sampleRate
+        let outFrames = AVAudioFrameCount(Double(frames) * ratio) + 1024
+        guard let outBuffer = AVAudioPCMBuffer(pcmFormat: format,
+                                               frameCapacity: outFrames) else { return nil }
+        var fed = false
+        var error: NSError?
+        converter.convert(to: outBuffer, error: &error) { _, status in
+            if fed {
+                status.pointee = .endOfStream
+                return nil
+            }
+            fed = true
+            status.pointee = .haveData
+            return inBuffer
+        }
+        return error == nil ? outBuffer : nil
     }
 
     /// Crée un buffer stéréo et le remplit via une fonction d'échantillon
@@ -358,6 +429,9 @@ final class AudioEngine {
 
     private func config(for mood: MusicMood) -> MusicConfig {
         switch mood {
+        case .mines, .inn, .combat, .boss, .title:
+            // Moods à piste CC0 : synthèse de repli si le fichier manque.
+            return config(for: mood.synthFallback)
         case .calm:
             // La mineur ouvert, doux — identique à l'ancienne ambiance village.
             return MusicConfig(duration: 8, root: 110, fifth: 164.81,

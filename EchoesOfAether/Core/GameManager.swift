@@ -196,6 +196,7 @@ final class GameManager {
             phase = .forest
             inMines = true
             hud.objectiveText = String(localized: "hud.objective.mines")
+            AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
@@ -880,6 +881,7 @@ final class GameManager {
 
     private func enterHouse(_ kind: HouseInteriorKind, in scene: SKScene) {
         activeInterior = kind
+        AudioEngine.shared.setMood(.inn)
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -891,6 +893,7 @@ final class GameManager {
     }
 
     private func leaveHouse(in scene: SKScene) {
+        AudioEngine.shared.setMood(.forPhase(phase))
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -2776,6 +2779,7 @@ final class GameManager {
             guard let self else { return }
             inMines = true
             hud.objectiveText = String(localized: "hud.objective.mines")
+            AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
@@ -2803,6 +2807,7 @@ final class GameManager {
             guard let self else { return }
             inMines = false
             hud.objectiveText = String(localized: "hud.objective.forest")
+            AudioEngine.shared.setMood(.forPhase(phase))
             world.switchToForest(in: scene)
         } completion: { [weak self] in
             guard let self, let scene = self.scene else { return }

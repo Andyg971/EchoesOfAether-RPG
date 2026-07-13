@@ -14,6 +14,9 @@ final class MainMenuScene: SKScene {
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.035, green: 0.030, blue: 0.055, alpha: 1)
+        // Thème d'écran-titre (CC0 « A Legend Will Rise »)
+        AudioEngine.shared.start()
+        AudioEngine.shared.setMood(.title)
         // Migration de l'ancienne sauvegarde unique vers le slot 1 (une fois).
         SaveManager.migrateLegacyIfNeeded()
         buildUI()

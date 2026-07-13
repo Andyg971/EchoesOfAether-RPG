@@ -44,6 +44,13 @@
 		6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */; };
 		6D7ECC41B8A741B0A0000001 /* InteractionBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */; };
 		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
+		6DAA0002B8A741B0A0000001 /* music_village.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0001B8A741B0A0000001 /* music_village.m4a */; };
+		6DAA0102B8A741B0A0000001 /* music_forest.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0101B8A741B0A0000001 /* music_forest.m4a */; };
+		6DAA0202B8A741B0A0000001 /* music_mines.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0201B8A741B0A0000001 /* music_mines.m4a */; };
+		6DAA0302B8A741B0A0000001 /* music_combat.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0301B8A741B0A0000001 /* music_combat.m4a */; };
+		6DAA0402B8A741B0A0000001 /* music_boss.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0401B8A741B0A0000001 /* music_boss.m4a */; };
+		6DAA0502B8A741B0A0000001 /* music_inn.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0501B8A741B0A0000001 /* music_inn.m4a */; };
+		6DAA0602B8A741B0A0000001 /* music_title.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0601B8A741B0A0000001 /* music_title.m4a */; };
 		6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFF02B8A741B0A0000001 /* Strings+References.swift */; };
 		71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
@@ -101,6 +108,13 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArtSprites.swift; sourceTree = "<group>"; };
 		6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionBubble.swift; sourceTree = "<group>"; };
 		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6DAA0001B8A741B0A0000001 /* music_village.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_village.m4a; sourceTree = "<group>"; };
+		6DAA0101B8A741B0A0000001 /* music_forest.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_forest.m4a; sourceTree = "<group>"; };
+		6DAA0201B8A741B0A0000001 /* music_mines.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_mines.m4a; sourceTree = "<group>"; };
+		6DAA0301B8A741B0A0000001 /* music_combat.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_combat.m4a; sourceTree = "<group>"; };
+		6DAA0401B8A741B0A0000001 /* music_boss.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_boss.m4a; sourceTree = "<group>"; };
+		6DAA0501B8A741B0A0000001 /* music_inn.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_inn.m4a; sourceTree = "<group>"; };
+		6DAA0601B8A741B0A0000001 /* music_title.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_title.m4a; sourceTree = "<group>"; };
 		6D7EFF02B8A741B0A0000001 /* Strings+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strings+References.swift"; sourceTree = "<group>"; };
 		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
@@ -161,6 +175,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */,
 				6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */,
 				6D7EDD01B8A741B0A0000001 /* Assets.xcassets */,
+				6DAAFF00B8A741B0A0000001 /* Music */,
 				6D7EFF00B8A741B0A0000001 /* Resources */,
 			);
 			path = EchoesOfAether;
@@ -280,6 +295,21 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			name = iOS;
 			sourceTree = "<group>";
 		};
+		6DAAFF00B8A741B0A0000001 /* Music */ = {
+			isa = PBXGroup;
+			children = (
+				6DAA0001B8A741B0A0000001 /* music_village.m4a */,
+				6DAA0101B8A741B0A0000001 /* music_forest.m4a */,
+				6DAA0201B8A741B0A0000001 /* music_mines.m4a */,
+				6DAA0301B8A741B0A0000001 /* music_combat.m4a */,
+				6DAA0401B8A741B0A0000001 /* music_boss.m4a */,
+				6DAA0501B8A741B0A0000001 /* music_inn.m4a */,
+				6DAA0601B8A741B0A0000001 /* music_title.m4a */,
+			);
+			name = Music;
+			path = Resources/Music;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -365,6 +395,13 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			files = (
 				6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */,
 				6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */,
+				6DAA0002B8A741B0A0000001 /* music_village.m4a in Resources */,
+				6DAA0102B8A741B0A0000001 /* music_forest.m4a in Resources */,
+				6DAA0202B8A741B0A0000001 /* music_mines.m4a in Resources */,
+				6DAA0302B8A741B0A0000001 /* music_combat.m4a in Resources */,
+				6DAA0402B8A741B0A0000001 /* music_boss.m4a in Resources */,
+				6DAA0502B8A741B0A0000001 /* music_inn.m4a in Resources */,
+				6DAA0602B8A741B0A0000001 /* music_title.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

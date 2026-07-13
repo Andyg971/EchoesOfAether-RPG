@@ -215,6 +215,8 @@ private var goldReward = 0
 
     // Audit visuel des sorts (--fx-demo)
     private var fxDemoIndex = 0
+    // Ambiance musicale à restaurer en quittant l'arène
+    private var moodBeforeCombat: AudioEngine.MusicMood = .calm
 
     // Combo
     private var comboCount = 0
@@ -294,6 +296,9 @@ self.comboCount = 0
 self.phase = .intro
         self.completion = completion
         self._player = player
+        // Musique : thème de combat (ou de boss), restaurée à la fin.
+        moodBeforeCombat = AudioEngine.shared.currentMood
+        AudioEngine.shared.setMood(boss != nil ? .boss : .combat)
         // Bestiaire : toute espèce affrontée est consignée.
         player.bestiarySeen.formUnion(enemySpecs.prefix(3).map(\.kind.bestiaryID))
 
@@ -700,6 +705,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
 
     private func handleDefeat() {
         phase = .finished
+        AudioEngine.shared.setMood(moodBeforeCombat)
         statusLabel.text = String(localized: "combat.status.defeat")
         attackButton.alpha = 0.3
         blackSlashButton.alpha = 0.3
@@ -1491,6 +1497,7 @@ private func showComboIfNeeded() {
             p.gainXP(xpReward)
         }
 
+        AudioEngine.shared.setMood(moodBeforeCombat)
         let delay: TimeInterval = isBoss ? 1.8 : 0.8
         root.run(.sequence([
             .wait(forDuration: delay),

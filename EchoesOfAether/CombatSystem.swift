@@ -160,6 +160,8 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var actorSprite: SKNode? { actingLyra ? lyraSprite : kaelSprite }
     // Étiquette de l'acteur courant sur le panneau d'actions
     private let actorTagLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private let actionPanel = SKShapeNode()
+    private var actionPanelWidth: CGFloat = 288
 
     /// État complet par ennemi : stats, tactique (faiblesses/bouclier)
     /// et nœuds UI (sprite, minibar HP).
@@ -353,6 +355,7 @@ private func startPlayerTurn() {
     showTurnBanner(String(localized: "combat.turn.player"),
                    color: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 1))
     refreshTurnOrder(currentEnemyIndex: nil)
+    layoutActionMenu()
     pulseActionPanel()
     updateVisuals()
     runFXDemoIfNeeded()
@@ -370,6 +373,7 @@ private func startLyraTurn() {
     showTurnBanner(String(localized: "combat.turn.lyra"),
                    color: SKColor(red: 0.50, green: 0.95, blue: 0.72, alpha: 1))
     refreshTurnOrder(currentEnemyIndex: nil)
+    layoutActionMenu()
     pulseActionPanel()
     updateVisuals()
     runFXDemoIfNeeded()
@@ -379,7 +383,8 @@ private func startLyraTurn() {
 /// feu → soin → glace → foudre à chaque tour du joueur.
 private func runFXDemoIfNeeded() {
     guard CommandLine.arguments.contains("--fx-demo") else { return }
-    let order: [CombatSpell] = [.ember, .mend, .frost, .thunder]
+    // Kits séparés : Kael caste feu, Lyra alterne glace/soin/foudre.
+    let order: [CombatSpell] = actingLyra ? [.frost, .mend, .thunder] : [.ember]
     let spell = order[fxDemoIndex % order.count]
     fxDemoIndex += 1
     root.run(.sequence([
@@ -604,27 +609,28 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         perform(.potion)
         return true
     }
-    if attackButton.contains(localPoint), ready {
+    // Seuls les boutons du kit de l'acteur courant sont actifs.
+    if attackButton.contains(localPoint), ready, !attackButton.isHidden {
         perform(.attack)
         return true
     }
-    if blackSlashButton.contains(localPoint), ready {
+    if blackSlashButton.contains(localPoint), ready, !blackSlashButton.isHidden {
         perform(.blackSlash)
         return true
     }
-    if fireButton.contains(localPoint), ready {
+    if fireButton.contains(localPoint), ready, !fireButton.isHidden {
         perform(.spell(.ember))
         return true
     }
-    if iceButton.contains(localPoint), ready {
+    if iceButton.contains(localPoint), ready, !iceButton.isHidden {
         perform(.spell(.frost))
         return true
     }
-    if lightningButton.contains(localPoint), ready {
+    if lightningButton.contains(localPoint), ready, !lightningButton.isHidden {
         perform(.spell(.thunder))
         return true
     }
-    if healButton.contains(localPoint), ready {
+    if healButton.contains(localPoint), ready, !healButton.isHidden {
         perform(.spell(.mend))
         return true
     }
@@ -2075,19 +2081,20 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
 private func setupButtons(scene: SKScene) {
-    // Panneau compact façon menu SNES : cadre or discret, grille serrée,
-    // pastille d'élément pixel sur chaque technique.
+    // Panneau compact façon menu SNES : une rangée de techniques par
+    // acteur. Kael : ATTAQUE + FEU + AETHER. Lyra : ATTAQUE + GLACE +
+    // FOUDRE + SOIN. `layoutActionMenu` répartit à chaque tour.
     let panelWidth = min(scene.size.width - 18, 288)
-    let panelHeight: CGFloat = 92
-    let panelY: CGFloat = 70
+    actionPanelWidth = panelWidth
+    let panelHeight: CGFloat = 54
+    let panelY: CGFloat = 62
 
-    let panel = SKShapeNode()
-    PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
+    PixelUI.stylePanel(actionPanel, size: CGSize(width: panelWidth, height: panelHeight),
                        fill: SKColor(red: 0.045, green: 0.038, blue: 0.045, alpha: 0.96),
                        accent: PixelUI.goldDim)
-    panel.position = CGPoint(x: scene.size.width / 2, y: panelY)
-    panel.zPosition = 850
-    root.addChild(panel)
+    actionPanel.position = CGPoint(x: scene.size.width / 2, y: panelY)
+    actionPanel.zPosition = 850
+    root.addChild(actionPanel)
 
     // Étiquette de l'acteur courant, posée sur le bord haut du panneau.
     actorTagLabel.fontSize = 12
@@ -2099,37 +2106,80 @@ private func setupButtons(scene: SKScene) {
     actorTagLabel.isHidden = true
     root.addChild(actorTagLabel)
 
-    let buttonW = (panelWidth - 28) / 3
-    let buttonH: CGFloat = 30
-    let x0 = scene.size.width / 2 - buttonW - 7
-    let x1 = scene.size.width / 2
-    let x2 = scene.size.width / 2 + buttonW + 7
-    let topY = panelY + 19
-    let bottomY = panelY - 17
-
-    addButton(attackButton, title: String(localized: "combat.button.attack"), at: CGPoint(x: x0, y: topY), width: buttonW, height: buttonH,
+    // Création des 6 boutons (positions posées par layoutActionMenu)
+    let buttonH: CGFloat = 32
+    addButton(attackButton, title: String(localized: "combat.button.attack"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.13, green: 0.13, blue: 0.16, alpha: 1), stroke: SKColor(white: 0.62, alpha: 1), fontSize: 12,
               chip: CombatElement.physical.color)
-    addButton(fireButton, title: String(localized: "combat.button.fire"), at: CGPoint(x: x1, y: topY), width: buttonW, height: buttonH,
+    addButton(fireButton, title: String(localized: "combat.button.fire"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.26, green: 0.07, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.85, green: 0.38, blue: 0.18, alpha: 1), fontSize: 12,
               chip: CombatElement.fire.color)
-    addButton(iceButton, title: String(localized: "combat.button.ice"), at: CGPoint(x: x2, y: topY), width: buttonW, height: buttonH,
+    addButton(iceButton, title: String(localized: "combat.button.ice"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.03, green: 0.14, blue: 0.23, alpha: 1), stroke: SKColor(red: 0.42, green: 0.72, blue: 0.90, alpha: 1), fontSize: 12,
               chip: CombatElement.ice.color)
-    addButton(blackSlashButton, title: String(localized: "combat.button.aether"), at: CGPoint(x: x0, y: bottomY), width: buttonW, height: buttonH,
+    addButton(blackSlashButton, title: String(localized: "combat.button.aether"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.17, green: 0.06, blue: 0.26, alpha: 1), stroke: SKColor(red: 0.62, green: 0.40, blue: 0.85, alpha: 1), fontSize: 12,
               chip: CombatElement.aether.color)
-    addButton(lightningButton, title: String(localized: "combat.button.lightning"), at: CGPoint(x: x1, y: bottomY), width: buttonW, height: buttonH,
+    addButton(lightningButton, title: String(localized: "combat.button.lightning"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.24, green: 0.18, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.85, green: 0.70, blue: 0.25, alpha: 1), fontSize: 12,
               chip: CombatElement.lightning.color)
-    addButton(healButton, title: String(localized: "combat.button.heal"), at: CGPoint(x: x2, y: bottomY), width: buttonW, height: buttonH,
+    addButton(healButton, title: String(localized: "combat.button.heal"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.03, green: 0.20, blue: 0.09, alpha: 1), stroke: SKColor(red: 0.38, green: 0.80, blue: 0.48, alpha: 1), fontSize: 12,
               chip: SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1))
 
-    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 46, y: panelY + 62), width: 84, height: 22,
+    addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 46, y: panelY + 56), width: 84, height: 22,
               fill: SKColor(red: 0.15, green: 0.09, blue: 0.24, alpha: 1), stroke: SKColor(red: 0.62, green: 0.48, blue: 0.82, alpha: 1), fontSize: 12)
-    addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 46, y: panelY + 62), width: 84, height: 22,
+    addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 46, y: panelY + 56), width: 84, height: 22,
               fill: SKColor(red: 0.06, green: 0.18, blue: 0.11, alpha: 1), stroke: SKColor(red: 0.38, green: 0.75, blue: 0.48, alpha: 1), fontSize: 12)
+
+    layoutActionMenu()
+}
+
+/// Boutons de techniques de l'acteur courant.
+/// Kael : arts martiaux + feu + Aether. Lyra : arcanes de glace,
+/// foudre et soin — kits complémentaires, aucun sort partagé.
+private var currentActorButtons: [SKShapeNode] {
+    actingLyra ? [attackButton, iceButton, lightningButton, healButton]
+               : [attackButton, fireButton, blackSlashButton]
+}
+
+/// Répartit la rangée de boutons de l'acteur courant dans le panneau,
+/// masque ceux de l'autre acteur.
+private func layoutActionMenu() {
+    guard let scene = parentScene else { return }
+    let visible = currentActorButtons
+    let hidden = [attackButton, fireButton, iceButton,
+                  blackSlashButton, lightningButton, healButton]
+        .filter { !visible.contains($0) }
+    hidden.forEach { $0.isHidden = true }
+
+    let count = CGFloat(visible.count)
+    let gap: CGFloat = 8
+    let buttonW = (actionPanelWidth - 16 - gap * (count - 1)) / count
+    let totalW = buttonW * count + gap * (count - 1)
+    let startX = scene.size.width / 2 - totalW / 2 + buttonW / 2
+    for (i, button) in visible.enumerated() {
+        button.isHidden = false
+        resizeButton(button, width: buttonW)
+        button.position = CGPoint(x: startX + CGFloat(i) * (buttonW + gap),
+                                  y: actionPanel.position.y)
+    }
+}
+
+/// Redimensionne un bouton existant (repasse le style pixel, recadre
+/// la pastille + le label à gauche).
+private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
+    guard let label = node.children.compactMap({ $0 as? SKLabelNode }).first,
+          let diamond = node.children.compactMap({ $0 as? SKSpriteNode }).first
+    else { return }
+    let stroke = node.strokeColor
+    let fill = node.fillColor
+    PixelUI.stylePanel(node, size: CGSize(width: width, height: 32),
+                       fill: fill, accent: stroke)
+    let chipSide: CGFloat = 7
+    let contentW = label.frame.width + chipSide + 6
+    label.position = CGPoint(x: -contentW / 2 + chipSide + 6, y: 0)
+    diamond.position = CGPoint(x: -contentW / 2 + chipSide / 2, y: 0)
 }
 
 // MARK: - Helpers

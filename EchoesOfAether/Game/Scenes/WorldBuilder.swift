@@ -408,7 +408,20 @@ final class WorldBuilder {
         // Crystal save proche auberge (UX : safe spot évident)
         addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.52), in: scene)
 
-        addAtmosphere(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)), to: scene)
+        // Village vivant : fumées de cheminée sur les maisons habitées
+        for (x, y, dy) in [(0.78, 0.58, 84.0), (0.50, 0.63, 82.0),
+                           (0.22, 0.58, 74.0), (0.17, 0.78, 64.0)] {
+            let smoke = ParticleFactory.chimneySmoke()
+            smoke.position = CGPoint(x: w * CGFloat(x) + 14, y: h * CGFloat(y) + CGFloat(dy))
+            add(smoke, to: scene)
+        }
+
+        // Poussière ambiante + papillons qui volettent entre les jardins
+        let ambiance = SKNode()
+        ambiance.addChild(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)))
+        ambiance.addChild(ParticleFactory.butterflies(in: CGSize(width: w, height: h)))
+        addAtmosphere(ambiance, to: scene)
+        setZoneVignette(in: scene, alpha: 0)
         debugDrawObstacles(in: scene)
     }
 
@@ -605,6 +618,7 @@ final class WorldBuilder {
         scatterForestProps(in: scene, w: w, h: h)
 
         addAtmosphere(ParticleFactory.forestFog(in: CGSize(width: w, height: h)), to: scene)
+        setZoneVignette(in: scene, alpha: 0.50)
         debugDrawObstacles(in: scene)
     }
 
@@ -1388,6 +1402,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         // Cendre en suspension : même atmosphère que les ruines
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.68)   // mines : galeries noires
     }
 
     /// Rails de mine : deux longerons métalliques + traverses de bois.
@@ -1688,6 +1703,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.22), in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.45)
     }
 
     /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :
@@ -1776,6 +1792,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.20), in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.45)
     }
 
     private func makeCrack(from start: CGPoint, to end: CGPoint) -> SKNode {
@@ -1983,6 +2000,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addSaveCrystal(at: CGPoint(x: w * 0.18, y: h * 0.20), in: scene)
 
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.40)
     }
 
     // MARK: - Building Blocks
@@ -2182,6 +2200,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.035, green: 0.027, blue: 0.025, alpha: 1)
         buildInterior(kind, in: scene)
+        setZoneVignette(in: scene, alpha: 0.38)   // pièce éclairée au feu
         kael.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.23)
         kael.zPosition = 20
     }
@@ -2770,6 +2789,46 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         atmosphereNode?.removeFromParent()
         atmosphereNode = node
         worldNode.addChild(node)
+    }
+
+    // MARK: - Vignette de zone (écran, ne scrolle pas)
+
+    /// Assombrit les bords de l'écran — ambiance grotte/forêt profonde.
+    /// Texture radiale rendue en basse résolution puis upscalée en
+    /// .nearest : le dégradé reste en gros pixels, cohérent pixel art.
+    /// alpha 0 = retire la vignette (village, zones claires).
+    func setZoneVignette(in scene: SKScene, alpha: CGFloat) {
+        scene.childNode(withName: "zoneVignette")?.removeFromParent()
+        guard alpha > 0.01 else { return }
+
+        let cols = 44, rows = 20
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: cols, height: rows), format: format
+        ).image { ctx in
+            let c = ctx.cgContext
+            for y in 0..<rows {
+                for x in 0..<cols {
+                    let nx = (CGFloat(x) + 0.5) / CGFloat(cols) * 2 - 1
+                    let ny = (CGFloat(y) + 0.5) / CGFloat(rows) * 2 - 1
+                    let d = min(1, sqrt(nx * nx + ny * ny * 0.85))
+                    let a = pow(max(0, d - 0.45) / 0.55, 2) * alpha
+                    guard a > 0.01 else { continue }
+                    c.setFillColor(SKColor(red: 0.01, green: 0.01, blue: 0.02,
+                                           alpha: a).cgColor)
+                    c.fill(CGRect(x: x, y: y, width: 1, height: 1))
+                }
+            }
+        }
+        let texture = SKTexture(image: image)
+        texture.filteringMode = .nearest
+        let vignette = SKSpriteNode(texture: texture)
+        vignette.name = "zoneVignette"
+        vignette.size = CGSize(width: scene.size.width + 4, height: scene.size.height + 4)
+        vignette.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        vignette.zPosition = 480   // au-dessus du monde, sous HUD/overlays
+        scene.addChild(vignette)
     }
 
     // MARK: - Sol plat (fond uni, sans tiles répétitives)

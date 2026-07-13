@@ -234,12 +234,23 @@ final class DialogueSystem {
             : color
 
         if let asset = portraitAsset(for: speaker), UIImage(named: asset) != nil {
+            let changed = portraitSprite.userData?["asset"] as? String != asset
             let texture = SKTexture(imageNamed: asset)
             texture.filteringMode = .nearest
             portraitSprite.texture = texture
             hasPortrait = true
+            if changed {
+                portraitSprite.userData = ["asset": asset]
+                // Pop du portrait quand le locuteur change
+                portraitSprite.setScale(0.82)
+                portraitSprite.run(.sequence([
+                    .scale(to: 1.06, duration: 0.10),
+                    .scale(to: 1.0, duration: 0.10)
+                ]))
+            }
         } else {
             hasPortrait = false
+            portraitSprite.userData = nil
         }
     }
 

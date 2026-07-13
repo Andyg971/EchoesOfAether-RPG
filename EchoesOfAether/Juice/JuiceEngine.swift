@@ -109,6 +109,25 @@ enum JuiceEngine {
         ]), withKey: "slowmo")
     }
 
+    /// Micro-zoom de caméra centré sur `center` : le nœud racine grossit
+    /// brièvement puis revient. Impact « caméra qui encaisse le coup ».
+    static func zoomPunch(_ node: SKNode, around center: CGPoint,
+                          scale: CGFloat = 1.035, duration: TimeInterval = 0.24) {
+        let dx = center.x * (1 - scale)
+        let dy = center.y * (1 - scale)
+        let zoomIn = SKAction.group([
+            .scale(to: scale, duration: duration * 0.35),
+            .move(to: CGPoint(x: dx, y: dy), duration: duration * 0.35)
+        ])
+        zoomIn.timingMode = .easeOut
+        let zoomOut = SKAction.group([
+            .scale(to: 1.0, duration: duration * 0.65),
+            .move(to: .zero, duration: duration * 0.65)
+        ])
+        zoomOut.timingMode = .easeIn
+        node.run(.sequence([zoomIn, zoomOut]), withKey: "zoomPunch")
+    }
+
     static func popIn(_ node: SKNode, delay: TimeInterval = 0) {
         node.setScale(0)
         node.alpha = 0

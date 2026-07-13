@@ -111,12 +111,16 @@ final class CombatSystem {
     // HP bars
     private let kaelHPBack = SKShapeNode()
     private let kaelHPFill = SKShapeNode()
+    private let kaelHPGhost = SKShapeNode()   // « dégâts fantômes » qui fondent
     private let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let lyraHPBack = SKShapeNode()
     private let lyraHPFill = SKShapeNode()
+    private let lyraHPGhost = SKShapeNode()
     private let lyraHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let enemyHPBack = SKShapeNode()
     private let enemyHPFill = SKShapeNode()
+    private let enemyHPGhost = SKShapeNode()
+    private var lastTargetIndexForGhost = -1
     private let enemyHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let targetNameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
@@ -315,6 +319,7 @@ self.phase = .intro
         if isBoss { setupBossUI(scene: scene) }
         setupComboAndStatusUI(scene: scene)
         updateVisuals()
+        playBattleIntroDissolve(scene: scene)
         playEntranceAnimation()
 
         // Premier tour après l'entrée en scène (le joueur ouvre toujours).
@@ -322,6 +327,35 @@ self.phase = .intro
             .wait(forDuration: 0.9),
             .run { [weak self] in self?.startPlayerTurn() }
         ]))
+    }
+
+    /// Transition d'entrée en combat façon SNES : l'écran est couvert de
+    /// carrés noirs qui se dissipent en ordre aléatoire, révélant l'arène.
+    private func playBattleIntroDissolve(scene: SKScene) {
+        let overlay = SKNode()
+        overlay.zPosition = 990
+        root.addChild(overlay)
+
+        let side: CGFloat = 44
+        let cols = Int(ceil(scene.size.width / side))
+        let rows = Int(ceil(scene.size.height / side))
+        for c in 0...cols {
+            for r in 0...rows {
+                let square = SKSpriteNode(
+                    color: SKColor(red: 0.01, green: 0.01, blue: 0.02, alpha: 1),
+                    size: CGSize(width: side + 1, height: side + 1))
+                square.position = CGPoint(x: CGFloat(c) * side + side / 2,
+                                          y: CGFloat(r) * side + side / 2)
+                overlay.addChild(square)
+                square.run(.sequence([
+                    .wait(forDuration: .random(in: 0.05...0.50)),
+                    .group([.fadeOut(withDuration: 0.16),
+                            .scale(to: 0.1, duration: 0.16)]),
+                    .removeFromParent()
+                ]))
+            }
+        }
+        overlay.run(.sequence([.wait(forDuration: 0.8), .removeFromParent()]))
     }
 
     /// Faiblesses + boucliers par type d'ennemi.
@@ -548,6 +582,7 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     }
     AudioEngine.shared.playDamage()
     JuiceEngine.screenShake(root, intensity: shakeIntensity, duration: 0.15)
+    if isSpecial { JuiceEngine.zoomPunch(root, around: victimHome, scale: 1.05) }
     playEnemyAttackAnimation(e, isSpecial: isSpecial, onLyra: hitsLyra)
     root.addChild(ParticleFactory.impactSparks(
         at: victimHome,
@@ -768,6 +803,7 @@ private func perform(_ action: CombatAction) {
         AudioEngine.shared.playHit()
         HapticsEngine.medium()
         JuiceEngine.screenShake(root, intensity: boost > 0 ? 7 : 5, duration: 0.2)
+        if boost > 0 { JuiceEngine.zoomPunch(root, around: enemyCenter) }
         playActorAttackAnimation(on: foe, strong: boost > 0)
         spawnSlashArc(at: enemyCenter, color: .white, strong: boost > 0)
         root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8 + boost * 4))
@@ -794,6 +830,7 @@ private func perform(_ action: CombatAction) {
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
         JuiceEngine.screenShake(root, intensity: 12 + CGFloat(boost) * 3, duration: 0.35)
+        JuiceEngine.zoomPunch(root, around: enemyCenter, scale: 1.045)
         JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
         JuiceEngine.flashOverlay(
             in: root,
@@ -932,6 +969,7 @@ private func hitWeakness(on foe: EnemyState, with element: CombatElement) -> Boo
         .fadeOut(withDuration: 0.25)
     ]))
     JuiceEngine.screenShake(root, intensity: 9, duration: 0.20)
+    JuiceEngine.zoomPunch(root, around: foe.homePosition, scale: 1.05)
     return true
 }
 
@@ -964,6 +1002,18 @@ private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
 /// Chaque sort a sa mise en scène : projectile de feu, pics de glace,
 /// foudre qui tombe, colonne de soin — plus d'anneau générique.
 private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, boosted: Bool) {
+    // Pose de cast : le lanceur s'imprègne brièvement de la couleur du sort
+    let castColor = spell.element?.color
+        ?? SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
+    actorSprite?.forEachDescendantSprite { sprite in
+        let prevColor = sprite.color
+        let prevFactor = sprite.colorBlendFactor
+        sprite.run(.sequence([
+            .colorize(with: castColor, colorBlendFactor: 0.45, duration: 0.10),
+            .wait(forDuration: 0.12),
+            .colorize(with: prevColor, colorBlendFactor: prevFactor, duration: 0.22)
+        ]))
+    }
     switch spell {
     case .ember:   playEmberEffect(on: foe, boosted: boosted)
     case .frost:   playFrostEffect(on: foe, boosted: boosted)
@@ -1481,8 +1531,29 @@ private func setupComboAndStatusUI(scene: SKScene) {
         halo.alpha = 0.55
         floor.addChild(halo)
 
-        // Décor d'arrière-plan : silhouettes selon la zone
-        addBackgroundDecor(to: floor, size: size, kind: enemyKind, palette: palette)
+        // Décor d'arrière-plan : silhouettes selon la zone, dans une
+        // couche qui dérive lentement (parallaxe subtile).
+        let decorLayer = SKNode()
+        floor.addChild(decorLayer)
+        addBackgroundDecor(to: decorLayer, size: size, kind: enemyKind, palette: palette)
+        let drift = SKAction.sequence([
+            .moveBy(x: 6, y: 0, duration: 7.0),
+            .moveBy(x: -6, y: 0, duration: 7.0)
+        ])
+        drift.timingMode = .easeInEaseOut
+        decorLayer.run(.repeatForever(drift))
+
+        // Nappe de brume au-dessus du décor, dérive en sens inverse
+        let mist = SKSpriteNode(color: palette.haloColor.withAlphaComponent(0.16),
+                                size: CGSize(width: size.width * 1.3, height: 46))
+        mist.position = CGPoint(x: size.width / 2, y: size.height * 0.50)
+        floor.addChild(mist)
+        let mistDrift = SKAction.sequence([
+            .moveBy(x: -18, y: 0, duration: 9.0),
+            .moveBy(x: 18, y: 0, duration: 9.0)
+        ])
+        mistDrift.timingMode = .easeInEaseOut
+        mist.run(.repeatForever(mistDrift))
 
         // Ligne d'horizon : trait fin lumineux
         let horizon = SKShapeNode(rectOf: CGSize(width: size.width, height: 1))
@@ -1809,6 +1880,22 @@ private func setupComboAndStatusUI(scene: SKScene) {
             .rotate(toAngle: 0, duration: 0.16, shortestUnitArc: true)
         ])
         k.run(.group([.sequence([lungeIn, lungeOut]), tilt]))
+
+        // Attaque forte : images rémanentes derrière la ruée
+        if strong {
+            for i in 0..<2 {
+                guard let ghost = k.copy() as? SKNode else { break }
+                ghost.alpha = 0.30 - CGFloat(i) * 0.10
+                ghost.position = CGPoint(x: home.x + CGFloat(i) * 26, y: home.y)
+                ghost.zPosition = k.zPosition - 0.1
+                root.addChild(ghost)
+                ghost.run(.sequence([
+                    .wait(forDuration: 0.05 + Double(i) * 0.04),
+                    .fadeOut(withDuration: 0.20),
+                    .removeFromParent()
+                ]))
+            }
+        }
         playEnemyHitReact(foe, strong: strong)
     }
 
@@ -1906,11 +1993,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
         configureBar(kaelHPBack, kaelHPFill, width: barWidth, height: barHeight,
                      color: SKColor(red: 0.40, green: 0.78, blue: 0.56, alpha: 1),
-                     at: CGPoint(x: kaelX, y: barY))
+                     at: CGPoint(x: kaelX, y: barY), ghost: kaelHPGhost)
         // Plate de droite = CIBLE courante (nom + HP mis à jour au retarget)
         configureBar(enemyHPBack, enemyHPFill, width: barWidth, height: barHeight,
                      color: SKColor(red: 0.82, green: 0.22, blue: 0.24, alpha: 1),
-                     at: CGPoint(x: enemyX, y: barY))
+                     at: CGPoint(x: enemyX, y: barY), ghost: enemyHPGhost)
 
         kaelHPLabel.fontSize = 15
         kaelHPLabel.fontColor = .white
@@ -1928,7 +2015,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         if hasLyra {
             configureBar(lyraHPBack, lyraHPFill, width: barWidth, height: barHeight,
                          color: SKColor(red: 0.32, green: 0.85, blue: 0.66, alpha: 1),
-                         at: CGPoint(x: lyraX, y: barY))
+                         at: CGPoint(x: lyraX, y: barY), ghost: lyraHPGhost)
             lyraHPLabel.fontSize = 15
             lyraHPLabel.fontColor = .white
             lyraHPLabel.position = CGPoint(x: lyraX, y: barY - 18)
@@ -2205,7 +2292,8 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
 
     private func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,
                               width: CGFloat, height: CGFloat,
-                              color: SKColor, at position: CGPoint) {
+                              color: SKColor, at position: CGPoint,
+                              ghost: SKShapeNode? = nil) {
         // Barres rectangulaires nettes — pas de bouts arrondis en pixel art.
         let rect = CGRect(x: -width / 2, y: -height / 2, width: width, height: height)
         let path = CGPath(rect: rect, transform: nil)
@@ -2217,12 +2305,36 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         back.position = position
         root.addChild(back)
 
+        // Barre fantôme : blanche, fond après les dégâts (feedback juteux)
+        if let ghost {
+            ghost.path = path
+            ghost.fillColor = SKColor(white: 0.92, alpha: 0.55)
+            ghost.strokeColor = .clear
+            ghost.position = position
+            ghost.xScale = 1.0
+            root.addChild(ghost)
+        }
+
         fill.path = path
         fill.fillColor = color
         fill.strokeColor = .clear
         fill.position = position
         fill.xScale = 1.0
         root.addChild(fill)
+    }
+
+    /// Barre fantôme : suit la vraie barre avec un temps de retard quand
+    /// les PV baissent ; se cale instantanément quand ils remontent.
+    private func updateGhostBar(_ ghost: SKShapeNode, to ratio: CGFloat) {
+        if ratio >= ghost.xScale - 0.001 {
+            ghost.removeAllActions()
+            ghost.xScale = ratio
+            return
+        }
+        ghost.removeAllActions()
+        let melt = SKAction.scaleX(to: ratio, duration: 0.35)
+        melt.timingMode = .easeOut
+        ghost.run(.sequence([.wait(forDuration: 0.30), melt]))
     }
 
     private func addCombatantLabel(_ text: String, at position: CGPoint) {
@@ -2283,10 +2395,13 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         let kaelHPRatio = max(0.02, CGFloat(kael.hp) / CGFloat(kael.maxHP))
         kaelHPFill.xScale = kaelHPRatio
         kaelHPLabel.text = String(kael.hp) + "/" + String(kael.maxHP)
+        updateGhostBar(kaelHPGhost, to: kaelHPRatio)
 
         if let l = lyra {
-            lyraHPFill.xScale = max(0.02, CGFloat(l.hp) / CGFloat(l.maxHP))
+            let ratio = max(0.02, CGFloat(l.hp) / CGFloat(l.maxHP))
+            lyraHPFill.xScale = ratio
             lyraHPLabel.text = String(l.hp) + "/" + String(l.maxHP)
+            updateGhostBar(lyraHPGhost, to: ratio)
         }
 
         // Étiquette d'acteur sur le panneau d'actions (qui joue ?)
@@ -2300,7 +2415,16 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         // Plate de droite = cible courante
         if let foe = target {
             let c = foe.combatant
-            enemyHPFill.xScale = max(0.02, CGFloat(c.hp) / CGFloat(c.maxHP))
+            let enemyRatio = max(0.02, CGFloat(c.hp) / CGFloat(c.maxHP))
+            enemyHPFill.xScale = enemyRatio
+            // Changement de cible : la barre fantôme saute sans animer
+            if lastTargetIndexForGhost != targetIndex {
+                lastTargetIndexForGhost = targetIndex
+                enemyHPGhost.removeAllActions()
+                enemyHPGhost.xScale = enemyRatio
+            } else {
+                updateGhostBar(enemyHPGhost, to: enemyRatio)
+            }
             enemyHPLabel.text = String(c.hp) + "/" + String(c.maxHP)
             targetNameLabel.text = c.name
             let weaknessText = foe.weaknesses.map { $0.icon }.sorted().joined(separator: "  ")

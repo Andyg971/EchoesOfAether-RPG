@@ -261,6 +261,78 @@ enum ParticleFactory {
         return container
     }
 
+    // MARK: - Village vivant
+
+    /// Fumée de cheminée : bouffées de carrés gris qui montent en
+    /// dérivant, en boucle. À poser sur le toit d'une maison.
+    static func chimneySmoke() -> SKNode {
+        let container = SKNode()
+        container.zPosition = 30
+        let spawn = SKAction.repeatForever(.sequence([
+            .run { [weak container] in
+                guard let container else { return }
+                let side = CGFloat.random(in: 4...7)
+                let puff = SKSpriteNode(
+                    color: SKColor(white: 0.78, alpha: CGFloat.random(in: 0.16...0.28)),
+                    size: CGSize(width: side, height: side))
+                puff.position = CGPoint(x: .random(in: -3...3), y: 0)
+                container.addChild(puff)
+                let rise = SKAction.moveBy(x: .random(in: -14...4),
+                                           y: .random(in: 34...52),
+                                           duration: .random(in: 2.2...3.2))
+                rise.timingMode = .easeOut
+                puff.run(.sequence([
+                    .group([rise,
+                            .scale(to: 2.0, duration: 2.8),
+                            .sequence([.wait(forDuration: 1.4),
+                                       .fadeOut(withDuration: 1.4)])]),
+                    .removeFromParent()
+                ]))
+            },
+            .wait(forDuration: 0.55)
+        ]))
+        container.run(spawn)
+        return container
+    }
+
+    /// Papillons : petits carrés colorés qui voletent en zigzag
+    /// dans la zone donnée. Discret — 4 papillons.
+    static func butterflies(in size: CGSize) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 24
+        let palette: [SKColor] = [
+            SKColor(red: 0.95, green: 0.75, blue: 0.30, alpha: 0.9),
+            SKColor(red: 0.85, green: 0.55, blue: 0.90, alpha: 0.9),
+            SKColor(red: 0.60, green: 0.85, blue: 0.95, alpha: 0.9),
+            SKColor(red: 0.98, green: 0.98, blue: 0.85, alpha: 0.9)
+        ]
+        for i in 0..<4 {
+            let fly = SKSpriteNode(color: palette[i % palette.count],
+                                   size: CGSize(width: 3, height: 3))
+            fly.position = CGPoint(x: .random(in: size.width * 0.1...size.width * 0.9),
+                                   y: .random(in: size.height * 0.15...size.height * 0.7))
+            container.addChild(fly)
+            // Zigzag : petites courses aléatoires enchaînées + battement d'ailes
+            let hop = SKAction.run { [weak fly] in
+                guard let fly else { return }
+                let dest = CGPoint(x: fly.position.x + .random(in: -60...60),
+                                   y: fly.position.y + .random(in: -30...40))
+                let clamped = CGPoint(
+                    x: min(max(dest.x, 20), size.width - 20),
+                    y: min(max(dest.y, size.height * 0.10), size.height * 0.8))
+                let move = SKAction.move(to: clamped, duration: .random(in: 1.2...2.2))
+                move.timingMode = .easeInEaseOut
+                fly.run(move)
+            }
+            fly.run(.repeatForever(.sequence([hop, .wait(forDuration: 2.3)])))
+            fly.run(.repeatForever(.sequence([
+                .scaleY(to: 0.4, duration: 0.12),
+                .scaleY(to: 1.0, duration: 0.12)
+            ])))
+        }
+        return container
+    }
+
     // MARK: - Tap
 
     /// Marqueur de tap pixel : couronne de carrés qui s'écarte, zéro cercle lissé.

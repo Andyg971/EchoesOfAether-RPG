@@ -195,6 +195,10 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 private var resonance = 0
 private var playerBP = 0
 private var queuedBoost = 0
+/// Règle du Boost (façon Octopath) : booster épuise le flux — aucun BP
+/// ne se régénère à la manche suivante.
+private var boostedThisRound = false
+private var bpRecharging = false
 private var goldReward = 0
     private var completion: ((Int, Int) -> Void)?
     private weak var parentScene: SKScene?
@@ -275,6 +279,8 @@ let startHP = min(player.currentHP, player.currentMaxHP)
 self.resonance = 0
 self.playerBP = 0
 self.queuedBoost = 0
+self.boostedThisRound = false
+self.bpRecharging = false
 self.comboCount = 0
 self.phase = .intro
         self.completion = completion
@@ -348,7 +354,17 @@ private func startPlayerTurn() {
     phase = .playerTurn
     actingLyra = false
     retargetIfNeeded()
-    playerBP = min(3, playerBP + 1)
+    // Régénération de BP — sautée si l'équipe a boosté à la manche
+    // précédente (le flux d'Aether doit se re-stabiliser).
+    if boostedThisRound {
+        boostedThisRound = false
+        bpRecharging = true
+        showEffect(String(localized: "combat.boost.recharging"),
+                   color: SKColor(red: 0.72, green: 0.62, blue: 1.00, alpha: 1))
+    } else {
+        bpRecharging = false
+        playerBP = min(3, playerBP + 1)
+    }
     statusLabel.text = aliveEnemies.count > 1
         ? String(localized: "combat.turn.chooseMulti")
         : String(localized: "combat.turn.choose")
@@ -724,6 +740,7 @@ private func perform(_ action: CombatAction) {
     let boost = queuedBoost
     let damageMultiplier = 1.0 + CGFloat(boost) * 0.55
     queuedBoost = 0
+    if boost > 0 { boostedThisRound = true }
 
     let enemyCenter = foe.homePosition
     // Lyra : attaque physique plus faible, sorts légèrement plus puissants.
@@ -2322,7 +2339,15 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         }
 
         let bpPips = (0..<3).map { $0 < playerBP ? "●" : "○" }.joined()
-        boostLabel.text = queuedBoost > 0 ? "BP " + bpPips + "   " + String(localized: "combat.status.boost \(queuedBoost + 1)") : "BP " + bpPips
+        if queuedBoost > 0 {
+            boostLabel.text = "BP " + bpPips + "   "
+                + String(localized: "combat.status.boost \(queuedBoost + 1)")
+        } else if bpRecharging {
+            boostLabel.text = "BP " + bpPips + "   "
+                + String(localized: "combat.boost.recharging")
+        } else {
+            boostLabel.text = "BP " + bpPips
+        }
 
         if statusLabel.text?.isEmpty ?? true {
             statusLabel.text = String(localized: "combat.status.battleStart")

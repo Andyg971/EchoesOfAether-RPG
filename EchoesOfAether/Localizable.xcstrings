@@ -17,6 +17,22 @@
         }
       }
     },
+    "combat.boost.recharging": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aether flow recharging…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flux d'Aether en recharge…"
+          }
+        }
+      }
+    },
     "combat.boss.enrage": {
       "localizations": {
         "en": {

@@ -46,6 +46,11 @@ final class GameManager {
     // Joystick virtuel flottant
     private let padBase = SKShapeNode(circleOfRadius: 34)
     private let padKnob = SKShapeNode(circleOfRadius: 15)
+    // Bouton d'action « A » (bas-droite) : déclenche l'interaction à portée.
+    // Plus fiable que taper précisément sur le PNJ/POI.
+    private let actionButton = SKShapeNode()
+    private let actionButtonLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    private var nearbyActionPoint: CGPoint?   // POI courant (coords monde)
     private var padActive = false
     private var padOrigin = CGPoint.zero
     private var padVector = CGVector.zero
@@ -75,6 +80,7 @@ final class GameManager {
         minimap.attach(to: scene)
         levelUp.attach(to: scene)
         bubble.attach(to: scene)
+        setupActionButton(in: scene)
         tutorial.attach(to: scene)
         syncLevelHUD()
 
@@ -317,6 +323,12 @@ final class GameManager {
             updateInteractionHint()
         }
 
+        // Bouton A visible uniquement en exploration
+        let showActionButton = state == .exploration && actionButton.parent != nil
+        if actionButton.isHidden == showActionButton {
+            actionButton.isHidden = !showActionButton
+        }
+
         minimapTimer += deltaTime
         if minimapTimer >= 0.10, state == .exploration {
             minimapTimer = 0
@@ -337,6 +349,59 @@ final class GameManager {
         if state == .exploration, let s = scene {
             world.updateCamera(in: s.size)
         }
+    }
+
+    // MARK: - Bouton d'action « A »
+
+    /// Bouton pixel fixe en bas à droite. Actif (doré, pulsé) quand une
+    /// interaction est à portée ; estompé sinon.
+    private func setupActionButton(in scene: SKScene) {
+        PixelUI.stylePanel(actionButton, size: CGSize(width: 54, height: 54),
+                           fill: SKColor(red: 0.10, green: 0.07, blue: 0.14, alpha: 0.88),
+                           accent: PixelUI.gold)
+        actionButton.position = CGPoint(x: scene.size.width - 58, y: 66)
+        actionButton.zPosition = 950
+        actionButton.isHidden = true
+        scene.addChild(actionButton)
+
+        actionButtonLabel.text = "A"
+        actionButtonLabel.fontSize = 32
+        actionButtonLabel.fontColor = PixelUI.gold
+        actionButtonLabel.verticalAlignmentMode = .center
+        actionButtonLabel.horizontalAlignmentMode = .center
+        actionButtonLabel.position = CGPoint(x: 0, y: -1)
+        actionButtonLabel.zPosition = 951
+        actionButton.addChild(actionButtonLabel)
+    }
+
+    /// Rafraîchit l'état visuel du bouton A selon le POI à portée.
+    private func updateActionButtonState() {
+        let enabled = nearbyActionPoint != nil
+        let targetAlpha: CGFloat = enabled ? 1.0 : 0.35
+        if abs(actionButton.alpha - targetAlpha) > 0.01 {
+            actionButton.run(.fadeAlpha(to: targetAlpha, duration: 0.15))
+            if enabled {
+                actionButton.run(.sequence([
+                    .scale(to: 1.12, duration: 0.10),
+                    .scale(to: 1.0, duration: 0.12)
+                ]))
+            }
+        }
+    }
+
+    /// Déclenche l'interaction du POI courant (comme un tap parfait dessus).
+    private func triggerNearbyAction(in scene: SKScene) {
+        guard let target = nearbyActionPoint else {
+            HapticsEngine.light()
+            return
+        }
+        HapticsEngine.medium()
+        actionButton.run(.sequence([
+            .scale(to: 0.90, duration: 0.06),
+            .scale(to: 1.0, duration: 0.10)
+        ]))
+        let screenPoint = scene.convert(target, from: world.worldNode)
+        handleExplorationTap(screenPoint, in: scene)
     }
 
     // MARK: - Joystick virtuel (flottant, quart bas-gauche)
@@ -453,6 +518,12 @@ final class GameManager {
         if state == .combat,     combat.handleTap(at: point, in: scene) { return }
         guard state == .exploration else { return }
         if hud.handleTap(at: point, in: scene) { return }
+        // Bouton A : zone de touch élargie (60×60 min Apple HIG déjà couvert)
+        if !actionButton.isHidden,
+           point.distance(to: actionButton.position) < 42 {
+            triggerNearbyAction(in: scene)
+            return
+        }
         handleExplorationTap(point, in: scene)
     }
 
@@ -2055,6 +2126,7 @@ final class GameManager {
         guard let scene else {
             hud.interactionHint = ""
             bubble.hide()
+            nearbyActionPoint = nil
             return
         }
         let kaelPos = world.kael.position
@@ -2062,6 +2134,7 @@ final class GameManager {
         var hint = ""
         var bubbleAnchor: CGPoint? = nil
         var bubbleAction: InteractionBubble.Action? = nil
+        var actionPoint: CGPoint? = nil   // POI brut pour le bouton A
 
         if let activeInterior {
             let exit = world.interiorExitPosition(in: scene.size)
@@ -2069,6 +2142,7 @@ final class GameManager {
                 hint = String(localized: "hint.exit")
                 bubbleAction = .enter
                 bubbleAnchor = CGPoint(x: exit.x, y: exit.y + 34)
+                actionPoint = exit
             } else {
                 let servicePoint = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.62)
                 if kaelPos.distance(to: servicePoint) < radius {
@@ -2079,6 +2153,7 @@ final class GameManager {
                     }
                     bubbleAction = activeInterior == .inn ? .talk : .shop
                     bubbleAnchor = CGPoint(x: servicePoint.x, y: servicePoint.y + 42)
+                    actionPoint = servicePoint
                 }
             }
         } else if inMines {
@@ -2100,6 +2175,7 @@ final class GameManager {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
             }
         } else {
             switch phase {
@@ -2114,12 +2190,26 @@ final class GameManager {
                 (world.child,    "hint.talk"),
                 (world.villager, "hint.talk")
             ]
-            if let nearest = nearestNPC(from: kaelPos, npcs: npcs, radius: radius) {
+            // Portes des maisons : le bouton A permet aussi d'entrer.
+            let doors: [(CGPoint, String)] = [.armory, .apothecary, .inn].map {
+                (world.houseDoorPosition(for: $0, in: scene.size), "hint.enter")
+            }
+            let nearestDoor = nearestCheckpoint(from: kaelPos, points: doors, radius: 70)
+            if let nearest = nearestNPC(from: kaelPos, npcs: npcs, radius: radius),
+               nearestDoor == nil
+               || kaelPos.distance(to: nearest.node.position)
+                  <= kaelPos.distance(to: nearestDoor!.point) {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 // Ancrer la bulle ~50pt au-dessus de la tête du PNJ
                 bubbleAnchor = CGPoint(x: nearest.node.position.x,
                                         y: nearest.node.position.y + 60)
+                actionPoint = nearest.node.position
+            } else if let door = nearestDoor {
+                hint = localizedHint(door.key)
+                bubbleAction = .enter
+                bubbleAnchor = CGPoint(x: door.point.x, y: door.point.y + 40)
+                actionPoint = door.point
             }
         case .ruins:
             let w = scene.size.width, h = scene.size.height
@@ -2133,6 +2223,7 @@ final class GameManager {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
             }
         case .forest:
             // POI en coordonnées MONDE (trek scrollable, cf. buildForest)
@@ -2150,6 +2241,7 @@ final class GameManager {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
             }
         case .act3:
             let w = scene.size.width, h = scene.size.height
@@ -2165,6 +2257,7 @@ final class GameManager {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
             }
             default:
                 break

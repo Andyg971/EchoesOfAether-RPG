@@ -2037,33 +2037,28 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let h = scene.size.height
         let room = CGRect(x: w * 0.15, y: h * 0.16, width: w * 0.70, height: h * 0.66)
 
-        // Plancher : 100 % tuiles (aucune shape), teinté par échoppe
-        if let boards = PixelArtSprites.tiledFloor(
-            tileNames: ["tile_dirt_1", "tile_dirt_2", "tile_dirt_3"],
-            in: room.size,
-            tileScale: 1.0,
-            tint: interiorFloorColor(for: kind)) {
-            boards.position = CGPoint(x: room.minX, y: room.minY)
-            boards.zPosition = -9
-            add(boards, to: scene)
-        }
+        // Plancher : vraies planches de bois pixel art générées
+        // (fini les tuiles de terre extérieures qui juraient en intérieur).
+        let boards = PixelArtSprites.plankFloor(
+            size: room.size,
+            palette: interiorPlankPalette(for: kind),
+            seed: UInt64(kind.rawValue.unicodeScalars.reduce(7) { $0 + Int($1.value) }))
+        boards.position = CGPoint(x: room.minX, y: room.minY)
+        boards.zPosition = -9
+        add(boards, to: scene)
 
-        // Tapis central en tuiles re-teintées (accent par échoppe)
+        // Tapis tissé central (accent par échoppe)
         let rugTint: SKColor
         switch kind {
         case .armory:     rugTint = SKColor(red: 0.38, green: 0.14, blue: 0.10, alpha: 1)
         case .apothecary: rugTint = SKColor(red: 0.14, green: 0.32, blue: 0.18, alpha: 1)
-        case .inn:        rugTint = SKColor(red: 0.36, green: 0.22, blue: 0.08, alpha: 1)
+        case .inn:        rugTint = SKColor(red: 0.42, green: 0.24, blue: 0.10, alpha: 1)
         }
-        if let rug = PixelArtSprites.tiledFloor(
-            tileNames: ["tile_dirt_1", "tile_dirt_2"],
-            in: CGSize(width: 144, height: 96),
-            tileScale: 1.0,
-            tint: rugTint) {
-            rug.position = CGPoint(x: room.midX - 72, y: room.midY - 64)
-            rug.zPosition = -8.4
-            add(rug, to: scene)
-        }
+        let rug = PixelArtSprites.wovenRug(
+            size: CGSize(width: 150, height: 96), accent: rugTint)
+        rug.position = CGPoint(x: room.midX - 75, y: room.midY - 64)
+        rug.zPosition = -8.4
+        add(rug, to: scene)
 
         addInteriorWalls(in: scene, room: room, kind: kind)
         addInteriorExitDoor(in: scene, room: room)
@@ -2091,14 +2086,27 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
     }
 
-    private func interiorFloorColor(for kind: HouseInteriorKind) -> SKColor {
+    /// Palette de planches par échoppe : 3 bruns + joint sombre.
+    private func interiorPlankPalette(for kind: HouseInteriorKind) -> [UIColor] {
         switch kind {
         case .armory:
-            return SKColor(red: 0.18, green: 0.13, blue: 0.10, alpha: 1)
+            // Noyer sombre de forge
+            return [UIColor(red: 0.34, green: 0.24, blue: 0.16, alpha: 1),
+                    UIColor(red: 0.30, green: 0.21, blue: 0.14, alpha: 1),
+                    UIColor(red: 0.26, green: 0.18, blue: 0.12, alpha: 1),
+                    UIColor(red: 0.12, green: 0.08, blue: 0.05, alpha: 1)]
         case .apothecary:
-            return SKColor(red: 0.12, green: 0.16, blue: 0.11, alpha: 1)
+            // Bois patiné aux reflets verdis (herboristerie)
+            return [UIColor(red: 0.30, green: 0.26, blue: 0.16, alpha: 1),
+                    UIColor(red: 0.26, green: 0.23, blue: 0.14, alpha: 1),
+                    UIColor(red: 0.22, green: 0.20, blue: 0.12, alpha: 1),
+                    UIColor(red: 0.10, green: 0.09, blue: 0.05, alpha: 1)]
         case .inn:
-            return SKColor(red: 0.19, green: 0.12, blue: 0.08, alpha: 1)
+            // Chêne chaleureux d'auberge
+            return [UIColor(red: 0.42, green: 0.29, blue: 0.17, alpha: 1),
+                    UIColor(red: 0.37, green: 0.25, blue: 0.14, alpha: 1),
+                    UIColor(red: 0.32, green: 0.21, blue: 0.12, alpha: 1),
+                    UIColor(red: 0.15, green: 0.09, blue: 0.05, alpha: 1)]
         }
     }
 

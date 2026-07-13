@@ -36,16 +36,27 @@ enum CombatSprites {
                                             resize: false, restore: true)))
         root.addChild(sprite)
 
-        // Aura Aether plus prononcée en combat
-        let aura = SKShapeNode(circleOfRadius: 46)
-        aura.fillColor = SKColor(red: 0.20, green: 0.05, blue: 0.35, alpha: 0.18)
-        aura.strokeColor = SKColor(red: 0.55, green: 0.22, blue: 0.85, alpha: 0.22)
-        aura.lineWidth = 1.5
-        aura.position = CGPoint(x: 0, y: 22)
-        aura.zPosition = -1
-        root.addChild(aura)
-        JuiceEngine.pulse(aura, scale: 1.18)
+        // Pas d'aura : le sprite pixel reste pur (cohérent avec le monde).
+        return root
+    }
 
+    // MARK: - Lyra (alliée en combat)
+
+    static func lyra() -> SKNode {
+        let root = SKNode()
+        root.name = "combatLyra"
+        addShadow(to: root, width: 48)
+
+        // Sprite ME 48×96 — même convention d'ancrage que les ennemis.
+        // L'asset regarde déjà vers la droite (vers les ennemis).
+        // Échelle réduite : alliée en retrait derrière Kael.
+        if let sprite = PixelArtSprites.animated(name: "npc_lyra", frames: 6,
+                                                 scale: 1.45,
+                                                 timePerFrame: 0.16,
+                                                 anchor: CGPoint(x: 0.5, y: 0.0)) {
+            sprite.position = CGPoint(x: 0, y: -32)
+            root.addChild(sprite)
+        }
         return root
     }
 

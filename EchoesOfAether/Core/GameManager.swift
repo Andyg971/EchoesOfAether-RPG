@@ -36,6 +36,11 @@ final class GameManager {
     private weak var scene: SKScene?
     private var resonanceTotal = 0
     private var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
+
+    /// Lyra combat aux côtés de Kael dans les zones du pacte (tant qu'elle vit).
+    private var lyraInParty: Bool {
+        [.forest, .shrine, .ruins].contains(phase) && !player.lyraDeceased
+    }
     private var prologueNode: SKNode?              // cinématique d'ouverture
     private var prologueCompletion: (() -> Void)?
     // Joystick virtuel flottant
@@ -1259,7 +1264,8 @@ final class GameManager {
                           hp: 200, kind: .ghoul, baseDamage: 34)
             ],
             goldReward: 40,
-            player: player
+            player: player,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1289,7 +1295,8 @@ final class GameManager {
                           hp: 180, kind: .ghoul, baseDamage: 32)
             ],
             goldReward: 55,
-            player: player
+            player: player,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1341,7 +1348,8 @@ final class GameManager {
             enemyHP: 240,
             goldReward: 35,
             player: player,
-            enemyKind: .beast
+            enemyKind: .beast,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1379,7 +1387,8 @@ final class GameManager {
                           hp: 175, kind: .wolf, baseDamage: 26)
             ],
             goldReward: 50,
-            player: player
+            player: player,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1456,7 +1465,8 @@ final class GameManager {
                 goldReward: 120,
                 player: player,
                 enemyKind: .guardian,
-                boss: bossConfig
+                boss: bossConfig,
+                withLyra: lyraInParty
             ) { [weak self] resonance, gold in
                 guard let self else { return }
 
@@ -1805,7 +1815,8 @@ final class GameManager {
             enemyHP: 360,
             goldReward: 30,
             player: player,
-            enemyKind: .ruinsGuardian
+            enemyKind: .ruinsGuardian,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -1849,7 +1860,8 @@ final class GameManager {
                 goldReward: 55,
                 player: player,
                 enemyKind: .archivist,
-                boss: bossConfig
+                boss: bossConfig,
+                withLyra: lyraInParty
             ) { [weak self] resonance, gold in
                 guard let self, let scene = self.scene else { return }
                 if resonance < 0 { showDeathScreen(); return }
@@ -2345,7 +2357,8 @@ final class GameManager {
                 goldReward: 0,
                 player: player,
                 enemyKind: .guardian,
-                boss: bossConfig
+                boss: bossConfig,
+                withLyra: lyraInParty
             ) { [weak self] resonance, gold in
                 guard let self else { return }
                 if resonance < 0 { showDeathScreen(); return }
@@ -2614,7 +2627,8 @@ final class GameManager {
                           hp: 230, kind: .ghoul, baseDamage: 36)
             ],
             goldReward: 55,
-            player: player
+            player: player,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }
@@ -2654,7 +2668,8 @@ final class GameManager {
                           hp: 560, kind: .ruinsGuardian, baseDamage: 48)
             ],
             goldReward: 150,
-            player: player
+            player: player,
+            withLyra: lyraInParty
         ) { [weak self] resonance, gold in
             guard let self else { return }
             if resonance < 0 { showDeathScreen(); return }

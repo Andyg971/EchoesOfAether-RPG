@@ -2077,7 +2077,7 @@ final class GameManager {
         // aussi la bulle d'interaction et le hint.
         transition(to: .inventory)
         let entries = PrototypeContent.buildLoreEntries(for: player)
-        lore.open(entries: entries) { [weak self] in
+        lore.open(entries: entries, bestiarySeen: player.bestiarySeen) { [weak self] in
             self?.transition(to: .exploration)
         }
     }
@@ -2549,6 +2549,15 @@ final class GameManager {
             transition(to: .shop)
             shop.open(title: String(localized: "shop.bram.title"),
                       items: bramItems(), player: player) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        case "bestiary":
+            // Audit : toutes les espèces révélées, ouverture sur l'onglet
+            player.bestiarySeen = Set(CombatSpriteKind.allCases.map(\.bestiaryID))
+            transition(to: .inventory)
+            lore.open(entries: PrototypeContent.buildLoreEntries(for: player),
+                      bestiarySeen: player.bestiarySeen,
+                      startOnBestiary: true) { [weak self] in
                 self?.transition(to: .exploration)
             }
         case "dialogue":

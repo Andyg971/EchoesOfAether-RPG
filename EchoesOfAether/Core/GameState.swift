@@ -99,6 +99,7 @@ final class PlayerState {
     var act2EranFound: Bool = false
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
+    var bestiarySeen: Set<String> = []    // espèces croisées en combat (bestiaire)
     var act3EranMet: Bool = false      // rencontre Eran au Seuil faite
     var act3BossDefeated: Bool = false // Gardien du Seuil vaincu → vraie fin
     // Choix d'Eran qui détermine la fin de l'Acte III :
@@ -185,6 +186,7 @@ final class PlayerState {
             act3EranMet: act3EranMet,
             act3BossDefeated: act3BossDefeated,
             act3EndingChoice: act3EndingChoice,
+            bestiarySeen: Array(bestiarySeen),
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -228,6 +230,7 @@ final class PlayerState {
         act3EranMet = data.act3EranMet ?? false
         act3BossDefeated = data.act3BossDefeated ?? false
         act3EndingChoice = data.act3EndingChoice
+        bestiarySeen = Set(data.bestiarySeen ?? [])
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -277,6 +280,7 @@ struct SaveData: Codable {
     let act3EranMet: Bool?
     let act3BossDefeated: Bool?
     let act3EndingChoice: Int?
+    let bestiarySeen: [String]?
     let phase: GamePhase
     let resonanceTotal: Int
 }

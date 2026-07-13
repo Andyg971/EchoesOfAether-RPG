@@ -289,6 +289,8 @@ self.comboCount = 0
 self.phase = .intro
         self.completion = completion
         self._player = player
+        // Bestiaire : toute espèce affrontée est consignée.
+        player.bestiarySeen.formUnion(enemySpecs.prefix(3).map(\.kind.bestiaryID))
 
         root.removeFromParent()
         root.removeAllChildren()
@@ -359,7 +361,7 @@ self.phase = .intro
     }
 
     /// Faiblesses + boucliers par type d'ennemi.
-    private static func tactics(for kind: CombatSpriteKind, isBoss: Bool)
+    static func tactics(for kind: CombatSpriteKind, isBoss: Bool)
         -> (weaknesses: Set<CombatElement>, shieldMax: Int) {
         let weaknesses: Set<CombatElement>
         var shieldMax: Int

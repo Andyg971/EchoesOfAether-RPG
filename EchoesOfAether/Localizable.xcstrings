@@ -1,6 +1,134 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "bestiary.archivist.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A dead scholar, archiving still, forever."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Érudit mort qui archive encore, à jamais."
+          }
+        }
+      }
+    },
+    "bestiary.beast.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Underbrush beast bloated with corrupted Aether."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bête des sous-bois gorgée d'Aether corrompu."
+          }
+        }
+      }
+    },
+    "bestiary.boneWalker.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wandering bones, held upright by the Threshold's echo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Squelette errant, tenu debout par l'écho du Seuil."
+          }
+        }
+      }
+    },
+    "bestiary.ghoul.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A villager of old, reclaimed by the ash."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Villageois d'antan que la cendre a repris."
+          }
+        }
+      }
+    },
+    "bestiary.guardian.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cracked sentinel of the Aether Shrine."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sentinelle fissurée du Sanctuaire de l'Aether."
+          }
+        }
+      }
+    },
+    "bestiary.row.detail %@ %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Weak: %1$@ · Shield %2$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faiblesses : %1$@ · Bouclier %2$lld"
+          }
+        }
+      }
+    },
+    "bestiary.ruinsGuardian.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Watch-golem of the Wellspring Ruins."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Golem de garde des Ruines de la Source."
+          }
+        }
+      }
+    },
+    "bestiary.wolf.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wolf drowned in shadow; hunts in silent packs."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Loup noyé d'ombre ; chasse en meute silencieuse."
+          }
+        }
+      }
+    },
     "combat.archivist.specialName": {
       "localizations": {
         "en": {
@@ -8950,6 +9078,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inscription d'Eran"
+          }
+        }
+      }
+    },
+    "lore.tab.bestiary": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bestiary"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bestiaire"
+          }
+        }
+      }
+    },
+    "lore.tab.chronicles": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chronicles"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chroniques"
           }
         }
       }

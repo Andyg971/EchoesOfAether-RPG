@@ -1579,37 +1579,41 @@ final class GameManager {
 
     // MARK: - Shop Items
 
+    /// Forge de Bram : seul le PALIER SUIVANT de chaque catégorie est en
+    /// vitrine (l'étal reste court et la progression lisible).
+    /// Palier 3 (Aetherite) : gold sink de fin de partie.
     private func bramItems() -> [ShopItem] {
-        [
-            ShopItem(
-                nameKey: "shop.bram.ironBlade.name",
-                descKey: "shop.bram.ironBlade.desc",
-                price: 80,
-                canBuy: { [weak self] _ in (self?.player.weaponLevel ?? 0) < 1 },
-                onBuy: { [weak self] _ in self?.player.weaponLevel = 1 }
-            ),
-            ShopItem(
-                nameKey: "shop.bram.runicBlade.name",
-                descKey: "shop.bram.runicBlade.desc",
-                price: 180,
-                canBuy: { [weak self] _ in (self?.player.weaponLevel ?? 0) < 2 },
-                onBuy: { [weak self] _ in self?.player.weaponLevel = 2 }
-            ),
-            ShopItem(
-                nameKey: "shop.bram.chainMail.name",
-                descKey: "shop.bram.chainMail.desc",
-                price: 60,
-                canBuy: { [weak self] _ in (self?.player.armorLevel ?? 0) < 1 },
-                onBuy: { [weak self] _ in self?.player.armorLevel = 1 }
-            ),
-            ShopItem(
-                nameKey: "shop.bram.reinforced.name",
-                descKey: "shop.bram.reinforced.desc",
-                price: 150,
-                canBuy: { [weak self] _ in (self?.player.armorLevel ?? 0) < 2 },
-                onBuy: { [weak self] _ in self?.player.armorLevel = 2 }
-            )
+        let weapons: [(name: LocalizedStringResource, desc: LocalizedStringResource, price: Int)] = [
+            ("shop.bram.ironBlade.name", "shop.bram.ironBlade.desc", 80),
+            ("shop.bram.runicBlade.name", "shop.bram.runicBlade.desc", 180),
+            ("shop.bram.aetheriteBlade.name", "shop.bram.aetheriteBlade.desc", 420)
         ]
+        let armors: [(name: LocalizedStringResource, desc: LocalizedStringResource, price: Int)] = [
+            ("shop.bram.chainMail.name", "shop.bram.chainMail.desc", 60),
+            ("shop.bram.reinforced.name", "shop.bram.reinforced.desc", 150),
+            ("shop.bram.aetheritePlate.name", "shop.bram.aetheritePlate.desc", 380)
+        ]
+
+        var items: [ShopItem] = []
+        if player.weaponLevel < weapons.count {
+            let next = weapons[player.weaponLevel]
+            let targetLevel = player.weaponLevel + 1
+            items.append(ShopItem(
+                nameKey: next.name, descKey: next.desc, price: next.price,
+                canBuy: { [weak self] _ in (self?.player.weaponLevel ?? 3) < targetLevel },
+                onBuy: { [weak self] _ in self?.player.weaponLevel = targetLevel }
+            ))
+        }
+        if player.armorLevel < armors.count {
+            let next = armors[player.armorLevel]
+            let targetLevel = player.armorLevel + 1
+            items.append(ShopItem(
+                nameKey: next.name, descKey: next.desc, price: next.price,
+                canBuy: { [weak self] _ in (self?.player.armorLevel ?? 3) < targetLevel },
+                onBuy: { [weak self] _ in self?.player.armorLevel = targetLevel }
+            ))
+        }
+        return items
     }
 
     private func maraItems() -> [ShopItem] {

@@ -220,7 +220,8 @@ final class InventoryOverlay {
         switch level {
         case 0: return String(localized: "inventory.weapon.fists")
         case 1: return String(localized: "inventory.weapon.ironBlade")
-        default: return String(localized: "inventory.weapon.runicBlade")
+        case 2: return String(localized: "inventory.weapon.runicBlade")
+        default: return String(localized: "inventory.weapon.aetheriteBlade")
         }
     }
 
@@ -228,7 +229,8 @@ final class InventoryOverlay {
         switch level {
         case 0: return String(localized: "inventory.armor.none")
         case 1: return String(localized: "inventory.armor.chainMail")
-        default: return String(localized: "inventory.armor.reinforced")
+        case 2: return String(localized: "inventory.armor.reinforced")
+        default: return String(localized: "inventory.armor.aetheritePlate")
         }
     }
 

@@ -8346,6 +8346,22 @@
         }
       }
     },
+    "inventory.armor.aetheritePlate": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aetherite Plate"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plastron d'Aetherite"
+          }
+        }
+      }
+    },
     "inventory.armor.chainMail": {
       "localizations": {
         "en": {
@@ -8614,6 +8630,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inventaire"
+          }
+        }
+      }
+    },
+    "inventory.weapon.aetheriteBlade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aetherite Blade"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lame d'Aetherite"
           }
         }
       }
@@ -10817,6 +10849,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le jouet perdu"
+          }
+        }
+      }
+    },
+    "shop.bram.aetheriteBlade.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forged from Threshold crystal. ATK +22, Slash +35."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forgée dans le cristal du Seuil. ATQ +22, Entaille +35."
+          }
+        }
+      }
+    },
+    "shop.bram.aetheriteBlade.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aetherite Blade"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lame d'Aetherite"
+          }
+        }
+      }
+    },
+    "shop.bram.aetheritePlate.desc": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The metal sings when Aether draws near. Max HP +50."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le métal chante quand l'Aether approche. PV max +50."
+          }
+        }
+      }
+    },
+    "shop.bram.aetheritePlate.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aetherite Plate"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plastron d'Aetherite"
           }
         }
       }

@@ -57,79 +57,82 @@ final class MainMenuScene: SKScene {
         let h = size.height
         let safeTop = max(safeAreaTop, 0)
         let safeBottom = max(safeAreaBottom, 0)
-        let contentTop = h - safeTop - 32
-        let contentBottom = safeBottom + 34
+        let contentTop = h - safeTop - 20
+        let contentBottom = safeBottom + 26
 
         buildRPGBackdrop(w: w, h: h)
         addChild(ParticleFactory.ambientDust(in: size))
 
-        // Layout top-down : en paysage (h courte) tout se compacte pour
-        // que titre, sous-titre et slots ne se chevauchent jamais.
-        let compact = h < 500
+        // Paysage : Kael (art de l'icône) à gauche, titre + slots à droite.
+        // Portrait (fallback) : tout centré, héros omis.
+        let landscape = w > h
+        let heroZoneWidth = landscape ? w * 0.38 : 0
+        let columnCenterX = landscape ? heroZoneWidth + (w - heroZoneWidth) / 2 : w / 2
+
+        if landscape {
+            buildHeroArt(centerX: max(heroZoneWidth * 0.52, 110),
+                         centerY: h * 0.52, maxHeight: h * 0.86)
+        }
 
         // Titre pixel : VT323 + ombre dure décalée (pas de glow flou).
         let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         titleLabel.text = String(localized: "menu.title")
-        titleLabel.fontSize = compact ? min(40, w * 0.06) : min(50, w * 0.125)
-        titleLabel.fontColor = SKColor(red: 0.86, green: 0.78, blue: 1, alpha: 1)
+        titleLabel.fontSize = landscape ? min(46, (w - heroZoneWidth) * 0.105) : min(44, w * 0.11)
+        titleLabel.fontColor = SKColor(red: 0.88, green: 0.80, blue: 1, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         titleLabel.verticalAlignmentMode = .center
-        titleLabel.position = CGPoint(
-            x: w / 2,
-            y: compact ? contentTop - 14 : min(h - safeTop - h * 0.18, contentTop - 56))
+        titleLabel.position = CGPoint(x: columnCenterX, y: contentTop - 18)
         titleLabel.zPosition = 20
         addChild(titleLabel)
-        JuiceEngine.float(titleLabel, distance: 4)
+        JuiceEngine.float(titleLabel, distance: 3)
 
         let titleShadow = SKLabelNode(fontNamed: PixelUI.uiFont)
         titleShadow.text = titleLabel.text
         titleShadow.fontSize = titleLabel.fontSize
-        titleShadow.fontColor = SKColor(red: 0.22, green: 0.10, blue: 0.40, alpha: 0.9)
+        titleShadow.fontColor = SKColor(red: 0.20, green: 0.10, blue: 0.38, alpha: 0.95)
         titleShadow.horizontalAlignmentMode = .center
         titleShadow.verticalAlignmentMode = .center
         titleShadow.position = CGPoint(x: titleLabel.position.x + 3, y: titleLabel.position.y - 3)
         titleShadow.zPosition = 19
         addChild(titleShadow)
-        JuiceEngine.float(titleShadow, distance: 4)
+        JuiceEngine.float(titleShadow, distance: 3)
+
+        // Filet doré sous le titre, façon écran-titre SNES
+        let rule = SKSpriteNode(color: PixelUI.gold.withAlphaComponent(0.55),
+                                size: CGSize(width: min(w - heroZoneWidth - 60, 300), height: 2))
+        rule.position = CGPoint(x: columnCenterX, y: titleLabel.position.y - 22)
+        rule.zPosition = 20
+        addChild(rule)
 
         let sub = SKLabelNode(fontNamed: PixelUI.uiFont)
         sub.text = String(localized: "menu.subtitle")
-        sub.fontSize = compact ? 15 : 17
-        sub.fontColor = SKColor(red: 0.74, green: 0.70, blue: 0.82, alpha: 0.85)
+        sub.fontSize = 15
+        sub.fontColor = SKColor(red: 0.76, green: 0.72, blue: 0.86, alpha: 0.9)
         sub.horizontalAlignmentMode = .center
         sub.verticalAlignmentMode = .center
-        sub.preferredMaxLayoutWidth = min(w - 48, 380)
+        sub.preferredMaxLayoutWidth = landscape ? (w - heroZoneWidth - 48) : min(w - 48, 380)
         sub.numberOfLines = 2
-        sub.position = CGPoint(x: w / 2, y: titleLabel.position.y - (compact ? 30 : 40))
+        sub.position = CGPoint(x: columnCenterX, y: rule.position.y - 16)
         sub.zPosition = 20
         addChild(sub)
 
-        // En-tête « Choisis un emplacement »
-        let slotsTitle = SKLabelNode(fontNamed: PixelUI.uiFont)
-        slotsTitle.text = String(localized: "menu.chooseSlot")
-        slotsTitle.fontSize = compact ? 14 : 17
-        slotsTitle.fontColor = SKColor(white: 0.68, alpha: 1)
-        slotsTitle.horizontalAlignmentMode = .center
-        slotsTitle.verticalAlignmentMode = .center
-        slotsTitle.zPosition = 20
-        slotsTitle.position = CGPoint(x: w / 2, y: sub.position.y - (compact ? 26 : 36))
-        addChild(slotsTitle)
-
-        // Empilement vertical des slots sous l'en-tête ; la hauteur des
-        // lignes se réduit pour tenir dans l'espace restant (paysage).
+        // Empilement vertical des slots sous le sous-titre.
         let count = SaveManager.slotCount
-        let spacing: CGFloat = compact ? 10 : 16
-        let zoneTop = slotsTitle.position.y - 20
-        let zoneBottom = contentBottom + 14
+        let spacing: CGFloat = 10
+        let zoneTop = sub.position.y - 18
+        let zoneBottom = contentBottom + 16
         let availH = max(zoneTop - zoneBottom, 120)
-        let rowHeight = min(66, max(48, (availH - CGFloat(count - 1) * spacing) / CGFloat(count)))
+        let rowHeight = min(60, max(46, (availH - CGFloat(count - 1) * spacing) / CGFloat(count)))
         let topRowY = zoneTop - rowHeight / 2
 
         for i in 0..<count {
             let slot = i + 1
             let rowY = topRowY - CGFloat(i) * (rowHeight + spacing)
-            let row = makeSlotRow(slot: slot, height: rowHeight)
-            row.position = CGPoint(x: w / 2, y: rowY)
+            let row = makeSlotRow(slot: slot, height: rowHeight,
+                                  width: landscape
+                                      ? min(w - heroZoneWidth - 44, 380)
+                                      : min(max(w - 56, 268), 360))
+            row.position = CGPoint(x: columnCenterX, y: rowY)
             row.zPosition = 20
             addChild(row)
             JuiceEngine.popIn(row, delay: 0.1 + Double(i) * 0.08)
@@ -137,13 +140,44 @@ final class MainMenuScene: SKScene {
 
         let version = SKLabelNode(fontNamed: PixelUI.uiFont)
         version.text = String(localized: "menu.version")
-        version.fontSize = 13
+        version.fontSize = 12
         version.fontColor = SKColor(white: 0.46, alpha: 0.9)
         version.horizontalAlignmentMode = .center
         version.verticalAlignmentMode = .center
-        version.position = CGPoint(x: w / 2, y: contentBottom)
+        version.position = CGPoint(x: columnCenterX, y: contentBottom - 6)
         version.zPosition = 20
         addChild(version)
+    }
+
+    /// Art de Kael (repris de l'icône de l'app) dans un cadre pixel doré.
+    private func buildHeroArt(centerX: CGFloat, centerY: CGFloat, maxHeight: CGFloat) {
+        guard UIImage(named: "menu_hero") != nil else { return }
+        let texture = SKTexture(imageNamed: "menu_hero")
+        texture.filteringMode = .nearest
+        let aspect = texture.size().width / texture.size().height
+        let height = maxHeight
+        let width = height * aspect
+
+        let frame = SKShapeNode()
+        PixelUI.stylePanel(frame, size: CGSize(width: width + 10, height: height + 10),
+                           fill: SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1),
+                           accent: PixelUI.gold)
+        frame.position = CGPoint(x: centerX, y: centerY)
+        frame.zPosition = 14
+        addChild(frame)
+
+        let hero = SKSpriteNode(texture: texture)
+        hero.size = CGSize(width: width, height: height)
+        hero.position = frame.position
+        hero.zPosition = 15
+        addChild(hero)
+        JuiceEngine.float(hero, distance: 2)
+
+        // Braises d'Aether qui montent devant le cadre
+        let embers = ParticleFactory.ambientDust(in: CGSize(width: width, height: height))
+        embers.position = CGPoint(x: centerX - width / 2, y: centerY - height / 2)
+        embers.zPosition = 16
+        addChild(embers)
     }
 
     // MARK: - Touches
@@ -232,8 +266,7 @@ final class MainMenuScene: SKScene {
 
     // MARK: - Slot row
 
-    private func makeSlotRow(slot: Int, height: CGFloat) -> SKShapeNode {
-        let width = min(max(size.width - 56, 268), 360)
+    private func makeSlotRow(slot: Int, height: CGFloat, width: CGFloat) -> SKShapeNode {
         let hasSave = SaveManager.hasSave(slot: slot)
 
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
@@ -336,57 +369,87 @@ final class MainMenuScene: SKScene {
     // MARK: - Helpers
 
     private func buildRPGBackdrop(w: CGFloat, h: CGFloat) {
-        let sky = SKShapeNode(rectOf: CGSize(width: w, height: h))
-        sky.fillColor = SKColor(red: 0.035, green: 0.030, blue: 0.055, alpha: 1)
-        sky.strokeColor = .clear
-        sky.position = CGPoint(x: w / 2, y: h / 2)
-        sky.zPosition = -20
-        addChild(sky)
+        // Ciel nocturne : dégradé en bandes plates (dithering rétro),
+        // de l'indigo profond au violet d'Aether.
+        let bands: [(CGFloat, CGFloat, CGFloat)] = [
+            (0.030, 0.026, 0.052), (0.040, 0.032, 0.068),
+            (0.052, 0.038, 0.086), (0.066, 0.046, 0.104)
+        ]
+        let bandH = h / CGFloat(bands.count)
+        for (i, c) in bands.enumerated() {
+            let strip = SKSpriteNode(color: SKColor(red: c.0, green: c.1, blue: c.2, alpha: 1),
+                                     size: CGSize(width: w + 4, height: bandH + 2))
+            strip.position = CGPoint(x: w / 2, y: h - bandH * (CGFloat(i) + 0.5))
+            strip.zPosition = -20
+            addChild(strip)
+        }
 
-        // Lune pixelisée : cercle rendu en 16 px puis agrandi en .nearest
-        // → gros pixels nets, cohérents avec le reste du jeu.
-        let moon = pixelCircleSprite(pixels: 16,
-                                     fill: SKColor(red: 0.62, green: 0.58, blue: 0.78, alpha: 0.34),
-                                     rim: SKColor(red: 0.82, green: 0.75, blue: 1, alpha: 0.30))
-        moon.size = CGSize(width: min(w, h) * 0.21, height: min(w, h) * 0.21)
-        moon.position = CGPoint(x: w * 0.74, y: h * 0.80)
-        moon.zPosition = -18
-        addChild(moon)
-        JuiceEngine.pulse(moon, scale: 1.04)
+        // Étoiles pixel : petits carrés scintillants, densité faible
+        var rng = SystemRandomNumberGenerator()
+        for _ in 0..<26 {
+            let side = CGFloat(Int.random(in: 2...3, using: &rng))
+            let star = SKSpriteNode(
+                color: Bool.random(using: &rng)
+                    ? SKColor(red: 0.85, green: 0.82, blue: 1.0, alpha: 0.8)
+                    : SKColor(red: 0.55, green: 0.80, blue: 0.90, alpha: 0.7),
+                size: CGSize(width: side, height: side))
+            star.position = CGPoint(x: .random(in: 8...(w - 8), using: &rng),
+                                    y: .random(in: h * 0.35...(h - 8), using: &rng))
+            star.zPosition = -18
+            star.alpha = .random(in: 0.3...0.9, using: &rng)
+            addChild(star)
+            star.run(.repeatForever(.sequence([
+                .fadeAlpha(to: 0.15, duration: .random(in: 0.8...2.2, using: &rng)),
+                .fadeAlpha(to: 0.85, duration: .random(in: 0.8...2.2, using: &rng))
+            ])))
+        }
 
-        // La chapelle de la Source sous la lune, gardée par les anges —
-        // le lieu où tout se joue, en vitrine dès le titre.
-        addBackdropSprite("gy_chapel", at: CGPoint(x: w * 0.50, y: h * 0.34), scale: 0.62, alpha: 0.80, z: -12)
-        addBackdropSprite("me_statue_angel", at: CGPoint(x: w * 0.33, y: h * 0.30), scale: 0.22, alpha: 0.66, z: -11)
-        addBackdropSprite("me_statue_angel", at: CGPoint(x: w * 0.67, y: h * 0.30), scale: 0.22, alpha: 0.66, z: -11)
-        addBackdropSprite("gy_tree", at: CGPoint(x: w * 0.10, y: h * 0.26), scale: 0.60, alpha: 0.75, z: -8)
-        addBackdropSprite("gy_tree", at: CGPoint(x: w * 0.90, y: h * 0.24), scale: 0.64, alpha: 0.78, z: -8)
-        addBackdropSprite("gy_candle", at: CGPoint(x: w * 0.24, y: h * 0.22), scale: 0.50, alpha: 0.85, z: -6)
-        addBackdropSprite("gy_candle", at: CGPoint(x: w * 0.76, y: h * 0.22), scale: 0.50, alpha: 0.85, z: -6)
+        // Lune pixelisée — uniquement en portrait : en paysage elle
+        // passait derrière le titre et le sous-titre.
+        if h > w {
+            let moon = pixelCircleSprite(pixels: 16,
+                                         fill: SKColor(red: 0.62, green: 0.58, blue: 0.78, alpha: 0.38),
+                                         rim: SKColor(red: 0.82, green: 0.75, blue: 1, alpha: 0.32))
+            moon.size = CGSize(width: min(w, h) * 0.16, height: min(w, h) * 0.16)
+            moon.position = CGPoint(x: w * 0.82, y: h * 0.82)
+            moon.zPosition = -17
+            addChild(moon)
+            JuiceEngine.pulse(moon, scale: 1.03)
+        }
 
-        let ground = SKShapeNode(rectOf: CGSize(width: w * 1.20, height: h * 0.36), cornerRadius: 0)
-        ground.fillColor = SKColor(red: 0.025, green: 0.040, blue: 0.030, alpha: 0.92)
-        ground.strokeColor = .clear
-        ground.position = CGPoint(x: w / 2, y: h * 0.13)
-        ground.zPosition = -6
+        // Forêt d'Ébène en silhouettes : deux plans de profondeur
+        let backTrees: [(CGFloat, CGFloat)] = [(0.06, 0.66), (0.20, 0.72), (0.38, 0.62),
+                                               (0.55, 0.70), (0.72, 0.64), (0.90, 0.70)]
+        for (x, s) in backTrees {
+            addBackdropSprite("tree_medium_2", at: CGPoint(x: w * x, y: h * 0.16),
+                              scale: s, alpha: 0.32, z: -14)
+        }
+        let frontTrees: [(CGFloat, CGFloat)] = [(0.12, 0.9), (0.46, 0.82), (0.82, 0.92)]
+        for (x, s) in frontTrees {
+            addBackdropSprite("tree_big", at: CGPoint(x: w * x, y: h * 0.04),
+                              scale: s, alpha: 0.5, z: -12)
+        }
+
+        // Sol : bande sombre en bas
+        let ground = SKSpriteNode(color: SKColor(red: 0.020, green: 0.028, blue: 0.024, alpha: 1),
+                                  size: CGSize(width: w * 1.2, height: h * 0.14))
+        ground.position = CGPoint(x: w / 2, y: h * 0.05)
+        ground.zPosition = -10
         addChild(ground)
 
-        // Halo d'Éther : bandes horizontales plates façon dithering rétro
-        // (remplace l'ellipse floue à glow).
+        // Brume d'Aether : bandes horizontales plates au ras du sol
         let aether = SKNode()
-        let bandHeights: [(CGFloat, CGFloat, CGFloat)] = [
-            (0.72, 8, 0.10), (0.58, 8, 0.16), (0.42, 8, 0.22)
-        ]
-        for (i, band) in bandHeights.enumerated() {
-            let strip = SKSpriteNode(color: SKColor(red: 0.55, green: 0.34, blue: 0.95, alpha: band.2),
-                                     size: CGSize(width: w * band.0, height: band.1))
-            strip.position = CGPoint(x: 0, y: CGFloat(i) * 8 - 8)
+        for (i, alpha) in [0.08, 0.13, 0.18].enumerated() {
+            let strip = SKSpriteNode(
+                color: SKColor(red: 0.55, green: 0.34, blue: 0.95, alpha: alpha),
+                size: CGSize(width: w * (0.9 - CGFloat(i) * 0.15), height: 7))
+            strip.position = CGPoint(x: 0, y: CGFloat(i) * 7 - 7)
             aether.addChild(strip)
         }
-        aether.position = CGPoint(x: w / 2, y: h * 0.24)
-        aether.zPosition = -4
+        aether.position = CGPoint(x: w / 2, y: h * 0.14)
+        aether.zPosition = -9
         addChild(aether)
-        JuiceEngine.pulse(aether, scale: 1.08)
+        JuiceEngine.pulse(aether, scale: 1.06)
     }
 
     /// Sprite cercle pixel art : dessiné à `pixels` px de côté puis

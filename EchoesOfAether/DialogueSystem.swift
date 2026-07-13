@@ -16,6 +16,9 @@ final class DialogueSystem {
     private let root = SKNode()
     private let panel = SKShapeNode()
     private let separator = SKShapeNode()          // trait fin sous le nom
+    private let portraitFrame = SKShapeNode()      // cadre pixel du portrait
+    private let portraitSprite = SKSpriteNode()    // visage du locuteur
+    private var hasPortrait = false
     private let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -47,6 +50,13 @@ final class DialogueSystem {
         panel.strokeColor = PixelUI.gold
         panel.lineWidth = 2
         root.addChild(panel)
+
+        // Portrait pixel du locuteur : cadre carré à gauche du panneau
+        portraitFrame.zPosition = 2
+        root.addChild(portraitFrame)
+        portraitSprite.texture?.filteringMode = .nearest
+        portraitSprite.zPosition = 3
+        root.addChild(portraitSprite)
 
         speakerLabel.horizontalAlignmentMode = .left
         speakerLabel.fontSize = 11
@@ -93,8 +103,23 @@ final class DialogueSystem {
         let baseY = panelHeight / 2 + 20 + safeBottom
         root.position = CGPoint(x: size.width / 2, y: baseY)
 
-        // Nom du locuteur seul, teinté à sa couleur — pas d'avatar.
-        let textX = -panelWidth / 2 + 14
+        // Portrait (44px natif) dans un cadre pixel à gauche ; le texte
+        // se décale quand un visage est affiché.
+        let portraitSide: CGFloat = 52
+        let portraitX = -panelWidth / 2 + portraitSide / 2 + 10
+        PixelUI.stylePanel(portraitFrame,
+                           size: CGSize(width: portraitSide, height: portraitSide),
+                           fill: SKColor(red: 0.08, green: 0.06, blue: 0.12, alpha: 1),
+                           accent: PixelUI.goldDim)
+        portraitFrame.position = CGPoint(x: portraitX, y: 0)
+        portraitSprite.position = portraitFrame.position
+        portraitSprite.size = CGSize(width: portraitSide - 8, height: portraitSide - 8)
+        portraitFrame.isHidden = !hasPortrait
+        portraitSprite.isHidden = !hasPortrait
+
+        let textX = hasPortrait
+            ? portraitX + portraitSide / 2 + 12
+            : -panelWidth / 2 + 14
         speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 16)
 
         let sepY = panelHeight / 2 - 26
@@ -103,8 +128,8 @@ final class DialogueSystem {
         sepPath.addLine(to: CGPoint(x: panelWidth / 2 - 22, y: sepY))
         separator.path = sepPath
 
-        bodyLabel.position = CGPoint(x: -panelWidth / 2 + 14, y: sepY - 6)
-        bodyLabel.preferredMaxLayoutWidth = panelWidth - 32
+        bodyLabel.position = CGPoint(x: textX, y: sepY - 6)
+        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - 18
 
         continueIndicator.position = CGPoint(x: panelWidth / 2 - 18, y: -panelHeight / 2 + 16)
 
@@ -174,8 +199,32 @@ final class DialogueSystem {
         return SKColor(hue: hue, saturation: 0.55, brightness: 0.75, alpha: 1)
     }
 
-    /// Plus d'avatar : le prénom seul, teinté à la couleur du locuteur
-    /// (éclairci si besoin pour rester lisible sur le panneau sombre).
+    /// Asset de portrait pixel par locuteur (nil = pas de visage :
+    /// voix, cristal, plaque… le panneau retombe en mode texte seul).
+    private func portraitAsset(for speaker: String) -> String? {
+        let key = speaker.lowercased()
+        let table: [(String, String)] = [
+            ("kael", "portrait_kael_icon"),
+            ("lyra", "portrait_lyra"),
+            ("dorin", "portrait_dorin"),
+            ("bram", "portrait_bram"),
+            ("mara", "portrait_mara"),
+            ("garen", "portrait_garen"),
+            ("sage", "portrait_sage"),
+            ("eran", "portrait_eran"),
+            ("archiv", "portrait_archivist"),
+            ("gardien", "portrait_guardian"),
+            ("guardian", "portrait_guardian"),
+            ("enfant", "portrait_child"),
+            ("child", "portrait_child"),
+            ("villageois", "portrait_villager"),
+            ("villager", "portrait_villager")
+        ]
+        for (needle, asset) in table where key.contains(needle) { return asset }
+        return nil
+    }
+
+    /// Nom teinté à la couleur du locuteur + portrait pixel si disponible.
     private func applyPortrait(for speaker: String) {
         let color = portraitColor(for: speaker)
         var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
@@ -183,6 +232,15 @@ final class DialogueSystem {
         speakerLabel.fontColor = b < 0.6
             ? SKColor(hue: h, saturation: min(s, 0.6), brightness: 0.80, alpha: 1)
             : color
+
+        if let asset = portraitAsset(for: speaker), UIImage(named: asset) != nil {
+            let texture = SKTexture(imageNamed: asset)
+            texture.filteringMode = .nearest
+            portraitSprite.texture = texture
+            hasPortrait = true
+        } else {
+            hasPortrait = false
+        }
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
@@ -259,6 +317,11 @@ final class DialogueSystem {
             bodyLabel.text = ""
             continueIndicator.isHidden = true
             createChoices(options)
+        }
+
+        // Le portrait peut apparaître/disparaître selon le locuteur.
+        if let sceneRef = root.scene {
+            layout(in: sceneRef.size, safeBottom: safeBottom)
         }
     }
 

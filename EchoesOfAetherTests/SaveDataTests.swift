@@ -64,6 +64,38 @@ final class SaveDataTests: XCTestCase {
         XCTAssertEqual(restored.currentHP, restored.currentMaxHP)
     }
 
+    /// Round-trip des champs de l'Acte IV (Le Cœur du Vide).
+    func testAct4FieldsRoundTrip() throws {
+        let player = PlayerState()
+        player.act4MemoriesSeen = ["1", "3"]
+        player.act4ReflectionsFreed = ["elder", "smith", "lost"]
+        player.act4DevourersDefeated = true
+        player.act4VoiceConfronted = true
+        player.act4BossDefeated = true
+        player.act4EndingChoice = 1
+
+        let data = player.toSaveData(phase: .act4, resonance: 77)
+        let encoded = try JSONEncoder().encode(data)
+        let decoded = try JSONDecoder().decode(SaveData.self, from: encoded)
+
+        XCTAssertEqual(decoded.phase, .act4)
+        XCTAssertEqual(Set(decoded.act4MemoriesSeen ?? []), ["1", "3"])
+        XCTAssertEqual(Set(decoded.act4ReflectionsFreed ?? []), ["elder", "smith", "lost"])
+        XCTAssertEqual(decoded.act4DevourersDefeated, true)
+        XCTAssertEqual(decoded.act4VoiceConfronted, true)
+        XCTAssertEqual(decoded.act4BossDefeated, true)
+        XCTAssertEqual(decoded.act4EndingChoice, 1)
+
+        let restored = PlayerState()
+        restored.load(from: decoded)
+        XCTAssertEqual(restored.act4MemoriesSeen, ["1", "3"])
+        XCTAssertEqual(restored.act4ReflectionsFreed, ["elder", "smith", "lost"])
+        XCTAssertTrue(restored.act4DevourersDefeated)
+        XCTAssertTrue(restored.act4VoiceConfronted)
+        XCTAssertTrue(restored.act4BossDefeated)
+        XCTAssertEqual(restored.act4EndingChoice, 1)
+    }
+
     /// Une sauvegarde « legacy » sans les clés optionnelles (level, xp, act3*)
     /// doit se décoder et fournir des valeurs par défaut sûres.
     func testBackwardCompatibilityWithMissingOptionalFields() throws {
@@ -106,6 +138,9 @@ final class SaveDataTests: XCTestCase {
         XCTAssertNil(decoded.act3EranMet)
         XCTAssertNil(decoded.act3BossDefeated)
         XCTAssertNil(decoded.act3EndingChoice)
+        XCTAssertNil(decoded.act4MemoriesSeen)
+        XCTAssertNil(decoded.act4BossDefeated)
+        XCTAssertNil(decoded.act4EndingChoice)
         XCTAssertEqual(decoded.phase, .village)
 
         // Le chargement applique les défauts sûrs.
@@ -116,5 +151,8 @@ final class SaveDataTests: XCTestCase {
         XCTAssertFalse(player.act3EranMet)
         XCTAssertFalse(player.act3BossDefeated)
         XCTAssertNil(player.act3EndingChoice)
+        XCTAssertTrue(player.act4MemoriesSeen.isEmpty)
+        XCTAssertFalse(player.act4BossDefeated)
+        XCTAssertNil(player.act4EndingChoice)
     }
 }

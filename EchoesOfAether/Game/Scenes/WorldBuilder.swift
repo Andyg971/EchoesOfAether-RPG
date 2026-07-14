@@ -301,6 +301,24 @@ final class WorldBuilder {
         if echoJoined { showLyraEcho(in: scene) }
     }
 
+    /// Acte IV — Le Cœur du Vide. Au-delà du Seuil : la source des échos.
+    /// Décor 100% assets existants (mêmes règles que le Seuil).
+    func switchToVoidHeart(in scene: SKScene,
+                           echoJoined: Bool = false,
+                           reflectionsFreed: Set<String> = [],
+                           devourersDefeated: Bool = false,
+                           bossDefeated: Bool = false) {
+        clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.04, green: 0.01, blue: 0.07, alpha: 1)
+        buildVoidHeart(in: scene, reflectionsFreed: reflectionsFreed,
+                       devourersDefeated: devourersDefeated,
+                       bossDefeated: bossDefeated)
+        if echoJoined { showLyraEcho(in: scene) }
+    }
+
     /// L'Écho de Lyra accompagne Kael au Seuil : le node Lyra existant,
     /// teinté cyan spectral et translucide (le follow est réutilisé).
     func showLyraEcho(in scene: SKScene) {
@@ -1853,6 +1871,139 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
+    }
+
+    /// LE CŒUR DU VIDE (Acte IV) — sanctuaire intérieur. Sol pierre teinté
+    /// pourpre profond, Cœur central (orbe pulsé au sommet de l'escalier),
+    /// fragments de mémoire, reflets absorbés, dévoreurs d'échos.
+    private func buildVoidHeart(in scene: SKScene,
+                                reflectionsFreed: Set<String> = [],
+                                devourersDefeated: Bool = false,
+                                bossDefeated: Bool = false) {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sol : pierre a2 teintée pourpre — plus profond que le Seuil
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_stone"],
+                      fallbackColor: SKColor(red: 0.05, green: 0.02, blue: 0.09, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.22, green: 0.10, blue: 0.32, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
+
+        // Titre de zone
+        let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+        zoneLabel.text = String(localized: "world.voidheart.title")
+        zoneLabel.fontSize = 14
+        zoneLabel.fontColor = SKColor(red: 0.75, green: 0.45, blue: 0.90, alpha: 0.65)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.93)
+        zoneLabel.zPosition = -1
+        add(zoneLabel, to: scene)
+
+        // ── LE CŒUR : orbe géant au sommet de l'escalier central ──
+        addPixelProp("me_stairs", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.70), scale: 0.60)
+        let heart = SKShapeNode(circleOfRadius: bossDefeated ? 34 : 46)
+        let heartColor: SKColor = bossDefeated
+            ? SKColor(red: 0.40, green: 0.85, blue: 0.95, alpha: 1)   // apaisé : cyan
+            : SKColor(red: 0.85, green: 0.25, blue: 0.95, alpha: 1)   // actif : pourpre
+        heart.fillColor = heartColor.withAlphaComponent(0.16)
+        heart.strokeColor = heartColor.withAlphaComponent(0.55)
+        heart.lineWidth = 2
+        heart.glowWidth = 10
+        heart.name = "voidHeartCore"
+        heart.position = CGPoint(x: w * 0.50, y: h * 0.86)
+        heart.zPosition = -2
+        add(heart, to: scene)
+        JuiceEngine.pulse(heart, scale: bossDefeated ? 1.06 : 1.25)
+
+        // Anneau de colonnes brisées autour du Cœur
+        for (px, py, flip) in [(0.30, 0.78, false), (0.70, 0.78, true),
+                               (0.22, 0.60, false), (0.78, 0.60, true)] {
+            addPixelProp("column_broken_1", in: scene,
+                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)),
+                         scale: 2.0, flipped: flip)
+        }
+
+        // Statues d'anges renversées — les gardiens sont tombés ici
+        addPixelProp("me_statue_angel", in: scene,
+                     at: CGPoint(x: w * 0.40, y: h * 0.52), scale: 0.24)
+        addPixelProp("me_statue_angel", in: scene,
+                     at: CGPoint(x: w * 0.60, y: h * 0.52), scale: 0.24, flipped: true)
+
+        // Fissures d'énergie convergeant vers le Cœur + mares d'Aether
+        for (px, py) in [(0.18, 0.40), (0.82, 0.44), (0.50, 0.28)] {
+            add(makeCrack(from: CGPoint(x: w * px, y: h * py),
+                          to: CGPoint(x: w * 0.50, y: h * 0.74)), to: scene)
+        }
+        for (px, py) in [(0.14, 0.30), (0.86, 0.34)] {
+            add(makeRedAetherPool(at: CGPoint(x: w * px, y: h * py)), to: scene)
+        }
+
+        // ── Fragments de mémoire (quête « Les souvenirs de Kael ») ──
+        // Chandelles spectrales aux trois points d'examen — toujours
+        // visibles ; l'état "vu" ne gate que l'interaction.
+        for (px, py) in [(0.20, 0.46), (0.62, 0.30), (0.80, 0.52)] {
+            addPixelProp("gy_candle", in: scene,
+                         at: CGPoint(x: w * px, y: h * py), scale: 0.55)
+            let mGlow = SKShapeNode(circleOfRadius: 16)
+            mGlow.fillColor = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 0.08)
+            mGlow.strokeColor = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 0.30)
+            mGlow.lineWidth = 1
+            mGlow.glowWidth = 4
+            mGlow.position = CGPoint(x: w * px, y: h * py)
+            mGlow.zPosition = -3
+            add(mGlow, to: scene)
+            JuiceEngine.pulse(mGlow, scale: 1.15)
+        }
+
+        // ── Reflets absorbés (quête « Les visages du Vide ») ──
+        let reflectionDefs: [(id: String, asset: String, x: CGFloat, y: CGFloat)] = [
+            ("elder", "npc_dorin", 0.28, 0.36),
+            ("smith", "npc_bram",  0.68, 0.44),
+            ("lost",  "npc_child", 0.46, 0.24)
+        ]
+        for def in reflectionDefs where !reflectionsFreed.contains(def.id) {
+            addWanderingSpirit(id: def.id, asset: def.asset, in: scene,
+                               at: CGPoint(x: w * def.x, y: h * def.y))
+        }
+
+        // ── Dévoreurs d'échos : combat annexe ──
+        if !devourersDefeated {
+            let devourZone = makeDangerZone(
+                at: CGPoint(x: w * 0.80, y: h * 0.66), radius: 36,
+                color: SKColor(red: 0.85, green: 0.25, blue: 0.60, alpha: 1))
+            add(devourZone, to: scene)
+            for (dx, flip) in [(-0.03, false), (0.04, true)] {
+                guard let devourer = PixelArtSprites.animated(
+                    name: "enemy_bone", frames: 6, scale: 0.5,
+                    timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+                devourer.position = CGPoint(x: w * (0.80 + dx), y: h * 0.68)
+                devourer.zPosition = actorLayer(for: devourer.position.y)
+                if flip { devourer.xScale = -abs(devourer.xScale) }
+                devourer.alpha = 0.70
+                devourer.forEachDescendantSprite { sp in
+                    sp.color = SKColor(red: 0.55, green: 0.12, blue: 0.40, alpha: 1)
+                    sp.colorBlendFactor = 0.60
+                }
+                add(devourer, to: scene)
+            }
+        }
+
+        // Marqueur de confrontation de la Voix (devant l'escalier)
+        if !bossDefeated {
+            let voiceMark = makeDangerZone(
+                at: CGPoint(x: w * 0.50, y: h * 0.58), radius: 34,
+                color: SKColor(red: 0.75, green: 0.35, blue: 0.95, alpha: 1))
+            add(voiceMark, to: scene)
+        }
+
+        // Cristal de sauvegarde (entrée, bas gauche)
+        addSaveCrystal(at: CGPoint(x: w * 0.14, y: h * 0.18), in: scene)
+
+        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.50)
     }
 
     /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.

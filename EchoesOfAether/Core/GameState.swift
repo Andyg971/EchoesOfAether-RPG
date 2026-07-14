@@ -26,6 +26,7 @@ enum GamePhase: Int, CaseIterable, Codable {
     case ruins   = 6   // Ruines de la Source
     case fallen  = 7   // Kael seul après la mort de Lyra
     case act3    = 8   // Le Seuil — Kael comme antagoniste
+    case act4    = 9   // Le Cœur du Vide — au-delà du Seuil
 
     var next: GamePhase? {
         GamePhase(rawValue: rawValue + 1)
@@ -109,6 +110,14 @@ final class PlayerState {
     // Choix d'Eran qui détermine la fin de l'Acte III :
     // nil = non choisi, 0 = franchir le Seuil, 1 = résister / refuser le Vide.
     var act3EndingChoice: Int? = nil
+    var act4MemoriesSeen: Set<String> = []       // fragments de mémoire examinés
+    var act4ReflectionsFreed: Set<String> = []   // reflets absorbés libérés
+    var act4DevourersDefeated: Bool = false      // combat annexe : dévoreurs purgés
+    var act4VoiceConfronted: Bool = false        // confrontation de la Voix faite
+    var act4BossDefeated: Bool = false           // Avatar du Vide vaincu
+    // Choix final devant le Cœur : nil = non choisi,
+    // 0 = détruire le Cœur (libérer les échos), 1 = fusionner avec le Cœur.
+    var act4EndingChoice: Int? = nil
 
     // MARK: - Stats dérivées (incluent le bonus de niveau)
     //
@@ -195,6 +204,12 @@ final class PlayerState {
             act3SpiritsCalmed: Array(act3SpiritsCalmed),
             act3StelesRead: Array(act3StelesRead),
             act3ShadesDefeated: act3ShadesDefeated,
+            act4MemoriesSeen: Array(act4MemoriesSeen),
+            act4ReflectionsFreed: Array(act4ReflectionsFreed),
+            act4DevourersDefeated: act4DevourersDefeated,
+            act4VoiceConfronted: act4VoiceConfronted,
+            act4BossDefeated: act4BossDefeated,
+            act4EndingChoice: act4EndingChoice,
             savedAt: Date(),
             phase: phase, resonanceTotal: resonance
         )
@@ -244,6 +259,12 @@ final class PlayerState {
         act3SpiritsCalmed = Set(data.act3SpiritsCalmed ?? [])
         act3StelesRead = Set(data.act3StelesRead ?? [])
         act3ShadesDefeated = data.act3ShadesDefeated ?? false
+        act4MemoriesSeen = Set(data.act4MemoriesSeen ?? [])
+        act4ReflectionsFreed = Set(data.act4ReflectionsFreed ?? [])
+        act4DevourersDefeated = data.act4DevourersDefeated ?? false
+        act4VoiceConfronted = data.act4VoiceConfronted ?? false
+        act4BossDefeated = data.act4BossDefeated ?? false
+        act4EndingChoice = data.act4EndingChoice
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -299,6 +320,13 @@ struct SaveData: Codable {
     let act3SpiritsCalmed: [String]?
     let act3StelesRead: [String]?
     let act3ShadesDefeated: Bool?
+    // Acte IV — le Cœur du Vide (optionnels — rétro-compatibles)
+    let act4MemoriesSeen: [String]?
+    let act4ReflectionsFreed: [String]?
+    let act4DevourersDefeated: Bool?
+    let act4VoiceConfronted: Bool?
+    let act4BossDefeated: Bool?
+    let act4EndingChoice: Int?
     // Horodatage pour la résolution de conflit iCloud (nil = save ancienne)
     let savedAt: Date?
     let phase: GamePhase

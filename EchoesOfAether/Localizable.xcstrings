@@ -742,6 +742,22 @@
         }
       }
     },
+    "combat.enemy.echoDevourer": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Echo Devourer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dévoreur d'échos"
+          }
+        }
+      }
+    },
     "combat.enemy.ghoul": {
       "localizations": {
         "en": {
@@ -818,6 +834,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gardien du Seuil"
+          }
+        }
+      }
+    },
+    "combat.enemy.voidAvatar": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avatar of the Void"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Avatar du Vide"
           }
         }
       }
@@ -1513,6 +1545,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "À toi de jouer !"
+          }
+        }
+      }
+    },
+    "combat.voidAvatar.specialName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erasure"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Effacement"
           }
         }
       }
@@ -4027,6 +4075,982 @@
           "stringUnit": {
             "state": "translated",
             "value": "La Voix"
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPost1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible… I am… eternal…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Impossible… je suis… éternel…"
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPost2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Avatar dissolves. Only the Heart remains, defenseless."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'Avatar se dissout. Il ne reste que le Cœur, sans défense."
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPost3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It is time. What I do now, no one can undo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "C'est l'heure. Ce que je fais maintenant, personne ne pourra le défaire."
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPre1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I am every shadow you defeated. Every echo you failed to save. Behold your work."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je suis chaque ombre que tu as vaincue. Chaque écho que tu n'as pas sauvé. Regarde ton œuvre."
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPre2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't listen! We are three. It is only what remains."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne l'écoute pas ! Nous sommes trois. Lui n'est que le reste."
+          }
+        }
+      }
+    },
+    "dialogue.act4.avatarPre3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "For Solis. For Lyra. For the end of the stolen echoes!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pour Solis. Pour Lyra. Pour la fin des échos volés !"
+          }
+        }
+      }
+    },
+    "dialogue.act4.choice1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Destroy it. Free the echoes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le détruire. Libérer les échos."
+          }
+        }
+      }
+    },
+    "dialogue.act4.choice2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merge with it. Become the keeper."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fusionner. Devenir le gardien."
+          }
+        }
+      }
+    },
+    "dialogue.act4.choicePrompt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "What will Kael do with the Heart?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Que fera Kael du Cœur ?"
+          }
+        }
+      }
+    },
+    "dialogue.act4.choiceResponse1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then Lyra will be free too… even if it means goodbye."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors Lyra sera libre aussi… même si cela veut dire adieu."
+          }
+        }
+      }
+    },
+    "dialogue.act4.choiceResponse2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "At last. A bearer worthy of me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enfin. Un porteur digne de moi."
+          }
+        }
+      }
+    },
+    "dialogue.act4.confront1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Here you stand before me at last. Do you know what I am, Kael?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Te voilà enfin devant moi. Sais-tu ce que je suis, Kael ?"
+          }
+        }
+      }
+    },
+    "dialogue.act4.confront2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The voice that promised me strength. The one that took Lyra."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La voix qui m'a promis la force. Celle qui a pris Lyra."
+          }
+        }
+      }
+    },
+    "dialogue.act4.confront3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I am the Heart. Every echo, every memory, every death… all returns to me. Without me, everything scatters."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je suis le Cœur. Chaque écho, chaque souvenir, chaque mort… tout revient à moi. Sans moi, tout se disperse."
+          }
+        }
+      }
+    },
+    "dialogue.act4.confront4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "It half-lies, Kael. That is worse than a lie. Choose with your eyes open."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il ment à moitié, Kael. C'est pire qu'un mensonge. Choisis avec les yeux ouverts."
+          }
+        }
+      }
+    },
+    "dialogue.act4.confront5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Whatever you choose… you must defeat me first. Come."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quoi que tu choisisses… il te faudra d'abord me vaincre. Viens."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I made my promise before the Voice. I keep it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J'ai fait ma promesse devant la Voix. Je la tiens."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael… if you shatter it, I go with the others. You know that."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael… si tu le brises, je pars avec les autres. Tu le sais."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I know. And that is why I do it. You deserve to be free, not to be my echo."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je sais. Et c'est pour ça que je le fais. Tu mérites d'être libre, pas d'être mon écho."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then… thank you. For the forest, for the Threshold, for everything. Farewell, Kael of Solis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors… merci. Pour la forêt, pour le Seuil, pour tout. Adieu, Kael de Solis."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farewell, Lyra. May your echo become a song."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adieu, Lyra. Que ton écho devienne chanson."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroyEnd1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart shatters. One by one, the echoes rise — free, at last. The Aether becomes light again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur se brise. Un à un, les échos s'élèvent — libres, enfin. L'Aether redevient lumière."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroyEnd2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In the village of Solis, they say a man came back from the Void, empty-handed and at peace."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au village de Solis, on raconte qu'un homme est revenu du Vide, les mains vides et le cœur en paix."
+          }
+        }
+      }
+    },
+    "dialogue.act4.devourers1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Careful! Those things feed on echoes… they are looking at me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attention ! Ces choses se nourrissent des échos… ils me regardent."
+          }
+        }
+      }
+    },
+    "dialogue.act4.devourers2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing devours you while I still stand. On your guard!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personne ne te dévorera tant que je tiens debout. En garde !"
+          }
+        }
+      }
+    },
+    "dialogue.act4.echo1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I feel it too. Every echo comes from here. So do I."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je le sens aussi. Tous les échos viennent d'ici. Moi aussi."
+          }
+        }
+      }
+    },
+    "dialogue.act4.eran1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fifty years I searched for this hall. It is more terrible than in my dreams."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cinquante ans que je cherche cette salle. Elle est plus terrible que dans mes rêves."
+          }
+        }
+      }
+    },
+    "dialogue.act4.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This place… it beats. Like a heart."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce lieu… il bat. Comme un cœur."
+          }
+        }
+      }
+    },
+    "dialogue.act4.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then let's end this. For Lyra. For all the others."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors finissons-en. Pour Lyra. Pour tous les autres."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memoriesDone1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You faced them, Kael. All of them. That is what it means to be whole."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu les as regardés en face, Kael. Tous. C'est ça, être entier."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memoriesDone2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Void wanted me to forget. I remember. That is my strength."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Vide voulait me faire oublier. Je me souviens. C'est ma force."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solis, one summer morning. A wooden house, the smell of bread. A voice calls: “Kael, you'll be late!”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solis, un matin d'été. Une maison de bois, l'odeur du pain. Une voix appelle : « Kael, tu vas être en retard ! »"
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.1Kael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mother… I had forgotten her voice."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ma mère… J'avais oublié sa voix."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The village square. Lyra laughs, hands full of Aether shards. “One day I'll see what lies beyond the forest.”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La place du village. Lyra rit, des éclats d'Aether plein les mains. « Un jour, je verrai ce qu'il y a derrière la forêt. »"
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.2Kael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "She saw what lay beyond. Because of me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elle l'a vu, ce qu'il y avait derrière. À cause de moi."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The shrine. A hand reaching for the red light. A voice whispers: “Accept, and you will never be weak again.”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le sanctuaire. Une main tendue vers la lumière rouge. Une voix murmure : « Accepte, et plus jamais tu ne seras faible. »"
+          }
+        }
+      }
+    },
+    "dialogue.act4.memory.3Kael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The pact. That is where everything fell apart. I will not run from this memory again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pacte. C'est là que tout a basculé. Je ne fuirai plus ce souvenir."
+          }
+        }
+      }
+    },
+    "dialogue.act4.memoryName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Memory"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Souvenir"
+          }
+        }
+      }
+    },
+    "dialogue.act4.merge1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Void needs a keeper. Someone who remembers every face. It will be me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Vide a besoin d'un gardien. Quelqu'un qui se souvient de chaque visage. Ce sera moi."
+          }
+        }
+      }
+    },
+    "dialogue.act4.merge2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael, no! It is the same trap that took my fifty years!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael, non ! C'est le même piège qui m'a pris cinquante ans !"
+          }
+        }
+      }
+    },
+    "dialogue.act4.merge3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No, Eran. You sought power. I keep watch. It is different — I choose to believe it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non, Eran. Toi, tu voulais le pouvoir. Moi, je veille. C'est différent — je veux le croire."
+          }
+        }
+      }
+    },
+    "dialogue.act4.merge4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then I stay with you. An echo beside the keeper. No one keeps watch alone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors je reste avec toi. Un écho auprès du gardien. Personne ne veille seul."
+          }
+        }
+      }
+    },
+    "dialogue.act4.merge5": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Together, then. May no echo ever be stolen again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ensemble, alors. Que plus aucun écho ne soit volé."
+          }
+        }
+      }
+    },
+    "dialogue.act4.mergeEnd1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart still beats — but it beats differently now. Calm. Watchful. Almost human."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur bat toujours — mais il bat autrement. Calme. Attentif. Presque humain."
+          }
+        }
+      }
+    },
+    "dialogue.act4.mergeEnd2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beyond the Threshold now watches a keeper who knows the price of a memory. The echoes sleep in peace."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au-delà du Seuil veille désormais un gardien qui connaît le prix d'un souvenir. Les échos dorment en paix."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.elder1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I kept the village gate all my life… then the Void took me. Who keeps the gate now?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J'ai gardé la porte du village toute ma vie… puis le Vide m'a pris. Qui garde la porte, maintenant ?"
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.elder2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dorin… yes. Then I can rest. Thank you, lad."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dorin… oui. Alors je peux me reposer. Merci, petit."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.elderKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gate holds, elder. Dorin keeps watch. You can let go."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La porte tient, doyen. Dorin veille. Vous pouvez lâcher prise."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.elderName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflection of the Elder"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflet du doyen"
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.lost1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I got lost in the forest… mama must be looking for me. It's so dark here."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je me suis perdu dans la forêt… maman doit me chercher. Il fait si sombre ici."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.lost2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I see her! Mama! Thank you, mister…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je la vois ! Maman ! Merci, monsieur…"
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.lostKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your mother waits on the other side, little one. Follow the light. Don't be afraid."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ta mère t'attend de l'autre côté, petit. Suis la lumière. N'aie pas peur."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.lostName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflection of the Child"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflet de l'enfant"
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.smith1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My forge… I still hear the hammer. I promised a blade to the boy from Solis."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ma forge… j'entends encore le marteau. J'avais promis une lame au garçon de Solis."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.smith2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then the fire may die down. Farewell, blade-bearer."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors le feu peut s'éteindre. Adieu, porteur de lame."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.smithKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The blade was forged. It carried me all the way here. Your promise is kept."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La lame a été forgée. Elle m'a mené jusqu'ici. Votre promesse est tenue."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflection.smithName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflection of the Smith"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reflet du forgeron"
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflectionsDone1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three faces returned to peace. The Void weakens — I can feel it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trois visages rendus à la paix. Le Vide s'affaiblit, je le sens."
+          }
+        }
+      }
+    },
+    "dialogue.act4.reflectionsDone2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Every freed echo is one more light against it. Let's press on."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Chaque écho libéré est une lumière de plus contre lui. Continuons."
+          }
+        }
+      }
+    },
+    "dialogue.act4.voice1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welcome home, Kael. Here, everything begins. Here, everything ends."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bienvenue chez toi, Kael. Ici, tout commence. Ici, tout finit."
+          }
+        }
+      }
+    },
+    "dialogue.act4.voice2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Come closer. The Heart waits for you alone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Approche. Le Cœur n'attend plus que toi."
           }
         }
       }
@@ -8634,6 +9658,54 @@
         }
       }
     },
+    "hud.objective.act4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart of the Void: find the source of the echoes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur du Vide : trouver la source des échos"
+          }
+        }
+      }
+    },
+    "hud.objective.act4Boss": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Face the Avatar of the Void"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Affronter l'Avatar du Vide"
+          }
+        }
+      }
+    },
+    "hud.objective.act4End": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart lies bare. Choose."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur est à nu. Choisir."
+          }
+        }
+      }
+    },
     "hud.objective.boss": {
       "localizations": {
         "en": {
@@ -8934,6 +10006,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trouver 5 Éclats d'Aether pour Lyra"
+          }
+        }
+      }
+    },
+    "hud.quest.memories %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael's memories: %lld/3 relived"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Souvenirs de Kael : %lld/3 revus"
+          }
+        }
+      }
+    },
+    "hud.quest.reflections %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Faces of the Void: %lld/3 freed"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Visages du Vide : %lld/3 libérés"
           }
         }
       }
@@ -9690,6 +10794,38 @@
         }
       }
     },
+    "lore.kaelMemories.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three fragments wrested from the Void: a mother's voice, a friend's laughter, a hand reaching for the red light. The Void erases; remembering is an act of resistance."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trois fragments arrachés au Vide : une voix de mère, un rire d'amie, une main tendue vers la lumière rouge. Le Vide efface ; se souvenir est un acte de résistance."
+          }
+        }
+      }
+    },
+    "lore.kaelMemories.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael's Memories"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les souvenirs de Kael"
+          }
+        }
+      }
+    },
     "lore.tab.bestiary": {
       "localizations": {
         "en": {
@@ -9802,6 +10938,38 @@
         }
       }
     },
+    "lore.voidheart.body": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beneath the Threshold beats the source of every echo. Neither god nor monster: a memory turned to hunger, collecting lives the way others collect stones. Whoever reaches it must choose what is to be done with the memory of the dead."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sous le Seuil bat la source de tous les échos. Ce n'est ni un dieu ni un monstre : une mémoire devenue faim, qui collectionne les vies comme d'autres collectionnent les pierres. Quiconque l'atteint doit choisir ce que l'on fait du souvenir des morts."
+          }
+        }
+      }
+    },
+    "lore.voidheart.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart of the Void"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur du Vide"
+          }
+        }
+      }
+    },
     "menu.chooseSlot": {
       "extractionState": "stale",
       "localizations": {
@@ -9880,6 +11048,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le Seuil"
+          }
+        }
+      }
+    },
+    "menu.phase.act4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart of the Void"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur du Vide"
           }
         }
       }
@@ -11044,6 +12228,22 @@
         }
       }
     },
+    "quest.memories.rewardMsg": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The memories rest. +70 gold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les souvenirs reposent. +70 or"
+          }
+        }
+      }
+    },
     "quest.mines.hud": {
       "localizations": {
         "en": {
@@ -11056,6 +12256,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Découvrir ce qui a tué les mines"
+          }
+        }
+      }
+    },
+    "quest.reflections.rewardMsg": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The faces are free. +100 gold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les visages sont libres. +100 or"
           }
         }
       }
@@ -12458,6 +13674,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le Seuil"
+          }
+        }
+      }
+    },
+    "world.voidheart.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Heart of the Void"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Cœur du Vide"
           }
         }
       }

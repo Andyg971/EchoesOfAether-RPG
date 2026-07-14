@@ -102,7 +102,7 @@ final class AudioEngine {
             case .forest:                    return .tense
             case .shrine:                    return .sacred
             case .act2, .ruins, .fallen:     return .ruins
-            case .act3:                      return .voidThreshold
+            case .act3, .act4:               return .voidThreshold
             }
         }
 

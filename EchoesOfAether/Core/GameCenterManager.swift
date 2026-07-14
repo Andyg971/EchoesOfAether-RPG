@@ -44,6 +44,7 @@ final class GameCenterManager {
         case loreCollector = "com.appmakerstudio.echoes.loreCollector"   // 4/4 lore IDs
         case act2Reached   = "com.appmakerstudio.echoes.act2"
         case act3Reached   = "com.appmakerstudio.echoes.act3"
+        case act4Reached   = "com.appmakerstudio.echoes.act4"
         case corruptedSoul = "com.appmakerstudio.echoes.corrupted"       // corruption level 3
     }
 }

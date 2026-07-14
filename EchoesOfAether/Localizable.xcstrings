@@ -1,6 +1,22 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "a11y.dialogue.choices %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ — Choices: %2$@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ — Choix : %2$@"
+          }
+        }
+      }
+    },
     "bestiary.archivist.desc": {
       "localizations": {
         "en": {

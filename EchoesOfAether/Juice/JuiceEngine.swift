@@ -1,22 +1,34 @@
 import SpriteKit
+import UIKit
 
-/// Réglages d'accessibilité persistés dans UserDefaults.
+/// Réglages d'accessibilité : préférence in-game (UserDefaults, écran
+/// Options) OU réglage système iOS — le plus protecteur des deux gagne.
 /// Lus à chaud par JuiceEngine (réduction d'animations) et par le HUD /
 /// le dialogue (gros texte).
+@MainActor
 enum AccessibilitySettings {
     static let reduceMotionKey = "reduceMotion"
     static let largeTextKey = "largeText"
 
     static var reduceMotion: Bool {
         UserDefaults.standard.bool(forKey: reduceMotionKey)
+            || UIAccessibility.isReduceMotionEnabled
     }
     static var largeText: Bool {
         UserDefaults.standard.bool(forKey: largeTextKey)
+            || UIApplication.shared.preferredContentSizeCategory.isAccessibilityCategory
     }
     /// Facteur multiplicatif appliqué aux tailles de police quand « gros
     /// texte » est actif.
     static var textScale: CGFloat {
         largeText ? 1.25 : 1.0
+    }
+
+    /// Annonce VoiceOver (répliques de dialogue, écrans de fin). No-op si
+    /// VoiceOver est inactif.
+    static func announce(_ message: String) {
+        guard UIAccessibility.isVoiceOverRunning else { return }
+        UIAccessibility.post(notification: .announcement, argument: message)
     }
 }
 
@@ -113,6 +125,8 @@ enum JuiceEngine {
     /// brièvement puis revient. Impact « caméra qui encaisse le coup ».
     static func zoomPunch(_ node: SKNode, around center: CGPoint,
                           scale: CGFloat = 1.035, duration: TimeInterval = 0.24) {
+        // Accessibilité : le zoom caméra est un déclencheur vestibulaire.
+        if AccessibilitySettings.reduceMotion { return }
         let dx = center.x * (1 - scale)
         let dy = center.y * (1 - scale)
         let zoomIn = SKAction.group([
@@ -129,6 +143,12 @@ enum JuiceEngine {
     }
 
     static func popIn(_ node: SKNode, delay: TimeInterval = 0) {
+        // Accessibilité : simple fondu, sans rebond d'échelle.
+        if AccessibilitySettings.reduceMotion {
+            node.alpha = 0
+            node.run(.sequence([.wait(forDuration: delay), .fadeIn(withDuration: 0.15)]))
+            return
+        }
         node.setScale(0)
         node.alpha = 0
         let appear = SKAction.group([
@@ -156,6 +176,8 @@ enum JuiceEngine {
     }
 
     static func pulse(_ node: SKNode, scale: CGFloat = 1.15) {
+        // Accessibilité : pas d'animation perpétuelle en mouvement réduit.
+        if AccessibilitySettings.reduceMotion { return }
         let up = SKAction.scale(to: scale, duration: 0.5)
         let down = SKAction.scale(to: 1.0, duration: 0.5)
         up.timingMode = .easeInEaseOut
@@ -164,6 +186,8 @@ enum JuiceEngine {
     }
 
     static func float(_ node: SKNode, distance: CGFloat = 6) {
+        // Accessibilité : pas d'animation perpétuelle en mouvement réduit.
+        if AccessibilitySettings.reduceMotion { return }
         let up = SKAction.moveBy(x: 0, y: distance, duration: 1)
         let down = SKAction.moveBy(x: 0, y: -distance, duration: 1)
         up.timingMode = .easeInEaseOut

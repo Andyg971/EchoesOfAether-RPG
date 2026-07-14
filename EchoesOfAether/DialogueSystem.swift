@@ -183,6 +183,13 @@ final class DialogueSystem {
     private func playEntranceAnimation() {
         guard let sceneRef = root.scene, !root.isHidden else { return }
         let restY = root.position.y
+        // Accessibilité : fondu seul, sans glissement vertical.
+        if AccessibilitySettings.reduceMotion {
+            root.alpha = 0
+            root.run(.fadeIn(withDuration: 0.18))
+            hasAnimatedEntrance = true
+            return
+        }
         root.position = CGPoint(x: root.position.x, y: restY - 40)
         root.alpha = 0
         root.run(.group([
@@ -314,6 +321,9 @@ final class DialogueSystem {
         HapticsEngine.light()
         AudioEngine.shared.playStep()
         refreshChoiceHighlight()
+        if let title = choiceNodes[choiceSelection].userData?["title"] as? String {
+            AccessibilitySettings.announce(title)
+        }
     }
 
     /// Le choix sélectionné est encadré d'or, les autres estompés.
@@ -367,6 +377,7 @@ final class DialogueSystem {
             applyPortrait(for: npc.speaker)
             bodyLabel.text = npc.text
             continueIndicator.isHidden = false
+            AccessibilitySettings.announce("\(npc.speaker). \(npc.text)")
             AudioEngine.shared.playTap()
             if let sceneRef = root.scene {
                 layout(in: sceneRef.size, safeBottom: safeBottom)
@@ -423,6 +434,7 @@ final class DialogueSystem {
             applyPortrait(for: speaker)
             bodyLabel.text = text
             continueIndicator.isHidden = false
+            AccessibilitySettings.announce("\(speaker). \(text)")
 
         case let .choice(prompt, options):
             // Le prompt sert de titre ; pas de body label pour éviter
@@ -432,6 +444,11 @@ final class DialogueSystem {
             bodyLabel.text = ""
             continueIndicator.isHidden = true
             createChoices(options)
+            let list = options.enumerated()
+                .map { "\($0.offset + 1). \($0.element.title)" }
+                .joined(separator: ", ")
+            AccessibilitySettings.announce(
+                String(localized: "a11y.dialogue.choices \(prompt) \(list)"))
         }
 
         // Le portrait peut apparaître/disparaître selon le locuteur.

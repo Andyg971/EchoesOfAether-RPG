@@ -93,6 +93,7 @@ final class AudioEngine {
         case combat      // combat standard
         case boss        // combat de boss
         case title       // écran-titre
+        case finale      // vraie fin / crédits — aube nouvelle
 
         /// Ambiance associée à une phase de jeu.
         static func forPhase(_ phase: GamePhase) -> MusicMood {
@@ -112,12 +113,13 @@ final class AudioEngine {
             case .tense:         return "music_forest"
             case .sacred:        return "music_title"
             case .ruins:         return "music_mines"
-            case .voidThreshold: return nil
+            case .voidThreshold: return "music_threshold"
             case .mines:         return "music_mines"
             case .inn:           return "music_inn"
             case .combat:        return "music_combat"
             case .boss:          return "music_boss"
             case .title:         return "music_title"
+            case .finale:        return "music_finale"
             }
         }
 
@@ -129,6 +131,7 @@ final class AudioEngine {
             case .combat: return .tense
             case .boss: return .voidThreshold
             case .title: return .sacred
+            case .finale: return .sacred
             default: return self
             }
         }
@@ -456,7 +459,7 @@ final class AudioEngine {
 
     private func config(for mood: MusicMood) -> MusicConfig {
         switch mood {
-        case .mines, .inn, .combat, .boss, .title:
+        case .mines, .inn, .combat, .boss, .title, .finale:
             // Moods à piste CC0 : synthèse de repli si le fichier manque.
             return config(for: mood.synthFallback)
         case .calm:

@@ -286,13 +286,31 @@ final class WorldBuilder {
 
     /// Acte III — Le Seuil. Royaume du Vide où Kael franchit la frontière.
     /// Décor 100% assets existants (statues, piliers, escalier, arbres morts).
-    func switchToThreshold(in scene: SKScene) {
+    func switchToThreshold(in scene: SKScene,
+                           echoJoined: Bool = false,
+                           spiritsCalmed: Set<String> = [],
+                           shadesDefeated: Bool = false) {
         clearBackdrop()
         worldHeight = scene.size.height
         worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.08, alpha: 1)
-        buildThreshold(in: scene)
+        buildThreshold(in: scene, echoJoined: echoJoined,
+                       spiritsCalmed: spiritsCalmed,
+                       shadesDefeated: shadesDefeated)
+        if echoJoined { showLyraEcho(in: scene) }
+    }
+
+    /// L'Écho de Lyra accompagne Kael au Seuil : le node Lyra existant,
+    /// teinté cyan spectral et translucide (le follow est réutilisé).
+    func showLyraEcho(in scene: SKScene) {
+        lyra.isHidden = false
+        lyra.alpha = 0.72
+        lyra.position = CGPoint(x: kael.position.x - 44, y: kael.position.y)
+        lyra.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 1)
+            s.colorBlendFactor = 0.45
+        }
     }
 
     // MARK: - Village Solis
@@ -1709,7 +1727,10 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :
     /// sol pierre teinté vide, escalier central (le Seuil), statues d'anges
     /// gardiens, piliers, arbres morts et ossements. Aucune forme custom.
-    private func buildThreshold(in scene: SKScene) {
+    private func buildThreshold(in scene: SKScene,
+                                echoJoined: Bool = false,
+                                spiritsCalmed: Set<String> = [],
+                                shadesDefeated: Bool = false) {
         let w = scene.size.width
         let h = scene.size.height
 
@@ -1788,11 +1809,128 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             color: SKColor(red: 0.40, green: 0.55, blue: 0.95, alpha: 1))
         add(eranMark, to: scene)
 
+        // ── L'Écho de Lyra attend à l'entrée tant qu'il n'a pas rejoint ──
+        if !echoJoined {
+            addThresholdEcho(in: scene, at: CGPoint(x: w * 0.30, y: h * 0.20))
+        }
+
+        // ── Esprits errants (quête « Les échos égarés ») ──
+        // Ils déambulent seuls ; apaisés, ils disparaissent du Seuil.
+        let spiritDefs: [(id: String, asset: String, x: CGFloat, y: CGFloat)] = [
+            ("miner",  "npc_villager", 0.20, 0.48),
+            ("mother", "npc_mara",     0.72, 0.50),
+            ("guard",  "npc_garen",    0.55, 0.38)
+        ]
+        for def in spiritDefs where !spiritsCalmed.contains(def.id) {
+            addWanderingSpirit(id: def.id, asset: def.asset, in: scene,
+                               at: CGPoint(x: w * def.x, y: h * def.y))
+        }
+
+        // ── Ombres hostiles : échos corrompus qui refusent l'apaisement ──
+        if !shadesDefeated {
+            let shadeZone = makeDangerZone(
+                at: CGPoint(x: w * 0.22, y: h * 0.64), radius: 36,
+                color: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 1))
+            add(shadeZone, to: scene)
+            for (dx, flip) in [(-0.03, false), (0.04, true)] {
+                guard let shade = PixelArtSprites.animated(
+                    name: "enemy_bone", frames: 6, scale: 0.5,
+                    timePerFrame: 0.2, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+                shade.position = CGPoint(x: w * (0.22 + dx), y: h * 0.66)
+                shade.zPosition = actorLayer(for: shade.position.y)
+                if flip { shade.xScale = -abs(shade.xScale) }
+                shade.alpha = 0.65
+                shade.forEachDescendantSprite { sp in
+                    sp.color = SKColor(red: 0.35, green: 0.15, blue: 0.55, alpha: 1)
+                    sp.colorBlendFactor = 0.55
+                }
+                add(shade, to: scene)
+            }
+        }
+
         // Cristal de sauvegarde (entrée du Seuil, bas droite)
         addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.20), in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
+    }
+
+    /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.
+    private func addThresholdEcho(in scene: SKScene, at pos: CGPoint) {
+        guard let echo = PixelArtSprites.animated(
+            name: "npc_lyra", frames: 6, scale: 0.5,
+            timePerFrame: 0.16, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        echo.name = "thresholdEcho"
+        echo.position = pos
+        echo.zPosition = actorLayer(for: pos.y)
+        echo.alpha = 0.72
+        echo.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 1)
+            s.colorBlendFactor = 0.45
+        }
+        addGroundShadow(under: echo, width: 24, height: 7)
+        add(echo, to: scene)
+        JuiceEngine.float(echo, distance: 4)
+    }
+
+    /// Esprit errant : PNJ spectral translucide qui déambule seul
+    /// (petites marches aléatoires autour de son point d'ancrage).
+    private func addWanderingSpirit(id: String, asset: String,
+                                    in scene: SKScene, at anchor: CGPoint) {
+        guard let spirit = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.5,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        spirit.name = "spirit_" + id
+        spirit.position = anchor
+        spirit.zPosition = actorLayer(for: anchor.y)
+        spirit.alpha = 0.62
+        spirit.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 1)
+            s.colorBlendFactor = 0.50
+        }
+        add(spirit, to: scene)
+
+        // Déambulation : dérive lente vers un point proche, pause, retour.
+        let wander = SKAction.repeatForever(.sequence([
+            .run { [weak spirit] in
+                guard let spirit else { return }
+                let dest = CGPoint(x: anchor.x + .random(in: -46...46),
+                                   y: anchor.y + .random(in: -26...26))
+                let move = SKAction.move(to: dest, duration: .random(in: 2.4...4.0))
+                move.timingMode = .easeInEaseOut
+                spirit.run(move)
+            },
+            .wait(forDuration: 4.4)
+        ]))
+        spirit.run(wander)
+        JuiceEngine.pulse(spirit, scale: 1.03)
+    }
+
+    /// Position monde d'un esprit errant encore présent (nil sinon).
+    func spiritPosition(id: String) -> CGPoint? {
+        worldNode.childNode(withName: "spirit_" + id)?.position
+    }
+
+    /// Retire un esprit apaisé avec une dissolution douce.
+    func calmSpirit(id: String) {
+        guard let spirit = worldNode.childNode(withName: "spirit_" + id) else { return }
+        spirit.run(.sequence([
+            .group([.fadeOut(withDuration: 0.8),
+                    .moveBy(x: 0, y: 26, duration: 0.8)]),
+            .removeFromParent()
+        ]))
+    }
+
+    /// Position de l'Écho de Lyra à l'entrée (nil si déjà rejoint).
+    var thresholdEchoPosition: CGPoint? {
+        worldNode.childNode(withName: "thresholdEcho")?.position
+    }
+
+    /// L'écho de l'entrée disparaît (il rejoint le groupe).
+    func removeThresholdEcho() {
+        worldNode.childNode(withName: "thresholdEcho")?.run(.sequence([
+            .fadeOut(withDuration: 0.6), .removeFromParent()
+        ]))
     }
 
     private func makeCrack(from start: CGPoint, to end: CGPoint) -> SKNode {

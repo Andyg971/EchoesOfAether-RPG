@@ -41,6 +41,14 @@ final class GameManager {
     private var lyraInParty: Bool {
         [.forest, .shrine, .ruins].contains(phase) && !player.lyraDeceased
     }
+
+    /// Trio de l'Acte III : l'Écho de Lyra puis Eran rejoignent Kael.
+    private var act3Party: [CombatAllyKind] {
+        var kinds: [CombatAllyKind] = []
+        if player.act3EchoJoined { kinds.append(.lyraEcho) }
+        if player.act3EranMet { kinds.append(.eran) }
+        return kinds
+    }
     private var prologueNode: SKNode?              // cinématique d'ouverture
     private var prologueCompletion: (() -> Void)?
     // Joystick virtuel flottant
@@ -234,10 +242,25 @@ final class GameManager {
                 return
             }
         }
+        if CommandLine.arguments.contains("--combat-trio") {
+            hud.goldValue = player.gold
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self, let scene = self.scene else { return }
+                self.phase = .act3
+                self.player.act3EchoJoined = true
+                self.player.act3EranMet = true
+                self.world.switchToThreshold(in: scene, echoJoined: true)
+                self.startVoidShadesCombat()
+            }
+            return
+        }
         if CommandLine.arguments.contains("--zone-threshold") {
             hud.goldValue = player.gold
             phase = .act3
-            world.switchToThreshold(in: scene)
+            world.switchToThreshold(in: scene,
+                                    echoJoined: player.act3EchoJoined,
+                                    spiritsCalmed: player.act3SpiritsCalmed,
+                                    shadesDefeated: player.act3ShadesDefeated)
             transition(to: .exploration)
             return
         }
@@ -359,12 +382,15 @@ final class GameManager {
             updateMenuNavigation()
         }
 
-        // Lyra accompagne Kael dans les zones du pacte (tant qu'elle vit)
-        if state == .exploration || state == .dialogue,
-           [.forest, .shrine, .ruins].contains(phase),
-           !player.lyraDeceased {
-            if world.lyra.isHidden { world.showLyraCompanion() }
-            world.updateLyraFollow(deltaTime: deltaTime)
+        // Lyra accompagne Kael dans les zones du pacte (tant qu'elle vit) ;
+        // au Seuil, c'est son Écho spectral qui suit (une fois rejoint).
+        if state == .exploration || state == .dialogue {
+            if [.forest, .shrine, .ruins].contains(phase), !player.lyraDeceased {
+                if world.lyra.isHidden { world.showLyraCompanion() }
+                world.updateLyraFollow(deltaTime: deltaTime)
+            } else if phase == .act3, player.act3EchoJoined {
+                world.updateLyraFollow(deltaTime: deltaTime)
+            }
         }
 
         if state == .exploration, let s = scene {
@@ -2380,13 +2406,29 @@ final class GameManager {
             }
         case .act3:
             let w = scene.size.width, h = scene.size.height
-            let checkpoints: [(CGPoint, String)]
+            var checkpoints: [(CGPoint, String)] = []
+            if !player.act3EchoJoined, let echoPos = world.thresholdEchoPosition {
+                checkpoints.append((echoPos, "hint.talk"))
+            }
+            for id in ["miner", "mother", "guard"]
+            where !player.act3SpiritsCalmed.contains(id) {
+                if let pos = world.spiritPosition(id: id) {
+                    checkpoints.append((pos, "hint.talk"))
+                }
+            }
+            for stele in [("1", 0.24, 0.34), ("2", 0.60, 0.32), ("3", 0.76, 0.28)]
+            where !player.act3StelesRead.contains(stele.0) {
+                checkpoints.append((CGPoint(x: w*stele.1, y: h*stele.2), "hint.examine"))
+            }
+            if !player.act3ShadesDefeated, player.act3EchoJoined {
+                checkpoints.append((CGPoint(x: w*0.22, y: h*0.64), "hint.fight"))
+            }
             if !player.act3EranMet {
-                checkpoints = [(CGPoint(x: w*0.50, y: h*0.62), "hint.examine")]
+                checkpoints.append((CGPoint(x: w*0.50, y: h*0.62), "hint.examine"))
             } else if !player.act3BossDefeated {
-                checkpoints = [(CGPoint(x: w*0.50, y: h*0.82), "hint.fight")]
+                checkpoints.append((CGPoint(x: w*0.50, y: h*0.82), "hint.fight"))
             } else {
-                checkpoints = [(CGPoint(x: w*0.50, y: h*0.82), "hint.enter")]
+                checkpoints.append((CGPoint(x: w*0.50, y: h*0.82), "hint.enter"))
             }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -2494,6 +2536,42 @@ final class GameManager {
         let w = scene.size.width, h = scene.size.height
         let gate = CGPoint(x: w * 0.50, y: h * 0.82)   // escalier = Le Seuil
 
+        // 0) L'Écho de Lyra attend à l'entrée — première rencontre
+        if !player.act3EchoJoined,
+           let echoPos = world.thresholdEchoPosition,
+           point.distance(to: echoPos) < 70 {
+            openAct3EchoMeet()
+            return true
+        }
+
+        // Esprits errants (quête « Les échos égarés »)
+        for id in ["miner", "mother", "guard"]
+        where !player.act3SpiritsCalmed.contains(id) {
+            if let pos = world.spiritPosition(id: id),
+               point.distance(to: pos) < 60 {
+                openSpiritDialogue(id: id)
+                return true
+            }
+        }
+
+        // Stèles du Vide (les trois tombes noires)
+        let steles: [(id: String, x: CGFloat, y: CGFloat)] = [
+            ("1", 0.24, 0.34), ("2", 0.60, 0.32), ("3", 0.76, 0.28)
+        ]
+        for stele in steles where !player.act3StelesRead.contains(stele.id) {
+            if point.distance(to: CGPoint(x: w * stele.x, y: h * stele.y)) < 55 {
+                openSteleDialogue(id: stele.id)
+                return true
+            }
+        }
+
+        // Ombres du Vide — combat annexe du trio
+        if !player.act3ShadesDefeated, player.act3EchoJoined,
+           point.distance(to: CGPoint(x: w * 0.22, y: h * 0.64)) < 75 {
+            startVoidShadesCombat()
+            return true
+        }
+
         // 1) Rencontre Eran (centre) tant qu'elle n'a pas eu lieu
         if !player.act3EranMet {
             if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.62)) < 80 {
@@ -2518,6 +2596,134 @@ final class GameManager {
         return false
     }
 
+    // MARK: - Acte III étendu (écho, esprits, stèles, ombres)
+
+    /// L'Écho de Lyra rejoint Kael — première scène du Seuil.
+    private func openAct3EchoMeet() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act3EchoMeetDialogue) { [weak self] in
+            guard let self, let scene else { return }
+            player.act3EchoJoined = true
+            world.removeThresholdEcho()
+            world.showLyraEcho(in: scene)
+            AudioEngine.shared.playQuestComplete()
+            hud.questText = String(localized: "hud.quest.spirits \(player.act3SpiritsCalmed.count)")
+            saveGame()
+            transition(to: .exploration)
+        }
+    }
+
+    /// Apaise un esprit errant ; les trois apaisés = récompense.
+    private func openSpiritDialogue(id: String) {
+        transition(to: .dialogue)
+        let steps: [DialogueStep]
+        switch id {
+        case "miner": steps = PrototypeContent.spiritMinerDialogue
+        case "mother": steps = PrototypeContent.spiritMotherDialogue
+        default: steps = PrototypeContent.spiritGuardDialogue
+        }
+        dialogue.start(steps) { [weak self] in
+            guard let self else { return }
+            player.act3SpiritsCalmed.insert(id)
+            world.calmSpirit(id: id)
+            AudioEngine.shared.playQuestComplete()
+            hud.questText = String(localized: "hud.quest.spirits \(player.act3SpiritsCalmed.count)")
+            if player.act3SpiritsCalmed.count >= 3 {
+                player.gold += 90
+                syncGold()
+                AudioEngine.shared.playGoldGain()
+                hud.questText = String(localized: "quest.spirits.rewardMsg")
+                player.loreDiscovered.insert("lostEchoes")
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.spiritsDoneDialogue) { [weak self] in
+                    self?.saveGame()
+                    self?.transition(to: .exploration)
+                }
+            } else {
+                saveGame()
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Lit une stèle du Vide ; les trois lues = lore + or.
+    private func openSteleDialogue(id: String) {
+        transition(to: .dialogue)
+        guard let index = Int(id) else { transition(to: .exploration); return }
+        dialogue.start(PrototypeContent.steleDialogue(index)) { [weak self] in
+            guard let self else { return }
+            player.act3StelesRead.insert(id)
+            hud.questText = String(localized: "hud.quest.steles \(player.act3StelesRead.count)")
+            if player.act3StelesRead.count >= 3 {
+                player.gold += 60
+                syncGold()
+                AudioEngine.shared.playGoldGain()
+                hud.questText = String(localized: "quest.steles.rewardMsg")
+                player.loreDiscovered.insert("eranPast")
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.stelesDoneDialogue) { [weak self] in
+                    self?.saveGame()
+                    self?.transition(to: .exploration)
+                }
+            } else {
+                saveGame()
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Combat annexe : les Ombres du Vide (trio requis : l'Écho a rejoint).
+    private func startVoidShadesCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startVoidShadesCombat() }
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.shadesPreDialogue) { [weak self] in
+            guard let self, let scene2 = self.scene else { return }
+            _ = scene
+            transition(to: .combat)
+            let name = String(localized: "combat.enemy.voidShade")
+            let levelBefore = player.level
+            combat.attach(
+                to: scene2,
+                enemySpecs: [
+                    EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
+                              hp: 300, kind: .boneWalker, baseDamage: 44),
+                    EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
+                              hp: 300, kind: .boneWalker, baseDamage: 44),
+                    EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(3)"),
+                              hp: 260, kind: .wolf, baseDamage: 40)
+                ],
+                goldReward: 110,
+                player: player,
+                allyKinds: act3Party
+            ) { [weak self] resonance, gold in
+                guard let self else { return }
+                if resonance < 0 { showDeathScreen(); return }
+                grantLevelUpDisplay(from: levelBefore)
+                resonanceTotal += resonance
+                player.gold += gold
+                player.act3ShadesDefeated = true
+                syncGold()
+                AudioEngine.shared.playGoldGain()
+                hud.resonanceValue = resonanceTotal
+                refreshThresholdBackdrop()
+                saveGame()
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Reconstruit le décor du Seuil selon la progression.
+    private func refreshThresholdBackdrop() {
+        guard let scene, phase == .act3 else { return }
+        let kaelPos = world.kael.position
+        world.switchToThreshold(in: scene,
+                                echoJoined: player.act3EchoJoined,
+                                spiritsCalmed: player.act3SpiritsCalmed,
+                                shadesDefeated: player.act3ShadesDefeated)
+        world.kael.position = kaelPos
+    }
+
     private func beginAct3() {
         guard let scene else { return }
         GameCenterManager.shared.report(.act3Reached)
@@ -2530,7 +2736,10 @@ final class GameManager {
             guard let self else { return }
             phase = .act3
             hud.objectiveText = String(localized: "hud.objective.act3")
-            world.switchToThreshold(in: scene)
+            world.switchToThreshold(in: scene,
+                                    echoJoined: player.act3EchoJoined,
+                                    spiritsCalmed: player.act3SpiritsCalmed,
+                                    shadesDefeated: player.act3ShadesDefeated)
             world.applyKaelCorruption(level: 3)
         } completion: { [weak self] in
             guard let self else { return }
@@ -2558,7 +2767,13 @@ final class GameManager {
             player.act3EranMet = true
             player.loreDiscovered.insert("threshold")
             hud.objectiveText = String(localized: "hud.objective.act3Boss")
-            transition(to: .exploration)
+            // Eran rejoint le trio pour la suite du Seuil.
+            dialogue.start(PrototypeContent.act3EranJoinDialogue) { [weak self] in
+                guard let self else { return }
+                AudioEngine.shared.playQuestComplete()
+                saveGame()
+                transition(to: .exploration)
+            }
         }
     }
 
@@ -2592,7 +2807,7 @@ final class GameManager {
                 player: player,
                 enemyKind: .guardian,
                 boss: bossConfig,
-                withLyra: lyraInParty
+                allyKinds: act3Party
             ) { [weak self] resonance, gold in
                 guard let self else { return }
                 if resonance < 0 { showDeathScreen(); return }
@@ -2618,6 +2833,7 @@ final class GameManager {
     /// Chaque fin enchaîne ses dialogues → crédits → menu.
     private func showAct3TrueEnding() {
         guard scene != nil else { return }
+        AudioEngine.shared.setMood(.finale)   // « New Sunrise » (CC0)
         transition(to: .dialogue)
         // Par défaut (aucun choix capturé), on retombe sur la fin "franchir".
         if player.act3EndingChoice == 1 {
@@ -3114,7 +3330,10 @@ final class GameManager {
                 : (player.act3EranMet
                     ? String(localized: "hud.objective.act3Boss")
                     : String(localized: "hud.objective.act3"))
-            world.switchToThreshold(in: scene)
+            world.switchToThreshold(in: scene,
+                                    echoJoined: player.act3EchoJoined,
+                                    spiritsCalmed: player.act3SpiritsCalmed,
+                                    shadesDefeated: player.act3ShadesDefeated)
             world.applyKaelCorruption(level: 3)
             corruptionCinematicShown = true
             transition(to: .exploration)

@@ -822,6 +822,22 @@
         }
       }
     },
+    "combat.enemy.voidShade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Void Shade"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ombre du Vide"
+          }
+        }
+      }
+    },
     "combat.enemy.wolf": {
       "localizations": {
         "en": {
@@ -866,6 +882,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Faiblesses:"
+          }
+        }
+      }
+    },
+    "combat.name.lyraEcho": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra's Echo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écho de Lyra"
           }
         }
       }
@@ -953,6 +985,22 @@
         }
       }
     },
+    "combat.status.allyDown %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ is down!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ est à terre !"
+          }
+        }
+      }
+    },
     "combat.status.attack %@": {
       "localizations": {
         "en": {
@@ -965,6 +1013,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Kael attaque ! %@ vacille."
+          }
+        }
+      }
+    },
+    "combat.status.attackAlly %@ %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ strikes! %2$@ staggers."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ frappe ! %2$@ vacille."
           }
         }
       }
@@ -1145,6 +1209,22 @@
         }
       }
     },
+    "combat.status.enemyHitsAlly %@ %@ %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ hits %2$@ −%3$lld"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ frappe %2$@ −%3$lld"
+          }
+        }
+      }
+    },
     "combat.status.enemyHitsLyra %@ %lld": {
       "localizations": {
         "en": {
@@ -1321,6 +1401,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Effondrement du Vide"
+          }
+        }
+      }
+    },
+    "combat.turn.ally %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@'s turn!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au tour de %@ !"
           }
         }
       }
@@ -3213,6 +3309,102 @@
         }
       }
     },
+    "dialogue.act3.echo1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael. Even the Void could not silence me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kael. Même le Vide n'a pas su me faire taire."
+          }
+        }
+      }
+    },
+    "dialogue.act3.echo2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I am what remains: the echo it stole from me. The Threshold keeps everything it takes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je suis ce qu'il reste : l'écho qu'il m'a volé. Le Seuil garde tout ce qu'il prend."
+          }
+        }
+      }
+    },
+    "dialogue.act3.echo3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You meant to cross that gate alone, with ITS voice in your head? Not while I still resound."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu comptais franchir cette porte seul, avec SA voix dans ta tête ? Pas tant que je résonne encore."
+          }
+        }
+      }
+    },
+    "dialogue.act3.echo4": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Behind you? In front, more like. You never could aim frost."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Derrière toi ? Devant, plutôt. Tu n'as jamais su viser la glace."
+          }
+        }
+      }
+    },
+    "dialogue.act3.echoKael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra?… No. You died. I watched you fall."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra ?… Non. Tu es morte. Je t'ai vue tomber."
+          }
+        }
+      }
+    },
+    "dialogue.act3.echoKael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Stay behind me, then. Like before."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "… Reste derrière moi, alors. Comme avant."
+          }
+        }
+      }
+    },
     "dialogue.act3.end1": {
       "localizations": {
         "en": {
@@ -3353,6 +3545,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Que réponds-tu à Eran ?"
+          }
+        }
+      }
+    },
+    "dialogue.act3.eranJoin1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I am already an echo, Kael. Let me finish what I began a century ago."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je suis déjà un écho, Kael. Laisse-moi finir ce que j'ai commencé il y a un siècle."
+          }
+        }
+      }
+    },
+    "dialogue.act3.eranJoin2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three voices against the Void. Works for me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trois voix contre le Vide. Ça me va."
           }
         }
       }
@@ -4960,6 +5184,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Du courage ou de l'inconscience. Dans les deux cas, ça m'arrange."
+          }
+        }
+      }
+    },
+    "dialogue.echo.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lyra's Echo"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Écho de Lyra"
           }
         }
       }
@@ -6918,6 +7158,38 @@
         }
       }
     },
+    "dialogue.shades.pre1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "These echoes do not want rest. The Void has turned them inside out."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ces échos-là ne veulent pas du repos. Le Vide les a retournés."
+          }
+        }
+      }
+    },
+    "dialogue.shades.pre2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then we free them our way."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors on les libère à notre manière."
+          }
+        }
+      }
+    },
     "dialogue.shrine.choice1": {
       "localizations": {
         "en": {
@@ -7138,6 +7410,310 @@
           "stringUnit": {
             "state": "translated",
             "value": "Voix"
+          }
+        }
+      }
+    },
+    "dialogue.spirit.done1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three echoes laid to rest. The Threshold grows lighter — I can feel it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trois échos rendus au repos. Le Seuil s'allège — je le sens."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.done2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Let it get used to it. We're only getting started."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qu'il s'habitue. On ne fait que commencer."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.guard1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I failed. The shrine's Guardian broke me, and the gate stood unwatched."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "J'ai failli. Le Gardien du sanctuaire m'a brisé, et la porte est restée sans veille."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.guard2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beaten… Then at last I can lower my spear."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vaincu… Alors je peux enfin baisser ma lance."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.guardKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Guardian lies cracked and beaten. Your watch is over, soldier."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Gardien est fêlé, vaincu. Ta veille est terminée, soldat."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.guardName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guard's Spirit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esprit du garde"
+          }
+        }
+      }
+    },
+    "dialogue.spirit.miner1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The gallery… did it hold? Did the others make it out?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La galerie… elle a tenu, dis ? Les autres sont sortis ?"
+          }
+        }
+      }
+    },
+    "dialogue.spirit.miner2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then I can set down my lantern… thank you, traveler."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors je peux poser la lanterne… merci, voyageur."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.minerKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Cendreval mines are silent now. The golem fell. They rest in peace."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les mines de Cendreval sont silencieuses. Le golem est tombé. Ils reposent en paix."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.minerName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Miner's Spirit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esprit du mineur"
+          }
+        }
+      }
+    },
+    "dialogue.spirit.mother1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "My little one… he played by the fountain. I never got to tuck him in."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mon petit… il jouait près de la fontaine. Je n'ai pas eu le temps de le border."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.mother2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "He laughs… that is all I needed to hear."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Il rit… c'est tout ce que je voulais entendre."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.motherKael": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The child of Solis still laughs by the fountain. He wears your medallion."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'enfant de Solis rit encore près de la fontaine. Il porte votre médaillon."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.motherName": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mother's Spirit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Esprit de la mère"
+          }
+        }
+      }
+    },
+    "dialogue.stele.1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\\u201cHere knelt Eran, first of the Watchers, who believed the Void could be bargained with.\\u201d"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« Ici s'agenouilla Eran, premier des Veilleurs, qui crut pouvoir marchander avec le Vide. »"
+          }
+        }
+      }
+    },
+    "dialogue.stele.2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\\u201cThe Void does not take. It TRADES: a memory for a power, a name for an eternity.\\u201d"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« Le Vide ne prend pas. Il ÉCHANGE : un souvenir contre un pouvoir, un nom contre une éternité. »"
+          }
+        }
+      }
+    },
+    "dialogue.stele.3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\\u201cEran gave his name. The Threshold keeps it still. It is all that remains to be returned.\\u201d"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« Eran donna son nom. Le Seuil le garde encore. C'est tout ce qu'il reste à rendre. »"
+          }
+        }
+      }
+    },
+    "dialogue.stele.done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Three steles. Three debts. Eran… what did you truly leave here?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trois stèles. Trois dettes. Eran… qu'as-tu vraiment laissé ici ?"
+          }
+        }
+      }
+    },
+    "dialogue.stele.name": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Void Stele"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stèle du Vide"
           }
         }
       }
@@ -8358,6 +8934,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Trouver 5 Éclats d'Aether pour Lyra"
+          }
+        }
+      }
+    },
+    "hud.quest.spirits %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lost echoes: %lld/3 laid to rest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Échos égarés : %lld/3 apaisés"
+          }
+        }
+      }
+    },
+    "hud.quest.steles %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Void steles: %lld/3 read"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stèles du Vide : %lld/3 lues"
           }
         }
       }
@@ -10628,6 +11236,22 @@
         }
       }
     },
+    "quest.spirits.rewardMsg": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The lost echoes rest. +90 gold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les échos égarés reposent. +90 or"
+          }
+        }
+      }
+    },
     "quest.state.active": {
       "localizations": {
         "en": {
@@ -10672,6 +11296,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Non démarrée"
+          }
+        }
+      }
+    },
+    "quest.steles.rewardMsg": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eran's past is deciphered. +60 gold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le passé d'Eran est déchiffré. +60 or"
           }
         }
       }

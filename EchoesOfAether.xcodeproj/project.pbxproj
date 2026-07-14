@@ -44,6 +44,8 @@
 		6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */; };
 		6D7ECC41B8A741B0A0000001 /* InteractionBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */; };
 		6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6D7EDD01B8A741B0A0000001 /* Assets.xcassets */; };
+		6DCC0002B8A741B0A0000001 /* music_threshold.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DCC0001B8A741B0A0000001 /* music_threshold.m4a */; };
+		6DCC0102B8A741B0A0000001 /* music_finale.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DCC0101B8A741B0A0000001 /* music_finale.m4a */; };
 		6DBB0002B8A741B0A0000001 /* sfx_tap.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6DBB0001B8A741B0A0000001 /* sfx_tap.wav */; };
 		6DBB0102B8A741B0A0000001 /* sfx_select.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6DBB0101B8A741B0A0000001 /* sfx_select.wav */; };
 		6DBB0202B8A741B0A0000001 /* sfx_hit.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6DBB0201B8A741B0A0000001 /* sfx_hit.wav */; };
@@ -119,6 +121,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArtSprites.swift; sourceTree = "<group>"; };
 		6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionBubble.swift; sourceTree = "<group>"; };
 		6D7EDD01B8A741B0A0000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6DCC0001B8A741B0A0000001 /* music_threshold.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_threshold.m4a; sourceTree = "<group>"; };
+		6DCC0101B8A741B0A0000001 /* music_finale.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_finale.m4a; sourceTree = "<group>"; };
 		6DBB0001B8A741B0A0000001 /* sfx_tap.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_tap.wav; sourceTree = "<group>"; };
 		6DBB0101B8A741B0A0000001 /* sfx_select.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_select.wav; sourceTree = "<group>"; };
 		6DBB0201B8A741B0A0000001 /* sfx_hit.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_hit.wav; sourceTree = "<group>"; };
@@ -321,6 +325,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6DAAFF00B8A741B0A0000001 /* Music */ = {
 			isa = PBXGroup;
 			children = (
+				6DCC0001B8A741B0A0000001 /* music_threshold.m4a */,
+				6DCC0101B8A741B0A0000001 /* music_finale.m4a */,
 				6DAA0001B8A741B0A0000001 /* music_village.m4a */,
 				6DAA0101B8A741B0A0000001 /* music_forest.m4a */,
 				6DAA0201B8A741B0A0000001 /* music_mines.m4a */,
@@ -437,6 +443,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			files = (
 				6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */,
 				6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */,
+				6DCC0002B8A741B0A0000001 /* music_threshold.m4a in Resources */,
+				6DCC0102B8A741B0A0000001 /* music_finale.m4a in Resources */,
 				6DBB0002B8A741B0A0000001 /* sfx_tap.wav in Resources */,
 				6DBB0102B8A741B0A0000001 /* sfx_select.wav in Resources */,
 				6DBB0202B8A741B0A0000001 /* sfx_hit.wav in Resources */,

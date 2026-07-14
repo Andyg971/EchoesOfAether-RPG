@@ -100,7 +100,11 @@ final class PlayerState {
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
     var bestiarySeen: Set<String> = []    // espèces croisées en combat (bestiaire)
-    var act3EranMet: Bool = false      // rencontre Eran au Seuil faite
+    var act3EranMet: Bool = false
+    var act3EchoJoined: Bool = false            // l'Écho de Lyra a rejoint Kael
+    var act3SpiritsCalmed: Set<String> = []     // esprits errants apaisés (quête)
+    var act3StelesRead: Set<String> = []        // stèles du Vide examinées
+    var act3ShadesDefeated: Bool = false        // combat annexe : ombres purgées      // rencontre Eran au Seuil faite
     var act3BossDefeated: Bool = false // Gardien du Seuil vaincu → vraie fin
     // Choix d'Eran qui détermine la fin de l'Acte III :
     // nil = non choisi, 0 = franchir le Seuil, 1 = résister / refuser le Vide.
@@ -187,6 +191,10 @@ final class PlayerState {
             act3BossDefeated: act3BossDefeated,
             act3EndingChoice: act3EndingChoice,
             bestiarySeen: Array(bestiarySeen),
+            act3EchoJoined: act3EchoJoined,
+            act3SpiritsCalmed: Array(act3SpiritsCalmed),
+            act3StelesRead: Array(act3StelesRead),
+            act3ShadesDefeated: act3ShadesDefeated,
             savedAt: Date(),
             phase: phase, resonanceTotal: resonance
         )
@@ -232,6 +240,10 @@ final class PlayerState {
         act3BossDefeated = data.act3BossDefeated ?? false
         act3EndingChoice = data.act3EndingChoice
         bestiarySeen = Set(data.bestiarySeen ?? [])
+        act3EchoJoined = data.act3EchoJoined ?? false
+        act3SpiritsCalmed = Set(data.act3SpiritsCalmed ?? [])
+        act3StelesRead = Set(data.act3StelesRead ?? [])
+        act3ShadesDefeated = data.act3ShadesDefeated ?? false
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 }
@@ -282,6 +294,11 @@ struct SaveData: Codable {
     let act3BossDefeated: Bool?
     let act3EndingChoice: Int?
     let bestiarySeen: [String]?
+    // Acte III étendu (optionnels — rétro-compatibles)
+    let act3EchoJoined: Bool?
+    let act3SpiritsCalmed: [String]?
+    let act3StelesRead: [String]?
+    let act3ShadesDefeated: Bool?
     // Horodatage pour la résolution de conflit iCloud (nil = save ancienne)
     let savedAt: Date?
     let phase: GamePhase

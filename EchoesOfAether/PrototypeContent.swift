@@ -996,6 +996,91 @@ enum PrototypeContent {
     ]
 
     /// Pré-combat : le Gardien du Seuil se dresse devant Kael.
+    // ── Acte III étendu : l'Écho de Lyra, les esprits, les stèles ──
+
+    /// L'Écho de Lyra attend Kael à l'entrée du Seuil — elle rejoint le trio.
+    static let act3EchoMeetDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.echo1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.echoKael1")),
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.echo2")),
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.echo3")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.echoKael2")),
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.echo4"))
+    ]
+
+    /// Esprit du mineur de Cendreval (quête « Les échos égarés »).
+    static let spiritMinerDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.spirit.minerName"),
+              text: String(localized: "dialogue.spirit.miner1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.spirit.minerKael")),
+        .line(speaker: String(localized: "dialogue.spirit.minerName"),
+              text: String(localized: "dialogue.spirit.miner2"))
+    ]
+
+    /// Esprit de la mère de Solis.
+    static let spiritMotherDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.spirit.motherName"),
+              text: String(localized: "dialogue.spirit.mother1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.spirit.motherKael")),
+        .line(speaker: String(localized: "dialogue.spirit.motherName"),
+              text: String(localized: "dialogue.spirit.mother2"))
+    ]
+
+    /// Esprit du garde du sanctuaire.
+    static let spiritGuardDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.spirit.guardName"),
+              text: String(localized: "dialogue.spirit.guard1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.spirit.guardKael")),
+        .line(speaker: String(localized: "dialogue.spirit.guardName"),
+              text: String(localized: "dialogue.spirit.guard2"))
+    ]
+
+    /// Les trois esprits apaisés — récompense.
+    static let spiritsDoneDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.spirit.done1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.spirit.done2"))
+    ]
+
+    /// Stèles du Vide : trois fragments de la chute d'Eran.
+    static func steleDialogue(_ index: Int) -> [DialogueStep] {
+        let key = "dialogue.stele.\(index)"
+        return [.line(speaker: String(localized: "dialogue.stele.name"),
+                      text: String(localized: String.LocalizationValue(key)))]
+    }
+
+    /// Les trois stèles lues.
+    static let stelesDoneDialogue: [DialogueStep] = [
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.stele.done"))
+    ]
+
+    /// Avant le combat annexe contre les ombres.
+    static let shadesPreDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.shades.pre1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.shades.pre2"))
+    ]
+
+    /// Eran rejoint le trio après la rencontre.
+    static let act3EranJoinDialogue: [DialogueStep] = [
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.eranJoin1")),
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.eranJoin2"))
+    ]
+
     static let act3GuardianPreDialogue: [DialogueStep] = [
         // La confrontation (scène ACT4_SC11 du scénario, adaptée à Eran)
         .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.1")),

@@ -18,6 +18,13 @@ enum PixelIcons {
         return build(map: map, palette: palette, pixel: pixel)
     }
 
+    /// Grille pixel libre pour les marqueurs du monde (jouet, minerai…) —
+    /// même rendu que les icônes, sans passer par un `Kind` dédié.
+    static func custom(map: [String], palette: [Character: SKColor],
+                       pixel: CGFloat = 2) -> SKNode {
+        build(map: map, palette: palette, pixel: pixel)
+    }
+
     // MARK: - Rendu grille
 
     private static func build(map: [String],

@@ -717,26 +717,29 @@ final class WorldBuilder {
         toy.position = CGPoint(x: w * 0.80, y: h * 0.45)
         toy.zPosition = 3
 
-        // Petit ours en bois (placeholder)
-        let body = SKShapeNode(rectOf: CGSize(width: 12, height: 14), cornerRadius: 3)
-        body.fillColor = SKColor(red: 0.55, green: 0.35, blue: 0.15, alpha: 1)
-        body.strokeColor = SKColor(red: 0.70, green: 0.45, blue: 0.20, alpha: 0.6)
-        body.lineWidth = 1
-        toy.addChild(body)
-
-        let head = SKShapeNode(circleOfRadius: 6)
-        head.fillColor = SKColor(red: 0.60, green: 0.40, blue: 0.18, alpha: 1)
-        head.strokeColor = .clear
-        head.position = CGPoint(x: 0, y: 12)
-        toy.addChild(head)
-
-        // Lueur dorée pour attirer l'œil
-        let glow = SKShapeNode(circleOfRadius: 18)
-        glow.fillColor = SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 0.08)
-        glow.strokeColor = SKColor(red: 1, green: 0.80, blue: 0.2, alpha: 0.20)
-        glow.lineWidth = 1
-        toy.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.5)
+        // Petit ours en bois — grille pixel (charte : zéro coin arrondi/glow)
+        let bear = PixelIcons.custom(map: [
+            ".OO....OO.",
+            ".Oo....oO.",
+            "..OOOOOO..",
+            ".OoooooooO",
+            ".OoDooDooO",
+            ".OooooooO.",
+            "..OonnOO..",
+            "..OOOOOO..",
+            ".OOooooOO.",
+            "OOooooooOO",
+            "OoOooooOoO",
+            ".OOooooOO.",
+            ".Oo....oO.",
+            ".OO....OO."
+        ], palette: [
+            "O": SKColor(red: 0.55, green: 0.35, blue: 0.15, alpha: 1),
+            "o": SKColor(red: 0.68, green: 0.45, blue: 0.20, alpha: 1),
+            "D": SKColor(red: 0.20, green: 0.12, blue: 0.06, alpha: 1),
+            "n": SKColor(red: 0.35, green: 0.22, blue: 0.10, alpha: 1)
+        ], pixel: 1.6)
+        toy.addChild(bear)
 
         // Losange pixel doré flottant au-dessus du jouet
         let sparkle = SKShapeNode(rectOf: CGSize(width: 8, height: 8))
@@ -818,28 +821,31 @@ final class WorldBuilder {
         marker.zPosition = 3
 
         // Bloc de minerai sombre (placeholder pixel)
-        let rock = SKShapeNode(rectOf: CGSize(width: 18, height: 12), cornerRadius: 3)
-        rock.fillColor = SKColor(red: 0.16, green: 0.15, blue: 0.20, alpha: 1)
-        rock.strokeColor = SKColor(red: 0.35, green: 0.30, blue: 0.45, alpha: 0.8)
-        rock.lineWidth = 1
+        // Bloc de fer corrompu — grille pixel, filons violets (zéro glow)
+        let rock = PixelIcons.custom(map: [
+            "....RRRR....",
+            "..RRrrrrRR..",
+            ".RrvRrrRvrR.",
+            "RrrvvrrrvvrR",
+            "RrrrvrrrrvrR",
+            "RrvrrrRvrrrR",
+            "RrvvrrrvvrrR",
+            ".RrrrRrrrrR.",
+            "..RRRRRRRR.."
+        ], palette: [
+            "R": SKColor(red: 0.10, green: 0.09, blue: 0.14, alpha: 1),
+            "r": SKColor(red: 0.20, green: 0.18, blue: 0.26, alpha: 1),
+            "v": SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 1)
+        ], pixel: 1.8)
         marker.addChild(rock)
 
-        // Filons violets — le fer est corrompu
-        for dx in [-5, 1, 6] {
-            let vein = SKShapeNode(rectOf: CGSize(width: 2, height: 7))
-            vein.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.9)
-            vein.strokeColor = .clear
-            vein.position = CGPoint(x: CGFloat(dx), y: 0)
-            vein.zRotation = 0.3
-            marker.addChild(vein)
-        }
-
-        let glow = SKShapeNode(circleOfRadius: 18)
-        glow.fillColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.08)
-        glow.strokeColor = SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 0.20)
-        glow.lineWidth = 1
-        marker.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.4)
+        // Étincelle pixel violette (repère œil, cohérent charte)
+        let sparkle = SKSpriteNode(color: SKColor(red: 0.65, green: 0.40, blue: 0.95, alpha: 1),
+                                   size: CGSize(width: 7, height: 7))
+        sparkle.zRotation = .pi / 4
+        sparkle.position = CGPoint(x: 0, y: 18)
+        marker.addChild(sparkle)
+        JuiceEngine.float(sparkle, distance: 4)
 
         worldNode.addChild(marker)
         backdropNodes.append(marker)

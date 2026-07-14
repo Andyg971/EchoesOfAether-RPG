@@ -706,8 +706,16 @@ final class GameManager {
         if state == .combat,     combat.handleTap(at: point, in: scene) { return }
         guard state == .exploration else { return }
         if hud.handleTap(at: point, in: scene) { return }
-        // Contrôles classiques : le monde ne réagit plus au toucher.
-        // Interactions = bouton A uniquement ; déplacement = joystick.
+        // Contrôles classiques : déplacement = joystick uniquement.
+        // Mais toucher directement le PNJ/POI À PORTÉE interagit quand
+        // même (équivalent du bouton A) — sinon le tap semble « cassé ».
+        if let target = nearbyActionPoint {
+            let wp = world.worldNode.convert(point, from: scene)
+            if wp.distance(to: target) < 48 {
+                triggerNearbyAction(in: scene)
+                return
+            }
+        }
     }
 
     // MARK: - Story Flow
@@ -3323,6 +3331,10 @@ final class GameManager {
             // Audit des portraits : un locuteur de chaque famille.
             transition(to: .dialogue)
             dialogue.start([
+                // Réplique la plus longue du jeu : vérifie que le panneau
+                // grandit avec le texte (3 lignes) sans déborder.
+                .line(speaker: "Dorin",
+                      text: String(localized: "dialogue.dorin.real.6")),
                 .line(speaker: "Kael", text: "Audit portrait Kael."),
                 .line(speaker: "Lyra", text: "Audit portrait Lyra."),
                 .line(speaker: "Dorin", text: "Audit portrait Dorin."),

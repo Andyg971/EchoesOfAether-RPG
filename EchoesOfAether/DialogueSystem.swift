@@ -26,6 +26,8 @@ final class DialogueSystem {
     private var choiceSelection = 0   // curseur sur les choix (A valide)
     private var steps: [DialogueStep] = []
     private var index = 0
+    /// Index du choix déjà résolu — B (skip) ne doit pas le re-poser.
+    private var answeredChoiceIndex = -1
     private var pendingNPC: (speaker: String, text: String)?
     private var completion: (() -> Void)?
     private var hasAnimatedEntrance = false
@@ -105,8 +107,25 @@ final class DialogueSystem {
         bodyLabel.fontSize = 14 * ts
         continueIndicator.fontSize = 12 * ts
         let hasChoices = !choiceNodes.isEmpty
-        let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
         let panelWidth = panelWidth(for: size)
+
+        // Géométrie du portrait AVANT la hauteur : la largeur de texte en
+        // dépend, et la hauteur du panneau suit le texte mesuré — les
+        // longues répliques (Dorin, Sage…) passent sur 3 lignes sans
+        // déborder du cadre.
+        let portraitSide: CGFloat = 52
+        let portraitX = -panelWidth / 2 + portraitSide / 2 + 10
+        // En mode choix, le portrait recouvrait les boutons : on le masque.
+        let showPortrait = hasPortrait && !hasChoices
+        let textX = showPortrait
+            ? portraitX + portraitSide / 2 + 12
+            : -panelWidth / 2 + 14
+        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - 18
+
+        let bodyHeight = max(16, bodyLabel.frame.height)
+        let panelHeight = hasChoices
+            ? panelHeightChoices
+            : max(panelHeightLine, 34 + bodyHeight + 16)
 
         // Cadre RPG pixel art (coins carrés, liseré sombre + bordure or)
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight))
@@ -116,8 +135,6 @@ final class DialogueSystem {
 
         // Portrait (44px natif) dans un cadre pixel à gauche ; le texte
         // se décale quand un visage est affiché.
-        let portraitSide: CGFloat = 52
-        let portraitX = -panelWidth / 2 + portraitSide / 2 + 10
         PixelUI.stylePanel(portraitFrame,
                            size: CGSize(width: portraitSide, height: portraitSide),
                            fill: SKColor(red: 0.08, green: 0.06, blue: 0.12, alpha: 1),
@@ -125,14 +142,9 @@ final class DialogueSystem {
         portraitFrame.position = CGPoint(x: portraitX, y: 0)
         portraitSprite.position = portraitFrame.position
         portraitSprite.size = CGSize(width: portraitSide - 8, height: portraitSide - 8)
-        // En mode choix, le portrait recouvrait les boutons : on le masque.
-        let showPortrait = hasPortrait && !hasChoices
         portraitFrame.isHidden = !showPortrait
         portraitSprite.isHidden = !showPortrait
 
-        let textX = showPortrait
-            ? portraitX + portraitSide / 2 + 12
-            : -panelWidth / 2 + 14
         speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 16)
 
         let sepY = panelHeight / 2 - 26
@@ -142,7 +154,6 @@ final class DialogueSystem {
         separator.path = sepPath
 
         bodyLabel.position = CGPoint(x: textX, y: sepY - 6)
-        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - 18
 
         continueIndicator.position = CGPoint(x: panelWidth / 2 - 18, y: -panelHeight / 2 + 16)
 
@@ -158,16 +169,19 @@ final class DialogueSystem {
         }
         self.steps = steps
         self.index = 0
+        self.answeredChoiceIndex = -1
         self.pendingNPC = nil
         self.lastChoiceIndex = nil
         self.completion = completion
         root.isHidden = false
-        playEntranceAnimation()
+        // Le contenu d'abord (layout → hauteur/position correctes), puis
+        // l'animation d'entrée qui glisse vers cette position au repos.
         showCurrentStep()
+        playEntranceAnimation()
     }
 
     private func playEntranceAnimation() {
-        guard let sceneRef = root.scene else { return }
+        guard let sceneRef = root.scene, !root.isHidden else { return }
         let restY = root.position.y
         root.position = CGPoint(x: root.position.x, y: restY - 40)
         root.alpha = 0
@@ -267,11 +281,29 @@ final class DialogueSystem {
         }
     }
 
-    /// Contrôles classiques : le panneau absorbe tout tap. Les choix se
-    /// naviguent au joystick (`moveChoiceSelection`) et se valident au
-    /// bouton A (`advance`/`confirmChoice`), B passe (`skipToEnd`).
+    /// Le dialogue est modal, mais le toucher direct marche aussi :
+    /// tap sur un choix = sélection + validation, tap sur le panneau =
+    /// avancer d'une réplique. Le joystick + A/B restent disponibles
+    /// (contrôles classiques).
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
-        isActive && !root.isHidden
+        guard isActive, !root.isHidden else { return false }
+        let local = root.convert(point, from: scene)
+
+        if !choiceNodes.isEmpty {
+            for (i, node) in choiceNodes.enumerated() where node.contains(local) {
+                choiceSelection = i
+                refreshChoiceHighlight()
+                confirmChoice()
+                return true
+            }
+            return true   // pas de skip accidentel pendant un choix
+        }
+
+        if panel.contains(local) {
+            advance()
+            return true
+        }
+        return true   // absorbe le reste (modal)
     }
 
     /// Joystick haut/bas : déplace le curseur sur les choix.
@@ -307,6 +339,7 @@ final class DialogueSystem {
             lastChoiceIndex = chosenIndex
             onChoiceSelected?(chosenIndex)
         }
+        answeredChoiceIndex = index
         pendingNPC = (speaker: npcSpeaker, text: npcText)
         clearChoices()
         let kaelName = String(localized: "dialogue.kael")
@@ -338,7 +371,8 @@ final class DialogueSystem {
             if let sceneRef = root.scene {
                 layout(in: sceneRef.size, safeBottom: safeBottom)
             }
-            index += 1
+            // index reste sur le choix : le prochain A affiche bien
+            // l'étape SUIVANTE (avant, elle était sautée — off-by-one).
             return
         }
 
@@ -355,6 +389,9 @@ final class DialogueSystem {
     func skipToEnd() {
         guard isActive, choiceNodes.isEmpty else { return }
         AudioEngine.shared.playTap()
+        // Au milieu de la résolution d'un choix (titre/réaction affichés) :
+        // le choix courant est déjà répondu, on reprend après lui.
+        if index == answeredChoiceIndex { index += 1 }
         pendingNPC = nil
         while index < steps.count {
             if case .choice = steps[index] { break }

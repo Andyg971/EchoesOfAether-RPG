@@ -1707,14 +1707,19 @@ final class GameManager {
     private func startBossFight() {
         guard scene != nil else { return }
         guard !player.bossDefeated else {
-            // Boss already dead → go straight to shrine ending
+            // Boss déjà vaincu (ex. save d'une session interrompue après la
+            // victoire) → fin de sanctuaire PUIS suite vers l'Acte II, comme
+            // le chemin de victoire. Sans onContinue, l'écran de fin n'a pas
+            // de bouton Continuer → jeu figé, Actes II–IV inatteignables.
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.shrineEnding) { [weak self] in
                 guard let self, let scene = self.scene else { return }
                 phase = .complete
                 hud.objectiveText = String(localized: "hud.objective.complete")
                 transition(to: .exploration)
-                TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal)
+                TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal) { [weak self] in
+                    self?.beginAct2()
+                }
             }
             return
         }

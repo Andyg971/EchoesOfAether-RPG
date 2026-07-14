@@ -85,6 +85,10 @@ final class PlayerState {
     var questMines: QuestState = .inactive      // les mines silencieuses (Cendreval)
     var minesProgress: Int = 0                  // 0=intact, 1=mineurs, 2=spectres, 3=golem vaincu
     var minesGoldTaken: Bool = false            // veine d'or ramassée (une fois)
+    var questDesert: QuestState = .inactive     // le désert d'Ossara (carte du monde)
+    var desertProgress: Int = 0                 // 0=intact, 1=pillards, 2=charognards, 3=colosse vaincu
+    var desertChestTaken: Bool = false          // coffre enfoui ramassé (une fois)
+    var desertOasisUsed: Bool = false           // oasis bue (une fois, non sauvegardé)
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -184,6 +188,9 @@ final class PlayerState {
             questMines: questMines,
             minesProgress: minesProgress,
             minesGoldTaken: minesGoldTaken,
+            questDesert: questDesert,
+            desertProgress: desertProgress,
+            desertChestTaken: desertChestTaken,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -236,6 +243,10 @@ final class PlayerState {
         questMines = data.questMines ?? .inactive
         minesProgress = data.minesProgress ?? 0
         minesGoldTaken = data.minesGoldTaken ?? false
+        questDesert = data.questDesert ?? .inactive
+        desertProgress = data.desertProgress ?? 0
+        desertChestTaken = data.desertChestTaken ?? false
+        desertOasisUsed = false
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -295,6 +306,10 @@ struct SaveData: Codable {
     let questMines: QuestState?
     let minesProgress: Int?
     let minesGoldTaken: Bool?
+    // Optionnels — saves antérieures au désert d'Ossara
+    let questDesert: QuestState?
+    let desertProgress: Int?
+    let desertChestTaken: Bool?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

@@ -742,6 +742,23 @@
         }
       }
     },
+    "combat.enemy.dunePillager": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dune Raider"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pillard des dunes"
+          }
+        }
+      }
+    },
     "combat.enemy.echoDevourer": {
       "localizations": {
         "en": {
@@ -818,6 +835,40 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gardien des Ruines"
+          }
+        }
+      }
+    },
+    "combat.enemy.sandColossus": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sand Colossus"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Colosse des sables"
+          }
+        }
+      }
+    },
+    "combat.enemy.scavenger": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara Scavenger"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Charognard d’Ossara"
           }
         }
       }
@@ -1082,6 +1133,7 @@
       }
     },
     "combat.status.attackLyra %@": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1258,6 +1310,7 @@
       }
     },
     "combat.status.enemyHitsLyra %@ %lld": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1306,6 +1359,7 @@
       }
     },
     "combat.status.lyraDown": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -1518,6 +1572,7 @@
       }
     },
     "combat.turn.lyra": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4592,6 +4647,7 @@
       }
     },
     "dialogue.act4.memory.1": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4608,6 +4664,7 @@
       }
     },
     "dialogue.act4.memory.1Kael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4624,6 +4681,7 @@
       }
     },
     "dialogue.act4.memory.2": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4640,6 +4698,7 @@
       }
     },
     "dialogue.act4.memory.2Kael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4656,6 +4715,7 @@
       }
     },
     "dialogue.act4.memory.3": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4672,6 +4732,7 @@
       }
     },
     "dialogue.act4.memory.3Kael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4832,6 +4893,7 @@
       }
     },
     "dialogue.act4.reflection.elder1": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4848,6 +4910,7 @@
       }
     },
     "dialogue.act4.reflection.elder2": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4864,6 +4927,7 @@
       }
     },
     "dialogue.act4.reflection.elderKael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4880,6 +4944,7 @@
       }
     },
     "dialogue.act4.reflection.elderName": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4896,6 +4961,7 @@
       }
     },
     "dialogue.act4.reflection.lost1": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4912,6 +4978,7 @@
       }
     },
     "dialogue.act4.reflection.lost2": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4928,6 +4995,7 @@
       }
     },
     "dialogue.act4.reflection.lostKael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4944,6 +5012,7 @@
       }
     },
     "dialogue.act4.reflection.lostName": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4960,6 +5029,7 @@
       }
     },
     "dialogue.act4.reflection.smith1": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4976,6 +5046,7 @@
       }
     },
     "dialogue.act4.reflection.smith2": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -4992,6 +5063,7 @@
       }
     },
     "dialogue.act4.reflection.smithKael": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5008,6 +5080,7 @@
       }
     },
     "dialogue.act4.reflection.smithName": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -5917,6 +5990,176 @@
           "stringUnit": {
             "state": "translated",
             "value": "Choisis comment Kael répond."
+          }
+        }
+      }
+    },
+    "dialogue.desert.ambush.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An ambush! They rise from the dunes!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Une embuscade ! Ils surgissent des dunes !"
+          }
+        }
+      }
+    },
+    "dialogue.desert.boss.post1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The colossus returns to the sand. The desert breathes again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le colosse retourne au sable. Le désert respire à nouveau."
+          }
+        }
+      }
+    },
+    "dialogue.desert.boss.post2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The caravans can pass again. If any remain."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Les caravanes pourront repasser. S’il en reste."
+          }
+        }
+      }
+    },
+    "dialogue.desert.boss.pre1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The ground is shaking. Something huge sleeps beneath the dunes."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le sol tremble. Quelque chose d’énorme dort sous les dunes."
+          }
+        }
+      }
+    },
+    "dialogue.desert.boss.pre2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Too late to turn back."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Trop tard pour reculer."
+          }
+        }
+      }
+    },
+    "dialogue.desert.chest.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A chest buried in the sand. The raiders never found it."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un coffre enfoui sous le sable. Les pillards ne l’ont jamais trouvé."
+          }
+        }
+      }
+    },
+    "dialogue.desert.combat1.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caravan raiders. They won’t rob anyone again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des pillards de caravanes. Ils ne détrousseront plus personne."
+          }
+        }
+      }
+    },
+    "dialogue.desert.enter.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara. The sun strikes like a hammer. Even the wind is thirsty."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara. Le soleil frappe comme un marteau. Même le vent a soif."
+          }
+        }
+      }
+    },
+    "dialogue.desert.enter.kael2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Raider tracks in the sand. I’m not alone out here."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des traces de pillards dans le sable. Je ne suis pas seul ici."
+          }
+        }
+      }
+    },
+    "dialogue.desert.oasis.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Clear water. My strength returns."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "De l’eau claire. Mes forces reviennent."
           }
         }
       }
@@ -8695,6 +8938,7 @@
       }
     },
     "dialogue.stele.1": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -8711,6 +8955,7 @@
       }
     },
     "dialogue.stele.2": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -8727,6 +8972,7 @@
       }
     },
     "dialogue.stele.3": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -9814,6 +10060,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Suivre le sentier profond"
+          }
+        }
+      }
+    },
+    "hud.objective.desert": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara Desert: follow the raiders’ tracks"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désert d’Ossara : suivre les traces des pillards"
           }
         }
       }
@@ -11002,6 +11265,193 @@
         }
       }
     },
+    "map.close": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Close"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fermer"
+          }
+        }
+      }
+    },
+    "map.legend": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tap a lit place to travel."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Touchez un lieu éclairé pour voyager."
+          }
+        }
+      }
+    },
+    "map.place.desert": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara Desert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désert d’Ossara"
+          }
+        }
+      }
+    },
+    "map.place.forest": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ebonwood Forest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Forêt d’Ébène"
+          }
+        }
+      }
+    },
+    "map.place.mines": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cendreval Mines"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mines de Cendreval"
+          }
+        }
+      }
+    },
+    "map.place.ruins": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruins of the Source"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ruines de la Source"
+          }
+        }
+      }
+    },
+    "map.place.shrine": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Shrine"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sanctuaire"
+          }
+        }
+      }
+    },
+    "map.place.threshold": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Threshold"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Seuil"
+          }
+        }
+      }
+    },
+    "map.place.village": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solis Village"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Village de Solis"
+          }
+        }
+      }
+    },
+    "map.place.voidheart": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Void Heart"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cœur du Vide"
+          }
+        }
+      }
+    },
+    "map.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "World Map"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Carte du monde"
+          }
+        }
+      }
+    },
     "menu.chooseSlot": {
       "extractionState": "stale",
       "localizations": {
@@ -11920,6 +12370,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Colis pour Garen"
+          }
+        }
+      }
+    },
+    "quest.desert.hud": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cleanse the Ossara Desert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purger le désert d’Ossara"
           }
         }
       }
@@ -13544,6 +14011,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "Sentier profond →"
+          }
+        }
+      }
+    },
+    "world.desert.exit": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Exit"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sortie"
+          }
+        }
+      }
+    },
+    "world.desert.oasis": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oasis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Oasis"
+          }
+        }
+      }
+    },
+    "world.desert.title": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ossara Desert"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Désert d’Ossara"
           }
         }
       }

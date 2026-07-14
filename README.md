@@ -1,9 +1,11 @@
 # Echoes of Aether
 
-> *"Elle avait raison. Sur tout. Mais les morts ne parlent pas."*
-> — Kael, Acte II
+> *"Kael. Même le Vide n'a pas su me faire taire."*
+> — L'Écho de Lyra, Acte III
 
-RPG iOS dark fantasy construit entièrement en **Swift 6 natif + SpriteKit** — aucun moteur externe, aucun asset payant. Chaque pixel est dessiné en code.
+RPG iOS dark fantasy construit entièrement en **Swift 6 natif + SpriteKit** — aucun moteur externe, aucune dépendance SPM. Pixel art (sprites LimeZu Modern Exteriors + éléments dessinés en code), musiques et SFX **CC0**, zéro asset généré par IA.
+
+**Paysage uniquement · Contrôles classiques (joystick + A/B) · 3 actes jouables · Combats en trio**
 
 ---
 
@@ -11,14 +13,14 @@ RPG iOS dark fantasy construit entièrement en **Swift 6 natif + SpriteKit** —
 
 **Kael** se réveille dans le village de **Solis**, son passé effacé. Guidé par sa meilleure amie **Lyra**, il s'aventure dans la **Forêt d'Ébène** corrompue, affronte le **Gardien de l'Aether**, et découvre une vérité qu'il ne peut plus ignorer.
 
-**Acte I — L'Éveil**  
-Kael retrouve ses repères à Solis. Exploration, quêtes, combats contre des créatures corrompues, victoire sur le Gardien du Sanctuaire — sans savoir ce que ses pouvoirs d'Aether noir signifient vraiment.
+**Acte I — L'Éveil**
+Kael retrouve ses repères à Solis. Exploration, quêtes, combats contre des créatures corrompues — Lyra se bat à ses côtés dans la forêt. Victoire sur le Gardien du Sanctuaire, sans savoir ce que ses pouvoirs d'Aether noir signifient vraiment.
 
-**Acte II — La Chute de Kael**  
-De retour en héros, Kael est hanté par des cauchemars. Dorin bloque la porte nord. Les Ruines de la Source cachent un Archiviste qui a catalogué chaque âme que Kael a jamais absorbée. Une inscription cachée de la chercheuse disparue **Eran Solace** évoque une salvation — le **Seuil**. Lyra découvre la vérité. Kael la fait taire. La Voix dit : *"Tu es libre. Viens."* Kael répond : *"Oui."*
+**Acte II — La Chute de Kael**
+De retour en héros, Kael est hanté par des cauchemars. Les Ruines de la Source cachent un Archiviste qui a catalogué chaque âme que Kael a jamais absorbée. Une inscription de la chercheuse disparue **Eran Solace** évoque le **Seuil**. Lyra découvre la vérité. Kael la fait taire. Les **Mines de Cendreval** s'ouvrent en zone annexe (3 combats dont un golem).
 
-**Acte III — (Prévu)**  
-Kael comme Lame du Vide. Le Seuil. Eran Solace. Un règlement de comptes.
+**Acte III — Le Seuil**
+Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho de Lyra** attend Kael à l'entrée et rejoint le groupe. **Eran**, premier des Veilleurs devenu écho lui-même, complète le **trio**. Esprits errants à apaiser, stèles qui révèlent le prix qu'Eran a payé (son *nom*), Ombres du Vide à purger — puis le Gardien du Seuil, et un choix : **franchir ou résister**. Deux fins.
 
 ---
 
@@ -26,13 +28,16 @@ Kael comme Lame du Vide. Le Seuil. Eran Solace. Un règlement de comptes.
 
 | Système | Description |
 |---------|-------------|
-| **Exploration** | Tap-to-move avec marqueur visuel. Interactions NPC par proximité. Changement de zone avec transitions. |
-| **Combat tour par tour** | Vrai tour par tour : le joueur choisit son action (attaque, sorts élémentaires, Entaille Noire, potion), puis chaque ennemi agit. Bannière de tour, file d'initiative, faiblesses, boucliers, BREAK, statuts, boss avec enragement. |
-| **Dialogues** | Système multi-lignes avec choix ramifiés. Les réponses affectent le ton, pas l'issue (couleur narrative). |
-| **Quêtes** | 8 quêtes : livraison (Mara → Garen), jouet perdu, Éclats d'Aether de Lyra, talisman de la villageoise, fer de Bram, herbe lunaire de Sage, éclaireur disparu de Garen, champignon de Mara. |
-| **Boutique / Inventaire** | Armes (Lame de Fer, Lame Runique), Armures (Cotte de Mailles, Armure Renforcée), Potions, Éclats d'Aether. |
-| **Sauvegarde** | 3 slots + migration legacy. Auto-save à chaque transition d'état + sauvegarde manuelle aux **Cristaux d'Aether** placés dans chaque zone. |
-| **Corruption** | La corruption visuelle de Kael progresse sur 3 niveaux (aura → vrilles → yeux rouges) à mesure que l'Acte II se déroule. |
+| **Contrôles classiques** | Zéro tactile de gameplay : joystick virtuel (déplacement + navigation des menus au flick), bouton **A** (interagir / valider), bouton **B** (annuler / passer / fermer). Curseur de sélection doré partout : combat, choix de dialogue, boutique, pause, onglets du journal. |
+| **Exploration** | Bulle de parole RPG blanche (« … », « ! », « ? », « » ») au-dessus des PNJ/POI, hints « A · Parler ». PNJ qui déambulent seuls (village, esprits du Seuil). Vignette d'ambiance par zone. |
+| **Combat tour par tour** | Solo, **duo** (Kael + Lyra, actes I-II) ou **trio** (Kael + Écho de Lyra + Eran, acte III). Kits complémentaires par personnage (Kael FEU/AETHER · Lyra GLACE/FOUDRE/SOIN · Écho GLACE/SOIN · Eran FOUDRE/AETHER). Faiblesses, boucliers, BREAK, statuts avec **icônes persistantes** (flamme/éclair/bouclier fêlé), **critiques** (12 %, ×1.5), **esquives** (10 %), combo, boss avec enragement. Boost façon Octopath : booster coupe la régénération de BP une manche. |
+| **Juice combat** | Entrée en scène « dissolution » SNES, parallaxe du décor, micro-zoom caméra sur les gros coups, ghost HP bars, images rémanentes, pose de cast colorée par élément. |
+| **Dialogues** | Portraits pixel des locuteurs (Kael = visage de l'icône de l'app), choix ramifiés au curseur, B passe jusqu'au prochain choix. |
+| **Quêtes** | 8 quêtes actes I-II + Mines de Cendreval + 3 quêtes annexes acte III (échos égarés, stèles du Vide, Ombres du Vide). |
+| **Boutique / Inventaire** | 3 paliers d'armes/armures (jusqu'à l'**Aetherite**), vitrine progressive (seul le palier suivant est affiché), potions, éclats. |
+| **Bestiaire** | Journal de l'Éther à onglets : Chroniques + Bestiaire (7 espèces, faiblesses/boucliers/lore, silhouettes tant que non croisées). |
+| **Sauvegarde** | 3 slots, auto-save, cristaux d'Aether, **sync iCloud** (Key-Value Store, la save la plus récente gagne). |
+| **Audio** | 9 musiques CC0 (village, forêt, mines, auberge, combat, boss, Seuil, titre, finale) avec cross-fade par zone + 11 SFX 8-bit CC0 (Juhani Junkala). Synthèse procédurale en repli. |
 
 ---
 
@@ -41,32 +46,32 @@ Kael comme Lame du Vide. Le Seuil. Eran Solace. Un règlement de comptes.
 ```
 EchoesOfAether/
 ├── Core/
-│   ├── GameState.swift         — Enums GameState/GamePhase, PlayerState, SaveData
-│   ├── GameManager.swift       — Coordinateur central. Route les taps, gère la machine d'états
-│   └── SaveManager.swift       — Encode/decode JSON vers UserDefaults
+│   ├── GameState.swift         — GameState/GamePhase, PlayerState, SaveData (Codable, rétro-compatible)
+│   ├── GameManager.swift       — Coordinateur central : états, boutons A/B, hints, quêtes, zones
+│   └── SaveManager.swift       — JSON sur disque + miroir iCloud KVS (résolution par horodatage)
 ├── Game/
 │   ├── Scenes/
-│   │   ├── WorldBuilder.swift       — Construction de toutes les zones (village, forêt, sanctuaire, ruines)
-│   │   ├── MovementController.swift — Tap-to-move avec interpolation de vitesse
-│   │   └── TransitionManager.swift  — Transitions fade, écrans de fin d'acte
+│   │   ├── WorldBuilder.swift       — Toutes les zones (village, forêt, sanctuaire, ruines, mines, Seuil, intérieurs)
+│   │   ├── MainMenuScene.swift      — Écran-titre (art de l'icône, ciel étoilé, slots)
+│   │   ├── MovementController.swift — Marche procédurale (bob + poussière)
+│   │   └── TransitionManager.swift  — Fades, écrans de fin
 │   └── Combat/
-│       └── CombatSystem.swift       — Moteur ATB, BossConfig, calcul de dégâts
-├── UI/
-│   ├── HUDOverlay.swift         — Or, Résonance, Objectif, labels de quête
-│   ├── DialogueSystem.swift     — Panel, speaker, choix (empilés verticalement)
-│   ├── ShopOverlay.swift        — Liste d'items avec logique d'achat
-│   └── InventoryOverlay.swift   — Affichage équipement + stats
-├── Models/
-│   └── WorldNode.swift          — Factory methods pour tous les personnages (Kael, Lyra, Dorin…)
+│       ├── CombatSprites.swift      — Sprites d'arène (Kael, alliés, ennemis, boss)
+│       └── PixelFX.swift            — FX pixel des sorts (zéro glow)
+├── UI/                          — HUD (ombres portées, safe areas island), Dialogue (portraits),
+│                                  Shop/Inventory/Lore/QuestLog/Pause/Options (curseur + dismiss B)
 ├── Juice/
-│   ├── JuiceEngine.swift        — screenShake, flashOverlay, slowMotion, popIn, pulse, float
-│   ├── ParticleFactory.swift    — impactSparks, blackAetherBurst, ambientDust, forestFog, shrineAura, ruinsAsh
-│   └── AudioEngine.swift        — Déclencheurs d'effets sonores (quête, or, combat)
-├── Content/
-│   └── PrototypeContent.swift   — Tous les tableaux de dialogues (clés xcstrings FR/EN)
-├── GameScene.swift              — SKScene shell — forward touches/update vers GameManager
-├── GameViewController.swift     — Hôte UIKit, injection safe area
-└── Localizable.xcstrings        — Toutes les strings, FR (base) + EN. Zéro string hard-codée.
+│   ├── JuiceEngine.swift        — screenShake, zoomPunch, flash, slowMotion, pulse…
+│   ├── ParticleFactory.swift    — étincelles, brumes, fumées de cheminée, papillons, atmosphères
+│   ├── HapticsEngine.swift      — CoreHaptics
+│   └── AudioEngine.swift        — AVAudioEngine : musiques/SFX fichiers CC0 + synthèse en repli
+├── Resources/
+│   ├── Music/  (9 × .m4a CC0)   └── SFX/  (11 × .wav CC0)
+├── CombatSystem.swift           — Moteur tour par tour : alliés génériques (AllyState), crit/esquive,
+│                                  curseur de menu, statuts, boss
+├── PrototypeContent.swift       — Tous les dialogues (clés xcstrings FR/EN)
+├── Marketing/                   — Trailer 39 s (gameplay réel + cartes titre pixel)
+└── Localizable.xcstrings        — ~750 clés, FR (base) + EN. Zéro string hard-codée.
 ```
 
 ### Machine d'états
@@ -77,52 +82,40 @@ GameState:  exploration → dialogue → combat → shop → inventory → trans
 GamePhase:
   wake → village → forest → shrine → complete
                                          ↓
-                                       act2 → ruins → fallen
+                                       act2 → ruins → fallen → act3 (Le Seuil)
+                              (+ Mines de Cendreval en zone annexe)
 ```
 
 ### Patterns clés
 
 - **@MainActor** partout — SpriteKit + Swift 6 strict concurrency
-- **Static factory** — `WorldNode.*()`, `ParticleFactory.*()`, `TransitionManager.*()`
+- **Static factory** — `WorldNode.*()`, `CombatSprites.*()`, `ParticleFactory.*()`
 - **Closure callbacks** — `DialogueSystem.start([steps]) { completion }` chaîne les scènes
-- **Pont valeur/référence pour la save** — `PlayerState` (class, @MainActor) ↔ `SaveData` (struct Codable)
+- **Alliés génériques** — `CombatAllyKind` + `AllyState` : duo/trio sans dupliquer le moteur
+- **Pont valeur/référence pour la save** — `PlayerState` (class, @MainActor) ↔ `SaveData` (struct Codable, champs optionnels rétro-compatibles)
 - **Zéro dépendance externe** — 0 packages SPM, frameworks Apple purs
 
 ---
 
-## Outils & Frameworks
+## Assets & licences
 
-| Outil | Usage |
-|-------|-------|
-| **Swift 6** | Strict concurrency, actors, Sendable |
-| **SpriteKit** | Tout le rendu 2D — nodes, actions, sans physics |
-| **UIKit** | Hôte GameViewController, safe area insets |
-| **Foundation** | Système de save Codable, String(localized:) |
-| **AVFoundation** | Wrapper moteur audio |
-| **Xcode 16+** | Build, simulateur, éditeur xcstrings |
-| **GitHub CLI (`gh`)** | Création de repo, CI-ready |
+| Type | Source | Licence |
+|------|--------|---------|
+| Sprites personnages/décors | LimeZu Modern Exteriors/Interiors + tiles RPG Maker MV | achetés/inclus |
+| Portraits de dialogue | têtes extraites des sprites + Kael depuis l'icône de l'app + 2 dessinés à la main (Gardien, Eran) | maison |
+| Sols générés | planchers de bois, tapis, vignettes — dessinés en code (nearest, pixel net) | maison |
+| Musiques (9) | cynicmusic, pauliuw, Brandon75689, Juhani Junkala, RandomMind, CodeManu, kindland, nene — OpenGameArt | **CC0** |
+| SFX (11) | « 512 Sound Effects » — Juhani Junkala, OpenGameArt | **CC0** |
+| Police | VT323 | OFL |
 
-### Stack de Juice
-
-| Effet | Déclencheur |
-|-------|-------------|
-| `screenShake` | Chaque coup en combat, événements de corruption |
-| `flashOverlay` | Entaille Noire, séquences de vision, découvertes |
-| `slowMotion` (0.15s) | Impact de l'Entaille Noire |
-| `blackAetherBurst` | VFX particules Entaille Noire |
-| `impactSparks` | Attaques normales, ramassage d'objets |
-| `popIn` | Entrée des éléments UI |
-| `pulse` / `float` | Décorations de zone ambiantes, objets interactifs |
-| `ambientDust` / `forestFog` / `shrineAura` / `ruinsAsh` | Atmosphère par zone |
+**Zéro asset généré par IA.**
 
 ---
 
 ## Localisation
 
-**100% localisé** — FR (base) + EN. Zéro string hard-codée.
-
-Utilise `Localizable.xcstrings` (format unifié Xcode 15+).  
-Tous les dialogues, labels HUD, noms de combat, items de boutique, textes de quête, labels du monde.
+**100 % localisé** — FR (base) + EN, ~750 clés. Zéro string hard-codée.
+Dialogues, HUD, combat, boutique, quêtes, bestiaire, tutoriel, hints boutons (« A · Parler »).
 
 Pour tester en anglais : `Scheme → Edit Scheme → Run → Options → App Language → English`
 
@@ -134,10 +127,15 @@ Pour tester en anglais : `Scheme → Edit Scheme → Run → Options → App Lan
 git clone https://github.com/Andyg971/EchoesOfAether-RPG.git
 cd EchoesOfAether-RPG
 open EchoesOfAether/EchoesOfAether.xcodeproj
-# ▶ Run sur simulateur iPhone (portrait)
+# ▶ Run sur simulateur iPhone (PAYSAGE)
 ```
 
 **Prérequis :** iOS 17+ / Xcode 16+ / aucune dépendance externe
+**iCloud :** activer la capability *iCloud → Key-value storage* sur l'App ID pour la sync des saves.
+
+### Args de debug (audit visuel)
+
+`--zone-village|forest|shrine|ruins|mines|threshold` · `--interior inn|armory|apothecary` · `--combat-test|multi|trio` · `--boss-test` · `--fx-demo` · `--overlay-test dialogue|bestiary|shop|…` · `--skip-dialogue` · `--cam-y <frac>`
 
 ---
 
@@ -145,53 +143,31 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 | Fonctionnalité | Statut |
 |----------------|--------|
-| Acte I — L'Éveil | ✅ Complet |
-| Acte II — La Chute de Kael | ✅ Complet |
-| Acte III — Le Seuil | ✅ Jouable (zone du Seuil dédiée + boss final + vraie fin) |
-| Menu principal / Pause / Options / Mort | ✅ Complet |
-| Combat tour par tour (sorts, statuts, combo, break, boss) | ✅ Complet |
-| Journal de quêtes + Journal de lore | ✅ Complet |
-| Minimap / Indicateur d'interaction / Haptics | ✅ Complet |
+| Acte I — L'Éveil (duo Kael + Lyra) | ✅ Complet |
+| Acte II — La Chute (ruines, Archiviste, mines de Cendreval) | ✅ Complet |
+| Acte III — Le Seuil (trio, quêtes annexes, 2 fins) | ✅ Complet |
+| Contrôles classiques (joystick + A/B, curseur, zéro tactile) | ✅ Complet |
+| Combat (duo/trio, crit, esquive, statuts, break, boss) | ✅ Complet |
+| Musiques + SFX réels (CC0) | ✅ Complet |
+| Sauvegarde 3 slots + iCloud KVS | ✅ Complet |
+| Bestiaire / Lore / Quêtes / Minimap / Tutoriel | ✅ Complet |
+| Menu principal (art de l'icône) / Pause / Options / Mort | ✅ Complet |
+| HUD safe-areas Dynamic Island, sans plaques | ✅ Complet |
 | GameCenter (auth + achievements) | ✅ Câblé |
-| Localisation FR + EN | ✅ Complet (459 clés) |
-| AppIcon 1024 | ✅ Présent |
-| Graphismes placeholder | ✅ (formes programmatiques) |
-| Audio (SFX + musique) | ✅ Synthèse procédurale (AVAudioPlayerNode + buffers PCM) |
-| Assets réels | 🟡 Partiel (tiles RPG Maker MV intégrées) |
-| Build App Store | 🟡 Prêt côté build, audio + Acte III à finir |
+| Localisation FR + EN | ✅ ~750 clés |
+| Trailer marketing (39 s, 1920×886) | ✅ `Marketing/` |
+| Frames d'animation Kael (walk/attack) | 🟡 Pack de sprites à intégrer (procédural en attendant) |
+| Build App Store | 🟡 Privacy manifest + screenshots à faire |
 
 ---
 
 ## Roadmap — Ce qui reste
 
-### ✅ Récemment livré
-
-- [x] **Audio réel** — `AudioEngine` synthétise SFX + pad d'ambiance dans des `AVAudioPCMBuffer`, joués via `AVAudioPlayerNode` (aucun render callback → pas de crash IO thread). Sliders SFX + Musique câblés dans Options.
-- [x] **Acte III jouable** — Zone du Seuil dédiée (assets existants : escalier, statues d'anges, piliers, arbres morts), boss final « Gardien du Seuil » (ATB + enrage), vraie fin (Kael franchit le Seuil → crédits).
-- [x] **Acte III enrichi (narration)** — Beats ajoutés au prologue, à la rencontre d'Eran (lore du Seuil), à la pré-bataille et aux deux fins (franchir / résister), FR + EN.
-
-### 🟡 Important
-
-- [x] **Slots de sauvegarde multiples** — 3 slots + migration de l'ancienne save.
-- [x] **Tutoriel / onboarding** — 4 panneaux (déplacement, PNJ, combat tour par tour, cristaux), relançable depuis Options.
-- [x] **Zéro trace IA** — aucun tiret cadratin dans les dialogues, aucun emoji dans l'UI (fabrique PixelIcons, grilles 8x8).
-- [ ] **Support iPad adaptatif** — `TARGETED_DEVICE_FAMILY = 1,2` mais layout non adaptatif.
-- [ ] **Accessibilité** — Dynamic Type, option « réduire les animations » (flashs/screen shakes fréquents).
-- [ ] **Mines de Cendreval** — zone annexe évoquée par Dorin (hook narratif prêt).
-- [ ] **Fix proximité Dorin/Garen** — conflits de tap possibles en Acte II.
-
-### 🟢 Nice-to-have
-
-- [x] **Tests unitaires** — cible XCTest `EchoesOfAetherTests` rattachée au projet (`PlayerState` courbe XP, `SaveData` round-trip + rétro-compat). 11 tests verts.
-- [x] **Musique d'ambiance par zone** — 5 ambiances pré-rendues (calme / forêt tendue / sanctuaire / ruines / Seuil) avec cross-fade automatique au changement de phase.
-
-### ✅ Déjà livré (anciennes entrées roadmap)
-
-Menu principal · Écran de mort + Réessayer · Restauration PV (cristaux/repos) · Menu pause ·
-Écran d'options (+ sélecteur langue FR/EN) · Journal de quêtes · Journal de lore (bouton HUD) ·
-Indicateur d'interaction (bulle + hint) · Indicateur de sauvegarde (flash) · Minimap ·
-Système de combo · Effets de statut (poison / Brûlure d'Aether) · Cinématique de corruption ·
-Crédits · Achievements GameCenter · Haptics CoreHaptics · Orientation portrait verrouillée.
+- [ ] **Frames walk/attack/cast de Kael** — pack de sprites acheté à intégrer (`kael_walk_1..6`…)
+- [ ] **Accessibilité** — VoiceOver sur les overlays, option « réduire les animations »
+- [ ] **Audit EN complet** — run intégral en anglais
+- [ ] **Support iPad adaptatif** — layout non adaptatif pour l'instant
+- [ ] **App Store** — privacy manifest, screenshots 6.9", page produit FR/EN, TestFlight
 
 ---
 
@@ -203,5 +179,5 @@ com.appmakerstudio.echoesofaether
 
 ---
 
-*Built with [Claude Code](https://claude.ai/code)*  
-*"Le Seuil peut encore—" / "Trop tard, Lyra."*
+*Built with [Claude Code](https://claude.ai/code)*
+*"Trois voix contre le Vide. Ça me va." — Eran*

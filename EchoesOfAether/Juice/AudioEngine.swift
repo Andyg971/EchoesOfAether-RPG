@@ -61,6 +61,23 @@ final class AudioEngine {
     enum Sound: CaseIterable {
         case tap, select, hit, blackSlash, damage
         case gold, purchase, quest, victory, step, shopOpen
+
+        /// SFX CC0 embarqué (Juhani Junkala) ; nil = synthèse.
+        var fileName: String? {
+            switch self {
+            case .tap:        return "sfx_tap"
+            case .select:     return "sfx_select"
+            case .hit:        return "sfx_hit"
+            case .blackSlash: return "sfx_blackslash"
+            case .damage:     return "sfx_damage"
+            case .gold:       return "sfx_gold"
+            case .purchase:   return "sfx_purchase"
+            case .quest:      return "sfx_quest"
+            case .victory:    return "sfx_victory"
+            case .step:       return "sfx_step"
+            case .shopOpen:   return "sfx_shopopen"
+            }
+        }
     }
 
     /// Ambiance musicale par zone. Chaque cas a sa propre boucle pré-rendue
@@ -278,7 +295,9 @@ final class AudioEngine {
 
     private func renderAllBuffers() {
         for sound in Sound.allCases {
-            buffers[sound] = renderSFX(sound)
+            // Vrai SFX CC0 embarqué quand disponible, synthèse sinon.
+            buffers[sound] = sound.fileName.flatMap { loadAudioBuffer(named: $0, ext: "wav") }
+                ?? renderSFX(sound)
         }
         for mood in MusicMood.allCases {
             // Vraie musique CC0 embarquée quand disponible ; sinon la
@@ -291,8 +310,13 @@ final class AudioEngine {
     /// Charge une piste embarquée dans un buffer PCM au format du moteur
     /// (conversion AVAudioConverter si le fichier diffère).
     private func loadMusicFile(for mood: MusicMood) -> AVAudioPCMBuffer? {
-        guard let name = mood.fileName,
-              let url = Bundle.main.url(forResource: name, withExtension: "m4a"),
+        guard let name = mood.fileName else { return nil }
+        return loadAudioBuffer(named: name, ext: "m4a")
+    }
+
+    /// Fichier audio du bundle → buffer PCM au format du moteur.
+    private func loadAudioBuffer(named name: String, ext: String) -> AVAudioPCMBuffer? {
+        guard let url = Bundle.main.url(forResource: name, withExtension: ext),
               let file = try? AVAudioFile(forReading: url) else { return nil }
 
         let inFormat = file.processingFormat

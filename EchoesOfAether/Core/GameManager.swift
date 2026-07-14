@@ -2982,7 +2982,8 @@ final class GameManager {
     private func showAct3ResistEnding() {
         dialogue.start(PrototypeContent.act3ResistEndingDialogue) { [weak self] in
             guard let self else { return }
-            dialogue.start(PrototypeContent.act3ResistEndPlaceholder) { [weak self] in
+            AudioEngine.shared.setMood(.finale)
+            dialogue.start(PrototypeContent.act3ResistEpilogueDialogue) { [weak self] in
                 self?.rollCreditsToMenu()
             }
         }

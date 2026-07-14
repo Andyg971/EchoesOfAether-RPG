@@ -4006,6 +4006,166 @@
         }
       }
     },
+    "dialogue.act3.resistEp.end": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "THE END — The Kept Echo. Thank you for playing."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FIN — L'Écho gardé. Merci d'avoir joué."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.eran1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Someone must watch over the Threshold. I crossed once — I know what waits on the other side."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quelqu'un doit veiller sur le Seuil. J'ai franchi une fois — je sais ce qui attend de l'autre côté."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.eran2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Go home, kid. Solis needs a living guardian. Not one more martyr."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rentre, gamin. Solis a besoin d'un gardien vivant. Pas d'un martyr de plus."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Farewell, Lyra. Your echo will haunt me no more. It will walk beside me."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Adieu, Lyra. Ton écho ne me hantera plus. Il marchera à côté de moi."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The mark goes dark. For the first time since the forest… silence."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La marque s'éteint. Pour la première fois depuis la forêt… le silence."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.lyra1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You chose memory over power. Then I can fade… light at last."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as choisi le souvenir plutôt que la puissance. Alors je peux partir… légère."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.lyra2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don't forget me, Kael. But don't live in my stead either. Live for yourself."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne m'oublie pas, Kael. Mais ne vis pas à ma place non plus. Vis pour toi."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.narr1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seasons passed. The Forest of Echoes grew green again, slowly, scar after scar."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des saisons passèrent. La Forêt des Échos reverdit, lentement, cicatrice après cicatrice."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.narr2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "In Solis, they tell the story of a mark-bearer who refused to become a god."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À Solis, on raconte l'histoire d'un porteur de marque qui refusa de devenir un dieu."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistEp.narr3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Threshold stayed sealed, watched by an old man who never quite sleeps."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le Seuil resta clos, gardé par un vieil homme qui ne dort jamais tout à fait."
+          }
+        }
+      }
+    },
     "dialogue.act3.trueEnd1": {
       "localizations": {
         "en": {

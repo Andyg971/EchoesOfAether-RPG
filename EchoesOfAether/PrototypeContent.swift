@@ -1177,12 +1177,33 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.resist4"))
     ]
 
-    /// Écran de fin de la branche "résister".
-    static let act3ResistEndPlaceholder: [DialogueStep] = [
+    /// Épilogue complet de la fin « Résister » (ACT3_RESIST) : adieux de
+    /// l'Écho de Lyra, Eran gardien du Seuil, retour de Kael, narration.
+    static let act3ResistEpilogueDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.resistEp.lyra1")),
+        .line(speaker: String(localized: "dialogue.echo.name"),
+              text: String(localized: "dialogue.act3.resistEp.lyra2")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.resistEp.kael1")),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.resistEp.eran1")),
+        .line(speaker: "Eran",
+              text: String(localized: "dialogue.act3.resistEp.eran2")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.act3.resistEp.kael2")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.resistEnd1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.act3.resistEnd2"))
+              text: String(localized: "dialogue.act3.resistEp.narr1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEp.narr2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEp.narr3")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEnd2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistEp.end"))
     ]
 
     // MARK: - Acte IV — Le Cœur du Vide

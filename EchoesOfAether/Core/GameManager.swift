@@ -23,6 +23,7 @@ final class GameManager {
     let lore      = LoreOverlay()
     let questLog  = QuestLogOverlay()
     let minimap   = MinimapOverlay()
+    let worldMap  = WorldMapOverlay()
     let levelUp   = LevelUpOverlay()
     let bubble    = InteractionBubble()
     let tutorial  = TutorialOverlay()
@@ -72,6 +73,9 @@ final class GameManager {
     /// Vrai quand Kael est dans les mines de Cendreval (excursion depuis
     /// la forêt — pas une GamePhase : la save garde phase = .forest).
     private var inMines = false
+    /// Vrai quand Kael est dans le désert d'Ossara (voyage via la carte
+    /// du monde — pas une GamePhase : la save garde la phase d'origine).
+    private var inDesert = false
 
     // MARK: - Setup
 
@@ -89,6 +93,7 @@ final class GameManager {
         lore.attach(to: scene)
         questLog.attach(to: scene)
         minimap.attach(to: scene)
+        worldMap.attach(to: scene)
         levelUp.attach(to: scene)
         bubble.attach(to: scene)
         setupActionButton(in: scene)
@@ -99,6 +104,10 @@ final class GameManager {
         hud.onPauseTap     = { [weak self] in self?.openPause() }
         hud.onLoreTap      = { [weak self] in self?.openLore() }
         hud.onQuestLogTap  = { [weak self] in self?.openQuestLog() }
+        hud.onMapTap       = { [weak self] in self?.openWorldMap() }
+        hud.mapButton.isHidden = true
+
+        worldMap.onTravel = { [weak self] id in self?.travel(to: id) }
 
         pause.onResume    = { [weak self] in self?.closePause() }
         pause.onSave      = { [weak self] in
@@ -207,6 +216,19 @@ final class GameManager {
             AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+            transition(to: .exploration)
+            return
+        }
+        if CommandLine.arguments.contains("--zone-desert") {
+            hud.goldValue = player.gold
+            phase = .forest
+            inDesert = true
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            AudioEngine.shared.setMood(.tense)
+            world.switchToDesert(in: scene, progress: player.desertProgress,
+                                 chestTaken: player.desertChestTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
             transition(to: .exploration)
@@ -328,6 +350,7 @@ final class GameManager {
         questLog.layout(in: size)
         minimap.layout(in: size, safeBottom: safeBottom, safeLeft: safeLeft)
         levelUp.layout(in: size)
+        worldMap.layout(in: size)
     }
 
     /// Pousse l'état niveau/XP du joueur vers le HUD. À appeler après
@@ -366,6 +389,7 @@ final class GameManager {
         // combat (activer la sélection), boutique et pause (valider).
         // Bouton B : dialogue (passer) + overlays fermables.
         let showActionButton = actionButton.parent != nil
+            && !worldMap.isActive
             && (state == .exploration || state == .dialogue
                 || state == .combat || state == .shop || pause.isActive)
         if actionButton.isHidden == showActionButton {
@@ -384,6 +408,13 @@ final class GameManager {
         if minimapTimer >= 0.10, state == .exploration {
             minimapTimer = 0
             updateMinimap()
+        }
+
+        // Bouton carte du monde : visible seulement là où le voyage
+        // a un sens (désert accessible, ou retour depuis le désert).
+        let showMap = worldMapAvailable && state == .exploration
+        if hud.mapButton.isHidden == showMap {
+            hud.mapButton.isHidden = !showMap
         }
 
         // Déplacement continu au joystick virtuel (exploration)
@@ -455,6 +486,7 @@ final class GameManager {
     private var dismissableOverlayActive: Bool {
         inventory.isActive || shop.isActive || lore.isActive
             || questLog.isActive || pause.isActive || options.isActive
+            || worldMap.isActive
     }
 
     /// Bouton B : annule / passe / ferme selon le contexte.
@@ -467,6 +499,7 @@ final class GameManager {
         // Ordre : options au-dessus de pause ; dialogue en dernier.
         if options.isActive { options.dismiss(); return }
         if pause.isActive { pause.dismiss(); return }
+        if worldMap.isActive { worldMap.dismiss(); return }
         if shop.isActive { shop.dismiss(); syncGold(); return }
         if lore.isActive { lore.dismiss(); return }
         if questLog.isActive { questLog.dismiss(); return }
@@ -540,7 +573,7 @@ final class GameManager {
     func padTouchBegan(at point: CGPoint, in scene: SKScene) -> Bool {
         // Exploration : déplacement. Menus (combat, dialogue, boutique,
         // pause…) : le même joystick navigue le curseur de sélection.
-        guard state != .transition,
+        guard state != .transition, !worldMap.isActive,
               point.x < scene.size.width * 0.42,
               point.y < scene.size.height * 0.60 else { return false }
         if padBase.parent == nil {
@@ -645,6 +678,9 @@ final class GameManager {
             handleBPress()
             return
         }
+        // Carte du monde : capture tous les taps tant qu'elle est ouverte
+        // (fermeture par son bouton, un lieu voyageable, ou B ci-dessus).
+        if worldMap.isActive, worldMap.handleTap(at: point, in: scene) { return }
         if !actionButton.isHidden, point.distance(to: actionButton.position) < 42 {
             actionButton.run(.sequence([
                 .scale(to: 0.90, duration: 0.06),
@@ -807,6 +843,12 @@ final class GameManager {
 
         if inMines {
             if tryMinesInteraction(wp, in: scene) { return }
+            tapAndMove(point, in: scene)
+            return
+        }
+
+        if inDesert {
+            if tryDesertInteraction(wp, in: scene) { return }
             tapAndMove(point, in: scene)
             return
         }
@@ -2342,6 +2384,31 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
                 actionPoint = nearest.point
             }
+        } else if inDesert {
+            // POI du désert : combats, coffre, oasis, sortie
+            let w = scene.size.width, h = scene.size.height
+            var checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.50, y: h*0.08), "hint.exit")
+            ]
+            if player.desertProgress < 1 {
+                checkpoints.append((CGPoint(x: w*0.28, y: h*0.55), "hint.fight"))
+            } else if player.desertProgress == 1 {
+                checkpoints.append((CGPoint(x: w*0.55, y: h*0.68), "hint.fight"))
+            } else if player.desertProgress == 2, player.questDesert != .complete {
+                checkpoints.append((CGPoint(x: w*0.80, y: h*0.55), "hint.fight"))
+            }
+            if !player.desertChestTaken {
+                checkpoints.append((CGPoint(x: w*0.12, y: h*0.56), "hint.examine"))
+            }
+            if !player.desertOasisUsed {
+                checkpoints.append((CGPoint(x: w*0.85, y: h*0.20), "hint.examine"))
+            }
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
+            }
         } else {
             switch phase {
             case .shrine:
@@ -3266,6 +3333,22 @@ final class GameManager {
                 .line(speaker: String(localized: "dialogue.shrine.voiceName"),
                       text: "Audit sans portrait (voix).")
             ]) { [weak self] in self?.transition(to: .exploration) }
+        case "dialoguechoice":
+            // Audit du panneau de choix compact (hauteur dynamique).
+            transition(to: .dialogue)
+            dialogue.start([
+                .choice(prompt: "Kael", options: [
+                    DialogueChoice(title: "Je garderai l'œil ouvert.",
+                                   responseSpeaker: "Villageoise",
+                                   response: "Merci, voyageur."),
+                    DialogueChoice(title: "La forêt est grande. Je ne promets rien.",
+                                   responseSpeaker: "Villageoise",
+                                   response: "Je comprends...")
+                ])
+            ]) { [weak self] in self?.transition(to: .exploration) }
+        case "worldmap":
+            // Audit de la carte du monde (états des lieux selon la phase).
+            worldMap.open(places: buildMapPlaces()) {}
         default: break
         }
     }
@@ -3600,6 +3683,442 @@ final class GameManager {
         hud.goldValue = player.gold
     }
 
+    // MARK: - Carte du monde
+
+    /// Le voyage n'a de sens que dans les phases « libres » : la forêt et
+    /// le village post-sanctuaire. Jamais depuis une excursion (mines) ni
+    /// un intérieur — sauf pour revenir du désert.
+    private var worldMapAvailable: Bool {
+        if inDesert { return true }
+        guard !inMines, activeInterior == nil else { return false }
+        return [.forest, .complete, .act2].contains(phase)
+    }
+
+    /// Identifiant carte de la zone où se trouve Kael.
+    private var currentPlaceID: String {
+        if inDesert { return "desert" }
+        if inMines { return "mines" }
+        switch phase {
+        case .wake, .village, .complete, .act2, .fallen: return "village"
+        case .forest: return "forest"
+        case .shrine: return "shrine"
+        case .ruins: return "ruins"
+        case .act3: return "threshold"
+        case .act4: return "voidheart"
+        }
+    }
+
+    private func openWorldMap() {
+        guard state == .exploration, worldMapAvailable else { return }
+        HapticsEngine.light()
+        worldMap.open(places: buildMapPlaces()) {}
+    }
+
+    /// Construit l'état des lieux selon la progression de l'histoire.
+    private func buildMapPlaces() -> [WorldMapPlace] {
+        let current = currentPlaceID
+        let reached = phase.rawValue
+        // Retour depuis le désert : la zone d'origine redevient voyageable.
+        let returnID = inDesert ? (phase == .forest ? "forest" : "village") : ""
+        let desertTravel = !inDesert && worldMapAvailable
+
+        func placeState(_ id: String, discovered: Bool,
+                        travel: Bool) -> WorldMapPlace.State {
+            if id == current { return .current }
+            if travel { return .available }
+            return discovered ? .locked : .hidden
+        }
+
+        return [
+            WorldMapPlace(id: "village",
+                          title: String(localized: "map.place.village"),
+                          point: CGPoint(x: 0.20, y: 0.80),
+                          state: placeState("village", discovered: true,
+                                            travel: returnID == "village"),
+                          accent: SKColor(red: 0.35, green: 0.65, blue: 0.35, alpha: 1)),
+            WorldMapPlace(id: "forest",
+                          title: String(localized: "map.place.forest"),
+                          point: CGPoint(x: 0.45, y: 0.64),
+                          state: placeState("forest",
+                                            discovered: reached >= GamePhase.forest.rawValue,
+                                            travel: returnID == "forest"),
+                          accent: SKColor(red: 0.15, green: 0.42, blue: 0.22, alpha: 1)),
+            WorldMapPlace(id: "mines",
+                          title: String(localized: "map.place.mines"),
+                          point: CGPoint(x: 0.28, y: 0.42),
+                          state: placeState("mines",
+                                            discovered: reached >= GamePhase.forest.rawValue,
+                                            travel: false),
+                          accent: SKColor(red: 0.40, green: 0.38, blue: 0.42, alpha: 1)),
+            WorldMapPlace(id: "shrine",
+                          title: String(localized: "map.place.shrine"),
+                          point: CGPoint(x: 0.70, y: 0.82),
+                          state: placeState("shrine",
+                                            discovered: reached >= GamePhase.shrine.rawValue,
+                                            travel: false),
+                          accent: SKColor(red: 0.30, green: 0.55, blue: 0.85, alpha: 1)),
+            WorldMapPlace(id: "desert",
+                          title: String(localized: "map.place.desert"),
+                          point: CGPoint(x: 0.80, y: 0.48),
+                          state: placeState("desert",
+                                            discovered: reached >= GamePhase.forest.rawValue,
+                                            travel: desertTravel),
+                          accent: SKColor(red: 0.85, green: 0.66, blue: 0.30, alpha: 1)),
+            WorldMapPlace(id: "ruins",
+                          title: String(localized: "map.place.ruins"),
+                          point: CGPoint(x: 0.16, y: 0.22),
+                          state: placeState("ruins",
+                                            discovered: reached >= GamePhase.ruins.rawValue,
+                                            travel: false),
+                          accent: SKColor(red: 0.55, green: 0.40, blue: 0.75, alpha: 1)),
+            WorldMapPlace(id: "threshold",
+                          title: String(localized: "map.place.threshold"),
+                          point: CGPoint(x: 0.52, y: 0.20),
+                          state: placeState("threshold",
+                                            discovered: reached >= GamePhase.act3.rawValue,
+                                            travel: false),
+                          accent: SKColor(red: 0.35, green: 0.22, blue: 0.55, alpha: 1)),
+            WorldMapPlace(id: "voidheart",
+                          title: String(localized: "map.place.voidheart"),
+                          point: CGPoint(x: 0.82, y: 0.12),
+                          state: placeState("voidheart",
+                                            discovered: reached >= GamePhase.act4.rawValue,
+                                            travel: false),
+                          accent: SKColor(red: 0.18, green: 0.12, blue: 0.28, alpha: 1))
+        ]
+    }
+
+    /// Voyage depuis la carte : seul le désert (aller) et la zone
+    /// d'origine (retour) sont voyageables pour l'instant.
+    private func travel(to id: String) {
+        switch id {
+        case "desert" where !inDesert:
+            enterDesert()
+        case "forest", "village":
+            if inDesert { exitDesert() }
+        default:
+            break
+        }
+    }
+
+    // MARK: - Désert d'Ossara
+
+    /// Voyage vers les dunes : Kael quitte sa zone, le désert se charge.
+    private func enterDesert() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inDesert = true
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            AudioEngine.shared.setMood(.tense)
+            world.switchToDesert(in: scene, progress: player.desertProgress,
+                                 chestTaken: player.desertChestTaken)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+        } completion: { [weak self] in
+            guard let self else { return }
+            if player.questDesert == .inactive {
+                player.questDesert = .active
+                hud.questText = String(localized: "quest.desert.hud")
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.desertEnterDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            } else if player.desertProgress >= 1, player.questDesert == .active,
+                      Int.random(in: 0..<100) < 30 {
+                // Rencontre aléatoire en chemin : les dunes ne pardonnent pas.
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.desertAmbushDialogue) { [weak self] in
+                    self?.startDesertAmbush()
+                }
+            } else {
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Retour vers la zone d'origine (la phase n'a pas changé).
+    private func exitDesert() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inDesert = false
+            AudioEngine.shared.setMood(.forPhase(phase))
+            switch phase {
+            case .forest:
+                hud.objectiveText = String(localized: "hud.objective.forest")
+                world.switchToForest(in: scene)
+            case .act2:
+                hud.objectiveText = String(localized: "hud.objective.act2")
+                world.switchToVillage(in: scene)
+                world.repositionDorinToGate(in: scene)
+                world.applyKaelCorruption(level: player.kaelCorruptionLevel)
+            default:
+                hud.objectiveText = String(localized: "hud.objective.complete")
+                world.switchToVillage(in: scene)
+            }
+        } completion: { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            if phase == .forest {
+                if player.questChildToy == .active { world.addToyMarker(in: scene) }
+                if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
+                addSideQuestMarkers(in: scene)
+                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.05)
+            } else {
+                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.12)
+            }
+            transition(to: .exploration)
+        }
+    }
+
+    private func tryDesertInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sortie (halo sud) : retour vers la zone d'origine
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.08)) < 60 {
+            exitDesert()
+            return true
+        }
+
+        // Zone 1 : pillards des dunes
+        if player.desertProgress < 1,
+           point.distance(to: CGPoint(x: w * 0.28, y: h * 0.55)) < 75 {
+            startDesertCombat1()
+            return true
+        }
+
+        // Zone 2 : charognards (après les pillards)
+        if player.desertProgress == 1,
+           point.distance(to: CGPoint(x: w * 0.55, y: h * 0.68)) < 75 {
+            startDesertCombat2()
+            return true
+        }
+
+        // Zone 3 : le colosse des sables
+        if player.desertProgress == 2, player.questDesert != .complete,
+           point.distance(to: CGPoint(x: w * 0.80, y: h * 0.55)) < 75 {
+            startDesertBossSequence()
+            return true
+        }
+
+        // Coffre enfoui (une seule fois)
+        if !player.desertChestTaken,
+           point.distance(to: CGPoint(x: w * 0.12, y: h * 0.56)) < 60 {
+            pickupBuriedChest()
+            return true
+        }
+
+        // Oasis : restaure tous les PV, une fois par visite
+        if !player.desertOasisUsed,
+           point.distance(to: CGPoint(x: w * 0.85, y: h * 0.20)) < 60 {
+            drinkAtOasis()
+            return true
+        }
+
+        return false
+    }
+
+    /// Combat 1 : deux pillards des dunes — les détrousseurs de caravanes.
+    private func startDesertCombat1() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startDesertCombat1() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let name = String(localized: "combat.enemy.dunePillager")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
+                          hp: 260, kind: .ghoul, baseDamage: 40),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
+                          hp: 260, kind: .ghoul, baseDamage: 40)
+            ],
+            goldReward: 60,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.desertProgress = 1
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            refreshDesertBackdrop()
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.desertCombat1PostDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Combat 2 : les charognards d'Ossara — ceux qui suivent les pillards.
+    private func startDesertCombat2() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startDesertCombat2() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let scavenger = String(localized: "combat.enemy.scavenger")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(scavenger) \(1)"),
+                          hp: 240, kind: .boneWalker, baseDamage: 38),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(scavenger) \(2)"),
+                          hp: 240, kind: .boneWalker, baseDamage: 38),
+                EnemySpec(name: String(localized: "combat.enemy.dunePillager"),
+                          hp: 220, kind: .ghoul, baseDamage: 36)
+            ],
+            goldReward: 80,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.desertProgress = 2
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            refreshDesertBackdrop()
+            transition(to: .exploration)
+        }
+    }
+
+    /// Boss du désert : dialogue d'approche puis le colosse des sables.
+    private func startDesertBossSequence() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.desertBossPreDialogue) { [weak self] in
+            self?.startDesertBossCombat()
+        }
+    }
+
+    private func startDesertBossCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startDesertBossCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.sandColossus"),
+                          hp: 640, kind: .ruinsGuardian, baseDamage: 52)
+            ],
+            goldReward: 180,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.desertProgress = 3
+            player.questDesert = .complete
+            syncGold()
+            hud.questText = ""
+            AudioEngine.shared.playQuestComplete()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            refreshDesertBackdrop()
+            transition(to: .dialogue)
+            dialogue.start(PrototypeContent.desertBossPostDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Embuscade de voyage : deux pillards surgissent des dunes.
+    private func startDesertAmbush() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startDesertAmbush() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let name = String(localized: "combat.enemy.dunePillager")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
+                          hp: 220, kind: .ghoul, baseDamage: 36),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
+                          hp: 220, kind: .ghoul, baseDamage: 36)
+            ],
+            goldReward: 40,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.desert")
+            transition(to: .exploration)
+        }
+    }
+
+    /// Reconstruit le décor du désert après un combat (les monstres
+    /// vaincus disparaissent, la zone suivante s'allume).
+    private func refreshDesertBackdrop() {
+        guard let scene, inDesert else { return }
+        let kaelPos = world.kael.position
+        world.switchToDesert(in: scene, progress: player.desertProgress,
+                             chestTaken: player.desertChestTaken)
+        world.kael.position = kaelPos
+    }
+
+    /// Coffre enfoui : +120 or, une seule fois.
+    private func pickupBuriedChest() {
+        guard let scene else { return }
+        player.desertChestTaken = true
+        player.gold += 120
+        syncGold()
+        AudioEngine.shared.playGoldGain()
+        world.removeBuriedChest()
+        let spot = CGPoint(x: scene.size.width * 0.12, y: scene.size.height * 0.56)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.desertChestDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Oasis : restaure tous les PV, une fois par visite.
+    private func drinkAtOasis() {
+        guard let scene else { return }
+        player.desertOasisUsed = true
+        player.currentHP = player.currentMaxHP
+        HapticsEngine.medium()
+        JuiceEngine.flashOverlay(in: scene, size: scene.size,
+                                 color: SKColor(red: 0.30, green: 0.75, blue: 0.85, alpha: 1),
+                                 duration: 0.25)
+        let spot = CGPoint(x: scene.size.width * 0.85, y: scene.size.height * 0.20)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.55, green: 0.90, blue: 1.0, alpha: 1), count: 12))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.desertOasisDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
     // MARK: - Save / Load
 
     func saveGame() {
@@ -3612,6 +4131,7 @@ final class GameManager {
         resonanceTotal = save.resonanceTotal
         phase = save.phase
         inMines = false   // la save ne stocke jamais l'excursion aux mines
+        inDesert = false  // ni le voyage au désert : respawn en zone d'origine
 
         hud.goldValue = player.gold
         hud.resonanceValue = resonanceTotal

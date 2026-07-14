@@ -333,6 +333,46 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.mines.gold.kael1"))
     ]
 
+    // MARK: - Désert d'Ossara (voyage via la carte du monde)
+
+    /// Première arrivée : le soleil, le sable, les traces.
+    static let desertEnterDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.enter.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.enter.kael2"))
+    ]
+
+    /// Après les pillards : les caravanes respirent.
+    static let desertCombat1PostDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.combat1.kael1"))
+    ]
+
+    /// Avant le colosse : le sol tremble sous les dunes.
+    static let desertBossPreDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.boss.pre1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.boss.pre2"))
+    ]
+
+    /// Après le colosse : le désert respire à nouveau.
+    static let desertBossPostDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.boss.post1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.boss.post2"))
+    ]
+
+    /// Coffre enfoui sous le sable.
+    static let desertChestDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.chest.kael1"))
+    ]
+
+    /// L'oasis : eau claire, forces retrouvées.
+    static let desertOasisDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.oasis.kael1"))
+    ]
+
+    /// Embuscade en chemin (rencontre aléatoire de voyage).
+    static let desertAmbushDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.desert.ambush.kael1"))
+    ]
+
     // MARK: - Forêt — jouet trouvé
 
     static let toyFoundDialogue: [DialogueStep] = [

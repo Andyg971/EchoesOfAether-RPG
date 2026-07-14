@@ -1629,6 +1629,275 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         ]))
     }
 
+    // MARK: - Désert d'Ossara (voyage depuis la carte du monde)
+
+    func switchToDesert(in scene: SKScene, progress: Int = 0, chestTaken: Bool = false) {
+        clearBackdrop()
+        worldHeight = scene.size.height
+        worldNode.position = .zero
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.42, green: 0.32, blue: 0.16, alpha: 1)
+        buildDesert(in: scene, progress: progress, chestTaken: chestTaken)
+    }
+
+    /// Dunes brûlées d'Ossara : sable ocre, roches érodées, carcasses
+    /// de caravanes, oasis au nord-est. Une hauteur d'écran, pas de scroll.
+    private func buildDesert(in scene: SKScene, progress: Int, chestTaken: Bool) {
+        let w = scene.size.width
+        let h = scene.size.height
+
+        // Sol : terre teintée sable chaud
+        addTiledFloor(in: scene,
+                      tileNames: ["a2_dirt"],
+                      fallbackColor: SKColor(red: 0.72, green: 0.56, blue: 0.30, alpha: 1),
+                      tileScale: 1.0,
+                      tint: SKColor(red: 0.82, green: 0.66, blue: 0.36, alpha: 1),
+                      z: -10,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
+
+        // Titre de zone
+        let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+        zoneLabel.text = String(localized: "world.desert.title")
+        zoneLabel.fontSize = 14
+        zoneLabel.fontColor = SKColor(red: 0.45, green: 0.32, blue: 0.14, alpha: 0.8)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        zoneLabel.zPosition = -1
+        add(zoneLabel, to: scene)
+
+        // Crêtes de dunes : bandes de sable clair qui ondulent
+        for (y, alpha) in [(0.26, 0.35), (0.46, 0.28), (0.66, 0.32), (0.82, 0.25)] {
+            let dune = SKShapeNode(rectOf: CGSize(width: w * 0.7, height: 5))
+            dune.fillColor = SKColor(red: 0.92, green: 0.80, blue: 0.52, alpha: CGFloat(alpha))
+            dune.strokeColor = .clear
+            dune.position = CGPoint(x: w * CGFloat.random(in: 0.35...0.65),
+                                    y: h * CGFloat(y))
+            dune.zPosition = -8
+            add(dune, to: scene)
+        }
+
+        // Roches érodées et pierres — le squelette du désert
+        let rocks: [(String, CGFloat, CGFloat, CGFloat)] = [
+            ("rock_7", 0.10, 0.30, 0.70), ("rock_3", 0.34, 0.22, 0.60),
+            ("rock_9", 0.64, 0.34, 0.65), ("rock_1", 0.90, 0.70, 0.60),
+            ("rock_5", 0.22, 0.84, 0.55), ("gy_stone_1", 0.46, 0.44, 0.55),
+            ("gy_stone_3", 0.70, 0.82, 0.55), ("ext_pebbles", 0.30, 0.62, 0.8),
+            ("ext_pebbles", 0.58, 0.18, 0.8), ("ext_pebbles", 0.78, 0.42, 0.8)
+        ]
+        for (asset, x, y, s) in rocks {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
+        }
+
+        // Arbres morts calcinés par le soleil — gy_tree (mv_dead_tree est
+        // une spritesheet entière, cf. forêt), petits et loin du HUD
+        for (x, y, s) in [(0.07, 0.32, 0.55), (0.40, 0.32, 0.5), (0.70, 0.26, 0.5)] {
+            guard let tree = PixelArtSprites.still(
+                name: "gy_tree", scale: CGFloat(s),
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            tree.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
+            tree.zPosition = actorLayer(for: tree.position.y)
+            tree.forEachDescendantSprite { sp in
+                sp.color = SKColor(red: 0.62, green: 0.46, blue: 0.22, alpha: 1)
+                sp.colorBlendFactor = 0.55
+            }
+            add(tree, to: scene)
+        }
+
+        // Ossements des caravanes perdues
+        for p in [(0.36, 0.50), (0.62, 0.60), (0.20, 0.44), (0.74, 0.26)] {
+            guard let bones = PixelArtSprites.still(
+                name: "bones_1", scale: 2.0,
+                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            bones.position = CGPoint(x: w * p.0, y: h * p.1)
+            bones.zPosition = -2
+            bones.alpha = 0.85
+            add(bones, to: scene)
+        }
+
+        // ── Oasis (nord-est) : bassin pixel + halo de fraîcheur ──
+        addOasis(in: scene, at: CGPoint(x: w * 0.85, y: h * 0.20))
+
+        // ── Monstres visibles aux zones de danger restantes ──
+        if progress < 1 {
+            let zone1 = makeDangerZone(
+                at: CGPoint(x: w * 0.28, y: h * 0.55),
+                radius: 38,
+                color: SKColor(red: 0.70, green: 0.45, blue: 0.20, alpha: 1))
+            zone1.name = "desertZone1"
+            add(zone1, to: scene)
+            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.57))
+            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.52), flipped: true)
+        }
+        if progress == 1 {
+            let zone2 = makeDangerZone(
+                at: CGPoint(x: w * 0.55, y: h * 0.68),
+                radius: 38,
+                color: SKColor(red: 0.55, green: 0.40, blue: 0.25, alpha: 1))
+            zone2.name = "desertZone2"
+            add(zone2, to: scene)
+            addDesertMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.52, y: h * 0.70))
+            addDesertMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.59, y: h * 0.65), flipped: true)
+            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.55, y: h * 0.74))
+        }
+        if progress == 2 {
+            let bossZone = makeDangerZone(
+                at: CGPoint(x: w * 0.80, y: h * 0.55),
+                radius: 40,
+                color: SKColor(red: 0.85, green: 0.45, blue: 0.10, alpha: 1))
+            bossZone.name = "desertZone3"
+            add(bossZone, to: scene)
+            addSandColossusSilhouette(in: scene, at: CGPoint(x: w * 0.80, y: h * 0.57))
+        }
+
+        // Coffre enfoui (flanc ouest) : les pillards ne l'ont jamais trouvé
+        if !chestTaken {
+            let chest = makeBuriedChest(at: CGPoint(x: w * 0.12, y: h * 0.56))
+            chest.name = "desertChest"
+            add(chest, to: scene)
+        }
+
+        // Sortie au sud : halo — retour vers la zone d'origine
+        let exitGlow = SKShapeNode(circleOfRadius: 34)
+        exitGlow.fillColor = SKColor(red: 0.55, green: 0.75, blue: 0.55, alpha: 0.10)
+        exitGlow.strokeColor = SKColor(red: 0.70, green: 0.90, blue: 0.70, alpha: 0.25)
+        exitGlow.lineWidth = 1.5
+        exitGlow.position = CGPoint(x: w * 0.50, y: h * 0.08)
+        add(exitGlow, to: scene)
+        JuiceEngine.pulse(exitGlow, scale: 1.15)
+        let exitLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+        exitLabel.text = String(localized: "world.desert.exit")
+        exitLabel.fontSize = 12
+        exitLabel.fontColor = SKColor(red: 0.40, green: 0.28, blue: 0.12, alpha: 0.85)
+        exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
+        add(exitLabel, to: scene)
+
+        // Poussière en suspension : chaleur d'Ossara
+        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
+    }
+
+    /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.
+    private func addOasis(in scene: SKScene, at pos: CGPoint) {
+        let oasis = SKNode()
+        oasis.name = "desertOasis"
+        oasis.position = pos
+        oasis.zPosition = -4
+
+        let rim = SKShapeNode(rectOf: CGSize(width: 92, height: 62))
+        rim.fillColor = SKColor(red: 0.52, green: 0.42, blue: 0.24, alpha: 1)
+        rim.strokeColor = .clear
+        oasis.addChild(rim)
+
+        let water = SKShapeNode(rectOf: CGSize(width: 80, height: 50))
+        water.fillColor = SKColor(red: 0.24, green: 0.62, blue: 0.72, alpha: 1)
+        water.strokeColor = SKColor(red: 0.55, green: 0.85, blue: 0.90, alpha: 0.8)
+        water.lineWidth = 1.5
+        oasis.addChild(water)
+
+        for (dx, dy) in [(-22, 10), (6, -8), (24, 6), (-8, 14)] {
+            let sparkle = SKSpriteNode(color: SKColor(red: 0.80, green: 0.95, blue: 1.0, alpha: 0.9),
+                                       size: CGSize(width: 3, height: 3))
+            sparkle.position = CGPoint(x: CGFloat(dx), y: CGFloat(dy))
+            oasis.addChild(sparkle)
+            JuiceEngine.pulse(sparkle, scale: 1.5)
+        }
+
+        let label = SKLabelNode(fontNamed: PixelUI.uiFont)
+        label.text = String(localized: "world.desert.oasis")
+        label.fontSize = 12
+        label.fontColor = SKColor(red: 0.30, green: 0.50, blue: 0.55, alpha: 0.9)
+        label.position = CGPoint(x: 0, y: 40)
+        oasis.addChild(label)
+
+        add(oasis, to: scene)
+    }
+
+    /// Monstre visible dans les dunes : sprite ennemi idle, teinté sable.
+    private func addDesertMonster(_ asset: String, in scene: SKScene,
+                                  at pos: CGPoint, flipped: Bool = false) {
+        guard let monster = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.55,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        monster.position = pos
+        monster.zPosition = actorLayer(for: pos.y)
+        if flipped { monster.xScale = -abs(monster.xScale) }
+        monster.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.85, green: 0.66, blue: 0.32, alpha: 1)
+            s.colorBlendFactor = 0.50
+        }
+        addGroundShadow(under: monster, width: 26, height: 7)
+        add(monster, to: scene)
+    }
+
+    /// Silhouette du colosse des sables endormi : masse de grès,
+    /// deux yeux d'ambre qui couvent sous la croûte.
+    private func addSandColossusSilhouette(in scene: SKScene, at pos: CGPoint) {
+        let colossus = SKNode()
+        colossus.zPosition = actorLayer(for: pos.y)
+        let body = SKColor(red: 0.55, green: 0.42, blue: 0.22, alpha: 1)
+        for (dx, dy, sw, sh) in [(0.0, 20.0, 52.0, 42.0), (-24.0, 5.0, 24.0, 24.0),
+                                 (24.0, 5.0, 24.0, 24.0), (0.0, 50.0, 34.0, 24.0)] {
+            let block = SKSpriteNode(color: body, size: CGSize(width: sw, height: sh))
+            block.position = CGPoint(x: dx, y: dy)
+            colossus.addChild(block)
+        }
+        for dx: CGFloat in [-8, 8] {
+            let eye = SKSpriteNode(color: SKColor(red: 1.0, green: 0.70, blue: 0.20, alpha: 1),
+                                   size: CGSize(width: 5, height: 5))
+            eye.position = CGPoint(x: dx, y: 52)
+            colossus.addChild(eye)
+            JuiceEngine.pulse(eye, scale: 1.3)
+        }
+        colossus.position = pos
+        addGroundShadow(under: colossus, width: 58, height: 13)
+        add(colossus, to: scene)
+    }
+
+    /// Coffre à demi enfoui dans le sable, cerclé de fer.
+    private func makeBuriedChest(at pos: CGPoint) -> SKNode {
+        let node = SKNode()
+        node.position = pos
+        node.zPosition = 1
+
+        // Monticule de sable
+        let mound = SKShapeNode(rectOf: CGSize(width: 52, height: 12))
+        mound.fillColor = SKColor(red: 0.88, green: 0.74, blue: 0.44, alpha: 1)
+        mound.strokeColor = .clear
+        mound.position = CGPoint(x: 0, y: -8)
+        node.addChild(mound)
+
+        // Couvercle visible du coffre
+        let lid = SKShapeNode(rectOf: CGSize(width: 34, height: 16))
+        lid.fillColor = SKColor(red: 0.36, green: 0.22, blue: 0.10, alpha: 1)
+        lid.strokeColor = SKColor(red: 0.20, green: 0.12, blue: 0.05, alpha: 1)
+        lid.lineWidth = 1.5
+        lid.position = CGPoint(x: 0, y: 2)
+        node.addChild(lid)
+
+        for dx: CGFloat in [-10, 10] {
+            let band = SKSpriteNode(color: SKColor(red: 0.62, green: 0.58, blue: 0.50, alpha: 1),
+                                    size: CGSize(width: 3, height: 16))
+            band.position = CGPoint(x: dx, y: 2)
+            node.addChild(band)
+        }
+
+        let glow = SKShapeNode(circleOfRadius: 26)
+        glow.fillColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.06)
+        glow.strokeColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.18)
+        glow.lineWidth = 1
+        node.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.3)
+        return node
+    }
+
+    /// Retire le coffre enfoui (après ramassage).
+    func removeBuriedChest() {
+        guard let chest = worldNode.childNode(withName: "desertChest") else { return }
+        chest.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+    }
+
     // MARK: - Ruines de la Source (Acte II)
 
     private func buildRuins(in scene: SKScene) {

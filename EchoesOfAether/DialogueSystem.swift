@@ -36,9 +36,19 @@ final class DialogueSystem {
     /// Callback déclenché quand le joueur sélectionne un choix (index 0-based).
     var onChoiceSelected: ((Int) -> Void)?
 
-    private let panelHeightLine: CGFloat = 76
-    private let panelHeightChoices: CGFloat = 170
+    private let panelHeightLine: CGFloat = 72
     private var safeBottom: CGFloat = 0
+
+    /// Hauteur ajustée au contenu : en-tête (prompt) + N boutons de choix
+    /// + marge basse — plus de grand vide noir sous les choix.
+    private var panelHeightChoices: CGFloat {
+        68 + CGFloat(max(0, choiceNodes.count - 1)) * 32
+    }
+
+    /// Largeur compacte : le panneau ne barre plus tout l'écran.
+    private func panelWidth(for size: CGSize) -> CGFloat {
+        min(size.width - 48, 640)
+    }
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -96,7 +106,7 @@ final class DialogueSystem {
         continueIndicator.fontSize = 12 * ts
         let hasChoices = !choiceNodes.isEmpty
         let panelHeight = hasChoices ? panelHeightChoices : panelHeightLine
-        let panelWidth = min(size.width - 32, 720)
+        let panelWidth = panelWidth(for: size)
 
         // Cadre RPG pixel art (coins carrés, liseré sombre + bordure or)
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight))
@@ -391,7 +401,7 @@ final class DialogueSystem {
 
     private func createChoices(_ options: [DialogueChoice]) {
         guard let sceneRef = root.scene else { return }
-        let panelWidth = min(sceneRef.size.width - 32, 720)
+        let panelWidth = panelWidth(for: sceneRef.size)
         let buttonWidth = panelWidth - 28
         let buttonHeight: CGFloat = 28
 
@@ -435,8 +445,10 @@ final class DialogueSystem {
             chevron.position = CGPoint(x: buttonWidth / 2 - 10, y: 0)
             button.addChild(chevron)
 
+            // Position provisoire — layoutChoices() replace précisément
+            // dès que la hauteur dynamique du panneau est connue.
             let yOffset = -CGFloat(offset) * (buttonHeight + 4)
-            button.position = CGPoint(x: 0, y: yOffset - 34)
+            button.position = CGPoint(x: 0, y: yOffset - 10)
 
             root.addChild(button)
             choiceNodes.append(button)
@@ -450,7 +462,9 @@ final class DialogueSystem {
     private func layoutChoices(panelWidth: CGFloat, panelHeight: CGFloat) {
         guard !choiceNodes.isEmpty else { return }
         let buttonHeight: CGFloat = 28
-        let startY = panelHeight / 2 - 42
+        // Premier bouton juste sous le séparateur ; le panneau colle au
+        // dernier bouton (hauteur dynamique, voir panelHeightChoices).
+        let startY = panelHeight / 2 - 44
 
         for (offset, node) in choiceNodes.enumerated() {
             node.position = CGPoint(x: 0, y: startY - CGFloat(offset) * (buttonHeight + 4))

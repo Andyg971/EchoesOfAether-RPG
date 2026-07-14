@@ -9683,13 +9683,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Echoes of Aether V1"
+            "value": "The Forest of Echoes is cleansed"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Echoes of Aether V1"
+            "value": "La Forêt des Échos est purifiée"
           }
         }
       }
@@ -9699,13 +9699,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "End of Prototype"
+            "value": "End of Act I"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fin du Prototype"
+            "value": "Fin de l'Acte I"
           }
         }
       }

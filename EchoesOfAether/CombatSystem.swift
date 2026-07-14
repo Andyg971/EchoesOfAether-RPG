@@ -103,6 +103,52 @@ struct EnemySpec {
     var baseDamage: Int = 18
 }
 
+/// Alliés jouables : Lyra (actes I-II), son écho spectral et Eran (Acte III).
+enum CombatAllyKind {
+    case lyra, lyraEcho, eran
+
+    var displayName: String {
+        switch self {
+        case .lyra: return "Lyra"
+        case .lyraEcho: return String(localized: "combat.name.lyraEcho")
+        case .eran: return "Eran"
+        }
+    }
+
+    func maxHP(level: Int) -> Int {
+        switch self {
+        case .lyra: return 160 + (level - 1) * 14
+        case .lyraEcho: return 140 + (level - 1) * 12   // spectrale, fragile
+        case .eran: return 190 + (level - 1) * 15       // esprit endurci
+        }
+    }
+
+    func attackDamage(level: Int) -> Int {
+        switch self {
+        case .lyra, .lyraEcho: return 30 + (level - 1) * 3
+        case .eran: return 36 + (level - 1) * 3
+        }
+    }
+
+    /// Multiplicateur des sorts (les arcanistes frappent plus fort).
+    var spellMultiplier: CGFloat {
+        switch self {
+        case .lyra: return 1.10
+        case .lyraEcho: return 1.18
+        case .eran: return 1.05
+        }
+    }
+
+    /// Couleur d'accent (pips d'initiative, plate HP).
+    var accentColor: SKColor {
+        switch self {
+        case .lyra: return SKColor(red: 0.32, green: 0.85, blue: 0.66, alpha: 1)
+        case .lyraEcho: return SKColor(red: 0.55, green: 0.90, blue: 0.95, alpha: 1)
+        case .eran: return SKColor(red: 0.48, green: 0.75, blue: 1.00, alpha: 1)
+        }
+    }
+}
+
 @MainActor
 final class CombatSystem {
     private let root = SKNode()
@@ -113,10 +159,7 @@ final class CombatSystem {
     private let kaelHPFill = SKShapeNode()
     private let kaelHPGhost = SKShapeNode()   // « dégâts fantômes » qui fondent
     private let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let lyraHPBack = SKShapeNode()
-    private let lyraHPFill = SKShapeNode()
-    private let lyraHPGhost = SKShapeNode()
-    private let lyraHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+
     private let enemyHPBack = SKShapeNode()
     private let enemyHPFill = SKShapeNode()
     private let enemyHPGhost = SKShapeNode()
@@ -148,20 +191,40 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     // Sprites combattants (refonte UI : on doit voir les personnages se battre)
     private var kaelSprite: SKNode?
     private var kaelHomePosition: CGPoint = .zero
-    private var lyraSprite: SKNode?
-    private var lyraHomePosition: CGPoint = .zero
     private var arenaFloor: SKNode?
 
-    // Lyra alliée (zones du pacte) — nil = Kael combat seul.
-    private var lyra: Combatant?
-    /// true pendant le tour/action de Lyra (le joueur contrôle les deux).
-    private var actingLyra = false
-    private var lyraAlive: Bool { lyra?.isAlive == true }
+    /// Alliés jouables aux côtés de Kael (0 à 2) : Lyra dans les zones
+    /// du pacte, l'Écho de Lyra et Eran au Seuil (trio de l'Acte III).
+    @MainActor
+    final class AllyState {
+        var combatant: Combatant
+        let kind: CombatAllyKind
+        var sprite: SKNode?
+        var home: CGPoint = .zero
+        let hpBack = SKShapeNode()
+        let hpFill = SKShapeNode()
+        let hpGhost = SKShapeNode()
+        let hpLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+
+        init(kind: CombatAllyKind, level: Int) {
+            self.kind = kind
+            let hp = kind.maxHP(level: level)
+            self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp)
+        }
+    }
+
+    private var allies: [AllyState] = []
+    /// nil = Kael agit ; sinon index de l'allié en train d'agir.
+    private var actingAllyIndex: Int?
+    private var actingAlly: AllyState? {
+        actingAllyIndex.flatMap { allies.indices.contains($0) ? allies[$0] : nil }
+    }
+    private var aliveAllies: [AllyState] { allies.filter { $0.combatant.isAlive } }
     /// Position d'origine de l'acteur en train d'agir (FX des sorts).
     private var actorHomePosition: CGPoint {
-        actingLyra ? lyraHomePosition : kaelHomePosition
+        actingAlly?.home ?? kaelHomePosition
     }
-    private var actorSprite: SKNode? { actingLyra ? lyraSprite : kaelSprite }
+    private var actorSprite: SKNode? { actingAlly?.sprite ?? kaelSprite }
     // Étiquette de l'acteur courant sur le panneau d'actions
     private let actorTagLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let actionPanel = SKShapeNode()
@@ -251,6 +314,7 @@ private var goldReward = 0
                 enemyKind: CombatSpriteKind = .beast,
                 boss: BossConfig? = nil,
                 withLyra: Bool = false,
+                allyKinds: [CombatAllyKind] = [],
                 completion: @escaping (Int, Int) -> Void) {
         // Ennemis relevés : le joueur doit encaisser une vraie menace.
         let dmg = boss != nil ? 38 : 28
@@ -258,16 +322,19 @@ private var goldReward = 0
                enemySpecs: [EnemySpec(name: enemyName, hp: enemyHP,
                                       kind: enemyKind, baseDamage: dmg)],
                goldReward: goldReward, player: player, boss: boss,
-               withLyra: withLyra,
+               withLyra: withLyra, allyKinds: allyKinds,
                completion: completion)
     }
 
     /// Combat multi-ennemis (1 à 3). Boss supporté en solo uniquement.
-    /// `withLyra` : Lyra rejoint le combat (tour Kael → tour Lyra → ennemis).
+    /// `withLyra` : Lyra rejoint (tour Kael → Lyra → ennemis).
+    /// `allyKinds` : composition explicite (Acte III : écho de Lyra + Eran,
+    /// trio complet — Kael puis chaque allié, puis les ennemis).
     func attach(to scene: SKScene, enemySpecs: [EnemySpec],
                 goldReward: Int = 30, player: PlayerState,
                 boss: BossConfig? = nil,
                 withLyra: Bool = false,
+                allyKinds: [CombatAllyKind] = [],
                 completion: @escaping (Int, Int) -> Void) {
         parentScene = scene
         self.goldReward = goldReward
@@ -284,10 +351,11 @@ private var goldReward = 0
 
 let startHP = min(player.currentHP, player.currentMaxHP)
         self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP)
-        // Lyra : arcaniste — moins de PV que Kael, scale avec le niveau.
-        let lyraHP = 160 + (player.level - 1) * 14
-        self.lyra = withLyra ? Combatant(name: "Lyra", maxHP: lyraHP, hp: lyraHP) : nil
-        self.actingLyra = false
+        // Alliés : Lyra via withLyra (compat), composition explicite sinon.
+        var kinds = allyKinds
+        if kinds.isEmpty, withLyra { kinds = [.lyra] }
+        self.allies = kinds.prefix(2).map { AllyState(kind: $0, level: player.level) }
+        self.actingAllyIndex = nil
 self.resonance = 0
 self.playerBP = 0
 self.queuedBoost = 0
@@ -399,7 +467,7 @@ func update(deltaTime: TimeInterval) {}
 private func startPlayerTurn() {
     guard isActive, kael.isAlive, !aliveEnemies.isEmpty else { return }
     phase = .playerTurn
-    actingLyra = false
+    actingAllyIndex = nil
     retargetIfNeeded()
     // Régénération de BP — sautée si l'équipe a boosté à la manche
     // précédente (le flux d'Aether doit se re-stabiliser).
@@ -427,17 +495,19 @@ private func startPlayerTurn() {
     runFXDemoIfNeeded()
 }
 
-/// Tour de Lyra : même panneau d'actions, le joueur contrôle l'alliée.
-private func startLyraTurn() {
-    guard isActive, kael.isAlive, lyraAlive, !aliveEnemies.isEmpty else {
+/// Tour d'un allié : même panneau d'actions, le joueur contrôle tout
+/// le trio (Kael → allié 1 → allié 2 → ennemis).
+private func startAllyTurn(_ index: Int) {
+    guard isActive, kael.isAlive, allies.indices.contains(index),
+          allies[index].combatant.isAlive, !aliveEnemies.isEmpty else {
         startEnemyTurn(); return
     }
     phase = .playerTurn
-    actingLyra = true
+    actingAllyIndex = index
     retargetIfNeeded()
     statusLabel.text = String(localized: "combat.turn.choose")
-    showTurnBanner(String(localized: "combat.turn.lyra"),
-                   color: SKColor(red: 0.50, green: 0.95, blue: 0.72, alpha: 1))
+    showTurnBanner(String(localized: "combat.turn.ally \(allies[index].kind.displayName)"),
+                   color: allies[index].kind.accentColor)
     refreshTurnOrder(currentEnemyIndex: nil)
     layoutActionMenu()
     menuRow = 0
@@ -453,7 +523,13 @@ private func startLyraTurn() {
 private func runFXDemoIfNeeded() {
     guard CommandLine.arguments.contains("--fx-demo") else { return }
     // Kits séparés : Kael caste feu, Lyra alterne glace/soin/foudre.
-    let order: [CombatSpell] = actingLyra ? [.frost, .mend, .thunder] : [.ember]
+    let order: [CombatSpell]
+    switch actingAlly?.kind {
+    case .lyra:      order = [.frost, .mend, .thunder]
+    case .lyraEcho:  order = [.frost, .mend]
+    case .eran:      order = [.thunder]
+    case nil:        order = [.ember]
+    }
     let spell = order[fxDemoIndex % order.count]
     fxDemoIndex += 1
     root.run(.sequence([
@@ -569,9 +645,11 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     let sparkColor: SKColor
     let shakeIntensity: CGFloat
 
-    // Cible : Lyra encaisse ~35 % des coups quand elle est debout.
+    // Cible : les alliés encaissent ~40 % des coups quand ils sont debout.
     // Les attaques spéciales de boss visent toujours Kael (enjeu narratif).
-    let hitsLyra = !isSpecial && lyraAlive && Double.random(in: 0...1) < 0.35
+    let victim: AllyState? = (!isSpecial && !aliveAllies.isEmpty
+                              && Double.random(in: 0...1) < 0.40)
+        ? aliveAllies.randomElement() : nil
 
     if isSpecial, let boss = bossConfig {
         dmg = boss.specialDamage * dmgMult
@@ -587,33 +665,32 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
         dmg = e.combatant.baseDamage * dmgMult
         sparkColor = .red
         shakeIntensity = isEnraged ? 6 : 3
-        statusLabel.text = hitsLyra
-            ? String(localized: "combat.status.enemyHitsLyra \(e.combatant.name) \(dmg)")
+        statusLabel.text = victim != nil
+            ? String(localized: "combat.status.enemyHitsAlly \(e.combatant.name) \(victim!.combatant.name) \(dmg)")
             : String(localized: "combat.status.enemyHits \(e.combatant.name) \(dmg)")
     }
 
-    let victimHome = hitsLyra ? lyraHomePosition : kaelHomePosition
+    let victimHome = victim?.home ?? kaelHomePosition
 
     // Esquive : 10 % de chance d'éviter un coup normal (jamais un spécial).
     if !isSpecial, Double.random(in: 0...1) < 0.10 {
         statusLabel.text = String(localized: "combat.status.dodged")
-        playEnemyAttackAnimation(e, isSpecial: false, onLyra: hitsLyra, dodged: true)
-        playDodgeEffect(sprite: hitsLyra ? lyraSprite : kaelSprite, home: victimHome)
+        playEnemyAttackAnimation(e, isSpecial: false, victim: victim, dodged: true)
+        playDodgeEffect(sprite: victim?.sprite ?? kaelSprite, home: victimHome)
         updateVisuals()
         proceed()
         return
     }
 
-    if hitsLyra, var l = lyra {
-        l.hp = max(0, l.hp - dmg)
-        lyra = l
+    if let victim {
+        victim.combatant.hp = max(0, victim.combatant.hp - dmg)
     } else {
         kael.hp = max(0, kael.hp - dmg)
     }
     AudioEngine.shared.playDamage()
     JuiceEngine.screenShake(root, intensity: shakeIntensity, duration: 0.15)
     if isSpecial { JuiceEngine.zoomPunch(root, around: victimHome, scale: 1.05) }
-    playEnemyAttackAnimation(e, isSpecial: isSpecial, onLyra: hitsLyra)
+    playEnemyAttackAnimation(e, isSpecial: isSpecial, victim: victim)
     root.addChild(ParticleFactory.impactSparks(
         at: victimHome,
         color: sparkColor,
@@ -622,18 +699,18 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     showFloatingText("-" + String(dmg), at: victimHome,
                      color: SKColor(red: 1.00, green: 0.40, blue: 0.35, alpha: 1))
 
-    if hitsLyra, lyra?.isAlive == false { handleLyraDown() }
+    if let victim, !victim.combatant.isAlive { handleAllyDown(victim) }
     if !kael.isAlive { handleDefeat(); return }
     updateVisuals()
     proceed()
 }
 
-/// Lyra tombe au combat : KO visuel, elle saute ses tours.
+/// Un allié tombe : KO visuel, il saute ses tours.
 /// La défaite n'arrive que si Kael tombe.
-private func handleLyraDown() {
-    showEffect(String(localized: "combat.status.lyraDown"),
+private func handleAllyDown(_ ally: AllyState) {
+    showEffect(String(localized: "combat.status.allyDown \(ally.combatant.name)"),
                color: SKColor(red: 1.00, green: 0.55, blue: 0.45, alpha: 1))
-    lyraSprite?.run(.group([
+    ally.sprite?.run(.group([
         .rotate(toAngle: -.pi / 2, duration: 0.5, shortestUnitArc: true),
         .moveBy(x: 0, y: -10, duration: 0.5),
         .fadeAlpha(to: 0.45, duration: 0.5)
@@ -761,14 +838,14 @@ private func perform(_ action: CombatAction) {
     if boost > 0 { boostedThisRound = true }
 
     let enemyCenter = foe.homePosition
-    // Lyra : attaque physique plus faible, sorts légèrement plus puissants.
-    let atkDmg = actingLyra
-        ? 30 + ((_player?.level ?? 1) - 1) * 3
-        : (_player?.attackDamage ?? 42)
-    let slashDmg = actingLyra
+    // Stats par acteur : alliés = attaque plus faible, sorts plus forts.
+    let level = _player?.level ?? 1
+    let atkDmg = actingAlly?.kind.attackDamage(level: level)
+        ?? (_player?.attackDamage ?? 42)
+    let slashDmg = actingAlly != nil
         ? Int(CGFloat(_player?.blackSlashDamage ?? 92) * 0.85)
         : (_player?.blackSlashDamage ?? 92)
-    let spellMult: CGFloat = actingLyra ? 1.10 : 1.0
+    let spellMult: CGFloat = actingAlly?.kind.spellMultiplier ?? 1.0
 
     switch action {
     case .attack:
@@ -781,8 +858,8 @@ private func perform(_ action: CombatAction) {
         if boost > 0 {
             statusLabel.text = String(localized: "combat.status.attackBoosted \(boost + 1) \(finalDmg)")
         } else {
-            statusLabel.text = actingLyra
-                ? String(localized: "combat.status.attackLyra \(foe.combatant.name)")
+            statusLabel.text = actingAlly != nil
+                ? String(localized: "combat.status.attackAlly \(actingAlly!.combatant.name) \(foe.combatant.name)")
                 : String(localized: "combat.status.attack \(foe.combatant.name)")
         }
         AudioEngine.shared.playHit()
@@ -844,10 +921,10 @@ private func perform(_ action: CombatAction) {
         if let p = _player, p.potions > 0 {
             p.potions -= 1
             let heal: Int
-            if actingLyra, var l = lyra {
-                heal = Int(CGFloat(l.maxHP) * 0.40)
-                l.hp = min(l.maxHP, l.hp + heal)
-                lyra = l
+            if let ally = actingAlly {
+                heal = Int(CGFloat(ally.combatant.maxHP) * 0.40)
+                ally.combatant.hp = min(ally.combatant.maxHP,
+                                        ally.combatant.hp + heal)
             } else {
                 heal = Int(CGFloat(kael.maxHP) * 0.40)
                 kael.hp = min(kael.maxHP, kael.hp + heal)
@@ -867,14 +944,20 @@ private func perform(_ action: CombatAction) {
         if spell == .mend {
             let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 5)
                            * damageMultiplier * spellMult)
-            // Le soin cible l'allié le plus blessé (en % de PV).
+            // Le soin cible le membre du groupe le plus blessé (% PV).
             let kaelRatio = CGFloat(kael.hp) / CGFloat(kael.maxHP)
-            let lyraRatio = lyra.map { CGFloat($0.hp) / CGFloat($0.maxHP) } ?? 2
+            let worstAlly = aliveAllies.min {
+                CGFloat($0.combatant.hp) / CGFloat($0.combatant.maxHP)
+                    < CGFloat($1.combatant.hp) / CGFloat($1.combatant.maxHP)
+            }
+            let worstRatio = worstAlly.map {
+                CGFloat($0.combatant.hp) / CGFloat($0.combatant.maxHP)
+            } ?? 2
             let healPos: CGPoint
-            if lyraAlive, lyraRatio < kaelRatio, var l = lyra {
-                l.hp = min(l.maxHP, l.hp + heal)
-                lyra = l
-                healPos = lyraHomePosition
+            if let ally = worstAlly, worstRatio < kaelRatio {
+                ally.combatant.hp = min(ally.combatant.maxHP,
+                                        ally.combatant.hp + heal)
+                healPos = ally.home
             } else {
                 kael.hp = min(kael.maxHP, kael.hp + heal)
                 healPos = kaelHomePosition
@@ -921,12 +1004,17 @@ private func endPlayerAction() {
     updateVisuals()
     guard !aliveEnemies.isEmpty else { checkVictory(); return }
     checkEnrage()
-    let lyraStillToAct = !actingLyra && lyraAlive
+    // Prochain allié vivant qui n'a pas encore agi cette manche.
+    let nextIdx: Int? = {
+        let start = actingAllyIndex.map { $0 + 1 } ?? 0
+        for i in start..<allies.count where allies[i].combatant.isAlive { return i }
+        return nil
+    }()
     root.run(.sequence([
         .wait(forDuration: 0.85),
         .run { [weak self] in
             guard let self else { return }
-            lyraStillToAct ? self.startLyraTurn() : self.startEnemyTurn()
+            if let i = nextIdx { self.startAllyTurn(i) } else { self.startEnemyTurn() }
         }
     ]))
 }
@@ -1375,8 +1463,9 @@ private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
         .fadeOut(withDuration: 0.25),
         .removeFromParent()
     ]))
-    let healedSprite = home == lyraHomePosition ? lyraSprite : kaelSprite
-    let baseScale: CGFloat = home == lyraHomePosition ? 0.95 : 1.10
+    let healedAlly = allies.first { $0.home == home }
+    let healedSprite = healedAlly?.sprite ?? kaelSprite
+    let baseScale: CGFloat = healedAlly != nil ? 0.95 : 1.10
     healedSprite?.run(.sequence([
         .scale(to: baseScale * 1.07, duration: 0.12),
         .scale(to: baseScale, duration: 0.18)
@@ -1832,18 +1921,17 @@ private func setupComboAndStatusUI(scene: SKScene) {
         kaelSprite = k
         kaelHomePosition = k.position
 
-        // Lyra en retrait derrière Kael (profondeur 3/4)
-        if lyra != nil {
-            let l = CombatSprites.lyra()
-            l.position = CGPoint(x: scene.size.width * 0.12,
-                                 y: scene.size.height * 0.45)
-            l.setScale(0.95)
-            l.zPosition = 5.4
-            root.addChild(l)
-            lyraSprite = l
-            lyraHomePosition = l.position
-        } else {
-            lyraSprite = nil
+        // Alliés en retrait derrière Kael (profondeur 3/4, diagonale)
+        let allySlots: [(x: CGFloat, y: CGFloat)] = [(0.13, 0.45), (0.10, 0.54)]
+        for (i, ally) in allies.enumerated() {
+            let node = CombatSprites.ally(kind: ally.kind)
+            node.position = CGPoint(x: scene.size.width * allySlots[i].x,
+                                    y: scene.size.height * allySlots[i].y)
+            node.setScale(0.95)
+            node.zPosition = 5.4 - CGFloat(i) * 0.1
+            root.addChild(node)
+            ally.sprite = node
+            ally.home = node.position
         }
 
         let formations: [[(x: CGFloat, y: CGFloat)]] = [
@@ -1882,14 +1970,15 @@ private func setupComboAndStatusUI(scene: SKScene) {
             .fadeIn(withDuration: 0.35),
             .move(to: kaelHomePosition, duration: 0.45)
         ]))
-        if let l = lyraSprite {
-            l.alpha = 0
-            l.position = CGPoint(x: lyraHomePosition.x - 70, y: lyraHomePosition.y)
-            l.run(.sequence([
-                .wait(forDuration: 0.12),
+        for (i, ally) in allies.enumerated() {
+            guard let node = ally.sprite else { continue }
+            node.alpha = 0
+            node.position = CGPoint(x: ally.home.x - 70, y: ally.home.y)
+            node.run(.sequence([
+                .wait(forDuration: 0.12 + Double(i) * 0.10),
                 .group([
                     .fadeIn(withDuration: 0.35),
-                    .move(to: lyraHomePosition, duration: 0.45)
+                    .move(to: ally.home, duration: 0.45)
                 ])
             ]))
         }
@@ -1964,7 +2053,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
     private func playEnemyAttackAnimation(_ foe: EnemyState, isSpecial: Bool,
-                                          onLyra: Bool = false,
+                                          victim: AllyState? = nil,
                                           dodged: Bool = false) {
         guard let e = foe.sprite else { return }
         CombatSprites.playAttackFrames(on: e, kind: foe.kind)
@@ -1976,11 +2065,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let lungeOut = SKAction.move(to: foe.homePosition, duration: 0.22)
         lungeOut.timingMode = .easeOut
         e.run(.sequence([lungeIn, lungeOut]))
-        if !dodged { playAllyHitReact(onLyra: onLyra) }
+        if !dodged { playAllyHitReact(victim: victim) }
     }
 
-    private func playAllyHitReact(onLyra: Bool = false) {
-        guard let k = onLyra ? lyraSprite : kaelSprite else { return }
+    private func playAllyHitReact(victim: AllyState? = nil) {
+        guard let k = victim?.sprite ?? kaelSprite else { return }
         let recoil = SKAction.sequence([
             .moveBy(x: -18, y: 0, duration: 0.06),
             .moveBy(x: 18, y: 0, duration: 0.18)
@@ -2029,10 +2118,16 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
     private func setupHPBars(scene: SKScene) {
-        let hasLyra = lyra != nil
-        let kaelX = scene.size.width * (hasLyra ? 0.18 : 0.28)
-        let lyraX = scene.size.width * 0.42
-        let enemyX = scene.size.width * 0.72
+        // Position des plates selon la taille du groupe (1 à 3 héros).
+        let kaelXFrac: CGFloat
+        let allyXFracs: [CGFloat]
+        switch allies.count {
+        case 0:  kaelXFrac = 0.28; allyXFracs = []
+        case 1:  kaelXFrac = 0.18; allyXFracs = [0.42]
+        default: kaelXFrac = 0.13; allyXFracs = [0.335, 0.54]
+        }
+        let kaelX = scene.size.width * kaelXFrac
+        let enemyX = scene.size.width * (allies.count == 2 ? 0.80 : 0.72)
         let barY = scene.size.height * 0.78
 
         configureBar(kaelHPBack, kaelHPFill, width: barWidth, height: barHeight,
@@ -2055,16 +2150,19 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
         addCombatantLabel("Kael", at: CGPoint(x: kaelX, y: barY + 16))
 
-        // Plate Lyra (équipe de deux) : même gabarit, teinte émeraude.
-        if hasLyra {
-            configureBar(lyraHPBack, lyraHPFill, width: barWidth, height: barHeight,
-                         color: SKColor(red: 0.32, green: 0.85, blue: 0.66, alpha: 1),
-                         at: CGPoint(x: lyraX, y: barY), ghost: lyraHPGhost)
-            lyraHPLabel.fontSize = 15
-            lyraHPLabel.fontColor = .white
-            lyraHPLabel.position = CGPoint(x: lyraX, y: barY - 18)
-            root.addChild(lyraHPLabel)
-            addCombatantLabel("Lyra", at: CGPoint(x: lyraX, y: barY + 16))
+        // Plates des alliés : même gabarit, accent de leur couleur.
+        let allyBarWidth = allies.count == 2 ? barWidth * 0.86 : barWidth
+        for (i, ally) in allies.enumerated() {
+            let x = scene.size.width * allyXFracs[i]
+            configureBar(ally.hpBack, ally.hpFill,
+                         width: allyBarWidth, height: barHeight,
+                         color: ally.kind.accentColor,
+                         at: CGPoint(x: x, y: barY), ghost: ally.hpGhost)
+            ally.hpLabel.fontSize = 15
+            ally.hpLabel.fontColor = .white
+            ally.hpLabel.position = CGPoint(x: x, y: barY - 18)
+            root.addChild(ally.hpLabel)
+            addCombatantLabel(ally.combatant.name, at: CGPoint(x: x, y: barY + 16))
         }
         targetNameLabel.fontSize = 19
         targetNameLabel.fontColor = .white
@@ -2118,8 +2216,10 @@ private func setupComboAndStatusUI(scene: SKScene) {
         turnBannerLabel.alpha = 0
         root.addChild(turnBannerLabel)
 
+        // Trio : la file d'initiative monte au-dessus des noms pour ne
+        // pas traverser les plates HP (4 plates = centre occupé).
         turnPipsRoot.position = CGPoint(x: scene.size.width / 2,
-                                        y: scene.size.height * 0.745)
+                                        y: scene.size.height * (allies.count == 2 ? 0.87 : 0.745))
         turnPipsRoot.zPosition = 935
         root.addChild(turnPipsRoot)
     }
@@ -2147,17 +2247,19 @@ private func setupComboAndStatusUI(scene: SKScene) {
     private func refreshTurnOrder(currentEnemyIndex: Int?) {
         turnPipsRoot.removeAllChildren()
 
-        // -1 = Kael ; -2 = Lyra ; n ≥ 0 = enemies[n] (vivants uniquement)
+        // -1 = Kael ; -2 - i = allié i ; n ≥ 0 = enemies[n] (vivants)
         let aliveIdx = enemies.indices.filter { enemies[$0].combatant.isAlive }
         var round: [Int] = [-1]
-        if lyraAlive { round.append(-2) }
+        for (i, ally) in allies.enumerated() where ally.combatant.isAlive {
+            round.append(-2 - i)
+        }
         round += aliveIdx
         guard !round.isEmpty else { return }
         // Décale la manche pour démarrer sur l'acteur courant
         let startPos: Int
         if let cur = currentEnemyIndex, let p = round.firstIndex(of: cur) {
             startPos = p
-        } else if actingLyra, let p = round.firstIndex(of: -2) {
+        } else if let i = actingAllyIndex, let p = round.firstIndex(of: -2 - i) {
             startPos = p
         } else {
             startPos = 0
@@ -2184,8 +2286,9 @@ private func setupComboAndStatusUI(scene: SKScene) {
             pip.position = CGPoint(x: x0 + CGFloat(i) * spacing, y: 0)
             if isEnemy {
                 pip.fillColor = SKColor(red: 0.42, green: 0.12, blue: 0.14, alpha: 0.95)
-            } else if actor == -2 {
-                pip.fillColor = SKColor(red: 0.10, green: 0.36, blue: 0.26, alpha: 0.95)
+            } else if actor <= -2, allies.indices.contains(-2 - actor) {
+                pip.fillColor = allies[-2 - actor].kind.accentColor
+                    .withAlphaComponent(0.55)
             } else {
                 pip.fillColor = SKColor(red: 0.12, green: 0.26, blue: 0.42, alpha: 0.95)
             }
@@ -2203,8 +2306,10 @@ private func setupComboAndStatusUI(scene: SKScene) {
             } else if isEnemy {
                 let name = enemies[actor].combatant.name
                 letter.text = String(name.prefix(1))
+            } else if actor <= -2, allies.indices.contains(-2 - actor) {
+                letter.text = String(allies[-2 - actor].kind.displayName.prefix(1))
             } else {
-                letter.text = actor == -2 ? "L" : "K"
+                letter.text = "K"
             }
             letter.fontSize = isCurrent ? 12 : 9
             letter.fontColor = .white
@@ -2370,12 +2475,16 @@ private func cycleTarget(direction: Int) {
     targetIndex = alive[(cur + direction + alive.count) % alive.count]
 }
 
-/// Boutons de techniques de l'acteur courant.
-/// Kael : arts martiaux + feu + Aether. Lyra : arcanes de glace,
-/// foudre et soin — kits complémentaires, aucun sort partagé.
+/// Boutons de techniques de l'acteur courant — kits complémentaires.
+/// Kael : feu + Aether. Lyra : glace/foudre/soin. Écho de Lyra :
+/// glace/soin. Eran : foudre + Aether.
 private var currentActorButtons: [SKShapeNode] {
-    actingLyra ? [attackButton, iceButton, lightningButton, healButton]
-               : [attackButton, fireButton, blackSlashButton]
+    switch actingAlly?.kind {
+    case .lyra:     return [attackButton, iceButton, lightningButton, healButton]
+    case .lyraEcho: return [attackButton, iceButton, healButton]
+    case .eran:     return [attackButton, lightningButton, blackSlashButton]
+    case nil:       return [attackButton, fireButton, blackSlashButton]
+    }
 }
 
 /// Répartit la rangée de boutons de l'acteur courant dans le panneau,
@@ -2614,19 +2723,23 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         kaelHPLabel.text = String(kael.hp) + "/" + String(kael.maxHP)
         updateGhostBar(kaelHPGhost, to: kaelHPRatio)
 
-        if let l = lyra {
-            let ratio = max(0.02, CGFloat(l.hp) / CGFloat(l.maxHP))
-            lyraHPFill.xScale = ratio
-            lyraHPLabel.text = String(l.hp) + "/" + String(l.maxHP)
-            updateGhostBar(lyraHPGhost, to: ratio)
+        for ally in allies {
+            let c = ally.combatant
+            let ratio = max(0.02, CGFloat(c.hp) / CGFloat(c.maxHP))
+            ally.hpFill.xScale = ratio
+            ally.hpLabel.text = String(c.hp) + "/" + String(c.maxHP)
+            updateGhostBar(ally.hpGhost, to: ratio)
         }
 
         // Étiquette d'acteur sur le panneau d'actions (qui joue ?)
-        actorTagLabel.text = actingLyra ? "◆ LYRA" : "◆ KAEL"
-        actorTagLabel.fontColor = actingLyra
-            ? SKColor(red: 0.50, green: 0.95, blue: 0.72, alpha: 1)
-            : SKColor(red: 0.62, green: 0.82, blue: 1.00, alpha: 1)
-        actorTagLabel.isHidden = lyra == nil
+        if let ally = actingAlly {
+            actorTagLabel.text = "◆ " + ally.kind.displayName.uppercased()
+            actorTagLabel.fontColor = ally.kind.accentColor
+        } else {
+            actorTagLabel.text = "◆ KAEL"
+            actorTagLabel.fontColor = SKColor(red: 0.62, green: 0.82, blue: 1.00, alpha: 1)
+        }
+        actorTagLabel.isHidden = allies.isEmpty
             || !(phase == .playerTurn || phase == .playerActing)
 
         // Plate de droite = cible courante

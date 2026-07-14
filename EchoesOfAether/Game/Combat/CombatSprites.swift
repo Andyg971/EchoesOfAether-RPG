@@ -92,7 +92,42 @@ enum CombatSprites {
         return root
     }
 
-    // MARK: - Lyra (alliée en combat)
+    // MARK: - Alliés en combat
+
+    /// Sprite d'allié selon sa nature. L'écho de Lyra est son sprite
+    /// teinté de cyan spectral et translucide ; Eran est un esprit
+    /// encapuchonné (sprite villageois noyé de bleu-nuit, spectral).
+    static func ally(kind: CombatAllyKind) -> SKNode {
+        switch kind {
+        case .lyra:
+            return lyra()
+        case .lyraEcho:
+            let node = lyra()
+            node.alpha = 0.78
+            node.forEachDescendantSprite { s in
+                s.color = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 1)
+                s.colorBlendFactor = 0.45
+            }
+            return node
+        case .eran:
+            let root = SKNode()
+            root.name = "combatEran"
+            addShadow(to: root, width: 48)
+            if let sprite = PixelArtSprites.animated(name: "npc_extra", frames: 6,
+                                                     scale: 1.45,
+                                                     timePerFrame: 0.18,
+                                                     anchor: CGPoint(x: 0.5, y: 0.0)) {
+                sprite.position = CGPoint(x: 0, y: -32)
+                sprite.alpha = 0.85
+                sprite.forEachDescendantSprite { s in
+                    s.color = SKColor(red: 0.30, green: 0.45, blue: 0.75, alpha: 1)
+                    s.colorBlendFactor = 0.50
+                }
+                root.addChild(sprite)
+            }
+            return root
+        }
+    }
 
     static func lyra() -> SKNode {
         let root = SKNode()

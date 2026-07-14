@@ -4436,13 +4436,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "In the village of Solis, they say a man came back from the Void, empty-handed and at peace."
+            "value": "Then, within the light, Kael watches the last echo rise. It wears his face."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Au village de Solis, on raconte qu'un homme est revenu du Vide, les mains vides et le cœur en paix."
+            "value": "Alors, dans la lumière, Kael voit le dernier écho se lever. Il porte son visage."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroyEnd3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one returns from the shrine. What walks toward Solis, empty-handed and at peace, only remembers having been Kael."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Personne ne revient du sanctuaire. Ce qui marche vers Solis, les mains vides et le cœur en paix, se souvient seulement d'avoir été Kael."
           }
         }
       }
@@ -4788,13 +4804,29 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Beyond the Threshold now watches a keeper who knows the price of a memory. The echoes sleep in peace."
+            "value": "Years later, at the shrine, a young man kneels before the red light. He has lost someone. He wants to be strong."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Au-delà du Seuil veille désormais un gardien qui connaît le prix d'un souvenir. Les échos dorment en paix."
+            "value": "Des années plus tard, au sanctuaire, un jeune homme s'agenouille devant la lumière rouge. Il a perdu quelqu'un. Il veut être fort."
+          }
+        }
+      }
+    },
+    "dialogue.act4.mergeEnd3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "And the Heart whispers, with Kael's voice: “Accept, and you will never be weak again.”"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Et le Cœur murmure, avec la voix de Kael : « Accepte, et plus jamais tu ne seras faible. »"
           }
         }
       }

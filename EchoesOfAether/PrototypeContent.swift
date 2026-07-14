@@ -1274,12 +1274,16 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act4.destroy5"))
     ]
 
-    /// Écran de fin de la branche « détruire ».
+    /// Écran de fin de la branche « détruire » — chute sombre : parmi les
+    /// échos libérés, Kael découvre le sien. Il est mort au sanctuaire,
+    /// à l'instant du pacte.
     static let act4DestroyEndScreen: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act4.destroyEnd1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.act4.destroyEnd2"))
+              text: String(localized: "dialogue.act4.destroyEnd2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act4.destroyEnd3"))
     ]
 
     /// Fin « Fusionner avec le Cœur » — Kael devient le nouveau gardien (choix : 1).
@@ -1296,12 +1300,15 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act4.merge5"))
     ]
 
-    /// Écran de fin de la branche « fusionner ».
+    /// Écran de fin de la branche « fusionner » — chute sombre : la Voix
+    /// qui a tenté Kael au sanctuaire a toujours été la sienne. Boucle.
     static let act4MergeEndScreen: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act4.mergeEnd1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.act4.mergeEnd2"))
+              text: String(localized: "dialogue.act4.mergeEnd2")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act4.mergeEnd3"))
     ]
 
     // MARK: - Lore entries (noms de clés xcstrings)

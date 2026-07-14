@@ -708,6 +708,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
+				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -739,6 +740,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 0.1;
+				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

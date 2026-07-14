@@ -187,6 +187,7 @@ final class PlayerState {
             act3BossDefeated: act3BossDefeated,
             act3EndingChoice: act3EndingChoice,
             bestiarySeen: Array(bestiarySeen),
+            savedAt: Date(),
             phase: phase, resonanceTotal: resonance
         )
     }
@@ -281,6 +282,8 @@ struct SaveData: Codable {
     let act3BossDefeated: Bool?
     let act3EndingChoice: Int?
     let bestiarySeen: [String]?
+    // Horodatage pour la résolution de conflit iCloud (nil = save ancienne)
+    let savedAt: Date?
     let phase: GamePhase
     let resonanceTotal: Int
 }

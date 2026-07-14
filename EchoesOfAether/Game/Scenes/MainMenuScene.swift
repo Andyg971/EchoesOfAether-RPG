@@ -19,6 +19,8 @@ final class MainMenuScene: SKScene {
         AudioEngine.shared.setMood(.title)
         // Migration de l'ancienne sauvegarde unique vers le slot 1 (une fois).
         SaveManager.migrateLegacyIfNeeded()
+        // iCloud : rapatrie les saves plus récentes d'un autre appareil.
+        SaveManager.syncFromCloudIfNewer()
         buildUI()
 
         // Auto-tap pour test E2E si lancé avec --auto-tap

@@ -63,10 +63,38 @@ enum SaveManager {
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             let json = try encoder.encode(data)
             try json.write(to: fileURL(slot: slot), options: .atomic)
+            // Miroir iCloud (Key-Value Store, 1 Mo/clé max — nos saves
+            // font quelques Ko). Silencieux si iCloud indisponible.
+            NSUbiquitousKeyValueStore.default.set(json, forKey: cloudKey(slot: slot))
         } catch {
             #if DEBUG
             print("[SaveManager] save failed (slot \(slot)): \(error)")
             #endif
+        }
+    }
+
+    // MARK: - iCloud (Key-Value Store)
+
+    private static func cloudKey(slot: Int) -> String { "echoes_save_\(slot)" }
+
+    /// À l'ouverture du menu : si iCloud possède une sauvegarde plus
+    /// récente que le disque (autre appareil), on la rapatrie. Ne touche
+    /// jamais à une save locale plus fraîche.
+    static func syncFromCloudIfNewer() {
+        let store = NSUbiquitousKeyValueStore.default
+        store.synchronize()
+        for slot in 1...slotCount {
+            guard let cloudJSON = store.data(forKey: cloudKey(slot: slot)),
+                  let cloudData = try? JSONDecoder().decode(SaveData.self, from: cloudJSON)
+            else { continue }
+            let cloudDate = cloudData.savedAt ?? .distantPast
+            let localDate = load(slot: slot)?.savedAt ?? .distantPast
+            if cloudDate > localDate {
+                try? cloudJSON.write(to: fileURL(slot: slot), options: .atomic)
+                #if DEBUG
+                print("[SaveManager] slot \(slot) restauré depuis iCloud (\(cloudDate))")
+                #endif
+            }
         }
     }
 
@@ -90,6 +118,7 @@ enum SaveManager {
 
     static func delete(slot: Int) {
         try? FileManager.default.removeItem(at: fileURL(slot: slot))
+        NSUbiquitousKeyValueStore.default.removeObject(forKey: cloudKey(slot: slot))
     }
 
     static func hasSave(slot: Int) -> Bool {

@@ -1748,6 +1748,22 @@
         }
       }
     },
+    "credits.quote": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "\"She was right. About everything.\""
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "« Elle avait raison. Sur tout. »"
+          }
+        }
+      }
+    },
     "credits.thanks": {
       "localizations": {
         "en": {
@@ -9530,6 +9546,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Continuer → Acte II"
+          }
+        }
+      }
+    },
+    "endscreen.act2.continue": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continue → Act III"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Continuer → Acte III"
           }
         }
       }

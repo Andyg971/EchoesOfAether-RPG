@@ -200,7 +200,7 @@ enum TransitionManager {
 
         // Quote finale
         let quote = SKLabelNode(fontNamed: "AvenirNext-MediumItalic")
-        quote.text = "\"Elle avait raison. Sur tout.\""
+        quote.text = String(localized: "credits.quote")
         quote.fontSize = 13
         quote.fontColor = SKColor(red: 0.65, green: 0.50, blue: 0.90, alpha: 0.85)
         quote.position = CGPoint(x: 0, y: -CGFloat(credits.count) * 26 - 20)
@@ -251,7 +251,11 @@ enum TransitionManager {
 
     // MARK: - Acte II End Screen
 
-    static func showAct2EndScreen(in scene: SKScene) {
+    /// Écran de fin d'Acte II. `onContinue` est OBLIGATOIRE pour la suite :
+    /// sans bouton Continuer, l'overlay opaque (zPos 2000) restait à l'écran
+    /// pour toujours — les dialogues (zPos 1000) se jouaient invisibles
+    /// derrière, Actes III–IV inatteignables.
+    static func showAct2EndScreen(in scene: SKScene, onContinue: @escaping () -> Void) {
         let overlay = SKShapeNode(rectOf: scene.size)
         overlay.fillColor = SKColor(red: 0.01, green: 0.01, blue: 0.02, alpha: 0.97)
         overlay.strokeColor = .clear
@@ -259,6 +263,9 @@ enum TransitionManager {
         overlay.zPosition = 2000
         overlay.alpha = 0
         scene.addChild(overlay)
+        // Réutilise le canal de tap de l'écran d'Acte I (handleEndScreenTap).
+        endOverlay = overlay
+        continuationClosure = onContinue
 
         let title = SKLabelNode(fontNamed: "AvenirNext-Bold")
         title.text = String(localized: "endscreen.act2.title")
@@ -306,6 +313,23 @@ enum TransitionManager {
         eranSig.fontColor = SKColor(red: 0.45, green: 0.65, blue: 0.90, alpha: 0.90)
         eranSig.position = CGPoint(x: 0, y: -78)
         overlay.addChild(eranSig)
+
+        let btn = SKShapeNode(rectOf: CGSize(width: 210, height: 46), cornerRadius: 12)
+        btn.fillColor = SKColor(red: 0.22, green: 0.08, blue: 0.10, alpha: 1)
+        btn.strokeColor = SKColor(red: 0.75, green: 0.30, blue: 0.25, alpha: 0.75)
+        btn.lineWidth = 1.5
+        btn.name = "continueBtn"
+        btn.position = CGPoint(x: 0, y: -126)
+        overlay.addChild(btn)
+
+        let btnLabel = SKLabelNode(fontNamed: "AvenirNext-DemiBold")
+        btnLabel.text = String(localized: "endscreen.act2.continue")
+        btnLabel.fontSize = 15
+        btnLabel.fontColor = .white
+        btnLabel.verticalAlignmentMode = .center
+        btnLabel.name = "continueBtn"
+        btn.addChild(btnLabel)
+        JuiceEngine.pulse(btn, scale: 1.04)
 
         overlay.run(.fadeAlpha(to: 1, duration: 1.2))
         for child in overlay.children {

@@ -2242,9 +2242,8 @@ final class GameManager {
                         blackOut.removeFromParent()
                         phase = .fallen
                         transition(to: .exploration)
-                        TransitionManager.showAct2EndScreen(in: scene)
-                        // Propose credits then Act III prologue
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) { [weak self] in
+                        saveGame()
+                        TransitionManager.showAct2EndScreen(in: scene) { [weak self] in
                             guard let self, let sc = self.scene else { return }
                             TransitionManager.showCredits(in: sc) { [weak self] in
                                 self?.beginAct3()
@@ -3323,6 +3322,14 @@ final class GameManager {
                       items: bramItems(), player: player) { [weak self] in
                 self?.transition(to: .exploration)
             }
+        case "act2end":
+            // Audit : écran de fin d'Acte II + continuation complète.
+            TransitionManager.showAct2EndScreen(in: scene) { [weak self] in
+                guard let self, let sc = self.scene else { return }
+                TransitionManager.showCredits(in: sc) { [weak self] in
+                    self?.beginAct3()
+                }
+            }
         case "bestiary":
             // Audit : toutes les espèces révélées, ouverture sur l'onglet
             player.bestiarySeen = Set(CombatSpriteKind.allCases.map(\.bestiaryID))
@@ -4178,8 +4185,12 @@ final class GameManager {
             world.switchToShrine(in: scene)
             transition(to: .exploration)
         case .complete:
+            // Save interrompue entre la fin de l'Acte I et le début de
+            // l'Acte II : sans relance, aucun déclencheur de suite (cul-de-sac,
+            // même famille que le boss forêt déjà vaincu). On reprend la suite.
             hud.objectiveText = String(localized: "hud.objective.complete")
             transition(to: .exploration)
+            beginAct2()
 
         case .act2:
             hud.objectiveText = String(localized: "hud.objective.act2")
@@ -4201,7 +4212,10 @@ final class GameManager {
             world.switchToRuins(in: scene)
             world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
-            TransitionManager.showAct2EndScreen(in: scene)
+            // Save interrompue à la fin de l'Acte II : re-propose la suite.
+            TransitionManager.showAct2EndScreen(in: scene) { [weak self] in
+                self?.beginAct3()
+            }
 
         case .act3:
             hud.objectiveText = player.act3BossDefeated

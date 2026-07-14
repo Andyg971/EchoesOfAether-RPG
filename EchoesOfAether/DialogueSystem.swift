@@ -408,8 +408,12 @@ final class DialogueSystem {
 
         guard index < steps.count else {
             root.isHidden = true
-            completion?()
+            // La completion peut relancer un dialogue enchaîné (Lyra → quête) :
+            // start() y stocke SA completion. La vider APRÈS l'appel écraserait
+            // celle du nouveau dialogue → soft-lock en state .dialogue.
+            let done = completion
             completion = nil
+            done?()
             return
         }
 

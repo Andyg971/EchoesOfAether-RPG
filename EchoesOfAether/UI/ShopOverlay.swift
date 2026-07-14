@@ -211,7 +211,10 @@ final class ShopOverlay {
 
     private func close() {
         root.isHidden = true
-        completion?()
+        // Vider AVANT d'appeler : si la completion rouvre un overlay qui
+        // stocke sa propre completion, l'ordre inverse l'écraserait.
+        let done = completion
         completion = nil
+        done?()
     }
 }

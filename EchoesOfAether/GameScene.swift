@@ -14,6 +14,11 @@ final class GameScene: SKScene {
         backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
         HapticsEngine.prepare()
         manager.setup(scene: self, slot: activeSlot)
+        // Layout initial avec les vrais insets : sans cet appel, le HUD
+        // partait avec safe areas à 0 (Dynamic Island par-dessus les
+        // boutons) tant qu'aucun resize ne survenait.
+        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom,
+                       safeLeft: safeAreaLeft, safeRight: safeAreaRight)
 
         // Audio démarré après transition complète (fade 0.5s + marge)
         // évite crash AURemoteIO::IOThread pendant changement de scène

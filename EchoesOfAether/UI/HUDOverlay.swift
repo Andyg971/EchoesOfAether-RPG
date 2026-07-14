@@ -3,10 +3,9 @@ import SpriteKit
 @MainActor
 final class HUDOverlay {
     private let root = SKNode()
-    private let objectivePlate = SKShapeNode()
-    private let resourcePlate = SKShapeNode()
-    private let statsPlate = SKShapeNode()
-    private let interactionPlate = SKShapeNode()
+    // Lisibilité sans plaques : chaque label a une ombre portée dure
+    // (décalage 1.5 px, noir) — fini les gros rectangles sombres.
+    private var shadowPairs: [(main: SKLabelNode, shadow: SKLabelNode)] = []
     private let objectiveLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let resonanceLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let goldLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -30,35 +29,41 @@ final class HUDOverlay {
     var onQuestLogTap: (() -> Void)?
 
     var objectiveText: String = "" {
-        didSet { objectiveLabel.text = objectiveText }
+        didSet { objectiveLabel.text = objectiveText; refreshShadows() }
     }
 
     var resonanceValue: Int = 0 {
-        didSet { resonanceLabel.text = String(localized: "hud.resonance \(resonanceValue)") }
+        didSet {
+            resonanceLabel.text = String(localized: "hud.resonance \(resonanceValue)")
+            refreshShadows()
+        }
     }
 
     var goldValue: Int = 0 {
-        didSet { goldLabel.text = String(localized: "hud.gold \(goldValue)") }
+        didSet {
+            goldLabel.text = String(localized: "hud.gold \(goldValue)")
+            refreshShadows()
+        }
     }
 
     var questText: String = "" {
         didSet {
             questLabel.text = questText
             questLabel.isHidden = questText.isEmpty
+            refreshShadows()
         }
     }
 
     var interactionHint: String = "" {
         didSet {
             interactionHintLabel.text = interactionHint
-            let hidden = interactionHint.isEmpty
-            interactionHintLabel.isHidden = hidden
-            interactionPlate.isHidden = hidden
+            interactionHintLabel.isHidden = interactionHint.isEmpty
+            refreshShadows()
         }
     }
 
     var hpValue: String = "" {
-        didSet { hpLabel.text = hpValue }
+        didSet { hpLabel.text = hpValue; refreshShadows() }
     }
 
     /// Met à jour le niveau + la barre d'XP. `progress` ∈ [0, 1].
@@ -74,6 +79,7 @@ final class HUDOverlay {
             xpBarFill.fillColor = SKColor(red: 0.55, green: 0.80, blue: 1, alpha: 1)
         }
         xpBarFill.xScale = max(0.02, min(1, isMax ? 1 : progress))
+        refreshShadows()
     }
 
     /// Masque/affiche tout le HUD d'exploration (le combat occupe
@@ -84,12 +90,6 @@ final class HUDOverlay {
 
     func attach(to scene: SKScene) {
         root.zPosition = 100
-
-        [objectivePlate, resourcePlate, statsPlate, interactionPlate].forEach {
-            configurePlate($0)
-            root.addChild($0)
-        }
-        interactionPlate.isHidden = true
 
         objectiveLabel.fontSize = 13
         objectiveLabel.fontColor = .white
@@ -163,8 +163,35 @@ final class HUDOverlay {
         setupLoreButton()
         setupQuestLogButton()
 
+        // Ombres portées de tous les labels (lisibilité sans plaques)
+        for label in [objectiveLabel, resonanceLabel, goldLabel, questLabel,
+                      interactionHintLabel, hpLabel, levelLabel, xpLabel] {
+            addShadow(for: label)
+        }
+
         scene.addChild(root)
         layout(in: scene.size)
+    }
+
+    private func addShadow(for label: SKLabelNode) {
+        let shadow = SKLabelNode(fontNamed: PixelUI.uiFont)
+        shadow.fontColor = SKColor(red: 0.02, green: 0.02, blue: 0.04, alpha: 0.92)
+        shadow.zPosition = -0.5
+        root.addChild(shadow)
+        shadowPairs.append((label, shadow))
+    }
+
+    /// Synchronise texte/position/visibilité des ombres avec leurs labels.
+    private func refreshShadows() {
+        for (main, shadow) in shadowPairs {
+            shadow.text = main.text
+            shadow.fontSize = main.fontSize
+            shadow.horizontalAlignmentMode = main.horizontalAlignmentMode
+            shadow.verticalAlignmentMode = main.verticalAlignmentMode
+            shadow.position = CGPoint(x: main.position.x + 1.5,
+                                      y: main.position.y - 1.5)
+            shadow.isHidden = main.isHidden
+        }
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
@@ -206,22 +233,13 @@ final class HUDOverlay {
         levelLabel.fontSize = 12 * f
         xpLabel.fontSize = 9 * f
 
-        let objectiveWidth = min(size.width * 0.58, 250 * s)
-        setPlate(objectivePlate, size: CGSize(width: objectiveWidth, height: 42 * s), radius: 8 * s)
-        objectivePlate.position = CGPoint(x: leftEdge + objectiveWidth / 2, y: topY - 10 * s)
-        objectiveLabel.position = CGPoint(x: leftEdge + 13 * s, y: topY - 5 * s)
-        questLabel.position = CGPoint(x: leftEdge + 13 * s, y: topY - 24 * s)
+        objectiveLabel.position = CGPoint(x: leftEdge + 2 * s, y: topY - 5 * s)
+        questLabel.position = CGPoint(x: leftEdge + 2 * s, y: topY - 24 * s)
 
-        let resourceWidth = min(132 * s, size.width * 0.32)
-        setPlate(resourcePlate, size: CGSize(width: resourceWidth, height: 44 * s), radius: 8 * s)
-        resourcePlate.position = CGPoint(x: rightEdge - resourceWidth / 2, y: topY - 10 * s)
-        resonanceLabel.position = CGPoint(x: rightEdge - 12 * s, y: topY - 2 * s)
-        goldLabel.position = CGPoint(x: rightEdge - 12 * s, y: topY - 21 * s)
+        resonanceLabel.position = CGPoint(x: rightEdge - 2 * s, y: topY - 2 * s)
+        goldLabel.position = CGPoint(x: rightEdge - 2 * s, y: topY - 21 * s)
 
-        let statsWidth = min(178 * s, size.width * 0.48)
-        setPlate(statsPlate, size: CGSize(width: statsWidth, height: 50 * s), radius: 8 * s)
-        statsPlate.position = CGPoint(x: leftEdge + statsWidth / 2, y: topY - 68 * s)
-        let statsX = leftEdge + 14 * s
+        let statsX = leftEdge + 2 * s
         hpLabel.position = CGPoint(x: statsX, y: topY - 52 * s)
         levelLabel.position = CGPoint(x: statsX, y: topY - 70 * s)
         let barX = statsX + 44 * s + xpBarWidth / 2
@@ -239,30 +257,12 @@ final class HUDOverlay {
         setButton(questLogButton, size: buttonSize)
         questLogButton.position = CGPoint(x: leftEdge + buttonSize / 2, y: topY - 176 * s)
 
-        let promptWidth = min(size.width - 48 * s, 300 * s)
-        setPlate(interactionPlate, size: CGSize(width: promptWidth, height: 34 * s), radius: 8 * s)
-        interactionPlate.position = CGPoint(x: size.width / 2, y: size.height * 0.19)
-        interactionHintLabel.position = interactionPlate.position
+        interactionHintLabel.position = CGPoint(x: size.width / 2,
+                                                y: size.height * 0.19)
+        refreshShadows()
     }
 
     // MARK: - Private
-
-    private func configurePlate(_ node: SKShapeNode) {
-        // Plaque pixel : fond sombre, fin liseré or discret, zéro glow.
-        node.fillColor = SKColor(red: 0.055, green: 0.048, blue: 0.055, alpha: 0.80)
-        node.strokeColor = PixelUI.goldDim
-        node.lineWidth = 1.5
-        node.glowWidth = 0
-        node.zPosition = -1
-    }
-
-    private func setPlate(_ node: SKShapeNode, size: CGSize, radius: CGFloat) {
-        // Coins carrés — le pixel art ne connaît pas les angles arrondis.
-        _ = radius
-        let rect = CGRect(x: -size.width / 2, y: -size.height / 2,
-                          width: size.width, height: size.height)
-        node.path = CGPath(rect: rect, transform: nil)
-    }
 
     private func setButton(_ node: SKShapeNode, size: CGFloat) {
         let rect = CGRect(x: -size / 2, y: -size / 2, width: size, height: size)

@@ -747,7 +747,12 @@ final class GameManager {
             layout(size: l.size, safeTop: l.top, safeBottom: l.bottom,
                    safeLeft: l.left, safeRight: l.right)
         } else if let scene {
-            hud.layout(in: scene.size)
+            if let last = lastLayout {
+                hud.layout(in: last.size, safeTop: last.top,
+                           safeLeft: last.left, safeRight: last.right)
+            } else {
+                hud.layout(in: scene.size)
+            }
             dialogue.layout(in: scene.size)
         }
     }

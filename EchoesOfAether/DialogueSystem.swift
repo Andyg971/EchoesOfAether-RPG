@@ -115,10 +115,12 @@ final class DialogueSystem {
         portraitFrame.position = CGPoint(x: portraitX, y: 0)
         portraitSprite.position = portraitFrame.position
         portraitSprite.size = CGSize(width: portraitSide - 8, height: portraitSide - 8)
-        portraitFrame.isHidden = !hasPortrait
-        portraitSprite.isHidden = !hasPortrait
+        // En mode choix, le portrait recouvrait les boutons : on le masque.
+        let showPortrait = hasPortrait && !hasChoices
+        portraitFrame.isHidden = !showPortrait
+        portraitSprite.isHidden = !showPortrait
 
-        let textX = hasPortrait
+        let textX = showPortrait
             ? portraitX + portraitSide / 2 + 12
             : -panelWidth / 2 + 14
         speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 16)

@@ -309,7 +309,10 @@ final class AudioEngine {
         let outFrames = AVAudioFrameCount(Double(frames) * ratio) + 1024
         guard let outBuffer = AVAudioPCMBuffer(pcmFormat: format,
                                                frameCapacity: outFrames) else { return nil }
-        var fed = false
+        // convert() est synchrone : le closure ne s'échappe pas du call.
+        // nonisolated(unsafe) fait taire les diagnostics Sendable d'AVFAudio.
+        nonisolated(unsafe) var fed = false
+        nonisolated(unsafe) let source = inBuffer
         var error: NSError?
         converter.convert(to: outBuffer, error: &error) { _, status in
             if fed {
@@ -318,7 +321,7 @@ final class AudioEngine {
             }
             fed = true
             status.pointee = .haveData
-            return inBuffer
+            return source
         }
         return error == nil ? outBuffer : nil
     }

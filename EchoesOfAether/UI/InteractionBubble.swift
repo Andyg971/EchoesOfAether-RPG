@@ -9,8 +9,8 @@ import SpriteKit
 @MainActor
 final class InteractionBubble {
     private let root = SKNode()
-    private let bg = SKShapeNode(rect: CGRect(x: -16, y: -16, width: 32, height: 32))
-    private let bgOuter = SKShapeNode(rect: CGRect(x: -19, y: -19, width: 38, height: 38))
+    private let bg = SKShapeNode(rect: CGRect(x: -15, y: -13, width: 30, height: 26))
+    private let bgOuter = SKShapeNode(rect: CGRect(x: -17, y: -15, width: 34, height: 30))
     private let iconHolder = SKNode()
     private var currentAction: Action?
 
@@ -46,34 +46,43 @@ final class InteractionBubble {
     var isVisible: Bool { root.parent != nil && !root.isHidden }
 
     func attach(to scene: SKScene) {
-        root.zPosition = 50
+        root.zPosition = 520   // au-dessus de la vignette de zone (480)
         root.isHidden = true
         scene.addChild(root)
 
-        // Cadre pixel : carré sombre + double bordure nette (zéro glow,
-        // zéro cercle lissé — style SNES comme le reste de l'UI).
+        // Bulle de parole RPG classique : petit rectangle BLANC à bord
+        // sombre, avec une queue en escalier pixel vers le PNJ.
         bgOuter.fillColor = .clear
-        bgOuter.strokeColor = SKColor(red: 0.02, green: 0.02, blue: 0.03, alpha: 0.9)
+        bgOuter.strokeColor = SKColor(red: 0.10, green: 0.09, blue: 0.12, alpha: 0.95)
         bgOuter.lineWidth = 2
         root.addChild(bgOuter)
 
-        bg.fillColor = SKColor(red: 0.18, green: 0.10, blue: 0.30, alpha: 0.97)
-        bg.strokeColor = SKColor(red: 0.85, green: 0.50, blue: 1, alpha: 1)
+        bg.fillColor = SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98)
+        bg.strokeColor = SKColor(red: 0.10, green: 0.09, blue: 0.12, alpha: 1)
         bg.lineWidth = 2
         bg.glowWidth = 0
         root.addChild(bg)
 
-        // Icône pixel art centrée
+        // Queue : deux marches pixel sous la bulle, pointant vers le PNJ
+        let tailBig = SKSpriteNode(color: SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98),
+                                   size: CGSize(width: 10, height: 6))
+        tailBig.position = CGPoint(x: -4, y: -18)
+        root.addChild(tailBig)
+        let tailSmall = SKSpriteNode(color: SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98),
+                                     size: CGSize(width: 5, height: 5))
+        tailSmall.position = CGPoint(x: -7, y: -23)
+        root.addChild(tailSmall)
+
+        // Icône pixel art centrée (redessinée sombre sur fond blanc)
         root.addChild(iconHolder)
 
-        // Animation idle : float vertical + halo pulse
+        // Animation idle : flottement discret
         let float = SKAction.repeatForever(.sequence([
-            .moveBy(x: 0, y: 4, duration: 0.7),
-            .moveBy(x: 0, y: -4, duration: 0.7)
+            .moveBy(x: 0, y: 3, duration: 0.7),
+            .moveBy(x: 0, y: -3, duration: 0.7)
         ]))
         float.timingMode = .easeInEaseOut
         root.run(float, withKey: "float")
-        JuiceEngine.pulse(bgOuter, scale: 1.10)
     }
 
     /// Affiche la bulle au-dessus d'une position cible (typiquement la
@@ -87,7 +96,20 @@ final class InteractionBubble {
         if iconChanged {
             currentAction = action
             iconHolder.removeAllChildren()
-            iconHolder.addChild(PixelIcons.node(action.pixelIcon, pixel: 2.4))
+            // Glyphe RPG classique : « … » parle, « ! » danger, « ? » examine
+            let glyph = SKLabelNode(fontNamed: PixelUI.uiFont)
+            switch action {
+            case .talk, .shop: glyph.text = "…"
+            case .fight:       glyph.text = "!"
+            case .examine:     glyph.text = "?"
+            case .enter:       glyph.text = "»"
+            }
+            glyph.fontSize = action == .talk || action == .shop ? 30 : 24
+            glyph.fontColor = SKColor(red: 0.12, green: 0.10, blue: 0.14, alpha: 1)
+            glyph.verticalAlignmentMode = .center
+            glyph.horizontalAlignmentMode = .center
+            glyph.position = CGPoint(x: 0, y: action == .talk || action == .shop ? 4 : 0)
+            iconHolder.addChild(glyph)
             // Petit pop quand l'action change
             root.run(.sequence([
                 .scale(to: 1.2, duration: 0.08),

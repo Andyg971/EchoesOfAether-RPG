@@ -2404,6 +2404,11 @@ final class GameManager {
 
         hud.interactionHint = hint
 
+        // Bouton A : mémorise le POI courant (c'était le chaînon manquant —
+        // sans cette ligne, A ne déclenchait jamais rien).
+        nearbyActionPoint = actionPoint
+        updateActionButtonState()
+
         if let anchor = bubbleAnchor, let action = bubbleAction {
             let screenAnchor = scene.convert(anchor, from: world.worldNode)
             bubble.show(at: screenAnchor, action: action)

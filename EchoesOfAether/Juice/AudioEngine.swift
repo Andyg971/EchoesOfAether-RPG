@@ -29,6 +29,19 @@ final class AudioEngine {
     private var musicUsingA = true
     private var musicFadeTask: Task<Void, Never>?
 
+    // Couche foley : boucle d'ambiance de zone (vent, grillons, gouttes)
+    // sous la musique. Même schéma que la musique (2 nodes + cross-fade),
+    // mixeur séparé à volume réduit. Aucune synthèse de repli : si le
+    // fichier d'ambiance manque, on reste silencieux (un vent synthétique
+    // jurerait). Fichiers CC0 embarqués dans Resources/Ambience.
+    private let ambienceMixer = AVAudioMixerNode()
+    private let ambiencePlayerA = AVAudioPlayerNode()
+    private let ambiencePlayerB = AVAudioPlayerNode()
+    private var ambienceUsingA = true
+    private var ambienceFadeTask: Task<Void, Never>?
+    private var ambienceBuffers: [Ambience: AVAudioPCMBuffer] = [:]
+    private(set) var currentAmbience: Ambience = .none
+
     private let sampleRate: Double = 44_100
     private lazy var format = AVAudioFormat(
         standardFormatWithSampleRate: sampleRate, channels: 2)!
@@ -49,7 +62,11 @@ final class AudioEngine {
 
     /// Volume de la musique d'ambiance (0...1).
     var musicVolume: Float = 0.55 {
-        didSet { musicMixer.outputVolume = clamp(musicVolume) }
+        didSet {
+            musicMixer.outputVolume = clamp(musicVolume)
+            // Le foley suit le réglage musique mais reste en retrait (×0.6).
+            ambienceMixer.outputVolume = clamp(musicVolume * 0.6)
+        }
     }
 
     var isRunning: Bool { engine.isRunning }
@@ -137,6 +154,29 @@ final class AudioEngine {
         }
     }
 
+    /// Couche foley bouclée par zone. Chaque cas mappe un fichier CC0
+    /// embarqué (Resources/Ambience). `.none` coupe l'ambiance.
+    enum Ambience: CaseIterable {
+        case none
+        case village   // brise légère + oiseaux lointains
+        case forest    // vent dans les feuilles + insectes
+        case mines     // goutte-à-goutte souterrain, réverbéré
+        case desert    // vent chaud, sable
+        case interior  // crépitement de feu, calme
+
+        /// Fichier CC0 embarqué ; nil = silence (aucune synthèse de repli).
+        var fileName: String? {
+            switch self {
+            case .none:     return nil
+            case .village:  return "amb_village"
+            case .forest:   return "amb_forest"
+            case .mines:    return "amb_mines"
+            case .desert:   return "amb_desert"
+            case .interior: return "amb_interior"
+            }
+        }
+    }
+
     // MARK: - Lifecycle
 
     func start() {
@@ -160,12 +200,16 @@ final class AudioEngine {
             return
         }
         startMusic()
+        startAmbience()
     }
 
     func stop() {
         musicFadeTask?.cancel()
+        ambienceFadeTask?.cancel()
         musicPlayerA.stop()
         musicPlayerB.stop()
+        ambiencePlayerA.stop()
+        ambiencePlayerB.stop()
         sfxPlayers.forEach { $0.stop() }
         engine.stop()
     }
@@ -199,6 +243,14 @@ final class AudioEngine {
         if engine.isRunning { crossfade(to: mood) }
     }
 
+    /// Bascule la couche foley de zone (cross-fade). Idempotent. Silencieux
+    /// si le fichier d'ambiance n'est pas embarqué (buffer absent).
+    func setAmbience(_ ambience: Ambience) {
+        guard ambience != currentAmbience else { return }
+        currentAmbience = ambience
+        if engine.isRunning { crossfadeAmbience(to: ambience) }
+    }
+
     // MARK: - Playback
 
     private func play(_ sound: Sound) {
@@ -217,6 +269,45 @@ final class AudioEngine {
         player.volume = 1
         player.scheduleBuffer(loop, at: nil, options: .loops, completionHandler: nil)
         player.play()
+    }
+
+    /// Démarre la couche foley courante (appelé après le moteur). Sans
+    /// buffer (fichier absent), ne fait rien : ambiance silencieuse.
+    private func startAmbience() {
+        guard engine.isRunning, let loop = ambienceBuffers[currentAmbience] else { return }
+        let player = ambienceUsingA ? ambiencePlayerA : ambiencePlayerB
+        if player.isPlaying { return }
+        player.volume = 1
+        player.scheduleBuffer(loop, at: nil, options: .loops, completionHandler: nil)
+        player.play()
+    }
+
+    /// Cross-fade de la couche foley. Si l'entrant n'a pas de buffer
+    /// (ex. `.none` ou fichier manquant), on se contente d'éteindre le
+    /// sortant en fondu.
+    private func crossfadeAmbience(to ambience: Ambience, duration: Double = 1.6) {
+        let incomingUsesA = !ambienceUsingA
+        ambienceUsingA = incomingUsesA
+        ambienceFadeTask?.cancel()
+        ambienceFadeTask = Task { @MainActor [weak self] in
+            guard let self else { return }
+            let incoming = incomingUsesA ? self.ambiencePlayerA : self.ambiencePlayerB
+            let outgoing = incomingUsesA ? self.ambiencePlayerB : self.ambiencePlayerA
+            let buffer = self.ambienceBuffers[ambience]
+            if let buffer { self.startLoop(incoming, buffer: buffer) }
+
+            let steps = 32
+            let stepDur = duration / Double(steps)
+            for i in 1...steps {
+                if Task.isCancelled { return }
+                let p = Float(i) / Float(steps)
+                if buffer != nil { incoming.volume = p }
+                outgoing.volume = 1 - p
+                try? await Task.sleep(nanoseconds: UInt64(stepDur * 1_000_000_000))
+            }
+            outgoing.stop()
+            outgoing.volume = 1
+        }
     }
 
     /// Cross-fade vers une nouvelle ambiance : l'entrant démarre à 0 et monte
@@ -290,8 +381,16 @@ final class AudioEngine {
         engine.connect(musicPlayerB, to: musicMixer, format: format)
         engine.connect(musicMixer, to: engine.mainMixerNode, format: format)
 
+        engine.attach(ambienceMixer)
+        engine.attach(ambiencePlayerA)
+        engine.attach(ambiencePlayerB)
+        engine.connect(ambiencePlayerA, to: ambienceMixer, format: format)
+        engine.connect(ambiencePlayerB, to: ambienceMixer, format: format)
+        engine.connect(ambienceMixer, to: engine.mainMixerNode, format: format)
+
         sfxMixer.outputVolume = clamp(masterVolume)
         musicMixer.outputVolume = clamp(musicVolume)
+        ambienceMixer.outputVolume = clamp(musicVolume * 0.6)
     }
 
     // MARK: - Synthèse
@@ -307,6 +406,12 @@ final class AudioEngine {
             // boucle synthétisée historique.
             musicBuffers[mood] = loadMusicFile(for: mood)
                 ?? renderMusicLoop(mood.synthFallback)
+        }
+        for ambience in Ambience.allCases {
+            // Foley : fichier CC0 uniquement, aucune synthèse de repli.
+            if let name = ambience.fileName {
+                ambienceBuffers[ambience] = loadAudioBuffer(named: name, ext: "m4a")
+            }
         }
     }
 

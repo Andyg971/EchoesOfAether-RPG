@@ -482,6 +482,7 @@ final class WorldBuilder {
             LightingEngine.applyGrade(.villageDay, in: scene)
             LightingEngine.startDayCycle(in: scene, day: .villageDay)
         }
+        AudioEngine.shared.setAmbience(.village)
         debugDrawObstacles(in: scene)
     }
 
@@ -687,6 +688,7 @@ final class WorldBuilder {
         // Sous la canopée le grade froid reste ; la pluie s'ajoute parfois
         _ = rollWeatherRain(in: scene, chance: 18)
         LightingEngine.applyGrade(.forest, in: scene)
+        AudioEngine.shared.setAmbience(.forest)
         debugDrawObstacles(in: scene)
     }
 
@@ -1479,6 +1481,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         setZoneVignette(in: scene, alpha: 0.68)   // mines : galeries noires
         LightingEngine.applyGrade(.mines, in: scene)
         LightingEngine.attachHeroLight(to: kael)  // seul point chaud mobile
+        AudioEngine.shared.setAmbience(.mines)
     }
 
     /// Rails de mine : deux longerons métalliques + traverses de bois.
@@ -1818,6 +1821,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
         LightingEngine.applyGrade(.desert, in: scene)
         LightingEngine.startDayCycle(in: scene, day: .desert, phaseSeconds: 90)
+        AudioEngine.shared.setAmbience(.desert)
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.
@@ -2055,6 +2059,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
         LightingEngine.applyGrade(.ruins, in: scene)
+        AudioEngine.shared.setAmbience(.none)   // la musique porte l'ambiance
     }
 
     /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :
@@ -2187,6 +2192,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
         LightingEngine.applyGrade(.threshold, in: scene)
+        AudioEngine.shared.setAmbience(.none)
     }
 
     /// LE CŒUR DU VIDE (Acte IV) — sanctuaire intérieur. Sol pierre teinté
@@ -2321,6 +2327,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
         LightingEngine.applyGrade(.voidheart, in: scene)
+        AudioEngine.shared.setAmbience(.none)
     }
 
     /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.
@@ -2608,6 +2615,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.40)
         LightingEngine.applyGrade(.shrine, in: scene)
+        AudioEngine.shared.setAmbience(.none)
     }
 
     // MARK: - Building Blocks
@@ -2809,6 +2817,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         buildInterior(kind, in: scene)
         setZoneVignette(in: scene, alpha: 0.38)   // pièce éclairée au feu
         LightingEngine.applyGrade(.interior, in: scene)
+        AudioEngine.shared.setAmbience(.interior)
         kael.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.23)
         kael.zPosition = 20
     }

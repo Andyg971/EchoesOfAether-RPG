@@ -1,0 +1,15 @@
+Ambiances (foley) — toutes CC0 (domaine public, aucune attribution requise).
+Sources OpenGameArt.org, conservées ici pour traçabilité.
+
+amb_forest.m4a   — "Forest Ambience" (Ludum Dare 29)
+                   https://opengameart.org/content/forest-ambience
+amb_mines.m4a    — "Loopable Dungeon Ambience"
+                   https://opengameart.org/content/loopable-dungeon-ambience
+amb_village.m4a  — "Birds and Wind" (version ambiance seule), Spring Spring
+                   https://opengameart.org/content/birds-and-wind-ambient-birds-wind-and-synth
+amb_interior.m4a — "Fire Crackling"
+                   https://opengameart.org/content/fire-crackling
+amb_desert.m4a   — "wind1" (vent synthétisé PureData)
+                   https://opengameart.org/content/wind1
+
+Originaux (mp3/ogg/wav) convertis en .m4a AAC stéréo 44,1 kHz via ffmpeg.

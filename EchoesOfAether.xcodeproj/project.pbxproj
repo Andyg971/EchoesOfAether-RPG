@@ -61,6 +61,11 @@
 		6DBB0902B8A741B0A0000001 /* sfx_step.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6DBB0901B8A741B0A0000001 /* sfx_step.wav */; };
 		6DBB1002B8A741B0A0000001 /* sfx_shopopen.wav in Resources */ = {isa = PBXBuildFile; fileRef = 6DBB1001B8A741B0A0000001 /* sfx_shopopen.wav */; };
 		6DAA0002B8A741B0A0000001 /* music_village.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0001B8A741B0A0000001 /* music_village.m4a */; };
+		6DAB0002B8A741B0A0000001 /* amb_forest.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAB0001B8A741B0A0000001 /* amb_forest.m4a */; };
+		6DAB0102B8A741B0A0000001 /* amb_mines.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAB0101B8A741B0A0000001 /* amb_mines.m4a */; };
+		6DAB0202B8A741B0A0000001 /* amb_village.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAB0201B8A741B0A0000001 /* amb_village.m4a */; };
+		6DAB0302B8A741B0A0000001 /* amb_interior.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAB0301B8A741B0A0000001 /* amb_interior.m4a */; };
+		6DAB0402B8A741B0A0000001 /* amb_desert.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAB0401B8A741B0A0000001 /* amb_desert.m4a */; };
 		6DAA0102B8A741B0A0000001 /* music_forest.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0101B8A741B0A0000001 /* music_forest.m4a */; };
 		6DAA0202B8A741B0A0000001 /* music_mines.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0201B8A741B0A0000001 /* music_mines.m4a */; };
 		6DAA0302B8A741B0A0000001 /* music_combat.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0301B8A741B0A0000001 /* music_combat.m4a */; };
@@ -145,6 +150,11 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6DBB0901B8A741B0A0000001 /* sfx_step.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_step.wav; sourceTree = "<group>"; };
 		6DBB1001B8A741B0A0000001 /* sfx_shopopen.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = sfx_shopopen.wav; sourceTree = "<group>"; };
 		6DAA0001B8A741B0A0000001 /* music_village.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_village.m4a; sourceTree = "<group>"; };
+		6DAB0001B8A741B0A0000001 /* amb_forest.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = amb_forest.m4a; sourceTree = "<group>"; };
+		6DAB0101B8A741B0A0000001 /* amb_mines.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = amb_mines.m4a; sourceTree = "<group>"; };
+		6DAB0201B8A741B0A0000001 /* amb_village.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = amb_village.m4a; sourceTree = "<group>"; };
+		6DAB0301B8A741B0A0000001 /* amb_interior.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = amb_interior.m4a; sourceTree = "<group>"; };
+		6DAB0401B8A741B0A0000001 /* amb_desert.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = amb_desert.m4a; sourceTree = "<group>"; };
 		6DAA0101B8A741B0A0000001 /* music_forest.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_forest.m4a; sourceTree = "<group>"; };
 		6DAA0201B8A741B0A0000001 /* music_mines.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_mines.m4a; sourceTree = "<group>"; };
 		6DAA0301B8A741B0A0000001 /* music_combat.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; path = music_combat.m4a; sourceTree = "<group>"; };
@@ -213,6 +223,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7EDD01B8A741B0A0000001 /* Assets.xcassets */,
 				6DAAFF00B8A741B0A0000001 /* Music */,
 				6DBBFF00B8A741B0A0000001 /* SFX */,
+				6DABFF00B8A741B0A0000001 /* Ambience */,
 				6D7EFF00B8A741B0A0000001 /* Resources */,
 			);
 			path = EchoesOfAether;
@@ -335,6 +346,19 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				BD9946241C401B2A418D271A /* Foundation.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		6DABFF00B8A741B0A0000001 /* Ambience */ = {
+			isa = PBXGroup;
+			children = (
+				6DAB0001B8A741B0A0000001 /* amb_forest.m4a */,
+				6DAB0101B8A741B0A0000001 /* amb_mines.m4a */,
+				6DAB0201B8A741B0A0000001 /* amb_village.m4a */,
+				6DAB0301B8A741B0A0000001 /* amb_interior.m4a */,
+				6DAB0401B8A741B0A0000001 /* amb_desert.m4a */,
+			);
+			name = Ambience;
+			path = Resources/Ambience;
 			sourceTree = "<group>";
 		};
 		6DAAFF00B8A741B0A0000001 /* Music */ = {
@@ -478,6 +502,11 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6DAA0402B8A741B0A0000001 /* music_boss.m4a in Resources */,
 				6DAA0502B8A741B0A0000001 /* music_inn.m4a in Resources */,
 				6DAA0602B8A741B0A0000001 /* music_title.m4a in Resources */,
+				6DAB0002B8A741B0A0000001 /* amb_forest.m4a in Resources */,
+				6DAB0102B8A741B0A0000001 /* amb_mines.m4a in Resources */,
+				6DAB0202B8A741B0A0000001 /* amb_village.m4a in Resources */,
+				6DAB0302B8A741B0A0000001 /* amb_interior.m4a in Resources */,
+				6DAB0402B8A741B0A0000001 /* amb_desert.m4a in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

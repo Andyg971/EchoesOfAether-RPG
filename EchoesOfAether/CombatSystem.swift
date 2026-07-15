@@ -292,6 +292,10 @@ private var queuedBoost = 0
 /// vraiment satisfaisants. Auparavant seuls les sorts avaient un maigre
 /// bonus (×1.25) ; l'attaque et le Black Slash n'en avaient aucun.
 private static let brokenDamageMultiplier: CGFloat = 1.8
+/// Facteur de menace global des attaques ennemies normales : > 1 rend les
+/// monstres plus dangereux (le joueur galère, doit utiliser ses options).
+/// Réglable d'un seul endroit après playtests.
+private static let enemyDamageScale: CGFloat = 1.3
 /// Couleur du dégât flottant quand le coup profite du bonus Break :
 /// ambre vif, pour que le joueur SENTE le moment de décharger.
 private static let brokenHitColor = SKColor(red: 1.0, green: 0.66, blue: 0.15, alpha: 1)
@@ -704,7 +708,9 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
                 duration: 0.25)
         }
     } else {
-        dmg = e.combatant.baseDamage * dmgMult
+        // Facteur de menace : les monstres frappent plus fort pour que le
+        // joueur doive vraiment gérer PV/MP/Boost et ses grosses attaques.
+        dmg = Int((CGFloat(e.combatant.baseDamage * dmgMult) * Self.enemyDamageScale).rounded())
         sparkColor = .red
         shakeIntensity = isEnraged ? 6 : 3
         statusLabel.text = victim != nil
@@ -2404,80 +2410,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Acteur courant en grand + glow ; ennemis break/gelés marqués ✕.
     /// `currentEnemyIndex` : nil = tour joueur, sinon index de l'ennemi
     /// en train d'agir.
+    /// File d'initiative (pips K L B K) retirée à la demande : elle
+    /// alourdissait l'écran de combat. La bannière de tour + le curseur
+    /// d'acteur suffisent à savoir qui joue.
     private func refreshTurnOrder(currentEnemyIndex: Int?) {
         turnPipsRoot.removeAllChildren()
-
-        // -1 = Kael ; -2 - i = allié i ; n ≥ 0 = enemies[n] (vivants)
-        let aliveIdx = enemies.indices.filter { enemies[$0].combatant.isAlive }
-        var round: [Int] = [-1]
-        for (i, ally) in allies.enumerated() where ally.combatant.isAlive {
-            round.append(-2 - i)
-        }
-        round += aliveIdx
-        guard !round.isEmpty else { return }
-        // Décale la manche pour démarrer sur l'acteur courant
-        let startPos: Int
-        if let cur = currentEnemyIndex, let p = round.firstIndex(of: cur) {
-            startPos = p
-        } else if let i = actingAllyIndex, let p = round.firstIndex(of: -2 - i) {
-            startPos = p
-        } else {
-            startPos = 0
-        }
-        let count = min(5, max(4, round.count + 1))
-        let actors: [Int] = (0..<count).map { round[(startPos + $0) % round.count] }
-
-        let spacing: CGFloat = 30
-        let x0 = -spacing * CGFloat(actors.count - 1) / 2
-
-        for (i, actor) in actors.enumerated() {
-            let isCurrent = i == 0
-            let isEnemy = actor >= 0
-            var skipped = false
-            if isEnemy, !isCurrent {
-                let e = enemies[actor]
-                if e.brokenTurns > 0 || e.combatant.stunned { skipped = true }
-            }
-
-            // Pip pixel : carré net, bord clair pour l'acteur courant.
-            let side: CGFloat = isCurrent ? 20 : 15
-            let pip = SKShapeNode(rect: CGRect(x: -side / 2, y: -side / 2,
-                                               width: side, height: side))
-            pip.position = CGPoint(x: x0 + CGFloat(i) * spacing, y: 0)
-            if isEnemy {
-                pip.fillColor = SKColor(red: 0.42, green: 0.12, blue: 0.14, alpha: 0.95)
-            } else if actor <= -2, allies.indices.contains(-2 - actor) {
-                pip.fillColor = allies[-2 - actor].kind.accentColor
-                    .withAlphaComponent(0.55)
-            } else {
-                pip.fillColor = SKColor(red: 0.12, green: 0.26, blue: 0.42, alpha: 0.95)
-            }
-            pip.strokeColor = isCurrent
-                ? SKColor(red: 1.00, green: 0.92, blue: 0.55, alpha: 1)
-                : SKColor(white: 0.45, alpha: 0.8)
-            pip.lineWidth = isCurrent ? 2 : 1
-            pip.glowWidth = 0
-            if skipped { pip.alpha = 0.35 }
-            turnPipsRoot.addChild(pip)
-
-            let letter = SKLabelNode(fontNamed: PixelUI.uiFont)
-            if skipped {
-                letter.text = "✕"
-            } else if isEnemy {
-                let name = enemies[actor].combatant.name
-                letter.text = String(name.prefix(1))
-            } else if actor <= -2, allies.indices.contains(-2 - actor) {
-                letter.text = String(allies[-2 - actor].kind.displayName.prefix(1))
-            } else {
-                letter.text = "K"
-            }
-            letter.fontSize = isCurrent ? 12 : 9
-            letter.fontColor = .white
-            letter.verticalAlignmentMode = .center
-            letter.position = pip.position
-            if skipped { letter.alpha = 0.5 }
-            turnPipsRoot.addChild(letter)
-        }
     }
 
     /// Petit pulse du panneau d'actions quand la main revient au joueur.

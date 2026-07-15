@@ -260,6 +260,7 @@ final class GameManager {
                                  chestTaken: player.desertChestTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
+            spawnDesertRoamers()
             transition(to: .exploration)
             return
         }
@@ -2259,7 +2260,7 @@ final class GameManager {
     }
 
     /// Crée un monstre baladeur (sprite animé) et l'enregistre.
-    private func addRoamer(_ asset: String, at pos: CGPoint, wh: CGFloat,
+    func addRoamer(_ asset: String, at pos: CGPoint, wh: CGFloat,
                            patrolRadius: CGFloat = 70, chaseSpeed: CGFloat = 104,
                            startCombat: @escaping () -> Void) {
         guard let node = world.makeRoamingMonster(asset: asset) else { return }

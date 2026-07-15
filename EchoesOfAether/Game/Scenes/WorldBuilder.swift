@@ -1912,37 +1912,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // ── Oasis (nord-est) : bassin pixel + halo de fraîcheur ──
         addOasis(in: scene, at: CGPoint(x: w * 0.85, y: h * 0.20))
 
-        // ── Monstres visibles aux zones de danger restantes ──
-        if progress < 1 {
-            let zone1 = makeDangerZone(
-                at: CGPoint(x: w * 0.28, y: h * 0.55),
-                radius: 38,
-                color: SKColor(red: 0.70, green: 0.45, blue: 0.20, alpha: 1))
-            zone1.name = "desertZone1"
-            add(zone1, to: scene)
-            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.57))
-            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.32, y: h * 0.52), flipped: true)
-        }
-        if progress == 1 {
-            let zone2 = makeDangerZone(
-                at: CGPoint(x: w * 0.55, y: h * 0.68),
-                radius: 38,
-                color: SKColor(red: 0.55, green: 0.40, blue: 0.25, alpha: 1))
-            zone2.name = "desertZone2"
-            add(zone2, to: scene)
-            addDesertMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.52, y: h * 0.70))
-            addDesertMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.59, y: h * 0.65), flipped: true)
-            addDesertMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.55, y: h * 0.74))
-        }
-        if progress == 2 {
-            let bossZone = makeDangerZone(
-                at: CGPoint(x: w * 0.80, y: h * 0.55),
-                radius: 40,
-                color: SKColor(red: 0.85, green: 0.45, blue: 0.10, alpha: 1))
-            bossZone.name = "desertZone3"
-            add(bossZone, to: scene)
-            addSandColossusSilhouette(in: scene, at: CGPoint(x: w * 0.80, y: h * 0.57))
-        }
+        // Les combats du désert sont portés par des monstres baladeurs
+        // (GameManager.spawnDesertRoamers) : plus de halos de danger ni de
+        // crânes statiques.
 
         // Coffre enfoui (flanc ouest) : les pillards ne l'ont jamais trouvé
         if !chestTaken {
@@ -2014,46 +1986,6 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     }
 
     /// Monstre visible dans les dunes : sprite ennemi idle, teinté sable.
-    private func addDesertMonster(_ asset: String, in scene: SKScene,
-                                  at pos: CGPoint, flipped: Bool = false) {
-        guard let monster = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.55,
-            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
-        monster.position = pos
-        monster.zPosition = actorLayer(for: pos.y)
-        if flipped { monster.xScale = -abs(monster.xScale) }
-        monster.forEachDescendantSprite { s in
-            s.color = SKColor(red: 0.85, green: 0.66, blue: 0.32, alpha: 1)
-            s.colorBlendFactor = 0.50
-        }
-        addGroundShadow(under: monster, width: 26, height: 7)
-        add(monster, to: scene)
-    }
-
-    /// Silhouette du colosse des sables endormi : masse de grès,
-    /// deux yeux d'ambre qui couvent sous la croûte.
-    private func addSandColossusSilhouette(in scene: SKScene, at pos: CGPoint) {
-        let colossus = SKNode()
-        colossus.zPosition = actorLayer(for: pos.y)
-        let body = SKColor(red: 0.55, green: 0.42, blue: 0.22, alpha: 1)
-        for (dx, dy, sw, sh) in [(0.0, 20.0, 52.0, 42.0), (-24.0, 5.0, 24.0, 24.0),
-                                 (24.0, 5.0, 24.0, 24.0), (0.0, 50.0, 34.0, 24.0)] {
-            let block = SKSpriteNode(color: body, size: CGSize(width: sw, height: sh))
-            block.position = CGPoint(x: dx, y: dy)
-            colossus.addChild(block)
-        }
-        for dx: CGFloat in [-8, 8] {
-            let eye = SKSpriteNode(color: SKColor(red: 1.0, green: 0.70, blue: 0.20, alpha: 1),
-                                   size: CGSize(width: 5, height: 5))
-            eye.position = CGPoint(x: dx, y: 52)
-            colossus.addChild(eye)
-            JuiceEngine.pulse(eye, scale: 1.3)
-        }
-        colossus.position = pos
-        addGroundShadow(under: colossus, width: 58, height: 13)
-        add(colossus, to: scene)
-    }
-
     /// Coffre à demi enfoui dans le sable, cerclé de fer.
     private func makeBuriedChest(at pos: CGPoint) -> SKNode {
         let node = SKNode()

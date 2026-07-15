@@ -22,6 +22,7 @@ extension GameManager {
                                           y: scene.size.height * 0.14)
         } completion: { [weak self] in
             guard let self else { return }
+            spawnDesertRoamers()
             if player.questDesert == .inactive {
                 player.questDesert = .active
                 hud.questText = String(localized: "quest.desert.hud")
@@ -42,9 +43,32 @@ extension GameManager {
         }
     }
 
+    /// Peuple le désert de monstres baladeurs selon la progression.
+    func spawnDesertRoamers() {
+        guard let scene, inDesert else { clearRoamers(); return }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        switch player.desertProgress {
+        case 0:
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.28, y: h * 0.55),
+                      wh: h) { [weak self] in self?.startDesertCombat1() }
+        case 1:
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.55, y: h * 0.68),
+                      wh: h) { [weak self] in self?.startDesertCombat2() }
+        case 2 where player.questDesert != .complete:
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.80, y: h * 0.55),
+                      wh: h, patrolRadius: 44, chaseSpeed: 78) { [weak self] in
+                self?.startDesertBossSequence()
+            }
+        default:
+            break
+        }
+    }
+
     /// Retour vers la zone d'origine (la phase n'a pas changé).
     func exitDesert() {
         guard let scene else { return }
+        clearRoamers()
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -88,26 +112,8 @@ extension GameManager {
             return true
         }
 
-        // Zone 1 : pillards des dunes
-        if player.desertProgress < 1,
-           point.distance(to: CGPoint(x: w * 0.28, y: h * 0.55)) < 75 {
-            startDesertCombat1()
-            return true
-        }
-
-        // Zone 2 : charognards (après les pillards)
-        if player.desertProgress == 1,
-           point.distance(to: CGPoint(x: w * 0.55, y: h * 0.68)) < 75 {
-            startDesertCombat2()
-            return true
-        }
-
-        // Zone 3 : le colosse des sables
-        if player.desertProgress == 2, player.questDesert != .complete,
-           point.distance(to: CGPoint(x: w * 0.80, y: h * 0.55)) < 75 {
-            startDesertBossSequence()
-            return true
-        }
+        // Les combats du désert se déclenchent au contact d'un monstre
+        // baladeur (spawnDesertRoamers), plus au tap.
 
         // Coffre enfoui (une seule fois)
         if !player.desertChestTaken,
@@ -286,6 +292,7 @@ extension GameManager {
         world.switchToDesert(in: scene, progress: player.desertProgress,
                              chestTaken: player.desertChestTaken)
         world.kael.position = kaelPos
+        spawnDesertRoamers()
     }
 
     /// Coffre enfoui : +120 or, une seule fois.

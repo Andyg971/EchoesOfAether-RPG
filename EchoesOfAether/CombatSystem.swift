@@ -268,6 +268,15 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 private var resonance = 0
 private var playerBP = 0
 private var queuedBoost = 0
+/// Payoff du Break (façon Octopath) : un ennemi au bouclier cassé subit
+/// bien plus de dégâts de TOUTE source pendant qu'il est à terre. C'est la
+/// récompense qui rend le ciblage des faiblesses + la décharge du Boost
+/// vraiment satisfaisants. Auparavant seuls les sorts avaient un maigre
+/// bonus (×1.25) ; l'attaque et le Black Slash n'en avaient aucun.
+private static let brokenDamageMultiplier: CGFloat = 1.8
+/// Couleur du dégât flottant quand le coup profite du bonus Break :
+/// ambre vif, pour que le joueur SENTE le moment de décharger.
+private static let brokenHitColor = SKColor(red: 1.0, green: 0.66, blue: 0.15, alpha: 1)
 /// Règle du Boost (façon Octopath) : booster épuise le flux — aucun BP
 /// ne se régénère à la manche suivante.
 private var boostedThisRound = false
@@ -585,7 +594,10 @@ private func runEnemyAction(at index: Int) {
         statusLabel.text = String(localized: "combat.status.break \(e.combatant.name)")
         showEffect(String(localized: "combat.effect.shieldRestored"),
                    color: SKColor(red: 0.95, green: 0.75, blue: 0.30, alpha: 1))
-        if e.brokenTurns == 0 { e.shield = e.shieldMax }
+        if e.brokenTurns == 0 {
+            e.shield = e.shieldMax
+            setBrokenPose(e, broken: false)   // l'ennemi se redresse
+        }
         updateVisuals()
         proceed(after: 0.9)
         return
@@ -854,6 +866,10 @@ private func perform(_ action: CombatAction) {
         var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
         let isCrit = Double.random(in: 0...1) < 0.12
         if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
+        // Cible déjà cassée : décharge dévastatrice (l'attaque physique ne
+        // brise pas de bouclier, mais frappe fort une cible à terre).
+        let hitBroken = foe.brokenTurns > 0
+        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         if boost > 0 {
             statusLabel.text = String(localized: "combat.status.attackBoosted \(boost + 1) \(finalDmg)")
@@ -872,7 +888,8 @@ private func perform(_ action: CombatAction) {
         if isCrit {
             playCritEffect(at: enemyCenter, damage: finalDmg)
         } else {
-            showFloatingText("-" + String(finalDmg), at: enemyCenter, color: .white)
+            showFloatingText("-" + String(finalDmg), at: enemyCenter,
+                             color: hitBroken ? Self.brokenHitColor : .white)
         }
         showComboIfNeeded()
 
@@ -882,7 +899,13 @@ private func perform(_ action: CombatAction) {
         var finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
         let isCrit = Double.random(in: 0...1) < 0.12
         if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
+        // Était-elle déjà cassée avant ce coup ? (hitWeakness va peut-être
+        // la casser maintenant ; dans les deux cas le Black Slash encaisse
+        // le bonus Break.)
+        let wasBroken = foe.brokenTurns > 0
         let broke = hitWeakness(on: foe, with: .aether)
+        let hitBroken = wasBroken || broke
+        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
         if resonance == 3 {
             foe.combatant.stunned = true
             showEffect(String(localized: "combat.effect.stun"), color: SKColor(red: 0.45, green: 0.70, blue: 1.00, alpha: 1))
@@ -912,7 +935,8 @@ private func perform(_ action: CombatAction) {
         if isCrit {
             playCritEffect(at: enemyCenter, damage: finalDmg)
         } else {
-            showFloatingText("-" + String(finalDmg), at: enemyCenter, color: CombatElement.aether.color)
+            showFloatingText("-" + String(finalDmg), at: enemyCenter,
+                             color: hitBroken ? Self.brokenHitColor : CombatElement.aether.color)
         }
 
     case .potion:
@@ -979,7 +1003,9 @@ private func perform(_ action: CombatAction) {
         let levelBonus = ((_player?.level ?? 1) - 1) * 5
         var finalDmg = Int(CGFloat(spell.basePower + levelBonus) * damageMultiplier * spellMult)
         if isWeak { finalDmg = Int(CGFloat(finalDmg) * 1.35) }
-        if foe.brokenTurns > 0 || broke { finalDmg = Int(CGFloat(finalDmg) * 1.25) }
+        // Payoff Break uniforme (était ×1.25, incohérent avec attaque/slash).
+        let hitBroken = foe.brokenTurns > 0 || broke
+        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         statusLabel.text = isWeak
             ? String(localized: "combat.status.spellWeak \(spell.title) \(finalDmg)")
@@ -989,7 +1015,8 @@ private func perform(_ action: CombatAction) {
         HapticsEngine.heavy()
         JuiceEngine.screenShake(root, intensity: isWeak ? 8 : 4, duration: 0.18)
         playSpellAnimation(spell, on: foe, boosted: boost > 0)
-        showFloatingText("-" + String(finalDmg), at: enemyCenter, color: element.color)
+        showFloatingText("-" + String(finalDmg), at: enemyCenter,
+                         color: hitBroken ? Self.brokenHitColor : element.color)
     }
 
     if let foe = target, !foe.combatant.isAlive {
@@ -1053,7 +1080,31 @@ private func hitWeakness(on foe: EnemyState, with element: CombatElement) -> Boo
     ]))
     JuiceEngine.screenShake(root, intensity: 9, duration: 0.20)
     JuiceEngine.zoomPunch(root, around: foe.homePosition, scale: 1.05)
+    setBrokenPose(foe, broken: true)
     return true
+}
+
+/// État « à terre » lisible sur le sprite d'un ennemi cassé : il chancelle
+/// puis reste affaissé et incliné tant qu'il est brisé, redressé au réveil.
+/// Géométrie seule (rotation + affaissement) — on ne touche pas la couleur
+/// pour ne pas écraser les sprites déjà teintés (loup d'ombre).
+private func setBrokenPose(_ foe: EnemyState, broken: Bool) {
+    guard let s = foe.sprite else { return }
+    s.removeAction(forKey: "brokenPose")
+    if broken {
+        let stagger = SKAction.sequence([
+            .rotate(toAngle: 0.28, duration: 0.12, shortestUnitArc: true),
+            .rotate(toAngle: 0.20, duration: 0.14, shortestUnitArc: true)
+        ])
+        stagger.timingMode = .easeOut
+        s.run(.group([stagger, .moveBy(x: 0, y: -6, duration: 0.26)]),
+              withKey: "brokenPose")
+    } else {
+        s.run(.group([
+            .rotate(toAngle: 0, duration: 0.22, shortestUnitArc: true),
+            .moveBy(x: 0, y: 6, duration: 0.22)
+        ]), withKey: "brokenPose")
+    }
 }
 
 private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,

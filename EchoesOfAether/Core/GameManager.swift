@@ -494,20 +494,44 @@ final class GameManager {
 
     // MARK: - Bouton d'action « A »
 
+    /// Relief pixel dur sur un bouton carré : biseau clair en haut/gauche,
+    /// ombre sombre en bas/droite (look touche de manette rétro, pas badge
+    /// web). Bandes de 3px, `.nearest` implicite (SKSpriteNode couleur).
+    private func addPixelBevel(to node: SKShapeNode, size: CGFloat,
+                               light: SKColor, dark: SKColor) {
+        let h = size / 2
+        let t: CGFloat = 3
+        let bands: [(CGPoint, CGSize, SKColor)] = [
+            (CGPoint(x: 0, y: h - t / 2), CGSize(width: size, height: t), light),   // haut
+            (CGPoint(x: -h + t / 2, y: 0), CGSize(width: t, height: size), light),  // gauche
+            (CGPoint(x: 0, y: -h + t / 2), CGSize(width: size, height: t), dark),    // bas
+            (CGPoint(x: h - t / 2, y: 0), CGSize(width: t, height: size), dark)      // droite
+        ]
+        for (pos, sz, color) in bands {
+            let band = SKSpriteNode(color: color, size: sz)
+            band.position = pos
+            band.zPosition = 0.5
+            node.addChild(band)
+        }
+    }
+
     /// Bouton pixel fixe en bas à droite. Actif (doré, pulsé) quand une
     /// interaction est à portée ; estompé sinon.
     private func setupActionButton(in scene: SKScene) {
         PixelUI.stylePanel(actionButton, size: CGSize(width: 54, height: 54),
-                           fill: SKColor(red: 0.10, green: 0.07, blue: 0.14, alpha: 0.88),
+                           fill: SKColor(red: 0.16, green: 0.13, blue: 0.10, alpha: 0.95),
                            accent: PixelUI.gold)
+        addPixelBevel(to: actionButton, size: 54,
+                      light: SKColor(red: 0.62, green: 0.50, blue: 0.24, alpha: 0.9),
+                      dark: SKColor(red: 0.05, green: 0.04, blue: 0.02, alpha: 0.95))
         actionButton.position = CGPoint(x: scene.size.width - 58, y: 66)
         actionButton.zPosition = 1_950   // au-dessus des panneaux (dialogue 1000+)
         actionButton.isHidden = true
         scene.addChild(actionButton)
 
         actionButtonLabel.text = "A"
-        actionButtonLabel.fontSize = 32
-        actionButtonLabel.fontColor = PixelUI.gold
+        actionButtonLabel.fontSize = 30
+        actionButtonLabel.fontColor = SKColor(red: 1.0, green: 0.92, blue: 0.62, alpha: 1)
         actionButtonLabel.verticalAlignmentMode = .center
         actionButtonLabel.horizontalAlignmentMode = .center
         actionButtonLabel.position = CGPoint(x: 0, y: -1)
@@ -517,8 +541,11 @@ final class GameManager {
         // Bouton B : en dessous-gauche de A, accent cuivré (annuler/passer)
         let bAccent = SKColor(red: 0.80, green: 0.42, blue: 0.30, alpha: 1)
         PixelUI.stylePanel(bButton, size: CGSize(width: 46, height: 46),
-                           fill: SKColor(red: 0.13, green: 0.07, blue: 0.08, alpha: 0.88),
+                           fill: SKColor(red: 0.18, green: 0.10, blue: 0.08, alpha: 0.95),
                            accent: bAccent)
+        addPixelBevel(to: bButton, size: 46,
+                      light: SKColor(red: 0.62, green: 0.34, blue: 0.24, alpha: 0.9),
+                      dark: SKColor(red: 0.06, green: 0.02, blue: 0.02, alpha: 0.95))
         bButton.position = CGPoint(x: scene.size.width - 58, y: 128)
         bButton.zPosition = 1_950
         bButton.isHidden = true

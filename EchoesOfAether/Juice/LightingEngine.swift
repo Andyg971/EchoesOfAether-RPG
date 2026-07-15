@@ -33,6 +33,10 @@ enum LightingEngine {
         static let voidheart = Grade(color: SKColor(red: 0.72, green: 0.60, blue: 0.90, alpha: 1))
         /// Intérieur : chaleur de feu de cheminée.
         static let interior  = Grade(color: SKColor(red: 1.00, green: 0.93, blue: 0.82, alpha: 1))
+        /// Pluie : ciel couvert, couleurs éteintes.
+        static let rainy     = Grade(color: SKColor(red: 0.70, green: 0.75, blue: 0.86, alpha: 1))
+        /// Nuit : bleu profond, les lanternes prennent le relais.
+        static let night     = Grade(color: SKColor(red: 0.50, green: 0.58, blue: 0.86, alpha: 1))
     }
 
     private static let gradeNodeName = "lightGrade"
@@ -50,6 +54,31 @@ enum LightingEngine {
         node.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         node.zPosition = 90
         scene.addChild(node)
+    }
+
+    // MARK: - Cycle jour/nuit
+
+    /// Cycle cosmétique piloté par SKAction sur le node de grade — zéro
+    /// coût par frame. Jour → crépuscule doré → nuit bleue → aube → jour.
+    /// `--time-night` fige la nuit (tests/screenshots).
+    static func startDayCycle(in scene: SKScene, day: Grade,
+                              phaseSeconds: TimeInterval = 75) {
+        guard let node = scene.childNode(withName: gradeNodeName) as? SKSpriteNode else { return }
+        if CommandLine.arguments.contains("--time-night") {
+            node.color = Grade.night.color
+            return
+        }
+        let dusk = SKColor(red: 1.00, green: 0.76, blue: 0.58, alpha: 1)
+        let dawn = SKColor(red: 0.94, green: 0.82, blue: 0.80, alpha: 1)
+        node.run(.repeatForever(.sequence([
+            .wait(forDuration: phaseSeconds),                                  // plein jour
+            .colorize(with: dusk, colorBlendFactor: 1, duration: 16),
+            .wait(forDuration: phaseSeconds * 0.35),                           // heure dorée
+            .colorize(with: Grade.night.color, colorBlendFactor: 1, duration: 16),
+            .wait(forDuration: phaseSeconds * 0.75),                           // nuit
+            .colorize(with: dawn, colorBlendFactor: 1, duration: 14),
+            .colorize(with: day.color, colorBlendFactor: 1, duration: 12)
+        ])), withKey: "dayCycle")
     }
 
     /// Transition douce vers un nouveau grade (voyage, tombée du soir).

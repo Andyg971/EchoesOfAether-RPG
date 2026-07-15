@@ -128,6 +128,41 @@ enum ParticleFactory {
         return container
     }
 
+    /// Pluie pixel en espace ÉCRAN (le monde scrolle, pas la pluie) :
+    /// traits verticaux 2×8 rendus en .nearest, légère gîte de vent.
+    /// `advanceSimulationTime` pré-remplit l'écran à l'arrivée en zone.
+    static func rain(in size: CGSize, heavy: Bool = false) -> SKNode {
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: 2, height: 8), format: format
+        ).image { ctx in
+            ctx.cgContext.setFillColor(SKColor(red: 0.78, green: 0.86, blue: 1.0,
+                                               alpha: 0.9).cgColor)
+            ctx.cgContext.fill(CGRect(x: 0, y: 0, width: 2, height: 8))
+        }
+        let texture = SKTexture(image: image)
+        texture.filteringMode = .nearest
+
+        let emitter = SKEmitterNode()
+        emitter.particleTexture = texture
+        emitter.particleBirthRate = heavy ? 240 : 130
+        emitter.particleLifetime = 1.6
+        emitter.particleLifetimeRange = 0.3
+        emitter.particlePositionRange = CGVector(dx: size.width + 240, dy: 0)
+        emitter.position = CGPoint(x: size.width / 2, y: size.height + 24)
+        emitter.particleSpeed = 620
+        emitter.particleSpeedRange = 130
+        emitter.emissionAngle = -.pi / 2 - 0.10   // vent léger vers la gauche
+        emitter.particleAlpha = 0.5
+        emitter.particleAlphaRange = 0.25
+        emitter.particleScale = 1.2
+        emitter.particleScaleRange = 0.4
+        emitter.advanceSimulationTime(2)
+        emitter.zPosition = 95   // au-dessus du grade (90), sous le HUD (100)
+        return emitter
+    }
+
     static func forestFog(in size: CGSize) -> SKNode {
         let container = SKNode()
         container.zPosition = 5

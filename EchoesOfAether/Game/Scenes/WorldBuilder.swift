@@ -458,7 +458,12 @@ final class WorldBuilder {
         ambiance.addChild(ParticleFactory.butterflies(in: CGSize(width: w, height: h)))
         addAtmosphere(ambiance, to: scene)
         setZoneVignette(in: scene, alpha: 0)
-        LightingEngine.applyGrade(.villageDay, in: scene)
+        if rollWeatherRain(in: scene) {
+            LightingEngine.applyGrade(.rainy, in: scene)
+        } else {
+            LightingEngine.applyGrade(.villageDay, in: scene)
+            LightingEngine.startDayCycle(in: scene, day: .villageDay)
+        }
         debugDrawObstacles(in: scene)
     }
 
@@ -660,6 +665,8 @@ final class WorldBuilder {
         forestAmbiance.addChild(LightingEngine.fireflies(in: CGSize(width: w, height: h)))
         addAtmosphere(forestAmbiance, to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
+        // Sous la canopée le grade froid reste ; la pluie s'ajoute parfois
+        _ = rollWeatherRain(in: scene, chance: 18)
         LightingEngine.applyGrade(.forest, in: scene)
         debugDrawObstacles(in: scene)
     }
@@ -1788,6 +1795,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
         LightingEngine.applyGrade(.desert, in: scene)
+        LightingEngine.startDayCycle(in: scene, day: .desert, phaseSeconds: 90)
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.
@@ -3270,7 +3278,8 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
 /// nettoyée au changement de zone comme le reste.
 private func attachPropLight(for name: String, on node: SKNode, in scene: SKScene) {
     let light: SKSpriteNode
-    if name.contains("lantern") || name.contains("torch") || name.contains("campfire") {
+    if name.contains("lantern") || name.contains("torch") || name.contains("campfire")
+        || name.contains("lamp") || (name.contains("candle") && !name.contains("_off")) {
         light = LightingEngine.pointLight(radius: 78,
                                           color: LightingEngine.LightColor.flame,
                                           flicker: true)
@@ -3392,6 +3401,22 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         // Le halo du héros n'existe que dans les zones noires (mines) ;
         // chaque zone le ré-attache explicitement si besoin.
         LightingEngine.removeHeroLight(from: kael)
+        // La pluie est en espace écran : sans ce retrait central, elle
+        // suivrait le joueur jusque dans les mines et les intérieurs.
+        worldNode.scene?.childNode(withName: "weatherRain")?.removeFromParent()
+    }
+
+    /// Décide la météo à l'entrée d'une zone extérieure : `--weather-rain`
+    /// force la pluie, sinon ~1 entrée sur 5. Pose l'emitter en espace
+    /// écran (z 95, sous le HUD) et dit à l'appelant d'assombrir le grade.
+    private func rollWeatherRain(in scene: SKScene, chance: Int = 20) -> Bool {
+        let raining = CommandLine.arguments.contains("--weather-rain")
+            || Int.random(in: 0..<100) < chance
+        guard raining else { return false }
+        let rain = ParticleFactory.rain(in: scene.size)
+        rain.name = "weatherRain"
+        scene.addChild(rain)
+        return true
     }
 
     private func addAtmosphere(_ node: SKNode, to scene: SKScene) {

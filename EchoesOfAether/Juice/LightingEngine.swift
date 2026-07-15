@@ -247,6 +247,119 @@ enum LightingEngine {
         return container
     }
 
+    // MARK: - Ombres de nuages (profondeur top-down)
+
+    /// Blob de nuage pixel : quelques ellipses fusionnées sur une grille
+    /// 36×20, rendu `.nearest` — l'ombre garde des bords en escalier.
+    private static func cloudTexture() -> SKTexture {
+        let cols = 36, rows = 20
+        let format = UIGraphicsImageRendererFormat()
+        format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: cols, height: rows), format: format
+        ).image { ctx in
+            let c = ctx.cgContext
+            c.setFillColor(SKColor.black.cgColor)
+            let lobes: [(cx: CGFloat, cy: CGFloat, rx: CGFloat, ry: CGFloat)] = [
+                (0.35, 0.50, 0.30, 0.42), (0.60, 0.45, 0.34, 0.48),
+                (0.48, 0.60, 0.24, 0.36), (0.75, 0.55, 0.20, 0.30)
+            ]
+            for y in 0..<rows {
+                for x in 0..<cols {
+                    let nx = (CGFloat(x) + 0.5) / CGFloat(cols)
+                    let ny = (CGFloat(y) + 0.5) / CGFloat(rows)
+                    let inside = lobes.contains { lobe in
+                        let dx = (nx - lobe.cx) / lobe.rx
+                        let dy = (ny - lobe.cy) / lobe.ry
+                        return dx * dx + dy * dy <= 1
+                    }
+                    if inside { c.fill(CGRect(x: x, y: y, width: 1, height: 1)) }
+                }
+            }
+        }
+        let texture = SKTexture(image: image)
+        texture.filteringMode = .nearest
+        return texture
+    }
+
+    /// Ombres de nuages qui dérivent lentement sur le terrain — LE truc
+    /// qui donne de la profondeur à une vue top-down. Espace monde,
+    /// au-dessus des acteurs (l'ombre tombe sur tout), sous le grade.
+    static func cloudShadows(in size: CGSize, count: Int = 3) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 58
+        let texture = cloudTexture()
+        for _ in 0..<count {
+            let shadow = SKSpriteNode(texture: texture)
+            let w = CGFloat.random(in: 220...360)
+            shadow.size = CGSize(width: w, height: w * 0.55)
+            shadow.alpha = .random(in: 0.09...0.15)
+            let startX = CGFloat.random(in: -w...size.width)
+            let y = CGFloat.random(in: size.height * 0.1...size.height * 0.9)
+            shadow.position = CGPoint(x: startX, y: y)
+            let span = size.width + w * 2
+            let speed: CGFloat = .random(in: 14...22)   // pt/s — très lent
+            // Traverse, puis retour instantané hors champ à gauche
+            let firstLeg = SKAction.moveTo(x: size.width + w, duration:
+                TimeInterval((size.width + w - startX) / speed))
+            let loop = SKAction.sequence([
+                .moveTo(x: -w, duration: 0),
+                .moveBy(x: span, y: 0, duration: TimeInterval(span / speed))
+            ])
+            shadow.run(.sequence([firstLeg, .repeatForever(loop)]))
+            container.addChild(shadow)
+        }
+        return container
+    }
+
+    // MARK: - Eau vivante
+
+    /// Scintillements pixel sur un plan d'eau elliptique : étincelles
+    /// qui naissent et meurent + nappe additive qui respire.
+    static func waterShimmer(center: CGPoint, radiusX: CGFloat, radiusY: CGFloat,
+                             count: Int = 12) -> SKNode {
+        let container = SKNode()
+        container.position = center
+        container.zPosition = -9.3   // juste au-dessus des tuiles d'eau (-9.5)
+
+        // Nappe de lumière qui respire
+        let sheen = SKSpriteNode(texture: haloTexture(color:
+            SKColor(red: 0.70, green: 0.92, blue: 1.0, alpha: 1)))
+        sheen.size = CGSize(width: radiusX * 1.6, height: radiusY * 1.6)
+        sheen.blendMode = .add
+        sheen.alpha = 0.07
+        sheen.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.13, duration: 2.6),
+            .fadeAlpha(to: 0.05, duration: 2.6)
+        ])))
+        container.addChild(sheen)
+
+        for _ in 0..<count {
+            // Point aléatoire dans l'ellipse (échantillonnage par rejet)
+            var p = CGPoint.zero
+            for _ in 0..<12 {
+                let candidate = CGPoint(x: .random(in: -radiusX...radiusX),
+                                        y: .random(in: -radiusY...radiusY))
+                let dx = candidate.x / radiusX, dy = candidate.y / radiusY
+                if dx * dx + dy * dy <= 0.82 { p = candidate; break }
+            }
+            let sparkle = SKSpriteNode(color: SKColor(red: 0.82, green: 0.96,
+                                                      blue: 1.0, alpha: 1),
+                                       size: CGSize(width: 3, height: 2))
+            sparkle.position = p
+            sparkle.alpha = 0
+            sparkle.run(.repeatForever(.sequence([
+                .wait(forDuration: .random(in: 0...3.0)),
+                .fadeAlpha(to: .random(in: 0.5...0.9), duration: 0.25),
+                .wait(forDuration: .random(in: 0.2...0.6)),
+                .fadeOut(withDuration: 0.4),
+                .wait(forDuration: .random(in: 0.5...2.0))
+            ])))
+            container.addChild(sparkle)
+        }
+        return container
+    }
+
     // MARK: - Lucioles
 
     /// Points lumineux qui errent lentement en pulsant — forêt au soir.

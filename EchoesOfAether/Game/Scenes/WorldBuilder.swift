@@ -389,6 +389,10 @@ final class WorldBuilder {
         // L'eau ne se marche pas.
         registerObstacle(CGRect(x: w * 0.085 - w * 0.052, y: h * 0.46 - h * 0.024,
                                 width: w * 0.104, height: h * 0.048))
+        // Eau vivante : scintillements + nappe qui respire
+        add(LightingEngine.waterShimmer(center: CGPoint(x: w * 0.085, y: h * 0.46),
+                                        radiusX: w * 0.058, radiusY: h * 0.027),
+            to: scene)
 
         decorateVillage(in: scene)
 
@@ -456,9 +460,13 @@ final class WorldBuilder {
         let ambiance = SKNode()
         ambiance.addChild(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)))
         ambiance.addChild(ParticleFactory.butterflies(in: CGSize(width: w, height: h)))
+        let raining = rollWeatherRain(in: scene)
+        if !raining {   // ciel dégagé : les nuages projettent leur ombre
+            ambiance.addChild(LightingEngine.cloudShadows(in: CGSize(width: w, height: h)))
+        }
         addAtmosphere(ambiance, to: scene)
         setZoneVignette(in: scene, alpha: 0)
-        if rollWeatherRain(in: scene) {
+        if raining {
             LightingEngine.applyGrade(.rainy, in: scene)
         } else {
             LightingEngine.applyGrade(.villageDay, in: scene)
@@ -1791,8 +1799,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
         add(exitLabel, to: scene)
 
-        // Poussière en suspension : chaleur d'Ossara
-        addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
+        // Poussière en suspension : chaleur d'Ossara + rares ombres de nuages
+        let desertAmbiance = SKNode()
+        desertAmbiance.addChild(ParticleFactory.ruinsAsh(in: scene.size))
+        desertAmbiance.addChild(LightingEngine.cloudShadows(in: scene.size, count: 2))
+        addAtmosphere(desertAmbiance, to: scene)
         setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
         LightingEngine.applyGrade(.desert, in: scene)
         LightingEngine.startDayCycle(in: scene, day: .desert, phaseSeconds: 90)

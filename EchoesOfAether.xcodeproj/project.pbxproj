@@ -17,6 +17,7 @@
 		6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2003B8A741B0A0000001 /* WorldNode.swift */; };
 		6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */; };
 		6D7E20F2B8A741B0A0000001 /* LightingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */; };
+		6DAAFC02B8A741B0A0000001 /* HD2DPostFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAAFC01B8A741B0A0000001 /* HD2DPostFX.swift */; };
 		6DAC0002B8A741B0A0000001 /* RoamingMonster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAC0001B8A741B0A0000001 /* RoamingMonster.swift */; };
 		6D7E20F4B8A741B0A0000001 /* AmbientLife.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */; };
 		6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */; };
@@ -113,6 +114,7 @@
 		6D7E2003B8A741B0A0000001 /* WorldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldNode.swift; sourceTree = "<group>"; };
 		6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuiceEngine.swift; sourceTree = "<group>"; };
 		6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingEngine.swift; sourceTree = "<group>"; };
+		6DAAFC01B8A741B0A0000001 /* HD2DPostFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HD2DPostFX.swift; sourceTree = "<group>"; };
 		6DAC0001B8A741B0A0000001 /* RoamingMonster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoamingMonster.swift; sourceTree = "<group>"; };
 		6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientLife.swift; sourceTree = "<group>"; };
 		6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
@@ -286,6 +288,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */,
 				6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */,
+				6DAAFC01B8A741B0A0000001 /* HD2DPostFX.swift */,
 				6DAC0001B8A741B0A0000001 /* RoamingMonster.swift */,
 				6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */,
 				6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */,
@@ -569,6 +572,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */,
 				6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */,
 				6D7E20F2B8A741B0A0000001 /* LightingEngine.swift in Sources */,
+				6DAAFC02B8A741B0A0000001 /* HD2DPostFX.swift in Sources */,
 				6DAC0002B8A741B0A0000001 /* RoamingMonster.swift in Sources */,
 				6D7E20F4B8A741B0A0000001 /* AmbientLife.swift in Sources */,
 				6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */,

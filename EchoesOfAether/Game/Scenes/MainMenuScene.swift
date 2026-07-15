@@ -77,6 +77,12 @@ final class MainMenuScene: SKScene {
 
         buildRPGBackdrop(w: w, h: h)
         addChild(ParticleFactory.ambientDust(in: size))
+        // Ambiance cinématique : éclats d'Aether qui s'élèvent + oiseaux
+        // lointains qui traversent le ciel d'Ébène.
+        addChild(ParticleFactory.aetherMotes(in: size))
+        let flock = AmbientLife.birds(in: size, flocks: 1)
+        flock.zPosition = -13   // derrière les arbres de premier plan
+        addChild(flock)
 
         // Paysage : Kael (art de l'icône) à gauche, titre + slots à droite.
         // Portrait (fallback) : tout centré, héros omis.
@@ -88,6 +94,20 @@ final class MainMenuScene: SKScene {
             buildHeroArt(centerX: max(heroZoneWidth * 0.52, 110),
                          centerY: h * 0.52, maxHeight: h * 0.86)
         }
+
+        // Lueur d'Aether pulsante derrière le titre (halo pixel .nearest).
+        let titleGlow = LightingEngine.pointLight(
+            radius: landscape ? 150 : 130,
+            color: SKColor(red: 0.62, green: 0.42, blue: 0.98, alpha: 1),
+            intensity: 2.2)
+        titleGlow.position = CGPoint(x: columnCenterX, y: contentTop - 18)
+        titleGlow.alpha = 0.5
+        titleGlow.zPosition = 15
+        addChild(titleGlow)
+        titleGlow.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.32, duration: 2.2),
+            .fadeAlpha(to: 0.5, duration: 2.2)
+        ])))
 
         // Titre pixel : VT323 + ombre dure décalée (pas de glow flou).
         let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)

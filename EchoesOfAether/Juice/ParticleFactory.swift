@@ -330,6 +330,50 @@ enum ParticleFactory {
         return container
     }
 
+    /// Éclats d'Aether : petits carrés violets/sarcelle qui s'élèvent
+    /// lentement en scintillant, comme le flux qui monte de la terre.
+    /// Cinématique de l'écran-titre — pixels nets, zéro glow flou.
+    static func aetherMotes(in size: CGSize, count: Int = 22) -> SKNode {
+        let container = SKNode()
+        container.zPosition = 26
+        let palette: [SKColor] = [
+            SKColor(red: 0.66, green: 0.42, blue: 0.98, alpha: 1),
+            SKColor(red: 0.45, green: 0.80, blue: 0.92, alpha: 1),
+            SKColor(red: 0.82, green: 0.66, blue: 1.00, alpha: 1)
+        ]
+        for _ in 0..<count {
+            let side = CGFloat(Int.random(in: 2...4))
+            let mote = SKSpriteNode(color: palette.randomElement()!,
+                                    size: CGSize(width: side, height: side))
+            let startX = CGFloat.random(in: 0...size.width)
+            mote.position = CGPoint(x: startX, y: .random(in: 0...size.height))
+            mote.alpha = 0
+            container.addChild(mote)
+            // Montée lente + léger balancement + scintillement, en boucle.
+            func climb() -> SKAction {
+                let dur = TimeInterval.random(in: 6...11)
+                let rise = SKAction.moveBy(x: .random(in: -24...24),
+                                           y: size.height * .random(in: 0.5...0.9),
+                                           duration: dur)
+                let twinkle = SKAction.sequence([
+                    .fadeAlpha(to: .random(in: 0.4...0.85), duration: dur * 0.25),
+                    .fadeAlpha(to: .random(in: 0.2...0.5), duration: dur * 0.5),
+                    .fadeAlpha(to: 0, duration: dur * 0.25)
+                ])
+                return .group([rise, twinkle])
+            }
+            let loop = SKAction.repeatForever(.sequence([
+                .run { [weak mote] in
+                    mote?.position = CGPoint(x: startX + .random(in: -20...20), y: -6)
+                },
+                .run { [weak mote] in mote?.run(climb()) },
+                .wait(forDuration: .random(in: 6...11))
+            ]))
+            mote.run(.sequence([.wait(forDuration: .random(in: 0...5)), loop]))
+        }
+        return container
+    }
+
     /// Papillons : petits carrés colorés qui voletent en zigzag
     /// dans la zone donnée. Discret — 4 papillons.
     static func butterflies(in size: CGSize) -> SKNode {

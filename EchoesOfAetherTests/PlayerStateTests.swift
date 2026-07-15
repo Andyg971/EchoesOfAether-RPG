@@ -28,6 +28,17 @@ final class PlayerStateTests: XCTestCase {
         XCTAssertEqual(PlayerState.xpForLevel(4), Int(80.0 * pow(4.0, 1.5))) // 80*8 = 640
     }
 
+    /// La réserve de Magie croît avec le niveau (L1 = 30, +4 par niveau).
+    func testMaxMPScalesWithLevel() {
+        let p = PlayerState()
+        p.level = 1
+        XCTAssertEqual(p.maxMP, 30)
+        p.level = 10
+        XCTAssertEqual(p.maxMP, 30 + 9 * 4)   // 66
+        p.level = PlayerState.maxLevel
+        XCTAssertEqual(p.maxMP, 30 + (PlayerState.maxLevel - 1) * 4)   // 146
+    }
+
     func testXPForLevelOutOfBounds() {
         XCTAssertEqual(PlayerState.xpForLevel(0), Int.max)
         XCTAssertEqual(PlayerState.xpForLevel(PlayerState.maxLevel), Int.max)

@@ -8,6 +8,9 @@ struct Combatant {
     var statusEffect: StatusEffect? = nil
     var statusTicks: Int = 0
     var stunned: Bool = false
+    // Points de Magie (Kael uniquement ; 0 pour les ennemis/alliés PNJ).
+    var mp: Int = 0
+    var maxMP: Int = 0
 
     var isAlive: Bool { hp > 0 }
 }
@@ -77,6 +80,17 @@ enum CombatSpell: CaseIterable {
         case .frost: return 58
         case .thunder: return 72
         case .mend: return 78
+        }
+    }
+
+    /// Coût exact en Points de Magie (Kael). Les sorts plus puissants
+    /// coûtent plus cher — il faut gérer sa réserve.
+    var mpCost: Int {
+        switch self {
+        case .ember: return 8
+        case .frost: return 10
+        case .thunder: return 12
+        case .mend: return 12
         }
     }
 }
@@ -159,6 +173,10 @@ final class CombatSystem {
     private let kaelHPFill = SKShapeNode()
     private let kaelHPGhost = SKShapeNode()   // « dégâts fantômes » qui fondent
     private let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    // Barre de Points de Magie (Kael) : alimente sorts + Black Slash.
+    private let kaelMPBack = SKShapeNode()
+    private let kaelMPFill = SKShapeNode()
+    private let kaelMPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     private let enemyHPBack = SKShapeNode()
     private let enemyHPFill = SKShapeNode()
@@ -370,7 +388,8 @@ private var goldReward = 0
         self.targetIndex = 0
 
 let startHP = min(player.currentHP, player.currentMaxHP)
-        self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP)
+        self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP,
+                              mp: player.maxMP, maxMP: player.maxMP)
         // Alliés : Lyra via withLyra (compat), composition explicite sinon.
         var kinds = allyKinds
         if kinds.isEmpty, withLyra { kinds = [.lyra] }
@@ -851,10 +870,32 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
 
     // MARK: - Actions
 
+/// Coût exact en Points de Magie d'une action (Kael). Physique = gratuit.
+private func mpCost(for action: CombatAction) -> Int {
+    switch action {
+    case .blackSlash:      return 14
+    case .spell(let spell): return spell.mpCost
+    case .attack, .potion:  return 0
+    }
+}
+
 private func perform(_ action: CombatAction) {
     guard let scene = parentScene, phase == .playerTurn,
           let foe = target else { return }
+
+    // Points de Magie : seul Kael en dépense (les alliés suivent leurs
+    // propres règles). Réserve insuffisante = l'action est refusée, le
+    // joueur garde son tour pour choisir autre chose (ex. attaque physique).
+    let cost = actingAlly == nil ? mpCost(for: action) : 0
+    if cost > 0, kael.mp < cost {
+        showEffect(String(localized: "combat.mp.insufficient"),
+                   color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+        AudioEngine.shared.playTap()
+        return   // reste en .playerTurn
+    }
+
     phase = .playerActing
+    if cost > 0 { kael.mp = max(0, kael.mp - cost) }
     let boost = queuedBoost
     let damageMultiplier = 1.0 + CGFloat(boost) * 0.55
     queuedBoost = 0
@@ -872,6 +913,11 @@ private func perform(_ action: CombatAction) {
 
     switch action {
     case .attack:
+        // L'attaque physique régénère un peu de Magie (Kael) : incite à
+        // alterner frappe physique et sorts plutôt que spammer la magie.
+        if actingAlly == nil {
+            kael.mp = min(kael.maxMP, kael.mp + 6)
+        }
         comboCount += 1
         let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
         var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
@@ -2248,6 +2294,15 @@ private func setupComboAndStatusUI(scene: SKScene) {
         kaelHPLabel.position = CGPoint(x: kaelX, y: barY - 18)
         root.addChild(kaelHPLabel)
 
+        // Mini-barre de Magie sous la vie de Kael (bleu clair).
+        configureBar(kaelMPBack, kaelMPFill, width: barWidth * 0.82, height: 7,
+                     color: SKColor(red: 0.42, green: 0.62, blue: 1.0, alpha: 1),
+                     at: CGPoint(x: kaelX, y: barY - 32))
+        kaelMPLabel.fontSize = 11
+        kaelMPLabel.fontColor = SKColor(red: 0.70, green: 0.82, blue: 1.0, alpha: 1)
+        kaelMPLabel.position = CGPoint(x: kaelX, y: barY - 46)
+        root.addChild(kaelMPLabel)
+
         enemyHPLabel.fontSize = 15
         enemyHPLabel.fontColor = .white
         enemyHPLabel.position = CGPoint(x: enemyX, y: barY - 18)
@@ -2827,6 +2882,11 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         kaelHPFill.xScale = kaelHPRatio
         kaelHPLabel.text = String(kael.hp) + "/" + String(kael.maxHP)
         updateGhostBar(kaelHPGhost, to: kaelHPRatio)
+
+        // Réserve de Magie
+        let mpRatio = kael.maxMP > 0 ? max(0, CGFloat(kael.mp) / CGFloat(kael.maxMP)) : 0
+        kaelMPFill.xScale = mpRatio
+        kaelMPLabel.text = "MP " + String(kael.mp) + "/" + String(kael.maxMP)
 
         for ally in allies {
             let c = ally.combatant

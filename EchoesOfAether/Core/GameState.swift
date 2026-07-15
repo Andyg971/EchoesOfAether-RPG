@@ -171,6 +171,10 @@ final class PlayerState {
     var attackDamage: Int      { 42 + weaponLevel * 22 + (level - 1) * 2 }
     var blackSlashDamage: Int  { 92 + weaponLevel * 35 + (level - 1) * 4 }
     var currentMaxHP: Int      { maxHP + armorLevel * 50 + (level - 1) * 12 }
+    /// Points de Magie : réserve qui alimente les sorts et le Black Slash.
+    /// Évolue avec le niveau (L1 = 30, L30 = 146). Les attaques physiques
+    /// n'en coûtent pas et en régénèrent un peu.
+    var maxMP: Int             { 30 + (level - 1) * 4 }
 
     var potionsFull: Bool { potions >= 3 }
 

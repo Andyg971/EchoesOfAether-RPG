@@ -14595,6 +14595,22 @@
           }
         }
       }
+    },
+    "combat.mp.insufficient": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magie insuffisante !"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough MP!"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

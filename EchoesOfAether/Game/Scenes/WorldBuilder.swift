@@ -239,13 +239,27 @@ final class WorldBuilder {
 
     // MARK: - Camera
 
+    /// Vrai jusqu'au premier `updateCamera` d'une zone : la caméra se cale
+    /// d'un coup sur Kael (pas de glissement disgracieux au spawn).
+    private var snapCameraNextFrame = true
+
+    /// Demande un recadrage instantané (changement de zone / téléportation).
+    func snapCamera() { snapCameraNextFrame = true }
+
     func updateCamera(in sceneSize: CGSize) {
         guard worldHeight > sceneSize.height else { return }
         let targetY = kael.position.y
-        let minY: CGFloat = 0
         let maxY = worldHeight - sceneSize.height
-        let clamped = min(max(targetY - sceneSize.height / 2, minY), maxY)
-        worldNode.position.y = -clamped
+        let clamped = min(max(targetY - sceneSize.height / 2, 0), maxY)
+        let goal = -clamped
+        if snapCameraNextFrame {
+            worldNode.position.y = goal
+            snapCameraNextFrame = false
+        } else {
+            // Suivi lissé : la caméra rattrape Kael en douceur (cinématique),
+            // au lieu de coller image par image.
+            worldNode.position.y += (goal - worldNode.position.y) * 0.18
+        }
     }
 
     // MARK: - Zone Backgrounds
@@ -3564,6 +3578,7 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
 
     private func clearBackdrop() {
         obstacles.removeAll()
+        snapCameraNextFrame = true   // nouvelle zone : recadrage instantané
         backdropNodes.forEach { $0.removeFromParent() }
         backdropNodes.removeAll()
         atmosphereNode?.removeFromParent()

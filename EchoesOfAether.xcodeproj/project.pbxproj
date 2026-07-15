@@ -23,6 +23,7 @@
 		6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */; };
 		6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */; };
 		6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2013B8A741B0A0000001 /* GameManager.swift */; };
+		6DAD0002B8A741B0A0000001 /* GameManager+Desert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */; };
 		6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2015B8A741B0A0000001 /* MovementController.swift */; };
 		6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2017B8A741B0A0000001 /* TransitionManager.swift */; };
 		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
@@ -112,6 +113,7 @@
 		6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDOverlay.swift; sourceTree = "<group>"; };
 		6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldBuilder.swift; sourceTree = "<group>"; };
 		6D7E2013B8A741B0A0000001 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
+		6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Desert.swift"; sourceTree = "<group>"; };
 		6D7E2015B8A741B0A0000001 /* MovementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementController.swift; sourceTree = "<group>"; };
 		6D7E2017B8A741B0A0000001 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6D7E2001B8A741B0A0000001 /* GameState.swift */,
 				6D7E2013B8A741B0A0000001 /* GameManager.swift */,
+				6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */,
 				6D7E4002B8A741B0A0000001 /* SaveManager.swift */,
 				6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */,
 			);
@@ -555,6 +558,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */,
 				6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */,
 				6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */,
+				6DAD0002B8A741B0A0000001 /* GameManager+Desert.swift in Sources */,
 				6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */,
 				6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */,
 				6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */,

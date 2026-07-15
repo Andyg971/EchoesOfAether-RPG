@@ -17,6 +17,7 @@
 		6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2003B8A741B0A0000001 /* WorldNode.swift */; };
 		6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */; };
 		6D7E20F2B8A741B0A0000001 /* LightingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */; };
+		6D7E20F4B8A741B0A0000001 /* AmbientLife.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */; };
 		6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */; };
 		6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */; };
 		6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */; };
@@ -99,6 +100,7 @@
 		6D7E2003B8A741B0A0000001 /* WorldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldNode.swift; sourceTree = "<group>"; };
 		6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuiceEngine.swift; sourceTree = "<group>"; };
 		6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingEngine.swift; sourceTree = "<group>"; };
+		6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientLife.swift; sourceTree = "<group>"; };
 		6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
 		6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDOverlay.swift; sourceTree = "<group>"; };
 		6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldBuilder.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */,
 				6D7E20F1B8A741B0A0000001 /* LightingEngine.swift */,
+				6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */,
 				6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */,
 				6D7E5002B8A741B0A0000001 /* AudioEngine.swift */,
 				6D7EBB01B8A741B0A0000001 /* HapticsEngine.swift */,
@@ -513,6 +516,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */,
 				6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */,
 				6D7E20F2B8A741B0A0000001 /* LightingEngine.swift in Sources */,
+				6D7E20F4B8A741B0A0000001 /* AmbientLife.swift in Sources */,
 				6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */,
 				6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */,
 				6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */,

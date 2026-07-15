@@ -456,10 +456,20 @@ final class WorldBuilder {
             add(smoke, to: scene)
         }
 
-        // Poussière ambiante + papillons qui volettent entre les jardins
+        // Village vivant : les PNJ « ambiance » respirent, jettent des
+        // coups d'œil et font quelques pas. On épargne Lyra (scripts de
+        // veille), Dorin et Garen (sentinelles + zones de tap sensibles).
+        AmbientLife.enliven(bram)
+        AmbientLife.enliven(mara)
+        AmbientLife.enliven(sage)
+        AmbientLife.enliven(villager)
+        AmbientLife.enliven(child, wanderRadius: 22)   // l'enfant gambade
+
+        // Poussière ambiante + papillons + oiseaux qui traversent le ciel
         let ambiance = SKNode()
         ambiance.addChild(ParticleFactory.ambientDust(in: CGSize(width: w, height: h)))
         ambiance.addChild(ParticleFactory.butterflies(in: CGSize(width: w, height: h)))
+        ambiance.addChild(AmbientLife.birds(in: CGSize(width: w, height: h)))
         let raining = rollWeatherRain(in: scene)
         if !raining {   // ciel dégagé : les nuages projettent leur ombre
             ambiance.addChild(LightingEngine.cloudShadows(in: CGSize(width: w, height: h)))
@@ -671,6 +681,7 @@ final class WorldBuilder {
         forestAmbiance.addChild(ParticleFactory.forestFog(in: CGSize(width: w, height: h)))
         forestAmbiance.addChild(LightingEngine.godRays(in: CGSize(width: w, height: h)))
         forestAmbiance.addChild(LightingEngine.fireflies(in: CGSize(width: w, height: h)))
+        forestAmbiance.addChild(AmbientLife.birds(in: CGSize(width: w, height: h), flocks: 1))
         addAtmosphere(forestAmbiance, to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
         // Sous la canopée le grade froid reste ; la pluie s'ajoute parfois

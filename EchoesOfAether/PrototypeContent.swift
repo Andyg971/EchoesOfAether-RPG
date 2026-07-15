@@ -1042,6 +1042,31 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.end2"))
     ]
 
+    /// Point de non-retour (façon Final Fantasy / Persona) : dernière mise en
+    /// garde avant de franchir le Seuil vers le Cœur du Vide. Le choix est lu
+    /// via `dialogue.lastChoiceIndex` (0 = franchir, 1 = rester / préparer).
+    static let act4ThresholdWarningDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act4.warning1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act4.warning2")),
+        .choice(
+            prompt: String(localized: "dialogue.act4.warningPrompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act4.warningCross"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act4.warningCrossResponse")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act4.warningStay"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act4.warningStayResponse")
+                )
+            ]
+        )
+    ]
+
     /// Pré-combat : le Gardien du Seuil se dresse devant Kael.
     // ── Acte III étendu : l'Écho de Lyra, les esprits, les stèles ──
 

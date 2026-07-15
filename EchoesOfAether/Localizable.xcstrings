@@ -4342,6 +4342,118 @@
         }
       }
     },
+    "dialogue.act4.warning1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beyond this Threshold, no one returns. Not you, nor what you believe yourself to be."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au-delà de ce Seuil, nul ne revient. Ni toi, ni ce que tu crois être."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warning2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All you leave behind — a vow, a face, a debt — stays unfinished. Forever."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce que tu laisses derrière — un serment, un visage, une dette — le restera. À jamais."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningPrompt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross the Threshold?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchir le Seuil ?"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningCross": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross — I've made my peace"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchir — j'ai fait mon deuil"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningCrossResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing holds me back now. I'm going."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus rien ne me retient en arrière. J'y vais."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningStay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay — not yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rester — pas encore"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningStayResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not like this. I have things to settle first."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas comme ça. Il me reste des comptes à régler avant."
+          }
+        }
+      }
+    },
     "dialogue.act4.avatarPost2": {
       "localizations": {
         "en": {

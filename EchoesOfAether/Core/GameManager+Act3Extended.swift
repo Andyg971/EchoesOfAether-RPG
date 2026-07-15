@@ -254,7 +254,29 @@ extension GameManager {
 
     /// Fin "Franchir le Seuil" — Kael embrasse le Vide. Ce n'est plus une
     /// fin : le Seuil s'ouvre sur l'Acte IV, le Cœur du Vide.
+    ///
+    /// Point de non-retour façon FF/Persona : avant de franchir, Kael reçoit
+    /// une dernière mise en garde. « Rester » le renvoie explorer et préparer
+    /// le Seuil (le gate reste franchissable) ; « Franchir » est irréversible.
     func showAct3CrossEnding() {
+        guard scene != nil else { return }
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act4ThresholdWarningDialogue) { [weak self] in
+            guard let self else { return }
+            if dialogue.lastChoiceIndex == 1 {
+                // Demi-tour : on quitte l'ambiance finale, retour exploration.
+                AudioEngine.shared.setMood(.forPhase(phase))
+                transition(to: .exploration)
+            } else {
+                performAct3Crossing()
+            }
+        }
+    }
+
+    /// Franchissement effectif du Seuil : narration de fin d'Acte III puis
+    /// bascule vers l'Acte IV. Appelé uniquement après confirmation « Franchir ».
+    private func performAct3Crossing() {
+        transition(to: .dialogue)
         dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
             guard let self else { return }
             // « Ce n'était que le début » — la Voix annonce l'Acte IV.

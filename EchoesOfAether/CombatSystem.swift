@@ -1565,6 +1565,8 @@ private func showComboIfNeeded() {
         blackSlashButton.alpha = 0.3
 
         enemies.filter { $0.sprite?.alpha ?? 0 > 0 }.forEach { playEnemyDeathAnimation($0) }
+        // Les héros survivants fêtent la victoire (saut de joie en cascade).
+        playVictoryPose()
         if isBoss, let scene = parentScene, let boss = enemies.first {
             // Epic boss death: slow-mo + big burst + flash
             JuiceEngine.slowMotion(scene: scene, duration: 0.4, factor: 0.15)
@@ -2104,6 +2106,47 @@ private func setupComboAndStatusUI(scene: SKScene) {
             .moveBy(x: 0, y: -10, duration: 0.5),
             .fadeAlpha(to: 0.6, duration: 0.5)
         ]))
+    }
+
+    /// Pose de victoire : Kael puis les alliés font un petit saut de joie
+    /// en cascade, avec une étincelle dorée. Sprites existants, zéro frame
+    /// nouvelle — remplaçable par une vraie anim de victoire plus tard.
+    private func playVictoryPose() {
+        // Bond joyeux : montée franche, retombée amortie, léger balancement.
+        func celebrate(_ node: SKNode, delay: TimeInterval) {
+            let hop = SKAction.sequence([
+                .moveBy(x: 0, y: 26, duration: 0.18),
+                .moveBy(x: 0, y: -26, duration: 0.16),
+                .moveBy(x: 0, y: 10, duration: 0.10),
+                .moveBy(x: 0, y: -10, duration: 0.10)
+            ])
+            hop.timingMode = .easeOut
+            let sway = SKAction.sequence([
+                .rotate(toAngle: 0.12, duration: 0.18, shortestUnitArc: true),
+                .rotate(toAngle: -0.08, duration: 0.16, shortestUnitArc: true),
+                .rotate(toAngle: 0, duration: 0.14, shortestUnitArc: true)
+            ])
+            node.run(.sequence([
+                .wait(forDuration: delay),
+                .run { [weak self, weak node] in
+                    guard let self, let node else { return }
+                    let sparkle = ParticleFactory.impactSparks(
+                        at: CGPoint(x: node.position.x, y: node.position.y + 30),
+                        color: SKColor(red: 1.0, green: 0.9, blue: 0.5, alpha: 1),
+                        count: 6)
+                    self.root.addChild(sparkle)
+                },
+                .group([hop, sway])
+            ]))
+        }
+        var delay: TimeInterval = 0.1
+        if let k = kaelSprite, (_player?.currentHP ?? 1) > 0 {
+            celebrate(k, delay: delay)
+        }
+        for ally in allies where (ally.combatant.hp) > 0 {
+            delay += 0.12
+            if let s = ally.sprite { celebrate(s, delay: delay) }
+        }
     }
 
     // MARK: - Setup

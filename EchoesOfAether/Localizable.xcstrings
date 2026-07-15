@@ -14467,6 +14467,134 @@
           }
         }
       }
+    },
+    "world.cave.title": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caverne aux Échos"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cave of Echoes"
+          }
+        }
+      }
+    },
+    "world.cave.exit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remonter à la forêt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the forest"
+          }
+        }
+      }
+    },
+    "world.cave.entrance": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caverne aux Échos"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cave of Echoes"
+          }
+        }
+      }
+    },
+    "hud.objective.cave": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore la Caverne aux Échos"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore the Cave of Echoes"
+          }
+        }
+      }
+    },
+    "hud.objective.cave.done": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le trésor de la caverne est à toi"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cave's treasure is yours"
+          }
+        }
+      }
+    },
+    "combat.enemy.echoGuardian": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardien d'ossements"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bone Guardian"
+          }
+        }
+      }
+    },
+    "dialogue.cave.enter.kael1": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des voix… elles résonnent encore dans la pierre."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voices… they still echo in the stone."
+          }
+        }
+      }
+    },
+    "dialogue.cave.enter.kael2": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quelque chose garde cet endroit. Restons sur nos gardes."
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something guards this place. Stay sharp."
+          }
+        }
+      }
     }
   },
   "version": "1.1"

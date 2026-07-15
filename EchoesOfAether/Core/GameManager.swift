@@ -78,6 +78,9 @@ final class GameManager {
     /// Vrai quand Kael est dans le désert d'Ossara (voyage via la carte
     /// du monde — pas une GamePhase : la save garde la phase d'origine).
     private var inDesert = false
+    /// Vrai quand Kael explore la Caverne aux Échos (donjon optionnel,
+    /// entrée dans la forêt — pas une GamePhase, comme les mines).
+    private var inCave = false
 
     // MARK: - Setup
 
@@ -219,6 +222,22 @@ final class GameManager {
             AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+            transition(to: .exploration)
+            return
+        }
+        if CommandLine.arguments.contains("--zone-cave") {
+            hud.goldValue = player.gold
+            phase = .forest
+            inCave = true
+            // --cave-cleared : affiche l'état post-combat (coffre visible)
+            if CommandLine.arguments.contains("--cave-cleared") {
+                player.caveCleared = true
+            }
+            hud.objectiveText = String(localized: "hud.objective.cave")
+            world.switchToCave(in: scene, cleared: player.caveCleared,
+                               chestTaken: player.caveChestTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
             transition(to: .exploration)
@@ -885,6 +904,12 @@ final class GameManager {
             return
         }
 
+        if inCave {
+            if tryCaveInteraction(wp, in: scene) { return }
+            tapAndMove(point, in: scene)
+            return
+        }
+
         if trySaveCrystalTap(wp, in: scene) { return }
 
         switch phase {
@@ -1532,6 +1557,13 @@ final class GameManager {
         let mineEntrance = CGPoint(x: w * 0.88, y: h * 0.30)
         if point.distance(to: mineEntrance) < 65 {
             enterMines()
+            return true
+        }
+
+        // Entrée de la Caverne aux Échos (donjon optionnel, flanc ouest)
+        let caveEntrance = CGPoint(x: w * 0.12, y: h * 0.80)
+        if point.distance(to: caveEntrance) < 65 {
+            enterCave()
             return true
         }
 
@@ -3467,6 +3499,7 @@ final class GameManager {
         if player.questSageHerb == .active   { world.addHerbMarker(in: scene) }
         if player.questGarenScout == .active { world.addBadgeMarker(in: scene) }
         world.addMineEntrance(in: scene)
+        world.addCaveEntrance(in: scene)   // donjon optionnel (flanc ouest)
     }
 
     // MARK: - Mines de Cendreval
@@ -3652,6 +3685,136 @@ final class GameManager {
         world.switchToMines(in: scene, progress: player.minesProgress,
                             goldTaken: player.minesGoldTaken)
         world.kael.position = kaelPos
+    }
+
+    // MARK: - Caverne aux Échos (donjon optionnel, entrée dans la forêt)
+
+    /// Descend dans la Caverne aux Échos depuis la forêt.
+    private func enterCave() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inCave = true
+            hud.objectiveText = String(localized: "hud.objective.cave")
+            world.switchToCave(in: scene, cleared: player.caveCleared,
+                               chestTaken: player.caveChestTaken)
+            world.kael.position = CGPoint(x: scene.size.width * 0.50,
+                                          y: scene.size.height * 0.14)
+        } completion: { [weak self] in
+            guard let self else { return }
+            // Dialogue d'ambiance à la première visite (gardien pas encore
+            // vaincu). One-shot, jamais enchaîné.
+            if !player.caveCleared {
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.caveEnterDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            } else {
+                transition(to: .exploration)
+            }
+        }
+    }
+
+    /// Remonte vers la forêt, respawn devant l'entrée de la caverne.
+    private func exitCave() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            inCave = false
+            hud.objectiveText = String(localized: "hud.objective.forest")
+            AudioEngine.shared.setMood(.forPhase(phase))
+            world.switchToForest(in: scene)
+        } completion: { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            if player.questChildToy == .active { world.addToyMarker(in: scene) }
+            if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
+            addSideQuestMarkers(in: scene)
+            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            world.kael.position = CGPoint(x: scene.size.width * 0.22, y: wh * 0.30)
+            transition(to: .exploration)
+        }
+    }
+
+    private func tryCaveInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
+        let w = scene.size.width
+        let h = scene.size.height
+        // Sortie (halo sud)
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.08)) < 60 {
+            exitCave()
+            return true
+        }
+        // Gardien d'ossements (tant qu'il n'est pas vaincu)
+        if !player.caveCleared,
+           point.distance(to: CGPoint(x: w * 0.50, y: h * 0.55)) < 80 {
+            startCaveCombat()
+            return true
+        }
+        // Coffre (révélé une fois le gardien vaincu)
+        if player.caveCleared, !player.caveChestTaken,
+           point.distance(to: CGPoint(x: w * 0.50, y: h * 0.68)) < 70 {
+            takeCaveChest(in: scene)
+            return true
+        }
+        return false
+    }
+
+    private func startCaveCombat() {
+        guard let scene else { return }
+        lastCombatStarter = { [weak self] in self?.startCaveCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.echoGuardian"),
+                          hp: 320, kind: .boneWalker, baseDamage: 40)
+            ],
+            goldReward: 80,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            player.caveCleared = true
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            hud.objectiveText = String(localized: "hud.objective.cave")
+            refreshCaveBackdrop()
+            saveGame()
+            transition(to: .exploration)
+        }
+    }
+
+    private func refreshCaveBackdrop() {
+        guard let scene, inCave else { return }
+        let kaelPos = world.kael.position
+        world.switchToCave(in: scene, cleared: player.caveCleared,
+                           chestTaken: player.caveChestTaken)
+        world.kael.position = kaelPos
+    }
+
+    private func takeCaveChest(in scene: SKScene) {
+        guard !player.caveChestTaken else { return }
+        player.caveChestTaken = true
+        player.gold += 150
+        player.aetherShards += 3
+        syncGold()
+        AudioEngine.shared.playGoldGain()
+        HapticsEngine.success()
+        world.removeCaveChest()
+        let spot = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.68)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+            count: 16))
+        hud.objectiveText = String(localized: "hud.objective.cave.done")
+        saveGame()
     }
 
     /// Boss des mines : dialogue d'approche puis golem de cendre.

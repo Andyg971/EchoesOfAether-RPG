@@ -34,6 +34,7 @@ Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho 
 | **Juice combat** | Entrée en scène « dissolution » SNES, parallaxe du décor, micro-zoom caméra sur les gros coups, ghost HP bars, images rémanentes, pose de cast colorée par élément. |
 | **Dialogues** | Portraits pixel des locuteurs (Kael = visage de l'icône de l'app), choix ramifiés au curseur, B passe jusqu'au prochain choix. |
 | **Quêtes** | 8 quêtes actes I-II + Mines de Cendreval + 3 quêtes annexes acte III (échos égarés, stèles du Vide, Ombres du Vide). |
+| **Donjons optionnels** | Mines de Cendreval (3 combats + veine d'or), désert d'Ossara (carte du monde), **Caverne aux Échos** (entrée forêt : gardien d'ossements + coffre — 150 or + 3 éclats). |
 | **Boutique / Inventaire** | 3 paliers d'armes/armures (jusqu'à l'**Aetherite**), vitrine progressive (seul le palier suivant est affiché), potions, éclats. |
 | **Bestiaire** | Journal de l'Éther à onglets : Chroniques + Bestiaire (7 espèces, faiblesses/boucliers/lore, silhouettes tant que non croisées). |
 | **Sauvegarde** | 3 slots, auto-save, cristaux d'Aether, **sync iCloud** (Key-Value Store, la save la plus récente gagne). |

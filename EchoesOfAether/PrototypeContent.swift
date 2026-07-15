@@ -341,6 +341,13 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.desert.enter.kael2"))
     ]
 
+    /// Caverne aux Échos — entrée (donjon optionnel). One-shot, aucun
+    /// enchaînement : garde anti-soft-lock.
+    static let caveEnterDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.cave.enter.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.cave.enter.kael2"))
+    ]
+
     /// Après les pillards : les caravanes respirent.
     static let desertCombat1PostDialogue: [DialogueStep] = [
         .line(speaker: "Kael", text: String(localized: "dialogue.desert.combat1.kael1"))

@@ -121,6 +121,9 @@ final class PlayerState {
     var desertProgress: Int = 0                 // 0=intact, 1=pillards, 2=charognards, 3=colosse vaincu
     var desertChestTaken: Bool = false          // coffre enfoui ramassé (une fois)
     var desertOasisUsed: Bool = false           // oasis bue (une fois, non sauvegardé)
+    // Caverne aux Échos (donjon optionnel, entrée dans la forêt)
+    var caveCleared: Bool = false               // gardien d'ossements vaincu
+    var caveChestTaken: Bool = false            // coffre de la caverne ramassé
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -229,6 +232,8 @@ final class PlayerState {
             questDesert: questDesert,
             desertProgress: desertProgress,
             desertChestTaken: desertChestTaken,
+            caveCleared: caveCleared,
+            caveChestTaken: caveChestTaken,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -286,6 +291,8 @@ final class PlayerState {
         desertProgress = data.desertProgress ?? 0
         desertChestTaken = data.desertChestTaken ?? false
         desertOasisUsed = false
+        caveCleared = data.caveCleared ?? false
+        caveChestTaken = data.caveChestTaken ?? false
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -365,6 +372,9 @@ struct SaveData: Codable {
     let questDesert: QuestState?
     let desertProgress: Int?
     let desertChestTaken: Bool?
+    // Caverne aux Échos (optionnels — rétro-compatibles)
+    let caveCleared: Bool?
+    let caveChestTaken: Bool?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

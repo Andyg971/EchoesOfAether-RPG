@@ -136,6 +136,23 @@ final class SaveDataTests: XCTestCase {
         XCTAssertNil(fresh.act4EndingChoice)
     }
 
+    /// Round-trip des flags de la Caverne aux Échos (donjon optionnel).
+    func testCaveFlagsRoundTrip() throws {
+        let player = PlayerState()
+        player.caveCleared = true
+        player.caveChestTaken = true
+        let decoded = try JSONDecoder().decode(
+            SaveData.self,
+            from: try JSONEncoder().encode(player.toSaveData(phase: .forest, resonance: 0)))
+        XCTAssertEqual(decoded.caveCleared, true)
+        XCTAssertEqual(decoded.caveChestTaken, true)
+
+        let restored = PlayerState()
+        restored.load(from: decoded)
+        XCTAssertTrue(restored.caveCleared)
+        XCTAssertTrue(restored.caveChestTaken)
+    }
+
     /// Une sauvegarde « legacy » sans les clés optionnelles (level, xp, act3*)
     /// doit se décoder et fournir des valeurs par défaut sûres.
     func testBackwardCompatibilityWithMissingOptionalFields() throws {

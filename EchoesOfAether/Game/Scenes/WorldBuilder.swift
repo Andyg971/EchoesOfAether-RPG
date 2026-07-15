@@ -594,7 +594,7 @@ final class WorldBuilder {
             addGroundShadow(under: tree, width: 18 * scaleMult, height: 6)
             add(tree, to: scene)
             // Tronc infranchissable (la canopée reste traversable derrière)
-            registerFootprint(of: tree, widthRatio: 0.45, maxDepth: 22)
+            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
         }
         var yCursor = h * 0.03
         var side = 0
@@ -644,7 +644,7 @@ final class WorldBuilder {
             }
             addGroundShadow(under: tree, width: 46 * treeScale, height: 13 * treeScale)
             add(tree, to: scene)
-            registerFootprint(of: tree, widthRatio: 0.45, maxDepth: 22)
+            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
         }
 
         // Les combats de la forêt sont désormais portés par des monstres
@@ -2651,19 +2651,31 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             }
         }
 
-        // ── CHAPELLE DE LA SOURCE (fond est) + portail à orbe rouge ──
+        // ── CHAPELLE DE LA SOURCE (fond est) + portail ──
         addPixelProp("gy_chapel", in: scene, at: CGPoint(x: w * 0.84, y: h * 0.42), scale: 0.55)
-        addPixelProp("gy_gate_big", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.42), scale: 0.50)
-        // Halo rouge menaçant sur le portail (le Gardien attend derrière)
-        let menace = SKShapeNode(circleOfRadius: 46)
-        menace.fillColor = SKColor(red: 0.65, green: 0.10, blue: 0.12, alpha: 0.10)
-        menace.strokeColor = SKColor(red: 0.85, green: 0.20, blue: 0.20, alpha: 0.30)
-        menace.lineWidth = 1.5
-        menace.glowWidth = 6
-        menace.position = CGPoint(x: w * 0.66, y: h * 0.53)
-        menace.zPosition = -2
-        add(menace, to: scene)
-        JuiceEngine.pulse(menace, scale: 1.25)
+        // Portail teinté pierre-violet : neutralise l'orbe rouge de l'asset
+        // (Andy ne veut aucun halo lumineux rouge sur la zone du boss).
+        if let gate = PixelArtSprites.still(name: "gy_gate_big", scale: 0.50,
+                                            anchor: CGPoint(x: 0.5, y: 0.0)) {
+            gate.position = CGPoint(x: w * 0.66, y: h * 0.42)
+            gate.zPosition = propLayer(for: h * 0.42, in: scene.size.height)
+            gate.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.42, green: 0.38, blue: 0.54, alpha: 1)
+                sprite.colorBlendFactor = 0.6
+            }
+            // L'orbe rouge est peint dans l'asset (haut-centre, ~y=210 sur
+            // 240px de haut, anchor pieds). On le recouvre d'un carré pierre
+            // ancré AU SPRITE (position locale → suit le scale sans calcul écran).
+            if let sprite = gate.children.compactMap({ $0 as? SKSpriteNode }).first {
+                let cap = SKSpriteNode(color: SKColor(red: 0.34, green: 0.31, blue: 0.42, alpha: 1),
+                                       size: CGSize(width: 48, height: 46))
+                cap.position = CGPoint(x: 0, y: 214)   // coords locales asset
+                cap.zPosition = 1
+                sprite.addChild(cap)
+            }
+            add(gate, to: scene)
+            registerFootprint(of: gate, widthRatio: 0.86, depthRatio: 0.9, maxDepth: 200)
+        }
 
         // Statues anges gardant le portail
         addPixelProp("me_statue_angel", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.30), scale: 0.22)
@@ -2696,6 +2708,23 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         // Cristal de sauvegarde (entrée ouest — safe spot avant le boss)
         addSaveCrystal(at: CGPoint(x: w * 0.18, y: h * 0.20), in: scene)
+
+        // Sortie ouest : retour vers la forêt (halo + panneau)
+        let exitGlow = SKShapeNode(circleOfRadius: 30)
+        exitGlow.fillColor = SKColor(red: 0.45, green: 0.75, blue: 0.55, alpha: 0.12)
+        exitGlow.strokeColor = SKColor(red: 0.55, green: 0.85, blue: 0.60, alpha: 0.28)
+        exitGlow.lineWidth = 1
+        exitGlow.position = CGPoint(x: w * 0.06, y: h * 0.46)
+        exitGlow.zPosition = -1
+        add(exitGlow, to: scene)
+        JuiceEngine.pulse(exitGlow, scale: 1.25)
+        let exitLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+        exitLabel.text = String(localized: "world.shrine.exit")
+        exitLabel.fontSize = 11
+        exitLabel.fontColor = SKColor(white: 0.75, alpha: 0.75)
+        exitLabel.position = CGPoint(x: w * 0.06, y: h * 0.40)
+        exitLabel.zPosition = -1
+        add(exitLabel, to: scene)
 
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.40)

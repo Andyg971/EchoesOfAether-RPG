@@ -223,11 +223,18 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         let hpFill = SKShapeNode()
         let hpGhost = SKShapeNode()
         let hpLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+        let mpBack = SKShapeNode()
+        let mpFill = SKShapeNode()
+        let mpLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
         init(kind: CombatAllyKind, level: Int) {
             self.kind = kind
             let hp = kind.maxHP(level: level)
-            self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp)
+            // Les alliés (Lyra, Eran, Écho) ont leur propre réserve de Magie :
+            // on les contrôle, leurs sorts coûtent des MP comme ceux de Kael.
+            let mp = 30 + (level - 1) * 4
+            self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp,
+                                       mp: mp, maxMP: mp)
         }
     }
 
@@ -295,7 +302,10 @@ private static let brokenDamageMultiplier: CGFloat = 1.8
 /// Facteur de menace global des attaques ennemies normales : > 1 rend les
 /// monstres plus dangereux (le joueur galère, doit utiliser ses options).
 /// Réglable d'un seul endroit après playtests.
-private static let enemyDamageScale: CGFloat = 1.3
+private static let enemyDamageScale: CGFloat = 1.5
+/// Facteur de robustesse global : les ennemis encaissent davantage → les
+/// combats durent plus (Andy les trouvait « trop rapides / trop faciles »).
+private static let enemyHPScale: CGFloat = 1.4
 /// Couleur du dégât flottant quand le coup profite du bonus Break :
 /// ambre vif, pour que le joueur SENTE le moment de décharger.
 private static let brokenHitColor = SKColor(red: 1.0, green: 0.66, blue: 0.15, alpha: 1)
@@ -377,10 +387,11 @@ private var goldReward = 0
         // relance (+45 % PV, +30 % dégâts par palier). La progression conservée
         // du joueur compense ; la difficulté reste devant lui.
         let ngp = max(0, player.newGamePlus)
-        let hpMult = 1.0 + 0.45 * Double(ngp)
+        // Robustesse de base (tous combats) × bonus New Game+.
+        let hpMult = Double(Self.enemyHPScale) * (1.0 + 0.45 * Double(ngp))
         let dmgMult = 1.0 + 0.30 * Double(ngp)
         self.enemies = enemySpecs.prefix(3).map { spec in
-            let scaled = ngp == 0 ? spec : EnemySpec(
+            let scaled = EnemySpec(
                 name: spec.name,
                 hp: Int((Double(spec.hp) * hpMult).rounded()),
                 kind: spec.kind,
@@ -889,11 +900,12 @@ private func perform(_ action: CombatAction) {
     guard let scene = parentScene, phase == .playerTurn,
           let foe = target else { return }
 
-    // Points de Magie : seul Kael en dépense (les alliés suivent leurs
-    // propres règles). Réserve insuffisante = l'action est refusée, le
-    // joueur garde son tour pour choisir autre chose (ex. attaque physique).
-    let cost = actingAlly == nil ? mpCost(for: action) : 0
-    if cost > 0, kael.mp < cost {
+    // Points de Magie : l'acteur courant (Kael OU l'allié contrôlé) dépense
+    // sa propre réserve. Réserve insuffisante = action refusée, le joueur
+    // garde son tour (ex. pour une attaque physique gratuite).
+    let cost = mpCost(for: action)
+    let actorMP = actingAlly?.combatant.mp ?? kael.mp
+    if cost > 0, actorMP < cost {
         showEffect(String(localized: "combat.mp.insufficient"),
                    color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
         AudioEngine.shared.playTap()
@@ -901,7 +913,13 @@ private func perform(_ action: CombatAction) {
     }
 
     phase = .playerActing
-    if cost > 0 { kael.mp = max(0, kael.mp - cost) }
+    if cost > 0 {
+        if let ally = actingAlly {
+            ally.combatant.mp = max(0, ally.combatant.mp - cost)
+        } else {
+            kael.mp = max(0, kael.mp - cost)
+        }
+    }
     let boost = queuedBoost
     let damageMultiplier = 1.0 + CGFloat(boost) * 0.55
     queuedBoost = 0
@@ -919,9 +937,11 @@ private func perform(_ action: CombatAction) {
 
     switch action {
     case .attack:
-        // L'attaque physique régénère un peu de Magie (Kael) : incite à
+        // L'attaque physique régénère un peu de Magie de l'acteur : incite à
         // alterner frappe physique et sorts plutôt que spammer la magie.
-        if actingAlly == nil {
+        if let ally = actingAlly {
+            ally.combatant.mp = min(ally.combatant.maxMP, ally.combatant.mp + 6)
+        } else {
             kael.mp = min(kael.maxMP, kael.mp + 6)
         }
         comboCount += 1
@@ -2328,6 +2348,14 @@ private func setupComboAndStatusUI(scene: SKScene) {
             ally.hpLabel.fontColor = .white
             ally.hpLabel.position = CGPoint(x: x, y: barY - 18)
             root.addChild(ally.hpLabel)
+            // Mini-barre de Magie de l'allié (comme Kael).
+            configureBar(ally.mpBack, ally.mpFill, width: allyBarWidth * 0.82, height: 7,
+                         color: SKColor(red: 0.42, green: 0.62, blue: 1.0, alpha: 1),
+                         at: CGPoint(x: x, y: barY - 32))
+            ally.mpLabel.fontSize = 11
+            ally.mpLabel.fontColor = SKColor(red: 0.70, green: 0.82, blue: 1.0, alpha: 1)
+            ally.mpLabel.position = CGPoint(x: x, y: barY - 46)
+            root.addChild(ally.mpLabel)
             addCombatantLabel(ally.combatant.name, at: CGPoint(x: x, y: barY + 16))
         }
         targetNameLabel.fontSize = 19
@@ -2831,6 +2859,9 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             ally.hpFill.xScale = ratio
             ally.hpLabel.text = String(c.hp) + "/" + String(c.maxHP)
             updateGhostBar(ally.hpGhost, to: ratio)
+            let mpRatio = c.maxMP > 0 ? max(0, CGFloat(c.mp) / CGFloat(c.maxMP)) : 0
+            ally.mpFill.xScale = mpRatio
+            ally.mpLabel.text = "MP " + String(c.mp) + "/" + String(c.maxMP)
         }
 
         // Étiquette d'acteur sur le panneau d'actions (qui joue ?)

@@ -14611,6 +14611,22 @@
           }
         }
       }
+    },
+    "world.shrine.exit": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour à la forêt"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the forest"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

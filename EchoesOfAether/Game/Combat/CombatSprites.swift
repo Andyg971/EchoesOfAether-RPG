@@ -395,37 +395,23 @@ enum CombatSprites {
         root.addChild(statue)
         JuiceEngine.float(statue, distance: 4)
 
-        // Cœur d'Aether qui bat dans la pierre
-        let core = SKShapeNode(circleOfRadius: 10)
-        core.fillColor = SKColor(red: 0.65, green: 0.25, blue: 0.95, alpha: 1)
-        core.strokeColor = .clear
-        core.glowWidth = 9
+        // Cœur d'Aether qui bat dans la pierre — carré pixel net (zéro glow).
+        let core = SKSpriteNode(color: SKColor(red: 0.65, green: 0.25, blue: 0.95, alpha: 1),
+                                size: CGSize(width: 14, height: 14))
         core.position = CGPoint(x: 0, y: 26)
         core.zPosition = 2
         root.addChild(core)
-        JuiceEngine.pulse(core, scale: 1.3)
+        JuiceEngine.pulse(core, scale: 1.25)
 
-        // Yeux corrompus
+        // Yeux corrompus — petits carrés nets, pas de glow flou.
         for dx: CGFloat in [-7, 7] {
-            let eye = SKShapeNode(circleOfRadius: 2.5)
-            eye.fillColor = SKColor(red: 0.95, green: 0.45, blue: 1, alpha: 1)
-            eye.strokeColor = .clear
-            eye.glowWidth = 5
+            let eye = SKSpriteNode(color: SKColor(red: 0.95, green: 0.45, blue: 1, alpha: 1),
+                                   size: CGSize(width: 4, height: 4))
             eye.position = CGPoint(x: dx, y: 78)
             eye.zPosition = 2
             root.addChild(eye)
-            JuiceEngine.pulse(eye, scale: 1.4)
         }
-
-        // Aura d'Aether
-        let aura = SKShapeNode(circleOfRadius: 58)
-        aura.fillColor = SKColor(red: 0.35, green: 0.10, blue: 0.55, alpha: 0.07)
-        aura.strokeColor = SKColor(red: 0.50, green: 0.20, blue: 0.80, alpha: 0.16)
-        aura.lineWidth = 1.5
-        aura.position = CGPoint(x: 0, y: 30)
-        aura.zPosition = -1
-        root.addChild(aura)
-        JuiceEngine.pulse(aura, scale: 1.25)
+        // Halo/aura retiré à la demande : le sprite pixel reste pur.
     }
 
     /// Fallback shape si l'asset statue manque.

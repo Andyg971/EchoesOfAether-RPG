@@ -273,6 +273,25 @@ extension GameManager {
         }
     }
 
+    /// Quitte le sanctuaire pour retourner à la forêt (le joueur peut se
+    /// renforcer avant d'affronter le Gardien).
+    func exitShrine() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self else { return }
+            phase = .forest
+            hud.objectiveText = String(localized: "hud.objective.deepPath")
+            showForest(in: scene)
+        } completion: { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            addSideQuestMarkers(in: scene)
+            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            world.kael.position = CGPoint(x: scene.size.width * 0.55, y: wh * 0.86)
+            transition(to: .exploration)
+        }
+    }
+
     func startBossFight() {
         guard scene != nil else { return }
         guard !player.bossDefeated else {

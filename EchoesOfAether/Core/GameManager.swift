@@ -961,7 +961,13 @@ final class GameManager {
             tapAndMove(point, in: scene)
 
         case .shrine:
-            if wp.x > scene.size.width * 0.55 && !player.bossDefeated {
+            // Sortie ouest → retour forêt (le joueur n'est plus coincé).
+            if wp.distance(to: CGPoint(x: scene.size.width * 0.06,
+                                       y: scene.size.height * 0.46)) < 60 {
+                exitShrine()
+            } else if trySaveCrystalTap(wp, in: scene) {
+                return   // cristal de sauvegarde fonctionnel
+            } else if wp.x > scene.size.width * 0.55 && !player.bossDefeated {
                 startBossFight()
             } else {
                 tapAndMove(point, in: scene)

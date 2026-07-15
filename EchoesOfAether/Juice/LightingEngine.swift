@@ -96,8 +96,12 @@ enum LightingEngine {
     /// `.nearest`, le halo garde de gros pixels assumés.
     private static var haloCache: [String: SKTexture] = [:]
 
-    private static func haloTexture(color: SKColor) -> SKTexture {
-        let key = color.description
+    /// `intensity` multiplie les paliers d'alpha : 1 = halo de jour discret
+    /// (lampadaires, props), >1 = halo appuyé pour les zones noires (le
+    /// héros dans les mines). Découple la force du halo héros de celle des
+    /// props sans avoir à raviver ces derniers.
+    private static func haloTexture(color: SKColor, intensity: CGFloat = 1) -> SKTexture {
+        let key = "\(color.description)|\(intensity)"
         if let cached = haloCache[key] { return cached }
         let side = 24
         let format = UIGraphicsImageRendererFormat()
@@ -109,13 +113,15 @@ enum LightingEngine {
         ).image { ctx in
             let c = ctx.cgContext
             let center = CGFloat(side) / 2
-            // 4 paliers discrets : cœur brillant → bord éteint
+            // 4 paliers discrets : cœur brillant → bord éteint. Volontairement
+            // discrets — en plein jour les halos doivent rester subtils, jamais
+            // dominer l'écran (surtout les lampadaires de village).
             let steps: [(radius: CGFloat, alpha: CGFloat)] = [
-                (1.00, 0.10), (0.72, 0.22), (0.46, 0.40), (0.24, 0.62)
+                (1.00, 0.03), (0.72, 0.06), (0.46, 0.11), (0.24, 0.18)
             ]
             for step in steps {
                 c.setFillColor(SKColor(red: r, green: g, blue: b,
-                                       alpha: step.alpha).cgColor)
+                                       alpha: min(1, step.alpha * intensity)).cgColor)
                 let radius = center * step.radius
                 // Cercle « pixelisé » : on remplit cellule par cellule
                 for y in 0..<side {
@@ -150,23 +156,28 @@ enum LightingEngine {
     }
 
     /// Lumière additive pixel. `flicker` anime un vacillement de flamme.
+    /// `intensity` > 1 renforce le halo (zones noires — halo du héros).
     static func pointLight(radius: CGFloat,
                            color: SKColor,
-                           flicker: Bool = false) -> SKSpriteNode {
-        let light = SKSpriteNode(texture: haloTexture(color: color))
+                           flicker: Bool = false,
+                           intensity: CGFloat = 1) -> SKSpriteNode {
+        let light = SKSpriteNode(texture: haloTexture(color: color, intensity: intensity))
         light.size = CGSize(width: radius * 2, height: radius * 2)
         light.blendMode = .add
         light.zPosition = 45   // au-dessus des acteurs (20-40), sous le grade
         if flicker {
+            // Vacillement de flamme discret : alpha bas (0.30–0.42) pour que
+            // les lanternes/torches éclairent sans éblouir en plein jour.
             let wobble = SKAction.repeatForever(.sequence([
-                .group([.fadeAlpha(to: 0.82, duration: 0.09),
+                .group([.fadeAlpha(to: 0.32, duration: 0.09),
                         .scale(to: 0.96, duration: 0.09)]),
-                .group([.fadeAlpha(to: 1.00, duration: 0.14),
+                .group([.fadeAlpha(to: 0.42, duration: 0.14),
                         .scale(to: 1.03, duration: 0.14)]),
-                .group([.fadeAlpha(to: 0.90, duration: 0.11),
+                .group([.fadeAlpha(to: 0.36, duration: 0.11),
                         .scale(to: 1.00, duration: 0.11)])
             ]))
             wobble.timingMode = .easeInEaseOut
+            light.alpha = 0.36
             light.run(wobble, withKey: "flicker")
         }
         return light
@@ -176,10 +187,12 @@ enum LightingEngine {
 
     private static let heroLightName = "kaelLight"
 
-    /// Attache un halo chaud au héros (mines, zones noires).
-    static func attachHeroLight(to hero: SKNode, radius: CGFloat = 120) {
+    /// Attache un halo chaud au héros (mines, zones noires). Intensité
+    /// appuyée (×3) : la texture halo de base est faible pour le plein jour,
+    /// mais le héros doit vraiment éclairer les galeries noires.
+    static func attachHeroLight(to hero: SKNode, radius: CGFloat = 130) {
         removeHeroLight(from: hero)
-        let light = pointLight(radius: radius, color: LightColor.hero)
+        let light = pointLight(radius: radius, color: LightColor.hero, intensity: 3)
         light.name = heroLightName
         light.alpha = 0.85
         light.position = CGPoint(x: 0, y: 14)

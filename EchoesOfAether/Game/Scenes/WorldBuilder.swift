@@ -3311,17 +3311,17 @@ private func attachPropLight(for name: String, on node: SKNode, in scene: SKScen
     let light: SKSpriteNode
     if name.contains("lantern") || name.contains("torch") || name.contains("campfire")
         || name.contains("lamp") || (name.contains("candle") && !name.contains("_off")) {
-        light = LightingEngine.pointLight(radius: 78,
+        light = LightingEngine.pointLight(radius: 48,
                                           color: LightingEngine.LightColor.flame,
                                           flicker: true)
     } else if name.contains("shroom") || name.contains("mushroom") {
-        light = LightingEngine.pointLight(radius: 34,
+        light = LightingEngine.pointLight(radius: 28,
                                           color: LightingEngine.LightColor.fungal)
-        light.alpha = 0.6
+        light.alpha = 0.35
     } else if name.contains("crystal") {
-        light = LightingEngine.pointLight(radius: 46,
+        light = LightingEngine.pointLight(radius: 36,
                                           color: LightingEngine.LightColor.crystal)
-        light.alpha = 0.7
+        light.alpha = 0.42
     } else {
         return
     }

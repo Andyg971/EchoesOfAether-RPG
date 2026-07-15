@@ -98,16 +98,16 @@ final class WorldBuilder {
     /// horizontale à la base — on peut passer « derrière » (au nord),
     /// jamais au travers.
     private func registerFootprint(of node: SKNode,
-                                   widthRatio: CGFloat = 0.70,
-                                   depthRatio: CGFloat = 0.35,
-                                   maxDepth: CGFloat = 26) {
+                                   widthRatio: CGFloat = 0.78,
+                                   depthRatio: CGFloat = 0.45,
+                                   maxDepth: CGFloat = 34) {
         let f = node.calculateAccumulatedFrame()
         let w = f.width * widthRatio
         guard w > 4 else { return }
         let d = min(f.height * depthRatio, maxDepth)
         registerObstacle(CGRect(x: node.position.x - w / 2,
                                 y: node.position.y - 4,
-                                width: w, height: max(8, d)))
+                                width: w, height: max(10, d)))
     }
 
     func layout(in size: CGSize) {
@@ -1208,6 +1208,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         node.position = p
         node.zPosition = -8.8
         add(node, to: scene)
+        // Les buissons touffus bloquent le passage (on les contourne) ;
+        // les fleurs plates restent franchissables.
+        if name.contains("bush") {
+            registerFootprint(of: node, widthRatio: 0.7, depthRatio: 0.5, maxDepth: 22)
+        }
         placed += 1
     }
 }

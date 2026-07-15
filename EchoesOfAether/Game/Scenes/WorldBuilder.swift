@@ -15,10 +15,6 @@ final class WorldBuilder {
     let villager: SKNode
 
     let worldNode = SKNode()
-    /// Enveloppe de post-process du monde (bloom HD-2D). Désactivée par défaut
-    /// (rendu direct, coût nul) ; seule la scène du Seuil l'active pour le
-    /// moment — look-dev de direction artistique façon Octopath.
-    let worldFX = SKEffectNode()
     private(set) var worldHeight: CGFloat = 0
     /// Empreintes au sol infranchissables (maisons, arbres, props solides).
     /// En coordonnées monde ; vidées à chaque changement de zone.
@@ -49,14 +45,7 @@ final class WorldBuilder {
 
     func build(in scene: SKScene) {
         worldNode.name = "worldNode"
-        // Le monde est enveloppé dans un SKEffectNode passthrough : effets
-        // désactivés, le rendu est identique et sans coût. Seul le Seuil active
-        // le bloom (cf. HD2DPostFX). Les taps passent par worldNode.convert,
-        // hiérarchie-aware, donc l'enveloppe ne casse pas l'input.
-        worldFX.name = "worldFX"
-        worldFX.shouldEnableEffects = false
-        scene.addChild(worldFX)
-        worldFX.addChild(worldNode)
+        scene.addChild(worldNode)
         buildVillage(in: scene)
         for node in [kael, lyra, dorin, bram, mara, garen, sage, child, villager] {
             worldNode.addChild(node)
@@ -324,11 +313,6 @@ final class WorldBuilder {
                        spiritsCalmed: spiritsCalmed,
                        shadesDefeated: shadesDefeated)
         if echoJoined { showLyraEcho(in: scene) }
-        // Look-dev HD-2D : bloom + lueurs émissives, uniquement au Seuil.
-        // `--no-hd2d` coupe l'effet pour comparer A/B en jeu (rendu pixel strict).
-        if !CommandLine.arguments.contains("--no-hd2d") {
-            HD2DPostFX.applyThreshold(on: worldFX, worldNode: worldNode, size: scene.size)
-        }
     }
 
     /// Acte IV — Le Cœur du Vide. Au-delà du Seuil : la source des échos.
@@ -3556,7 +3540,6 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     private func clearBackdrop() {
         obstacles.removeAll()
         snapCameraNextFrame = true   // nouvelle zone : recadrage instantané
-        HD2DPostFX.disable(on: worldFX)   // le bloom HD-2D ne survit pas au changement de zone
         backdropNodes.forEach { $0.removeFromParent() }
         backdropNodes.removeAll()
         atmosphereNode?.removeFromParent()

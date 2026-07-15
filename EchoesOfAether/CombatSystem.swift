@@ -351,9 +351,20 @@ private var goldReward = 0
         self.isEnraged = false
         self.enemyTurnCount = 0
 
+        // New Game+ : les ennemis encaissent et frappent plus fort à chaque
+        // relance (+45 % PV, +30 % dégâts par palier). La progression conservée
+        // du joueur compense ; la difficulté reste devant lui.
+        let ngp = max(0, player.newGamePlus)
+        let hpMult = 1.0 + 0.45 * Double(ngp)
+        let dmgMult = 1.0 + 0.30 * Double(ngp)
         self.enemies = enemySpecs.prefix(3).map { spec in
-            let tactics = Self.tactics(for: spec.kind, isBoss: boss != nil)
-            return EnemyState(spec: spec, weaknesses: tactics.weaknesses,
+            let scaled = ngp == 0 ? spec : EnemySpec(
+                name: spec.name,
+                hp: Int((Double(spec.hp) * hpMult).rounded()),
+                kind: spec.kind,
+                baseDamage: Int((Double(spec.baseDamage) * dmgMult).rounded()))
+            let tactics = Self.tactics(for: scaled.kind, isBoss: boss != nil)
+            return EnemyState(spec: scaled, weaknesses: tactics.weaknesses,
                               shieldMax: tactics.shieldMax)
         }
         self.targetIndex = 0

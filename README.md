@@ -37,6 +37,7 @@ Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho 
 | **Boutique / Inventaire** | 3 paliers d'armes/armures (jusqu'à l'**Aetherite**), vitrine progressive (seul le palier suivant est affiché), potions, éclats. |
 | **Bestiaire** | Journal de l'Éther à onglets : Chroniques + Bestiaire (7 espèces, faiblesses/boucliers/lore, silhouettes tant que non croisées). |
 | **Sauvegarde** | 3 slots, auto-save, cristaux d'Aether, **sync iCloud** (Key-Value Store, la save la plus récente gagne). |
+| **New Game+** | Après une fin, relancer conserve niveau/or/équipement et durcit les combats (+45 % PV, +30 % dégâts par palier). Le slot terminé affiche « Nouvelle Partie + » ; les deux fins donnent une vraie raison de recommencer. |
 | **Audio** | 9 musiques CC0 (village, forêt, mines, auberge, combat, boss, Seuil, titre, finale) avec cross-fade par zone + 11 SFX 8-bit CC0 (Juhani Junkala) + 5 ambiances foley CC0 (couche sous la musique). Synthèse procédurale en repli. |
 
 ---

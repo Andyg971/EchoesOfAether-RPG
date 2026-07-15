@@ -33,6 +33,8 @@ final class GameManager {
 
     /// Slot de sauvegarde actif (injecté au démarrage par la scène).
     private(set) var activeSlot: Int = 1
+    /// Graine New Game+ en attente (fournie par le menu à `setup`).
+    private var pendingNewGamePlusSeed: NewGamePlusSeed?
 
     private weak var scene: SKScene?
     private var resonanceTotal = 0
@@ -79,9 +81,10 @@ final class GameManager {
 
     // MARK: - Setup
 
-    func setup(scene: SKScene, slot: Int = 1) {
+    func setup(scene: SKScene, slot: Int = 1, newGamePlusSeed: NewGamePlusSeed? = nil) {
         self.scene = scene
         self.activeSlot = slot
+        self.pendingNewGamePlusSeed = newGamePlusSeed
         world.build(in: scene)
         hud.attach(to: scene)
         dialogue.attach(to: scene)
@@ -324,6 +327,27 @@ final class GameManager {
                                       y: self.world.lyra.position.y - 50)
                 self.world.kael.position = target
             }
+            return
+        }
+
+        // New Game+ : graine du menu (partie terminée) ou --ngplus N (test).
+        // Elle prime sur toute sauvegarde : on repart de l'intro, acquis
+        // conservés, difficulté relevée.
+        var ngSeed = pendingNewGamePlusSeed
+        if ngSeed == nil,
+           let idx = CommandLine.arguments.firstIndex(of: "--ngplus"),
+           CommandLine.arguments.indices.contains(idx + 1),
+           let tier = Int(CommandLine.arguments[idx + 1]) {
+            ngSeed = NewGamePlusSeed(testTier: tier)
+        }
+        if let seed = ngSeed {
+            pendingNewGamePlusSeed = nil
+            SaveManager.delete(slot: activeSlot)
+            player.applyNewGamePlusSeed(seed)
+            hud.goldValue = player.gold
+            syncLevelHUD()
+            startWakeSequence()
+            saveGame()
             return
         }
 

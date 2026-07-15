@@ -57,6 +57,38 @@ extension CGPoint {
 // MARK: - PlayerState
 
 @MainActor
+/// Acquis conservés d'une partie à l'autre en New Game+ : niveau, or et
+/// équipement traversent, la progression narrative repart de zéro.
+struct NewGamePlusSeed {
+    let level: Int
+    let xp: Int
+    let gold: Int
+    let weaponLevel: Int
+    let armorLevel: Int
+    let potions: Int
+    let aetherShards: Int
+    let newGamePlus: Int   // déjà incrémenté (palier de la nouvelle run)
+
+    /// Depuis une sauvegarde terminée → graine de la relance (palier +1).
+    init(from data: SaveData) {
+        level = data.level ?? 1
+        xp = data.xp ?? 0
+        gold = data.gold
+        weaponLevel = data.weaponLevel
+        armorLevel = data.armorLevel
+        potions = data.potions
+        aetherShards = data.aetherShards
+        newGamePlus = (data.newGamePlus ?? 0) + 1
+    }
+
+    /// Graine synthétique pour tests (`--ngplus N`) : Kael équipé, palier N.
+    init(testTier tier: Int) {
+        level = 15; xp = 0; gold = 500
+        weaponLevel = 2; armorLevel = 2; potions = 3; aetherShards = 5
+        newGamePlus = max(1, tier)
+    }
+}
+
 final class PlayerState {
 
     // Niveau max ; après L30, plus de XP gagné. Choix narratif : Kael
@@ -122,6 +154,12 @@ final class PlayerState {
     // Choix final devant le Cœur : nil = non choisi,
     // 0 = détruire le Cœur (libérer les échos), 1 = fusionner avec le Cœur.
     var act4EndingChoice: Int? = nil
+
+    // New Game+ : 0 = première partie. Chaque relance après une fin
+    // incrémente le compteur ; il durcit les combats et conserve la
+    // progression (niveau, or, équipement). Les deux fins donnent une
+    // vraie raison de recommencer.
+    var newGamePlus: Int = 0
 
     // MARK: - Stats dérivées (incluent le bonus de niveau)
     //
@@ -217,6 +255,7 @@ final class PlayerState {
             act4VoiceConfronted: act4VoiceConfronted,
             act4BossDefeated: act4BossDefeated,
             act4EndingChoice: act4EndingChoice,
+            newGamePlus: newGamePlus,
             savedAt: Date(),
             phase: phase, resonanceTotal: resonance
         )
@@ -276,7 +315,23 @@ final class PlayerState {
         act4VoiceConfronted = data.act4VoiceConfronted ?? false
         act4BossDefeated = data.act4BossDefeated ?? false
         act4EndingChoice = data.act4EndingChoice
+        newGamePlus = data.newGamePlus ?? 0
         currentHP = currentMaxHP   // toujours plein au chargement
+    }
+
+    /// Applique une graine New Game+ à un état FRAÎCHEMENT initialisé :
+    /// on garde les acquis (niveau, or, équipement), tout le reste (quêtes,
+    /// actes, progression) reste à sa valeur de départ.
+    func applyNewGamePlusSeed(_ seed: NewGamePlusSeed) {
+        level = max(1, min(Self.maxLevel, seed.level))
+        xp = max(0, seed.xp)
+        gold = seed.gold
+        weaponLevel = seed.weaponLevel
+        armorLevel = seed.armorLevel
+        potions = seed.potions
+        aetherShards = seed.aetherShards
+        newGamePlus = seed.newGamePlus
+        currentHP = currentMaxHP
     }
 }
 
@@ -342,6 +397,8 @@ struct SaveData: Codable {
     let act4VoiceConfronted: Bool?
     let act4BossDefeated: Bool?
     let act4EndingChoice: Int?
+    // New Game+ (optionnel — saves antérieures repartent à 0)
+    let newGamePlus: Int?
     // Horodatage pour la résolution de conflit iCloud (nil = save ancienne)
     let savedAt: Date?
     let phase: GamePhase

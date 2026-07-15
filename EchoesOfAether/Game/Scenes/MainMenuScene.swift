@@ -45,6 +45,15 @@ final class MainMenuScene: SKScene {
                 self?.transitionToGame(slot: 2, newGame: true)
             }
         }
+
+        // Test New Game+ : --ngplus N démarre une partie NG+ palier N sur le
+        // slot 2 (le seed synthétique est construit dans GameManager.setup).
+        if CommandLine.arguments.contains("--ngplus") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                SaveManager.delete(slot: 2)
+                self?.transitionToGame(slot: 2, newGame: true)
+            }
+        }
     }
 
     override func didChangeSize(_ oldSize: CGSize) {
@@ -215,7 +224,13 @@ final class MainMenuScene: SKScene {
         }
         resetDeleteConfirmIfNeeded()
         HapticsEngine.light()
-        if SaveManager.hasSave(slot: slot) {
+        // Partie terminée (une fin choisie) → relance en New Game+ : acquis
+        // conservés, histoire rejouée, difficulté relevée.
+        if let meta = SaveManager.metadata(slot: slot), meta.completed,
+           let data = SaveManager.load(slot: slot) {
+            transitionToGame(slot: slot, newGame: true,
+                             seed: NewGamePlusSeed(from: data))
+        } else if SaveManager.hasSave(slot: slot) {
             transitionToGame(slot: slot, newGame: false)
         } else {
             transitionToGame(slot: slot, newGame: true)
@@ -253,10 +268,12 @@ final class MainMenuScene: SKScene {
 
     // MARK: - Transition
 
-    private func transitionToGame(slot: Int, newGame: Bool) {
+    private func transitionToGame(slot: Int, newGame: Bool,
+                                  seed: NewGamePlusSeed? = nil) {
         guard let view = self.view else { return }
         if newGame {
             // Nouvelle partie dans ce slot : on efface toute sauvegarde résiduelle.
+            // (Le seed NG+ a déjà été lu depuis cette save avant l'effacement.)
             SaveManager.delete(slot: slot)
         }
 
@@ -267,6 +284,7 @@ final class MainMenuScene: SKScene {
         gameScene.safeAreaLeft = safeAreaLeft
         gameScene.safeAreaRight = safeAreaRight
         gameScene.activeSlot = slot
+        gameScene.newGamePlusSeed = seed
         view.presentScene(gameScene, transition: .fade(with: .black, duration: 0.5))
     }
 
@@ -301,8 +319,14 @@ final class MainMenuScene: SKScene {
 
         let subL = SKLabelNode(fontNamed: PixelUI.uiFont)
         if hasSave, let meta = SaveManager.metadata(slot: slot) {
-            subL.text = String(localized: "menu.slot.meta \(phaseDisplayName(meta.phase)) \(meta.level) \(meta.gold)")
-            subL.fontColor = SKColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 0.95)
+            if meta.completed {
+                // Partie terminée : le tap relance en New Game+ (palier suivant).
+                subL.text = String(localized: "menu.slot.newGamePlus \(meta.newGamePlus + 1)")
+                subL.fontColor = SKColor(red: 1.0, green: 0.82, blue: 0.32, alpha: 1)
+            } else {
+                subL.text = String(localized: "menu.slot.meta \(phaseDisplayName(meta.phase)) \(meta.level) \(meta.gold)")
+                subL.fontColor = SKColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 0.95)
+            }
         } else {
             subL.text = String(localized: "menu.newGame")
             subL.fontColor = SKColor(red: 0.80, green: 0.72, blue: 0.95, alpha: 0.9)

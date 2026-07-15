@@ -96,6 +96,46 @@ final class SaveDataTests: XCTestCase {
         XCTAssertEqual(restored.act4EndingChoice, 1)
     }
 
+    /// Round-trip du palier New Game+.
+    func testNewGamePlusRoundTrip() throws {
+        let player = PlayerState()
+        player.newGamePlus = 2
+        let data = player.toSaveData(phase: .village, resonance: 0)
+        let decoded = try JSONDecoder().decode(
+            SaveData.self, from: try JSONEncoder().encode(data))
+        XCTAssertEqual(decoded.newGamePlus, 2)
+
+        let restored = PlayerState()
+        restored.load(from: decoded)
+        XCTAssertEqual(restored.newGamePlus, 2)
+    }
+
+    /// La graine New Game+ conserve les acquis et incrémente le palier ;
+    /// la progression narrative repart de zéro sur un état frais.
+    func testNewGamePlusSeedKeepsProgressResetsStory() throws {
+        let finished = PlayerState()
+        finished.gold = 900
+        finished.weaponLevel = 2
+        finished.armorLevel = 2
+        _ = finished.gainXP(PlayerState.xpForLevel(1) * 20)
+        finished.questBramOre = .complete
+        finished.act4EndingChoice = 0
+        finished.newGamePlus = 1
+
+        let data = finished.toSaveData(phase: .act4, resonance: 0)
+        let seed = NewGamePlusSeed(from: data)
+        XCTAssertEqual(seed.newGamePlus, 2)          // palier +1
+        XCTAssertEqual(seed.gold, 900)               // acquis conservé
+
+        let fresh = PlayerState()
+        fresh.applyNewGamePlusSeed(seed)
+        XCTAssertEqual(fresh.gold, 900)              // acquis appliqués
+        XCTAssertEqual(fresh.weaponLevel, 2)
+        XCTAssertEqual(fresh.newGamePlus, 2)
+        XCTAssertEqual(fresh.questBramOre, .inactive) // histoire remise à zéro
+        XCTAssertNil(fresh.act4EndingChoice)
+    }
+
     /// Une sauvegarde « legacy » sans les clés optionnelles (level, xp, act3*)
     /// doit se décoder et fournir des valeurs par défaut sûres.
     func testBackwardCompatibilityWithMissingOptionalFields() throws {

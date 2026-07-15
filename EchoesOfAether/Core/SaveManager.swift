@@ -6,6 +6,10 @@ struct SaveSlotInfo {
     let phase: GamePhase
     let level: Int
     let gold: Int
+    /// Une fin a été choisie (Acte III ou IV) → propose New Game+.
+    let completed: Bool
+    /// Palier New Game+ atteint (0 = première partie).
+    let newGamePlus: Int
 }
 
 enum SaveManager {
@@ -128,8 +132,11 @@ enum SaveManager {
     /// Métadonnées légères pour l'affichage du slot (nil si vide ou illisible).
     static func metadata(slot: Int) -> SaveSlotInfo? {
         guard let data = load(slot: slot) else { return nil }
+        let completed = data.act3EndingChoice != nil || data.act4EndingChoice != nil
         return SaveSlotInfo(phase: data.phase,
                             level: data.level ?? 1,
-                            gold: data.gold)
+                            gold: data.gold,
+                            completed: completed,
+                            newGamePlus: data.newGamePlus ?? 0)
     }
 }

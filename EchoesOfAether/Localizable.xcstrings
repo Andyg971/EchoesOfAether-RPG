@@ -14451,6 +14451,22 @@
           }
         }
       }
+    },
+    "menu.slot.newGamePlus %lld": {
+      "localizations": {
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✦ Nouvelle Partie + (Palier %lld)"
+          }
+        },
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✦ New Game+ (Tier %lld)"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

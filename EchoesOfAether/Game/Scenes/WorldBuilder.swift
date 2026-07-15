@@ -633,20 +633,9 @@ final class WorldBuilder {
             registerFootprint(of: tree, widthRatio: 0.45, maxDepth: 22)
         }
 
-        // ── POI : zones de danger, campement, seuil, statues ──
-        add(makeDangerZone(at: CGPoint(x: w * 0.30, y: h * 0.31), radius: 35,
-                           color: SKColor(red: 0.50, green: 0.10, blue: 0.10, alpha: 1)),
-            to: scene)
-        add(makeDangerZone(at: CGPoint(x: w * 0.70, y: h * 0.66), radius: 40,
-                           color: SKColor(red: 0.40, green: 0.08, blue: 0.45, alpha: 1)),
-            to: scene)
-        // Chasses optionnelles répétables (goules à l'ouest, ossements à l'est)
-        add(makeDangerZone(at: CGPoint(x: w * 0.20, y: h * 0.585), radius: 32,
-                           color: SKColor(red: 0.25, green: 0.42, blue: 0.12, alpha: 1)),
-            to: scene)
-        add(makeDangerZone(at: CGPoint(x: w * 0.82, y: h * 0.74), radius: 32,
-                           color: SKColor(red: 0.55, green: 0.52, blue: 0.42, alpha: 1)),
-            to: scene)
+        // Les combats de la forêt sont désormais portés par des monstres
+        // baladeurs (GameManager.spawnForestRoamers) : plus de halos de danger
+        // ni de crânes statiques marquant les zones de combat.
 
         // Campement : feu, bois, banc — havre au milieu du trek
         addPixelProp("me_campfire", in: scene, at: CGPoint(x: w * 0.52, y: h * 0.515), scale: 0.50)

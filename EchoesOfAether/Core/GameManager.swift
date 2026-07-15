@@ -173,7 +173,7 @@ final class GameManager {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self else { return }
                 self.phase = .forest
-                self.world.switchToForest(in: scene)
+                self.showForest(in: scene)
                 self.startGroveCombat()
             }
             return
@@ -183,7 +183,7 @@ final class GameManager {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self else { return }
                 self.phase = .forest
-                self.world.switchToForest(in: scene)
+                self.showForest(in: scene)
                 self.startClearingCombat()
             }
             return
@@ -202,7 +202,7 @@ final class GameManager {
         if CommandLine.arguments.contains("--zone-forest") {
             hud.goldValue = player.gold
             phase = .forest
-            world.switchToForest(in: scene)
+            showForest(in: scene)
             addSideQuestMarkers(in: scene)
             transition(to: .exploration)
             let frac: Double
@@ -1146,7 +1146,7 @@ final class GameManager {
                 phase = .forest
                 hud.objectiveText = String(localized: "hud.objective.forest")
                 world.endLyraVigil()
-                world.switchToForest(in: scene)
+                showForest(in: scene)
             } completion: { [weak self] in
                 guard let self else { return }
                 if player.questChildToy == .active {
@@ -1487,23 +1487,9 @@ final class GameManager {
         let w = scene.size.width
         let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
 
-        // Zone 1 : Bosquet corrompu (ouest) — combat bête
-        if player.forestProgress < 1 {
-            let groveCenter = CGPoint(x: w * 0.30, y: h * 0.31)
-            if point.distance(to: groveCenter) < 80 {
-                startGroveCombat()
-                return true
-            }
-        }
-
-        // Zone 2 : Clairière sombre (est) — combat loups
-        if player.forestProgress >= 1 && player.forestProgress < 2 {
-            let clearingCenter = CGPoint(x: w * 0.70, y: h * 0.66)
-            if point.distance(to: clearingCenter) < 80 {
-                startClearingCombat()
-                return true
-            }
-        }
+        // Les combats de la forêt (bosquet, clairière, chasses) ne se
+        // déclenchent plus au tap : des monstres baladeurs chargent Kael
+        // (cf. spawnForestRoamers).
 
         // Zone 3 : Seuil du sanctuaire (nord)
         if player.forestProgress >= 2 {
@@ -1573,18 +1559,6 @@ final class GameManager {
             return true
         }
 
-        // Chasses optionnelles (répétables — XP/or, ennemis coriaces)
-        let ghoulDen = CGPoint(x: w * 0.20, y: h * 0.585)
-        if point.distance(to: ghoulDen) < 75 {
-            startGhoulCombat()
-            return true
-        }
-        let boneTrail = CGPoint(x: w * 0.82, y: h * 0.74)
-        if point.distance(to: boneTrail) < 75 {
-            startBoneCombat()
-            return true
-        }
-
         return false
     }
 
@@ -1616,6 +1590,9 @@ final class GameManager {
             syncGold()
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
+            // Chasse vaincue : ne recharge plus Kael avant la prochaine visite.
+            forestHuntsCleared.insert("ghoul")
+            spawnForestRoamers()
             transition(to: .exploration)
         }
     }
@@ -1647,6 +1624,8 @@ final class GameManager {
             syncGold()
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
+            forestHuntsCleared.insert("bone")
+            spawnForestRoamers()
             transition(to: .exploration)
         }
     }
@@ -1703,6 +1682,7 @@ final class GameManager {
             hud.resonanceValue = resonanceTotal
             hud.objectiveText = String(localized: "hud.objective.clearing")
             GameCenterManager.shared.report(.firstBlood)
+            spawnForestRoamers()   // fait apparaître les loups de la clairière
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.forestGroveDialogue) { [weak self] in
                 self?.transition(to: .exploration)
@@ -1741,6 +1721,7 @@ final class GameManager {
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
             hud.objectiveText = String(localized: "hud.objective.deepPath")
+            spawnForestRoamers()   // plus de combat de progression, chasses restent
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.blackAetherDialogue) { [weak self] in
                 self?.transition(to: .exploration)
@@ -3549,7 +3530,7 @@ final class GameManager {
             inMines = false
             hud.objectiveText = String(localized: "hud.objective.forest")
             AudioEngine.shared.setMood(.forPhase(phase))
-            world.switchToForest(in: scene)
+            showForest(in: scene)
         } completion: { [weak self] in
             guard let self, let scene = self.scene else { return }
             if player.questChildToy == .active { world.addToyMarker(in: scene) }
@@ -3721,6 +3702,45 @@ final class GameManager {
         }
     }
 
+    /// Chasses optionnelles (ghoul/bone) vaincues durant la visite courante
+    /// de la forêt : évite qu'elles rechargent Kael en boucle. Remis à zéro
+    /// à chaque nouvelle entrée en forêt (`showForest`).
+    private var forestHuntsCleared: Set<String> = []
+
+    /// Affiche la forêt ET (re)peuple ses monstres baladeurs. Remplace les
+    /// appels directs à `world.switchToForest` pour garantir le spawn.
+    private func showForest(in scene: SKScene) {
+        world.switchToForest(in: scene)
+        forestHuntsCleared.removeAll()
+        spawnForestRoamers()
+    }
+
+    /// Peuple la forêt : combat de progression courant + chasses optionnelles
+    /// non encore vaincues cette visite. Coords MONDE (trek scrollable).
+    private func spawnForestRoamers() {
+        guard let scene, !inMines, !inCave, phase == .forest else { clearRoamers(); return }
+        clearRoamers()
+        let w = scene.size.width
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        // Combat de progression : bête (bosquet) puis loups (clairière).
+        if player.forestProgress < 1 {
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.30, y: wh * 0.31),
+                      wh: wh) { [weak self] in self?.startGroveCombat() }
+        } else if player.forestProgress < 2 {
+            addRoamer("enemy_shadewolf", at: CGPoint(x: w * 0.70, y: wh * 0.66),
+                      wh: wh) { [weak self] in self?.startClearingCombat() }
+        }
+        // Chasses optionnelles répétables (tant que non vaincues cette visite).
+        if !forestHuntsCleared.contains("ghoul") {
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.20, y: wh * 0.585),
+                      wh: wh) { [weak self] in self?.startGhoulCombat() }
+        }
+        if !forestHuntsCleared.contains("bone") {
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.82, y: wh * 0.74),
+                      wh: wh) { [weak self] in self?.startBoneCombat() }
+        }
+    }
+
     /// Peuple la caverne du gardien baladeur (si pas encore vaincu).
     private func spawnCaveRoamer() {
         guard let scene, !player.caveCleared else { clearRoamers(); return }
@@ -3782,7 +3802,7 @@ final class GameManager {
             inCave = false
             hud.objectiveText = String(localized: "hud.objective.forest")
             AudioEngine.shared.setMood(.forPhase(phase))
-            world.switchToForest(in: scene)
+            showForest(in: scene)
         } completion: { [weak self] in
             guard let self, let scene = self.scene else { return }
             if player.questChildToy == .active { world.addToyMarker(in: scene) }
@@ -4114,7 +4134,7 @@ final class GameManager {
             switch phase {
             case .forest:
                 hud.objectiveText = String(localized: "hud.objective.forest")
-                world.switchToForest(in: scene)
+                showForest(in: scene)
             case .act2:
                 hud.objectiveText = String(localized: "hud.objective.act2")
                 world.switchToVillage(in: scene)
@@ -4409,7 +4429,7 @@ final class GameManager {
             transition(to: .exploration)
         case .forest:
             hud.objectiveText = String(localized: "hud.objective.forest")
-            world.switchToForest(in: scene)
+            showForest(in: scene)
             if player.questChildToy == .active {
                 world.addToyMarker(in: scene)
             }

@@ -33,6 +33,7 @@
 		6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2015B8A741B0A0000001 /* MovementController.swift */; };
 		6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2017B8A741B0A0000001 /* TransitionManager.swift */; };
 		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
+		6DAAFB02B8A741B0A0000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */; };
 		6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */; };
 		6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E4002B8A741B0A0000001 /* SaveManager.swift */; };
 		6D7E5001B8A741B0A0000001 /* AudioEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E5002B8A741B0A0000001 /* AudioEngine.swift */; };
@@ -129,6 +130,7 @@
 		6D7E2015B8A741B0A0000001 /* MovementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementController.swift; sourceTree = "<group>"; };
 		6D7E2017B8A741B0A0000001 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopOverlay.swift; sourceTree = "<group>"; };
 		6D7E4002B8A741B0A0000001 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
 		6D7E5002B8A741B0A0000001 /* AudioEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioEngine.swift; sourceTree = "<group>"; };
@@ -235,6 +237,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E1008B8A741B0A0000001 /* CombatSystem.swift */,
 				6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */,
 				6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */,
+				6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */,
 				6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */,
 				6D7EDD01B8A741B0A0000001 /* Assets.xcassets */,
 				6DAAFF00B8A741B0A0000001 /* Music */,
@@ -505,6 +508,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			buildActionMask = 2147483647;
 			files = (
 				6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */,
+				6DAAFB02B8A741B0A0000001 /* PrivacyInfo.xcprivacy in Resources */,
 				6D7EDD02B8A741B0A0000001 /* Assets.xcassets in Resources */,
 				6DCC0002B8A741B0A0000001 /* music_threshold.m4a in Resources */,
 				6DCC0102B8A741B0A0000001 /* music_finale.m4a in Resources */,
@@ -796,7 +800,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -828,7 +832,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 0.1;
+				MARKETING_VERSION = 1.0;
 				CODE_SIGN_ENTITLEMENTS = EchoesOfAether/EchoesOfAether.entitlements;
 				PRODUCT_BUNDLE_IDENTIFIER = com.appmakerstudio.echoesofaether;
 				PRODUCT_NAME = "$(TARGET_NAME)";

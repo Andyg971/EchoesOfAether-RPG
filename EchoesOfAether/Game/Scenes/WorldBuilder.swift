@@ -1456,38 +1456,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             JuiceEngine.pulse(shroom, scale: 1.05)
         }
 
-        // ── Monstres visibles aux zones de combat restantes ──
-        if progress < 1 {
-            let zone1 = makeDangerZone(
-                at: CGPoint(x: w * 0.30, y: h * 0.48),
-                radius: 38,
-                color: SKColor(red: 0.55, green: 0.50, blue: 0.40, alpha: 1))
-            zone1.name = "minesZone1"
-            add(zone1, to: scene)
-            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.27, y: h * 0.50))
-            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.34, y: h * 0.45), flipped: true)
-        }
-        if progress == 1 {
-            let zone2 = makeDangerZone(
-                at: CGPoint(x: w * 0.46, y: h * 0.64),
-                radius: 38,
-                color: SKColor(red: 0.45, green: 0.55, blue: 0.65, alpha: 1))
-            zone2.name = "minesZone2"
-            add(zone2, to: scene)
-            addMineMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.66))
-            addMineMonster("enemy_bone", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.61), flipped: true)
-            addMineMonster("enemy_ghoul", in: scene, at: CGPoint(x: w * 0.46, y: h * 0.70))
-        }
-        if progress == 2 {
-            let bossZone = makeDangerZone(
-                at: CGPoint(x: w * 0.62, y: h * 0.68),
-                radius: 40,
-                color: SKColor(red: 0.75, green: 0.35, blue: 0.15, alpha: 1))
-            bossZone.name = "minesZone3"
-            add(bossZone, to: scene)
-            // Silhouette du golem : masse sombre aux yeux de braise
-            addMineGolemSilhouette(in: scene, at: CGPoint(x: w * 0.62, y: h * 0.70))
-        }
+        // Les monstres ne sont plus des props statiques : le GameManager
+        // fait patrouiller des RoamingMonster (spawnMineRoamers) qui chargent
+        // Kael. Fini les halos de danger + crânes + bouton « A · Combattre ».
 
         // Plaque des mineurs (bas-gauche) : le lore de Cendreval
         let plaque = makeMinersPlaque(at: CGPoint(x: w * 0.18, y: h * 0.68))
@@ -1596,47 +1567,22 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addPixelProp("village_lantern_1", in: scene, at: pos, scale: 0.5)
     }
 
-    /// Monstre visible dans la galerie : sprite ennemi idle, teinté cendre.
-    private func addMineMonster(_ asset: String, in scene: SKScene,
-                                at pos: CGPoint, flipped: Bool = false) {
+    /// Crée un sprite de monstre baladeur (ennemi idle animé, teinté cendre,
+    /// ancré aux pieds + ombre) SANS le placer — le GameManager le pilote via
+    /// `RoamingMonster`. Renvoie nil si l'asset manque.
+    func makeRoamingMonster(asset: String) -> SKNode? {
         guard let monster = PixelArtSprites.animated(
             name: asset, frames: 6, scale: 0.55,
-            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
-        monster.position = pos
-        monster.zPosition = actorLayer(for: pos.y)
-        if flipped { monster.xScale = -abs(monster.xScale) }
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         monster.forEachDescendantSprite { s in
-            s.color = SKColor(red: 0.45, green: 0.42, blue: 0.40, alpha: 1)
-            s.colorBlendFactor = 0.25
+            s.color = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1)
+            s.colorBlendFactor = 0.22
         }
         addGroundShadow(under: monster, width: 26, height: 7)
-        add(monster, to: scene)
+        return monster
     }
 
-    /// Silhouette du golem de cendre endormi : masse de pierre sombre,
-    /// deux braises pour les yeux.
-    private func addMineGolemSilhouette(in scene: SKScene, at pos: CGPoint) {
-        let golem = SKNode()
-        golem.zPosition = actorLayer(for: pos.y)
-        let body = SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1)
-        for (dx, dy, sw, sh) in [(0.0, 18.0, 46.0, 38.0), (-20.0, 4.0, 22.0, 22.0),
-                                 (20.0, 4.0, 22.0, 22.0), (0.0, 44.0, 30.0, 22.0)] {
-            let block = SKSpriteNode(color: body, size: CGSize(width: sw, height: sh))
-            block.position = CGPoint(x: dx, y: dy)
-            golem.addChild(block)
-        }
-        for dx: CGFloat in [-7, 7] {
-            let eye = SKSpriteNode(color: SKColor(red: 1.0, green: 0.45, blue: 0.15, alpha: 1),
-                                   size: CGSize(width: 5, height: 5))
-            eye.position = CGPoint(x: dx, y: 46)
-            golem.addChild(eye)
-            JuiceEngine.pulse(eye, scale: 1.3)
-        }
-        golem.position = pos
-        addGroundShadow(under: golem, width: 52, height: 12)
-        add(golem, to: scene)
-    }
-
+    /// Monstre visible dans la galerie : sprite ennemi idle, teinté cendre.
     /// Plaque de bois gravée par les équipes de mineurs.
     private func makeMinersPlaque(at pos: CGPoint) -> SKNode {
         let node = SKNode()
@@ -1796,11 +1742,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                          scale: 0.8)
         }
 
-        // Gardien d'ossements (si pas encore vaincu) — barre l'accès au coffre
-        if !cleared {
-            addMineMonster("enemy_bone_idle", in: scene,
-                           at: CGPoint(x: w * 0.50, y: h * 0.55))
-        }
+        // Le gardien d'ossements est un RoamingMonster piloté par le
+        // GameManager (spawnCaveRoamer) : il patrouille et charge Kael.
 
         // Coffre au trésor (visible une fois le gardien vaincu, si non pris)
         if cleared && !chestTaken {

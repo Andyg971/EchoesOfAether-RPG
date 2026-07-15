@@ -65,6 +65,9 @@ final class GameManager {
     private let bButton = SKShapeNode()
     private let bButtonLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var nearbyActionPoint: CGPoint?   // POI courant (coords monde)
+    /// Monstres baladeurs de la zone courante (mines, caverne) : patrouillent
+    /// et chargent Kael au contact pour déclencher le combat.
+    private var roamers: [RoamingMonster] = []
     private var padActive = false
     private var padOrigin = CGPoint.zero
     private var padVector = CGVector.zero
@@ -224,6 +227,7 @@ final class GameManager {
                                 goldTaken: player.minesGoldTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
+            spawnMineRoamers()
             transition(to: .exploration)
             return
         }
@@ -240,6 +244,7 @@ final class GameManager {
                                chestTaken: player.caveChestTaken)
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
                                           y: scene.size.height * 0.14)
+            spawnCaveRoamer()
             transition(to: .exploration)
             return
         }
@@ -463,6 +468,7 @@ final class GameManager {
         // Déplacement continu au joystick virtuel (exploration)
         if state == .exploration {
             updatePadMovement(deltaTime: deltaTime)
+            updateRoamers(deltaTime: deltaTime)
         } else {
             updateMenuNavigation()
         }
@@ -3519,6 +3525,7 @@ final class GameManager {
                                           y: scene.size.height * 0.14)
         } completion: { [weak self] in
             guard let self else { return }
+            spawnMineRoamers()
             if player.questMines == .inactive {
                 player.questMines = .active
                 hud.questText = String(localized: "quest.mines.hud")
@@ -3535,6 +3542,7 @@ final class GameManager {
     /// Remonte à la forêt, respawn devant la galerie.
     private func exitMines() {
         guard let scene else { return }
+        clearRoamers()
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -3563,28 +3571,9 @@ final class GameManager {
             return true
         }
 
-        // Zone 1 : mineurs cendreux
-        if player.minesProgress < 1,
-           point.distance(to: CGPoint(x: w * 0.30, y: h * 0.48)) < 75 {
-            startMinesCombat1()
-            return true
-        }
-
-        // Zone 2 : spectres des galeries (après les mineurs)
-        if player.minesProgress == 1,
-           point.distance(to: CGPoint(x: w * 0.46, y: h * 0.64)) < 75 {
-            startMinesCombat2()
-            return true
-        }
-
-        // Zone 3 : golem de cendre (fond de galerie).
-        // Garde questMines : les anciennes sauvegardes avaient progress==2
-        // pour « golem vaincu » — pas de re-fight.
-        if player.minesProgress == 2, player.questMines != .complete,
-           point.distance(to: CGPoint(x: w * 0.62, y: h * 0.68)) < 75 {
-            startMinesBossSequence()
-            return true
-        }
+        // Les combats ne se déclenchent plus au tap : les monstres
+        // baladeurs chargent Kael et le contact ouvre le combat
+        // (cf. spawnMineRoamers / RoamingMonster).
 
         // Plaque des mineurs : lore de Cendreval
         if point.distance(to: CGPoint(x: w * 0.18, y: h * 0.68)) < 60 {
@@ -3685,6 +3674,72 @@ final class GameManager {
         world.switchToMines(in: scene, progress: player.minesProgress,
                             goldTaken: player.minesGoldTaken)
         world.kael.position = kaelPos
+        spawnMineRoamers()
+    }
+
+    // MARK: - Monstres baladeurs (aggro au contact)
+
+    /// Retire tous les monstres baladeurs (changement de zone, contact).
+    private func clearRoamers() {
+        roamers.forEach { $0.node.removeFromParent() }
+        roamers.removeAll()
+    }
+
+    /// Fait patrouiller/charger les monstres ; au contact, lance le combat.
+    private func updateRoamers(deltaTime: TimeInterval) {
+        guard state == .exploration, !roamers.isEmpty else { return }
+        let heroPos = world.kael.position
+        for roamer in roamers {
+            if roamer.update(deltaTime: deltaTime, heroPos: heroPos) {
+                clearRoamers()   // le combat prend le relais
+                return
+            }
+        }
+    }
+
+    /// Peuple les mines de monstres baladeurs selon la progression.
+    private func spawnMineRoamers() {
+        guard let scene else { return }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        let wh = world.worldHeight > 0 ? world.worldHeight : h
+        switch player.minesProgress {
+        case 0:
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.30, y: h * 0.48),
+                      wh: wh) { [weak self] in self?.startMinesCombat1() }
+        case 1:
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.46, y: h * 0.62),
+                      wh: wh) { [weak self] in self?.startMinesCombat2() }
+        case 2 where player.questMines != .complete:
+            // Le golem est un boss : plus lent, patrouille plus large.
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.62, y: h * 0.66),
+                      wh: wh, patrolRadius: 40, chaseSpeed: 74) { [weak self] in
+                self?.startMinesBossSequence()
+            }
+        default:
+            break
+        }
+    }
+
+    /// Peuple la caverne du gardien baladeur (si pas encore vaincu).
+    private func spawnCaveRoamer() {
+        guard let scene, !player.caveCleared else { clearRoamers(); return }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        addRoamer("enemy_bone", at: CGPoint(x: w * 0.50, y: h * 0.55),
+                  wh: h, patrolRadius: 80) { [weak self] in self?.startCaveCombat() }
+    }
+
+    /// Crée un monstre baladeur (sprite animé) et l'enregistre.
+    private func addRoamer(_ asset: String, at pos: CGPoint, wh: CGFloat,
+                           patrolRadius: CGFloat = 70, chaseSpeed: CGFloat = 104,
+                           startCombat: @escaping () -> Void) {
+        guard let node = world.makeRoamingMonster(asset: asset) else { return }
+        world.worldNode.addChild(node)
+        roamers.append(RoamingMonster(
+            node: node, home: pos, worldHeight: wh,
+            patrolRadius: patrolRadius, chaseSpeed: chaseSpeed,
+            startCombat: startCombat))
     }
 
     // MARK: - Caverne aux Échos (donjon optionnel, entrée dans la forêt)
@@ -3703,6 +3758,7 @@ final class GameManager {
                                           y: scene.size.height * 0.14)
         } completion: { [weak self] in
             guard let self else { return }
+            spawnCaveRoamer()
             // Dialogue d'ambiance à la première visite (gardien pas encore
             // vaincu). One-shot, jamais enchaîné.
             if !player.caveCleared {
@@ -3719,6 +3775,7 @@ final class GameManager {
     /// Remonte vers la forêt, respawn devant l'entrée de la caverne.
     private func exitCave() {
         guard let scene else { return }
+        clearRoamers()
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self else { return }
@@ -3745,12 +3802,7 @@ final class GameManager {
             exitCave()
             return true
         }
-        // Gardien d'ossements (tant qu'il n'est pas vaincu)
-        if !player.caveCleared,
-           point.distance(to: CGPoint(x: w * 0.50, y: h * 0.55)) < 80 {
-            startCaveCombat()
-            return true
-        }
+        // Le gardien charge Kael (RoamingMonster) — plus de combat au tap.
         // Coffre (révélé une fois le gardien vaincu)
         if player.caveCleared, !player.caveChestTaken,
            point.distance(to: CGPoint(x: w * 0.50, y: h * 0.68)) < 70 {
@@ -3798,6 +3850,7 @@ final class GameManager {
         world.switchToCave(in: scene, cleared: player.caveCleared,
                            chestTaken: player.caveChestTaken)
         world.kael.position = kaelPos
+        spawnCaveRoamer()   // (ne respawn rien si le gardien est vaincu)
     }
 
     private func takeCaveChest(in scene: SKScene) {

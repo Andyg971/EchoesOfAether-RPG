@@ -188,19 +188,18 @@ enum LightingEngine {
     private static let heroLightName = "kaelLight"
 
     /// Attache un halo chaud au héros (mines, zones noires). Intensité
-    /// appuyée (×3) : la texture halo de base est faible pour le plein jour,
-    /// mais le héros doit vraiment éclairer les galeries noires.
-    static func attachHeroLight(to hero: SKNode, radius: CGFloat = 130) {
+    /// modérée (×1.7) : assez pour lire autour de Kael sans l'éblouir.
+    static func attachHeroLight(to hero: SKNode, radius: CGFloat = 104) {
         removeHeroLight(from: hero)
-        let light = pointLight(radius: radius, color: LightColor.hero, intensity: 3)
+        let light = pointLight(radius: radius, color: LightColor.hero, intensity: 1.7)
         light.name = heroLightName
-        light.alpha = 0.85
+        light.alpha = 0.55
         light.position = CGPoint(x: 0, y: 14)
         light.zPosition = 5
         // Respiration lente — le halo vit sans clignoter
         light.run(.repeatForever(.sequence([
-            .fadeAlpha(to: 0.72, duration: 1.1),
-            .fadeAlpha(to: 0.85, duration: 1.1)
+            .fadeAlpha(to: 0.45, duration: 1.1),
+            .fadeAlpha(to: 0.55, duration: 1.1)
         ])))
         hero.addChild(light)
     }

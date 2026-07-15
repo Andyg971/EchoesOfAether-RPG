@@ -458,6 +458,7 @@ final class WorldBuilder {
         ambiance.addChild(ParticleFactory.butterflies(in: CGSize(width: w, height: h)))
         addAtmosphere(ambiance, to: scene)
         setZoneVignette(in: scene, alpha: 0)
+        LightingEngine.applyGrade(.villageDay, in: scene)
         debugDrawObstacles(in: scene)
     }
 
@@ -653,8 +654,13 @@ final class WorldBuilder {
 
         scatterForestProps(in: scene, w: w, h: h)
 
-        addAtmosphere(ParticleFactory.forestFog(in: CGSize(width: w, height: h)), to: scene)
+        let forestAmbiance = SKNode()
+        forestAmbiance.addChild(ParticleFactory.forestFog(in: CGSize(width: w, height: h)))
+        forestAmbiance.addChild(LightingEngine.godRays(in: CGSize(width: w, height: h)))
+        forestAmbiance.addChild(LightingEngine.fireflies(in: CGSize(width: w, height: h)))
+        addAtmosphere(forestAmbiance, to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
+        LightingEngine.applyGrade(.forest, in: scene)
         debugDrawObstacles(in: scene)
     }
 
@@ -1445,6 +1451,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // Cendre en suspension : même atmosphère que les ruines
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.68)   // mines : galeries noires
+        LightingEngine.applyGrade(.mines, in: scene)
+        LightingEngine.attachHeroLight(to: kael)  // seul point chaud mobile
     }
 
     /// Rails de mine : deux longerons métalliques + traverses de bois.
@@ -1779,6 +1787,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // Poussière en suspension : chaleur d'Ossara
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
+        LightingEngine.applyGrade(.desert, in: scene)
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.
@@ -2015,6 +2024,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
+        LightingEngine.applyGrade(.ruins, in: scene)
     }
 
     /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :
@@ -2146,6 +2156,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
+        LightingEngine.applyGrade(.threshold, in: scene)
     }
 
     /// LE CŒUR DU VIDE (Acte IV) — sanctuaire intérieur. Sol pierre teinté
@@ -2279,6 +2290,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
+        LightingEngine.applyGrade(.voidheart, in: scene)
     }
 
     /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.
@@ -2565,6 +2577,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.40)
+        LightingEngine.applyGrade(.shrine, in: scene)
     }
 
     // MARK: - Building Blocks
@@ -2765,6 +2778,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         scene.backgroundColor = SKColor(red: 0.035, green: 0.027, blue: 0.025, alpha: 1)
         buildInterior(kind, in: scene)
         setZoneVignette(in: scene, alpha: 0.38)   // pièce éclairée au feu
+        LightingEngine.applyGrade(.interior, in: scene)
         kael.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.23)
         kael.zPosition = 20
     }
@@ -3247,6 +3261,34 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
     if !Self.walkablePropPrefixes.contains(where: name.hasPrefix) {
         registerFootprint(of: node)
     }
+    attachPropLight(for: name, on: node, in: scene)
+}
+
+/// Les sources lumineuses naturelles s'éclairent toutes seules :
+/// lanterne/torche/feu → flamme vacillante, champignon → lueur froide,
+/// cristal → éclat violet. Lumière posée en espace monde (backdrop),
+/// nettoyée au changement de zone comme le reste.
+private func attachPropLight(for name: String, on node: SKNode, in scene: SKScene) {
+    let light: SKSpriteNode
+    if name.contains("lantern") || name.contains("torch") || name.contains("campfire") {
+        light = LightingEngine.pointLight(radius: 78,
+                                          color: LightingEngine.LightColor.flame,
+                                          flicker: true)
+    } else if name.contains("shroom") || name.contains("mushroom") {
+        light = LightingEngine.pointLight(radius: 34,
+                                          color: LightingEngine.LightColor.fungal)
+        light.alpha = 0.6
+    } else if name.contains("crystal") {
+        light = LightingEngine.pointLight(radius: 46,
+                                          color: LightingEngine.LightColor.crystal)
+        light.alpha = 0.7
+    } else {
+        return
+    }
+    let frame = node.calculateAccumulatedFrame()
+    light.position = CGPoint(x: node.position.x,
+                             y: node.position.y + frame.height * 0.60)
+    add(light, to: scene)
 }
 
 private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
@@ -3347,6 +3389,9 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
         backdropNodes.removeAll()
         atmosphereNode?.removeFromParent()
         atmosphereNode = nil
+        // Le halo du héros n'existe que dans les zones noires (mines) ;
+        // chaque zone le ré-attache explicitement si besoin.
+        LightingEngine.removeHeroLight(from: kael)
     }
 
     private func addAtmosphere(_ node: SKNode, to scene: SKScene) {

@@ -2466,11 +2466,22 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     private func setupCombatants(scene: SKScene) {
         // Perspective 3/4 à la Octopath : Kael au premier plan, ennemis
-        // étagés à droite. La formation est remontée et décalée vers le
-        // centre depuis que le menu de commandes occupe le bas-gauche —
-        // sinon la boîte passe devant le groupe.
+        // étagés à droite.
+        //
+        // La formation s'étalait en diagonale serrée (Kael 0.34/0.50, alliés
+        // 0.22/0.58 et 0.19/0.67). Deux défauts, mesurés sur 874×402 :
+        //
+        // - Les deux alliés n'étaient qu'à 45 pt l'un de l'autre pour des
+        //   corps de ~45 pt de large : ils se marchaient dessus.
+        // - Leurs sprites montaient jusqu'à 269 et 305, alors que la rangée
+        //   de plates descend à 265 : le porteur du dernier créneau passait
+        //   devant sa propre barre de Magie.
+        //
+        // La diagonale est donc plus plate et plus large : elle garde la
+        // profondeur (Kael devant, alliés en retrait) mais chaque corps a sa
+        // place, et le groupe reste sous les plates.
         let k = CombatSprites.kael()
-        k.position = CGPoint(x: scene.size.width * 0.34, y: scene.size.height * 0.50)
+        k.position = CGPoint(x: scene.size.width * 0.33, y: scene.size.height * 0.46)
         k.setScale(1.10)
         k.zPosition = 6
         root.addChild(k)
@@ -2478,7 +2489,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         kaelHomePosition = k.position
 
         // Alliés en retrait derrière Kael (profondeur 3/4, diagonale)
-        let allySlots: [(x: CGFloat, y: CGFloat)] = [(0.22, 0.58), (0.19, 0.67)]
+        let allySlots: [(x: CGFloat, y: CGFloat)] = [(0.21, 0.49), (0.10, 0.52)]
         for (i, ally) in allies.enumerated() {
             let node = CombatSprites.ally(kind: ally.kind)
             node.position = CGPoint(x: scene.size.width * allySlots[i].x,
@@ -3245,7 +3256,12 @@ private func applyHeal(_ amount: Int, toIndex index: Int) -> CGPoint {
 private var currentActorButtons: [SKShapeNode] {
     switch actingAlly?.kind {
     case .lyra:     return [attackButton, healButton, blessingButton]
-    case .lyraEcho: return [attackButton, healButton]
+    // L'Écho garde la Bénédiction. Elle n'apparaissait que chez la Lyra
+    // vivante, donc les Actes I-II : le joueur apprenait le soin de groupe,
+    // puis le perdait pile pour les Actes III-IV — le trio, trois ennemis,
+    // des coups à 60. Le reste de sa fiche disait déjà l'inverse de son
+    // menu : l'Écho porte le plus haut multiplicateur de sorts du jeu (1.18).
+    case .lyraEcho: return [attackButton, healButton, blessingButton]
     case .eran:     return [attackButton, windButton, emberButton, blackSlashButton]
     // Kael : le brasier au quotidien, la Tempête comme atout (1x), et
     // l'Aether. Glace et foudre ne sont plus des sorts a part - elles

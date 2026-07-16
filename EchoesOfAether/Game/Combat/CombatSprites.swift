@@ -71,24 +71,9 @@ enum CombatSprites {
     // MARK: - Kael
 
     static func kael() -> SKNode {
-        let root = SKNode()
+        let root = BattleSprites.node(.kael)
         root.name = "combatKael"
-        addShadow(to: root, width: 64)
-
-        let textures: [SKTexture] = (1...6).map { i in
-            let t = SKTexture(imageNamed: "kael_idle_\(i)")
-            t.filteringMode = .nearest
-            return t
-        }
-        let sprite = SKSpriteNode(texture: textures[0])
-        sprite.setScale(1.8)
-        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        sprite.position = CGPoint(x: 0, y: -32)
-        sprite.run(.repeatForever(.animate(with: textures, timePerFrame: 0.11,
-                                            resize: false, restore: true)))
-        root.addChild(sprite)
-
-        // Pas d'aura : le sprite pixel reste pur (cohérent avec le monde).
+        addShadow(to: root, width: 56)
         return root
     }
 
@@ -102,6 +87,7 @@ enum CombatSprites {
         case .lyra:
             return lyra()
         case .lyraEcho:
+            // L'Écho garde le sprite de Lyra, teinté cyan et translucide.
             let node = lyra()
             node.alpha = 0.78
             node.forEachDescendantSprite { s in
@@ -110,41 +96,45 @@ enum CombatSprites {
             }
             return node
         case .eran:
-            let root = SKNode()
+            let root = BattleSprites.node(.eran)
             root.name = "combatEran"
-            addShadow(to: root, width: 48)
-            if let sprite = PixelArtSprites.animated(name: "npc_extra", frames: 6,
-                                                     scale: 1.45,
-                                                     timePerFrame: 0.18,
-                                                     anchor: CGPoint(x: 0.5, y: 0.0)) {
-                sprite.position = CGPoint(x: 0, y: -32)
-                sprite.alpha = 0.85
-                sprite.forEachDescendantSprite { s in
-                    s.color = SKColor(red: 0.30, green: 0.45, blue: 0.75, alpha: 1)
-                    s.colorBlendFactor = 0.50
-                }
-                root.addChild(sprite)
-            }
+            addShadow(to: root, width: 52)
             return root
         }
     }
 
     static func lyra() -> SKNode {
-        let root = SKNode()
+        let root = BattleSprites.node(.lyra)
         root.name = "combatLyra"
         addShadow(to: root, width: 48)
-
-        // Sprite ME 48×96 — même convention d'ancrage que les ennemis.
-        // L'asset regarde déjà vers la droite (vers les ennemis).
-        // Échelle réduite : alliée en retrait derrière Kael.
-        if let sprite = PixelArtSprites.animated(name: "npc_lyra", frames: 6,
-                                                 scale: 1.45,
-                                                 timePerFrame: 0.16,
-                                                 anchor: CGPoint(x: 0.5, y: 0.0)) {
-            sprite.position = CGPoint(x: 0, y: -32)
-            root.addChild(sprite)
-        }
         return root
+    }
+
+    // MARK: - Animations d'action (héros et alliés)
+
+    /// Traduit un node de combat en héros de `BattleSprites` d'après son nom.
+    private static func hero(of node: SKNode) -> BattleSprites.Hero? {
+        switch node.name {
+        case "combatKael": return .kael
+        case "combatLyra": return .lyra
+        case "combatEran": return .eran
+        default: return nil
+        }
+    }
+
+    /// Joue l'attaque du héros/allié ; retombe sur l'idle à la fin.
+    /// Sans effet si le node n'est pas un héros à pack (ennemis, boss).
+    static func playHeroAttack(on node: SKNode, completion: (() -> Void)? = nil) {
+        guard let h = hero(of: node) else { completion?(); return }
+        BattleSprites.play(.attack, hero: h, on: node, completion: completion)
+    }
+
+    /// Joue un sort (0 = skill1, 1 = skill2).
+    static func playHeroSkill(on node: SKNode, index: Int,
+                              completion: (() -> Void)? = nil) {
+        guard let h = hero(of: node) else { completion?(); return }
+        BattleSprites.play(index == 0 ? .skill1 : .skill2, hero: h, on: node,
+                           completion: completion)
     }
 
     // MARK: - Enemy factory

@@ -2143,11 +2143,18 @@ private func setupComboAndStatusUI(scene: SKScene) {
         lungeIn.timingMode = .easeIn
         let lungeOut = SKAction.move(to: home, duration: 0.18)
         lungeOut.timingMode = .easeOut
-        let tilt = SKAction.sequence([
-            .rotate(toAngle: -0.15, duration: 0.08, shortestUnitArc: true),
-            .rotate(toAngle: 0, duration: 0.16, shortestUnitArc: true)
-        ])
-        k.run(.group([.sequence([lungeIn, lungeOut]), tilt]))
+
+        // Vraie animation du pack : attaque, ou sort si le coup est appuyé.
+        // Sans pack (ennemi contrôlé, node sans corps), rien ne se passe et
+        // seule la ruée subsiste — le combat n'est jamais bloqué.
+        if strong {
+            CombatSprites.playHeroSkill(on: k, index: 0)
+        } else {
+            CombatSprites.playHeroAttack(on: k)
+        }
+        // Le tilt d'origine tordait le sprite pour simuler un coup ; les packs
+        // portent leur propre gestuelle, on ne la contrarie plus.
+        k.run(.sequence([lungeIn, lungeOut]))
 
         // Attaque forte : images rémanentes derrière la ruée
         if strong {

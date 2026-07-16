@@ -291,8 +291,8 @@ final class WorldBuilder {
 
     func switchToRuins(in scene: SKScene) {
         clearBackdrop()
-        worldHeight = scene.size.height
         worldNode.position = .zero
+        // worldHeight est défini par buildRuins (enfilade de salles scrollable).
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.04, green: 0.02, blue: 0.03, alpha: 1)
         buildRuins(in: scene)
@@ -2128,8 +2128,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     // MARK: - Ruines de la Source (Acte II)
 
     private func buildRuins(in scene: SKScene) {
-        let w = scene.size.width
-        let h = scene.size.height
+        // Plan unique de la zone (décor, hit-tests, bulles, spawns).
+        let plan = RuinsLayout(sceneSize: scene.size)
+        let w = plan.width
+        let h = plan.height
+        worldHeight = h   // enfilade de salles : la caméra scrolle
 
         // Sol : dalles de pierre teintées rouge-brun (la Source corrompue)
         addTiledFloor(in: scene,
@@ -2140,47 +2143,52 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Fissures d'Aether rouge dans le sol
-        let crackPositions: [(CGFloat, CGFloat, CGFloat, CGFloat)] = [
-            (0.20, 0.25, 0.38, 0.32), (0.45, 0.18, 0.58, 0.30),
-            (0.62, 0.42, 0.78, 0.50), (0.15, 0.55, 0.32, 0.63),
-            (0.50, 0.65, 0.68, 0.72)
-        ]
-        for (x1, y1, x2, y2) in crackPositions {
-            let crack = makeCrack(from: CGPoint(x: w * x1, y: h * y1),
-                                  to:   CGPoint(x: w * x2, y: h * y2))
-            add(crack, to: scene)
+        // Allée centrale : la même pierre, éclaircie — l'axe des salles.
+        addPathStrip(in: scene, rect: CGRect(x: w * 0.44, y: h * 0.02,
+                                             width: w * 0.12, height: h * 0.92))
+
+        // ── PAROIS : les salles sont creusées dans la ruine ──
+        for band in plan.corridorBands {
+            let y = h * band.y0
+            let height = h * (band.y1 - band.y0)
+            addWall(in: scene, rect: CGRect(x: 0, y: y,
+                                            width: w * band.left, height: height))
+            addWall(in: scene, rect: CGRect(x: w * band.right, y: y,
+                                            width: w * (1 - band.right), height: height))
         }
 
-        // ── VESTIGES : chapelle effondrée, maison en ruine, portail brisé ──
-        addPixelProp("house_ruins_1", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.78), scale: 0.62)
-        addPixelProp("gy_gate_high", in: scene, at: CGPoint(x: w * 0.08, y: h * 0.76), scale: 0.48)
-        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.74), scale: 0.52, flipped: true)
-
-        // Colonnes brisées cadrant les zones de combat (échelle pixel : ×2
-        // sur du 16×32 natif → 32×64 pt, net, plus d'étirement flou)
-        for (px, py) in [(0.10, 0.42), (0.38, 0.50), (0.72, 0.52), (0.90, 0.40)] {
-            addPixelProp("column_broken_1", in: scene,
-                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 2.0)
+        // Fissures d'Aether rouge : elles rampent le long des salles.
+        for (fy, fy2) in [(CGFloat(0.10), CGFloat(0.18)), (0.42, 0.52), (0.66, 0.74)] {
+            guard let b = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
+            else { continue }
+            add(makeCrack(from: CGPoint(x: w * (b.left + 0.06), y: h * fy),
+                          to: CGPoint(x: w * 0.50, y: h * fy2)), to: scene)
         }
-        addPixelProp("pillar_grey_1", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.30), scale: 1.8)
-        addPixelProp("pillar_grey_2", in: scene, at: CGPoint(x: w * 0.66, y: h * 0.26), scale: 1.8)
 
-        // ── CIMETIÈRE PROFANÉ : tombes de bois, croix, chandeliers éteints ──
+        // ── VESTIGES : la chapelle effondrée ferme le fond des archives ──
+        addPixelProp("house_ruins_1", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.955), scale: 0.62)
+        addPixelProp("gy_gate_high", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.335), scale: 0.48)   // le goulot gardé
+        addPixelProp("gy_tree", in: scene,
+                     at: CGPoint(x: w * 0.80, y: h * 0.145), scale: 0.52, flipped: true)
+
+        // ── CIMETIÈRE PROFANÉ : tombes et croix, contre les parois des salles ──
+        // Chaque relique se cale sur sa bande : posées en dur, elles
+        // finissaient dans la roche.
         let relics: [(String, CGFloat, CGFloat, CGFloat)] = [
-            ("gy_grave_wood", 0.20, 0.36, 0.55), ("gy_cross_wood", 0.34, 0.28, 0.55),
-            ("gy_tomb_brown", 0.48, 0.34, 0.55), ("gy_grave_wood", 0.58, 0.26, 0.50),
-            ("gy_cross_wood", 0.76, 0.34, 0.55), ("gy_tomb_brown", 0.86, 0.28, 0.55),
-            ("gy_candle_off", 0.30, 0.58, 0.50), ("gy_candle_off", 0.56, 0.54, 0.50),
-            ("gy_stone_1", 0.42, 0.42, 0.50), ("gy_stone_3", 0.68, 0.44, 0.50),
-            ("gy_stone_2", 0.16, 0.30, 0.50)
+            ("gy_grave_wood", 0.16, 0.10, 0.55), ("gy_cross_wood", 0.82, 0.13, 0.55),
+            ("gy_tomb_brown", 0.20, 0.44, 0.55), ("gy_grave_wood", 0.80, 0.48, 0.50),
+            ("gy_cross_wood", 0.24, 0.54, 0.55), ("gy_tomb_brown", 0.78, 0.70, 0.55),
+            ("gy_candle_off", 0.22, 0.66, 0.50), ("gy_candle_off", 0.78, 0.66, 0.50),
+            ("gy_stone_1", 0.30, 0.42, 0.50), ("gy_stone_3", 0.70, 0.44, 0.50)
         ]
         for (asset, x, y, s) in relics {
             addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
         }
 
-        // Ossements nets à l'échelle pixel (16×32 natif → ×2)
-        for p in [(0.30, 0.44), (0.65, 0.38), (0.45, 0.62)] {
+        // Ossements au goulot — c'est là que les Gardiens ont fait le ménage.
+        for p in [(0.46, 0.325), (0.54, 0.345), (0.50, 0.36)] {
             guard let bones = PixelArtSprites.still(
                 name: "bones_1", scale: 2.0,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
@@ -2190,12 +2198,12 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             add(bones, to: scene)
         }
 
-        // Titre de zone
+        // Titre de zone, à l'entrée
         let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.ruins.title")
         zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.70, green: 0.25, blue: 0.25, alpha: 0.60)
-        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.015)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
@@ -2203,29 +2211,28 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // (cf. GameManager.spawnRuinsRoamers) : ils patrouillent et chargent
         // Kael. Plus de halo ni de crâne flottant à taper.
 
-        // Inscription secondaire d'Eran (coins bas-gauche)
-        let eranInscription = makeEranInscription(at: CGPoint(x: w * 0.15, y: h * 0.65))
-        add(eranInscription, to: scene)
+        // Inscription d'Eran : dans le renfoncement, hors du trajet.
+        add(makeEranInscription(at: plan.eranInscription), to: scene)
 
-        // Mur d'inscription (discovery) — haut-droite
-        let inscriptionWall = makeInscriptionWall(
-            at: CGPoint(x: w * 0.70, y: h * 0.65)
-        )
-        add(inscriptionWall, to: scene)
+        // Mur d'inscription (discovery) : au fond des archives.
+        add(makeInscriptionWall(at: plan.discoveryWall), to: scene)
 
-        // Mares d'Aether rouge (ambiance)
-        for (px, py) in [(0.15, 0.38), (0.55, 0.35), (0.82, 0.42)] {
-            let pool = makeRedAetherPool(at: CGPoint(x: w * px, y: h * py))
-            add(pool, to: scene)
+        // Mares d'Aether rouge (ambiance), au centre des salles.
+        for fy in [CGFloat(0.12), 0.48, 0.70] {
+            guard let b = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
+            else { continue }
+            add(makeRedAetherPool(at: CGPoint(x: w * (b.left + b.right) / 2 + 40,
+                                              y: h * fy)), to: scene)
         }
 
-        // Cristal de sauvegarde (entrée des ruines, bas droite)
-        addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.22), in: scene)
+        // Cristal de sauvegarde, dans le hall d'entrée.
+        addSaveCrystal(at: plan.saveCrystal, in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)
         LightingEngine.applyGrade(.ruins, in: scene)
         AudioEngine.shared.setAmbience(.none)   // la musique porte l'ambiance
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois
     }
 
     /// LE SEUIL (Acte III) — arène finale. Uniquement des assets existants :

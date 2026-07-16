@@ -1820,10 +1820,10 @@ final class GameManager {
             }
         case .ruins:
             // Gardiens et Archiviste chargent Kael : pas de bulle « Combattre ».
-            let w = scene.size.width, h = scene.size.height
+            let plan = RuinsLayout(sceneSize: scene.size)
             let checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.15, y: h*0.65), "hint.examine"),
-                (CGPoint(x: w*0.70, y: h*0.65), "hint.examine")
+                (plan.eranInscription, "hint.examine"),
+                (plan.discoveryWall, "hint.examine")
             ]
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -2375,8 +2375,12 @@ final class GameManager {
 
     /// Affiche les Ruines ET (re)peuple leurs baladeurs. À utiliser partout
     /// plutôt que `world.switchToRuins` seul, sinon la zone reste vide.
-    func showRuins(in scene: SKScene) {
+    func showRuins(in scene: SKScene, placeKael: Bool = true) {
         world.switchToRuins(in: scene)
+        if placeKael {
+            world.kael.position = RuinsLayout(sceneSize: scene.size).entrance
+            world.snapCamera()
+        }
         spawnRuinsRoamers()
     }
 
@@ -2414,17 +2418,23 @@ final class GameManager {
     func spawnRuinsRoamers() {
         guard let scene, phase == .ruins || phase == .fallen else { clearRoamers(); return }
         clearRoamers()
-        let w = scene.size.width, h = scene.size.height
+        let plan = RuinsLayout(sceneSize: scene.size)
         let ruinsTint = SKColor(red: 0.62, green: 0.30, blue: 0.28, alpha: 1)
         if player.ruinsProgress < 1 {
-            addRoamer("enemy_bone", at: CGPoint(x: w * 0.28, y: h * 0.50), wh: h,
-                      tint: ruinsTint, blend: 0.35) { [weak self] in
-                self?.startRuinsCombat1()
+            // Les Gardiens tiennent le goulot : on ne passe pas sans eux.
+            for dx in [CGFloat(-0.04), 0.04] {
+                addRoamer("enemy_bone",
+                          at: CGPoint(x: plan.guardiansAmbush.x + plan.width * dx,
+                                      y: plan.guardiansAmbush.y),
+                          wh: plan.height, patrolRadius: 44,
+                          tint: ruinsTint, blend: 0.35) { [weak self] in
+                    self?.startRuinsCombat1()
+                }
             }
         } else if player.ruinsProgress == 1 {
             // L'Archiviste est un mini-boss : patrouille serrée, charge lente.
-            addRoamer("enemy_archivist", at: CGPoint(x: w * 0.62, y: h * 0.60), wh: h,
-                      patrolRadius: 46, chaseSpeed: 78,
+            addRoamer("enemy_archivist", at: plan.archivistAmbush,
+                      wh: plan.height, patrolRadius: 52, chaseSpeed: 78,
                       tint: SKColor(red: 0.55, green: 0.20, blue: 0.45, alpha: 1),
                       blend: 0.40) { [weak self] in
                 self?.startRuinsCombat2()

@@ -182,16 +182,15 @@ extension GameManager {
     // MARK: - Ruins Interactions
 
     func tryRuinsInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
-        let w = scene.size.width
-        let h = scene.size.height
+        let plan = RuinsLayout(sceneSize: scene.size)
 
         // Les combats ne se déclenchent plus au tap : les gardiens et
         // l'Archiviste chargent Kael, le contact ouvre le combat
         // (cf. spawnRuinsRoamers / RoamingMonster).
 
-        // Inscription d'Eran (bas-gauche) — accessible dès l'entrée
+        // Inscription d'Eran, dans le renfoncement — dès l'entrée
         if !player.act2EranFound {
-            if point.distance(to: CGPoint(x: w * 0.15, y: h * 0.65)) < 60 {
+            if point.distance(to: plan.eranInscription) < 60 {
                 openEranInscription()
                 return true
             }
@@ -199,7 +198,7 @@ extension GameManager {
 
         // Inscription principale (discovery) — débloquée après les 2 combats
         if player.ruinsProgress >= 2 {
-            if point.distance(to: CGPoint(x: w * 0.70, y: h * 0.65)) < 70 {
+            if point.distance(to: plan.discoveryWall) < 70 {
                 openDiscovery()
                 return true
             }

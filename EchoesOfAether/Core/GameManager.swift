@@ -1847,7 +1847,7 @@ final class GameManager {
                 actionPoint = nearest.point
             }
         case .act3:
-            let w = scene.size.width, h = scene.size.height
+            let plan = ThresholdLayout(sceneSize: scene.size)
             var checkpoints: [(CGPoint, String)] = []
             if !player.act3EchoJoined, let echoPos = world.thresholdEchoPosition {
                 checkpoints.append((echoPos, "hint.talk"))
@@ -1858,17 +1858,16 @@ final class GameManager {
                     checkpoints.append((pos, "hint.talk"))
                 }
             }
-            for stele in [("1", 0.24, 0.34), ("2", 0.60, 0.32), ("3", 0.76, 0.28)]
-            where !player.act3StelesRead.contains(stele.0) {
-                checkpoints.append((CGPoint(x: w*stele.1, y: h*stele.2), "hint.examine"))
+            for stele in plan.steles where !player.act3StelesRead.contains(stele.id) {
+                checkpoints.append((stele.pos, "hint.examine"))
             }
             // Les Ombres viennent à Kael : aucune bulle « Combattre ».
             if !player.act3EranMet {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.62), "hint.talk"))
+                checkpoints.append((plan.eran, "hint.talk"))
             } else if !player.act3BossDefeated {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.82), "hint.fight"))
+                checkpoints.append((plan.portal, "hint.fight"))
             } else {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.82), "hint.enter"))
+                checkpoints.append((plan.portal, "hint.enter"))
             }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -2000,8 +1999,8 @@ final class GameManager {
     // MARK: - Act III
 
     private func tryAct3Interaction(_ point: CGPoint, in scene: SKScene) -> Bool {
-        let w = scene.size.width, h = scene.size.height
-        let gate = CGPoint(x: w * 0.50, y: h * 0.82)   // escalier = Le Seuil
+        let plan = ThresholdLayout(sceneSize: scene.size)
+        let gate = plan.portal   // sommet du couloir = Le Seuil
 
         // 0) L'Écho de Lyra attend à l'entrée — première rencontre
         if !player.act3EchoJoined,
@@ -2021,12 +2020,9 @@ final class GameManager {
             }
         }
 
-        // Stèles du Vide (les trois tombes noires)
-        let steles: [(id: String, x: CGFloat, y: CGFloat)] = [
-            ("1", 0.24, 0.34), ("2", 0.60, 0.32), ("3", 0.76, 0.28)
-        ]
-        for stele in steles where !player.act3StelesRead.contains(stele.id) {
-            if point.distance(to: CGPoint(x: w * stele.x, y: h * stele.y)) < 55 {
+        // Stèles du Vide, au fond de leurs alcôves
+        for stele in plan.steles where !player.act3StelesRead.contains(stele.id) {
+            if point.distance(to: stele.pos) < 55 {
                 openSteleDialogue(id: stele.id)
                 return true
             }
@@ -2035,9 +2031,9 @@ final class GameManager {
         // Les Ombres du Vide chargent Kael (cf. spawnAct3Roamers) : plus de
         // combat au tap.
 
-        // 1) Rencontre Eran (centre) tant qu'elle n'a pas eu lieu
+        // 1) Rencontre Eran sur son palier tant qu'elle n'a pas eu lieu
         if !player.act3EranMet {
-            if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.62)) < 80 {
+            if point.distance(to: plan.eran) < 80 {
                 openAct3EranMeet()
                 return true
             }
@@ -2382,12 +2378,18 @@ final class GameManager {
         spawnRuinsRoamers()
     }
 
-    /// Affiche le Seuil ET (re)peuple ses Ombres.
-    func showThreshold(in scene: SKScene) {
+    /// Affiche le Seuil ET (re)peuple ses Ombres. `placeKael: false` préserve
+    /// la position courante (reconstruction du décor après un combat).
+    func showThreshold(in scene: SKScene, placeKael: Bool = true) {
         world.switchToThreshold(in: scene,
                                 echoJoined: player.act3EchoJoined,
                                 spiritsCalmed: player.act3SpiritsCalmed,
                                 shadesDefeated: player.act3ShadesDefeated)
+        if placeKael {
+            // Le couloir se parcourt du sud au nord : Kael entre par le bas.
+            world.kael.position = ThresholdLayout(sceneSize: scene.size).entrance
+            world.snapCamera()
+        }
         spawnAct3Roamers()
     }
 
@@ -2431,12 +2433,14 @@ final class GameManager {
             clearRoamers(); return
         }
         clearRoamers()
-        let w = scene.size.width, h = scene.size.height
+        // Embusquées au goulot : impossible de monter sans les affronter.
+        let plan = ThresholdLayout(sceneSize: scene.size)
         let shadeTint = SKColor(red: 0.35, green: 0.15, blue: 0.55, alpha: 1)
-        for (i, dx) in [-0.03, 0.04].enumerated() {
+        for (i, dx) in [CGFloat(-0.06), 0.06].enumerated() {
             addRoamer("enemy_bone",
-                      at: CGPoint(x: w * (0.22 + dx), y: h * (0.66 + Double(i) * 0.02)),
-                      wh: h, patrolRadius: 62,
+                      at: CGPoint(x: plan.shadeAmbush.x + plan.width * dx,
+                                  y: plan.shadeAmbush.y + plan.height * CGFloat(i) * 0.012),
+                      wh: plan.height, patrolRadius: 54,
                       tint: shadeTint, blend: 0.55, alpha: 0.72) { [weak self] in
                 self?.startVoidShadesCombat()
             }

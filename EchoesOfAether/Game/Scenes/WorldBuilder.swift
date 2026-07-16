@@ -305,8 +305,8 @@ final class WorldBuilder {
                            spiritsCalmed: Set<String> = [],
                            shadesDefeated: Bool = false) {
         clearBackdrop()
-        worldHeight = scene.size.height
         worldNode.position = .zero
+        // worldHeight est défini par buildThreshold (couloir vertical scrollable).
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.08, alpha: 1)
         buildThreshold(in: scene, echoJoined: echoJoined,
@@ -1221,6 +1221,50 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 }
 
     // MARK: - Forest Building Blocks
+
+    /// Allée usée : la MÊME pierre que le sol, teintée plus clair. Pas de
+    /// tuile dédiée (`me_path_*` sont des cailloux épars, pas un dallage) —
+    /// le contraste de teinte suffit à lire le chemin, et reste pixel-net.
+    /// Purement visuel : ne bloque rien.
+    private func addPathStrip(in scene: SKScene, rect: CGRect) {
+        guard rect.width > 1, rect.height > 1,
+              let strip = PixelArtSprites.tiledFloor(
+                tileNames: ["a2_stone"],
+                in: rect.size, tileScale: 1.0,
+                tint: SKColor(red: 0.52, green: 0.46, blue: 0.74, alpha: 1)) else { return }
+        strip.position = CGPoint(x: rect.minX, y: rect.minY)
+        strip.zPosition = -9   // au-dessus du sol (-10), sous tous les props
+        add(strip, to: scene)
+    }
+
+    /// Paroi de couloir en maçonnerie ruinée. Chaque pièce est un obstacle
+    /// réel : c'est ce qui transforme l'esplanade en chemin. Le motif alterne
+    /// (colonne, pilier, tombe, stèle) — une même colonne répétée à
+    /// l'identique se lit immédiatement comme du copier-coller.
+    private func addWallRun(in scene: SKScene, x: CGFloat,
+                            y0: CGFloat, y1: CGFloat, flipped: Bool = false) {
+        let pieces: [(String, CGFloat)] = [
+            ("column_broken_1", 2.0), ("pillar_grey_1", 1.6),
+            ("gy_tomb_black", 0.55), ("column_broken_1", 2.0),
+            ("pillar_grey_2", 1.6), ("gy_stone_2", 0.6)
+        ]
+        // Décalage dérivé de la position : deux parois voisines ne démarrent
+        // pas sur la même pièce, la file ne se lit pas comme une frise.
+        var i = Int(abs(x) / 37) % pieces.count
+        var y = y0
+        while y <= y1 {
+            let (asset, scale) = pieces[i % pieces.count]
+            if PixelArtSprites.exists(asset) {
+                addPixelProp(asset, in: scene, at: CGPoint(x: x, y: y),
+                             scale: scale, flipped: flipped)
+            } else {
+                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: x, y: y),
+                             scale: 2.0, flipped: flipped)
+            }
+            y += 46
+            i += 1
+        }
+    }
 
     /// Eran Solace, le Premier Gardien, debout au centre du Seuil. Vieil homme
     /// marqué par le Vide : sprite de sage, teinté du violet du Seuil.
@@ -2149,10 +2193,13 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                                 echoJoined: Bool = false,
                                 spiritsCalmed: Set<String> = [],
                                 shadesDefeated: Bool = false) {
-        let w = scene.size.width
-        let h = scene.size.height
+        // Plan unique de la zone (décor, hit-tests, bulles, spawns le partagent).
+        let plan = ThresholdLayout(sceneSize: scene.size)
+        let w = plan.width
+        let h = plan.height
+        worldHeight = h   // couloir vertical : la caméra scrolle (cf. updateCamera)
 
-        // Sol : pierre a2 teintée bleu-vide très sombre
+        // Sol : pierre a2 teintée bleu-vide très sombre, sur tout le couloir
         addTiledFloor(in: scene,
                       tileNames: ["a2_stone"],
                       fallbackColor: SKColor(red: 0.06, green: 0.05, blue: 0.12, alpha: 1),
@@ -2161,57 +2208,79 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Titre de zone
+        // Chemin dallé : le fil conducteur sud → nord. Il dit où aller sans
+        // jamais l'écrire — les stèles, elles, sont hors du chemin.
+        addPathStrip(in: scene,
+                     rect: CGRect(x: w * 0.42, y: h * 0.02,
+                                  width: w * 0.16, height: h * 0.90))
+        // Embranchements vers les alcôves : l'allée bifurque vers chaque stèle.
+        for stele in plan.steles {
+            let onLeft = stele.pos.x < w * 0.5
+            let x0 = onLeft ? stele.pos.x : w * 0.50
+            let x1 = onLeft ? w * 0.50 : stele.pos.x
+            addPathStrip(in: scene,
+                         rect: CGRect(x: x0, y: stele.pos.y - h * 0.010,
+                                      width: x1 - x0, height: h * 0.020))
+        }
+
+        // Titre de zone (à l'entrée, là où le joueur arrive)
         let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.threshold.title")
         zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.55, green: 0.45, blue: 0.85, alpha: 0.65)
-        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.93)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.012)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // ── LE SEUIL : portail à orbe rouge au sommet de l'escalier ──
-        addPixelProp("me_stairs", in: scene,
-                     at: CGPoint(x: w * 0.50, y: h * 0.70), scale: 0.60)
-        addPixelProp("gy_gate_big", in: scene,
-                     at: CGPoint(x: w * 0.50, y: h * 0.84), scale: 0.55)
+        // ── PAROIS : colonnes et tombes qui taillent le couloir ──
+        // Ce sont de vrais obstacles (addPixelProp enregistre leur empreinte) :
+        // le joueur ne traverse pas, il suit — ou contourne vers une alcôve.
+        for band in plan.corridorBands {
+            if let lx = band.left {
+                addWallRun(in: scene, x: w * lx, y0: h * band.y0, y1: h * band.y1)
+            }
+            if let rx = band.right {
+                addWallRun(in: scene, x: w * rx, y0: h * band.y0, y1: h * band.y1, flipped: true)
+            }
+        }
+
+        // ── LE SEUIL : escalier + portail au bout du couloir ──
+        addPixelProp("me_stairs", in: scene, at: plan.stairsBase, scale: 0.60)
+        addPixelProp("gy_gate_big", in: scene, at: plan.portal, scale: 0.55)
         let voidGlow = SKShapeNode(circleOfRadius: 52)
         voidGlow.fillColor = SKColor(red: 0.30, green: 0.08, blue: 0.45, alpha: 0.10)
         voidGlow.strokeColor = SKColor(red: 0.55, green: 0.20, blue: 0.85, alpha: 0.30)
         voidGlow.lineWidth = 1.5
         voidGlow.glowWidth = 8
-        voidGlow.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        voidGlow.position = CGPoint(x: plan.portal.x, y: plan.portal.y + h * 0.025)
         voidGlow.zPosition = -2
         add(voidGlow, to: scene)
         JuiceEngine.pulse(voidGlow, scale: 1.2)
 
-        // Statues d'anges gardiens flanquant le Seuil (échelle pixel nette)
+        // Statues d'anges gardiens flanquant la dernière montée
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.36, y: h * 0.80), scale: 0.24)
+                     at: CGPoint(x: w * 0.36, y: h * 0.845), scale: 0.24)
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.64, y: h * 0.80), scale: 0.24, flipped: true)
+                     at: CGPoint(x: w * 0.64, y: h * 0.845), scale: 0.24, flipped: true)
 
-        // Allée de chandeliers spectraux + colonnes cadrant l'arène
-        for (i, py) in [CGFloat(0.40), 0.55, 0.70].enumerated() {
-            if i % 2 == 0 {
-                addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.14, y: h * py), scale: 0.55)
-                addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.86, y: h * py), scale: 0.55)
-            } else {
-                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.14, y: h * py), scale: 2.0)
-                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: w * 0.86, y: h * py), scale: 2.0)
-            }
+        // Chandeliers : jalonnent le chemin, pas l'arène. Ils rythment la
+        // montée et rendent le couloir lisible dans le noir.
+        for fy in [CGFloat(0.09), 0.20, 0.30, 0.42, 0.55, 0.66, 0.78] {
+            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.385, y: h * fy), scale: 0.55)
+            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.615, y: h * fy), scale: 0.55)
         }
 
-        // Arches brisées + arbres morts (le Vide consume la vie)
-        addPixelProp("gy_gate_high", in: scene, at: CGPoint(x: w * 0.10, y: h * 0.26), scale: 0.45)
-        addPixelProp("gy_tree", in: scene, at: CGPoint(x: w * 0.90, y: h * 0.26), scale: 0.50, flipped: true)
+        // Arche brisée à l'entrée du goulot : on voit le piège avant d'y entrer.
+        addPixelProp("gy_gate_high", in: scene,
+                     at: CGPoint(x: w * 0.50, y: h * 0.305), scale: 0.45)
 
-        // Tombes des âmes absorbées + ossements nets
-        for (asset, px, py) in [("gy_tomb_black", 0.24, 0.34), ("gy_cross_black", 0.42, 0.26),
-                                ("gy_tomb_grey_2", 0.60, 0.32), ("gy_tomb_black", 0.76, 0.28)] {
-            addPixelProp(asset, in: scene, at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)), scale: 0.55)
+        // Tombes au fond des alcôves + ossements au goulot (là où ça a saigné)
+        for (i, stele) in plan.steles.enumerated() {
+            let asset = i == 1 ? "gy_tomb_grey_2" : "gy_tomb_black"
+            addPixelProp(asset, in: scene,
+                         at: CGPoint(x: stele.pos.x, y: stele.pos.y + h * 0.02), scale: 0.55)
         }
-        for p in [(0.30, 0.45), (0.66, 0.42), (0.48, 0.30)] {
+        for p in [(0.46, 0.345), (0.55, 0.325), (0.50, 0.36)] {
             guard let bones = PixelArtSprites.still(
                 name: "bones_1", scale: 2.0,
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
@@ -2220,34 +2289,29 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             bones.alpha = 0.85
             add(bones, to: scene)
         }
+        addPixelProp("gy_tree", in: scene,
+                     at: CGPoint(x: w * 0.86, y: h * 0.135), scale: 0.50, flipped: true)
 
-        // Eran Solace en personne (centre) — le Premier Gardien attend Kael.
-        // Un vrai PNJ, plus un marqueur : on parle à quelqu'un, pas à un halo.
-        addEran(in: scene, at: CGPoint(x: w * 0.50, y: h * 0.62))
+        // Eran Solace sur son palier — le Premier Gardien attend Kael.
+        addEran(in: scene, at: plan.eran)
 
-        // ── L'Écho de Lyra attend à l'entrée tant qu'il n'a pas rejoint ──
+        // ── L'Écho de Lyra attend juste après l'entrée ──
         if !echoJoined {
-            addThresholdEcho(in: scene, at: CGPoint(x: w * 0.30, y: h * 0.20))
+            addThresholdEcho(in: scene, at: plan.echoMeet)
         }
 
         // ── Esprits errants (quête « Les échos égarés ») ──
         // Ils déambulent seuls ; apaisés, ils disparaissent du Seuil.
-        let spiritDefs: [(id: String, asset: String, x: CGFloat, y: CGFloat)] = [
-            ("miner",  "npc_villager", 0.20, 0.48),
-            ("mother", "npc_mara",     0.72, 0.50),
-            ("guard",  "npc_garen",    0.55, 0.38)
-        ]
-        for def in spiritDefs where !spiritsCalmed.contains(def.id) {
-            addWanderingSpirit(id: def.id, asset: def.asset, in: scene,
-                               at: CGPoint(x: w * def.x, y: h * def.y))
+        for def in plan.spirits where !spiritsCalmed.contains(def.id) {
+            addWanderingSpirit(id: def.id, asset: def.asset, in: scene, at: def.pos)
         }
 
         // ── Ombres hostiles : échos corrompus qui refusent l'apaisement ──
-        // Portées par des monstres baladeurs (cf. GameManager.spawnAct3Roamers) :
-        // elles patrouillent et chargent Kael au lieu d'attendre un tap.
+        // Portées par des monstres baladeurs (cf. GameManager.spawnAct3Roamers),
+        // embusquées au goulot : elles patrouillent et chargent Kael.
 
-        // Cristal de sauvegarde (entrée du Seuil, bas droite)
-        addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.20), in: scene)
+        // Cristal de sauvegarde, à l'entrée — dernier répit avant la montée.
+        addSaveCrystal(at: plan.saveCrystal, in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)

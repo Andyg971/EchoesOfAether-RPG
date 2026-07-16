@@ -23,6 +23,7 @@
 		6D7E20F4B8A741B0A0000001 /* AmbientLife.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */; };
 		6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */; };
 		6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */; };
+		6DAAFE02B8A741B0A0000001 /* ThresholdLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAAFE01B8A741B0A0000001 /* ThresholdLayout.swift */; };
 		6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */; };
 		6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2013B8A741B0A0000001 /* GameManager.swift */; };
 		6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */; };
@@ -122,6 +123,7 @@
 		6D7E20F3B8A741B0A0000001 /* AmbientLife.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AmbientLife.swift; sourceTree = "<group>"; };
 		6D7E2007B8A741B0A0000001 /* ParticleFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ParticleFactory.swift; sourceTree = "<group>"; };
 		6D7E200DB8A741B0A0000001 /* HUDOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HUDOverlay.swift; sourceTree = "<group>"; };
+		6DAAFE01B8A741B0A0000001 /* ThresholdLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThresholdLayout.swift; sourceTree = "<group>"; };
 		6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldBuilder.swift; sourceTree = "<group>"; };
 		6D7E2013B8A741B0A0000001 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
 		6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act2.swift"; sourceTree = "<group>"; };
@@ -337,6 +339,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7E2012B8A741B0A0000001 /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				6DAAFE01B8A741B0A0000001 /* ThresholdLayout.swift */,
 				6D7E200FB8A741B0A0000001 /* WorldBuilder.swift */,
 				6D7E2015B8A741B0A0000001 /* MovementController.swift */,
 				6D7E2017B8A741B0A0000001 /* TransitionManager.swift */,
@@ -586,6 +589,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E2008B8A741B0A0000001 /* ParticleFactory.swift in Sources */,
 				6D7E200CB8A741B0A0000001 /* HUDOverlay.swift in Sources */,
 				6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */,
+				6DAAFE02B8A741B0A0000001 /* ThresholdLayout.swift in Sources */,
 				6D7E200EB8A741B0A0000001 /* WorldBuilder.swift in Sources */,
 				6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */,
 				6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */,

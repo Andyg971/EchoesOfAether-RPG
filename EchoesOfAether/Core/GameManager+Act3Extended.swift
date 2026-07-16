@@ -125,9 +125,7 @@ extension GameManager {
     /// Reconstruit le décor du Seuil selon la progression.
     func refreshThresholdBackdrop() {
         guard let scene, phase == .act3 else { return }
-        let kaelPos = world.kael.position
-        showThreshold(in: scene)
-        world.kael.position = kaelPos
+        showThreshold(in: scene, placeKael: false)
     }
 
     func beginAct3() {

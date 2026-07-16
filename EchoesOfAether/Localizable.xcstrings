@@ -7889,13 +7889,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Did you find the 5 Shards? No? Try Mara's shop, she should have some in stock."
+            "value": "The crystal, Kael. Deep in the forest. Every day you lose, your mark gains one."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu as trouvé les 5 Éclats ? Non ? Essaye chez Mara, elle devrait en avoir en stock."
+            "value": "Le cristal, Kael. Au fond de la forêt. Chaque jour que tu perds, ta marque en gagne un."
           }
         }
       }
@@ -7905,13 +7905,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Count on me."
+            "value": "I'll go."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Compte sur moi."
+            "value": "J'y vais."
           }
         }
       }
@@ -7921,13 +7921,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "What is an Aether Shard?"
+            "value": "And if I don't like the answer?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Qu'est-ce qu'un Éclat d'Aether ?"
+            "value": "Et si la réponse ne me plaît pas ?"
           }
         }
       }
@@ -7937,13 +7937,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "You have them! Let me see… Extraordinary. The energy emanating from them is fascinating."
+            "value": "You found it. Let me… Oh."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tu les as ! Laisse-moi voir… Extraordinaire. L'énergie qui en émane est fascinante."
+            "value": "Tu l'as trouvé. Laisse-moi… Oh."
           }
         }
       }
@@ -7953,13 +7953,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Here, take this as thanks. You've earned it."
+            "value": "Kael, this crystal isn't reacting to your mark. It's ANSWERING it. This isn't an infection. It's a conversation, and it started without you."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Tiens, prends ceci pour te remercier. Tu as bien mérité."
+            "value": "Kael, ce cristal ne réagit pas à ta marque. Il lui RÉPOND. Ce n'est pas une infection. C'est une conversation, et elle a commencé sans toi."
           }
         }
       }
@@ -7969,13 +7969,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "My analysis is progressing thanks to your shards. You've done me a great service, Kael."
+            "value": "I'm still looking, Kael. Don't ask me before I'm certain."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Mes analyses avancent grâce à tes éclats. Tu m'as rendu un immense service, Kael."
+            "value": "Je cherche encore, Kael. Ne me demande pas avant que je sois sûre."
           }
         }
       }
@@ -7985,13 +7985,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kael, I need your help. My research on the Black Aether is progressing, but I'm missing components."
+            "value": "Kael. Show me your arm. …Your mark has moved since yesterday. It's spreading."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kael, j'ai besoin de ton aide. Mes recherches sur l'Aether noir avancent, mais il me manque des composants."
+            "value": "Kael. Montre-moi ton bras. …Ta marque a bougé depuis hier. Elle s'étend."
           }
         }
       }
@@ -8001,13 +8001,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "If you could bring me 5 Aether Shards, I could understand what's corrupting these lands."
+            "value": "There's a mother crystal deep in the forest. Aether that hasn't turned yet. If I can compare the two, I'll know how long you have."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Si tu pouvais me ramener 5 Éclats d'Aether, je pourrais comprendre ce qui corrompt ces terres."
+            "value": "Il y a un cristal-mère au fond de la forêt. De l'Aether qui n'a pas encore tourné. Si je peux comparer les deux, je saurai combien de temps il te reste."
           }
         }
       }
@@ -8017,13 +8017,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "… These shards resonate with the mark on my arm. It's strange."
+            "value": "How long do I have, Lyra?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "… Ces éclats résonnent avec la marque sur mon bras. C'est étrange."
+            "value": "Combien de temps il me reste, Lyra ?"
           }
         }
       }
@@ -8033,13 +8033,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Accept Lyra's quest?"
+            "value": "Answer Lyra"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Accepter la quête de Lyra ?"
+            "value": "Répondre à Lyra"
           }
         }
       }
@@ -8049,13 +8049,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Thank you, Kael. Mara sells them at her shop, or you might find some in the forest."
+            "value": "Deep in the forest, where nothing grows anymore. You'll feel it before you see it — your mark will see to that."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Merci, Kael. Mara en vend à sa boutique, ou tu en trouveras peut-être dans la forêt."
+            "value": "Au fond de la forêt, là où plus rien ne pousse. Tu le sentiras avant de le voir — ta marque s'en chargera."
           }
         }
       }
@@ -8065,13 +8065,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Crystals that concentrate Aether energy. Mara has some in her shop. Bring me 5, it's important."
+            "value": "Then you'll know it anyway. I'd rather have a friend who knows than a friend who hopes."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Des cristaux qui concentrent l'énergie de l'Aether. Mara en a dans sa boutique. Ramène-m'en 5, c'est important."
+            "value": "Alors tu la connaîtras quand même. Je préfère un ami qui sait à un ami qui espère."
           }
         }
       }
@@ -10839,13 +10839,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Find 5 Aether Shards for Lyra"
+            "value": "Find the mother crystal (forest)"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Trouver 5 Éclats d'Aether pour Lyra"
+            "value": "Trouver le cristal-mère (forêt)"
           }
         }
       }
@@ -13290,13 +13290,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aether Shards (Lyra)"
+            "value": "The Mother Crystal"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Éclats d'Aether (Lyra)"
+            "value": "Le cristal-mère"
           }
         }
       }
@@ -14020,35 +14020,33 @@
       }
     },
     "questlog.shards.desc": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gather five Aether shards for Lyra."
+            "value": "Bring Lyra an untouched mother crystal from deep in the forest."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Réunir cinq fragments d'Éther pour Lyra."
+            "value": "Rapporter à Lyra un cristal-mère intact, au fond de la forêt."
           }
         }
       }
     },
     "questlog.shards.title": {
-      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The Aether Shards"
+            "value": "What the Mark Says"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Les fragments d'Éther"
+            "value": "Ce que dit la marque"
           }
         }
       }
@@ -14423,38 +14421,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Auberge du Sage"
-          }
-        }
-      }
-    },
-    "shop.mara.aetherShard.desc": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aether shard. Lyra seeks five"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fragment d'Éther. Lyra en cherche cinq"
-          }
-        }
-      }
-    },
-    "shop.mara.aetherShard.name": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aether Shard"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Éclat d'Aether"
           }
         }
       }
@@ -15182,6 +15148,70 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fin Blanche"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.crystal.found1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An untouched crystal, driven into the dead earth. It resonates with your mark — the same note, an octave lower."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un cristal intact, planté dans la terre morte. Il résonne avec ta marque — le même son, une octave plus bas."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.crystal.found2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…So it isn't the forest that's sick. It's the same thing I am."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Alors ce n'est pas la forêt qui est malade. C'est la même chose que moi."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…You're not answering."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Tu ne réponds pas."
+          }
+        }
+      }
+    },
+    "quest.state.found": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To report"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À rapporter"
           }
         }
       }

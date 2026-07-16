@@ -34,7 +34,16 @@ enum GamePhase: Int, CaseIterable, Codable {
 }
 
 enum QuestState: String, Codable {
-    case inactive, active, complete
+    /// `found` — l'objet est ramassé, le donneur ne le sait pas encore.
+    ///
+    /// Les autres quêtes s'en passent : ramasser l'insigne de Tomm suffit à
+    /// clore, et revoir Garen n'est qu'un épilogue rejouable. La quête de Lyra
+    /// a besoin de l'étape en plus : ce qu'elle lit dans le cristal est la
+    /// chute, et une chute ne se rejoue pas.
+    ///
+    /// Nouvelle valeur brute : les sauvegardes d'avant ne la contiennent
+    /// jamais, elles se relisent sans rien perdre.
+    case inactive, active, found, complete
 }
 
 @MainActor

@@ -71,6 +71,15 @@ extension GameManager {
             }
         }
 
+        // Cristal-mère (quête de Lyra), au cœur mort de la forêt.
+        if player.questLyraShards == .active {
+            let crystalSpot = CGPoint(x: w * 0.78, y: h * 0.70)
+            if point.distance(to: crystalSpot) < 60 {
+                pickupMotherCrystal()
+                return true
+            }
+        }
+
         // Entrée des mines de Cendreval (flanc est)
         let mineEntrance = CGPoint(x: w * 0.88, y: h * 0.30)
         if point.distance(to: mineEntrance) < 65 {

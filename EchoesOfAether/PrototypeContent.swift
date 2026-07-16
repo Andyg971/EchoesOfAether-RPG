@@ -255,7 +255,16 @@ enum PrototypeContent {
     static let lyraQuestCompleteDialogue: [DialogueStep] = [
         .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.complete1")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.lyra.quest.complete2")),
-        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.quest.kael1"))
+        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.quest.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.quest.kael2"))
+    ]
+
+    /// Découverte du cristal-mère en forêt — le beat qui porte la quête.
+    /// Kael parle, comme pour l'insigne de Tomm ou la croix de bois : ces
+    /// trouvailles sont toujours vues à travers lui.
+    static let lyraCrystalFoundDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.crystal.found1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.lyra.crystal.found2"))
     ]
 
     static let lyraQuestDoneDialogue: [DialogueStep] = [

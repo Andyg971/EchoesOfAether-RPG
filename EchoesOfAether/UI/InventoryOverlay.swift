@@ -196,12 +196,16 @@ final class InventoryOverlay {
         switch state {
         case .inactive: color = SKColor(white: 0.40, alpha: 1)
         case .active:   color = SKColor(red: 0.90, green: 0.80, blue: 0.35, alpha: 1)
+        // Objet en poche, donneur pas encore prévenu : ambre, entre le jaune
+        // « en cours » et le vert « terminée ».
+        case .found:    color = SKColor(red: 0.95, green: 0.60, blue: 0.25, alpha: 1)
         case .complete: color = SKColor(red: 0.40, green: 0.80, blue: 0.45, alpha: 1)
         }
         let stateLabel: String
         switch state {
         case .inactive: stateLabel = String(localized: "quest.state.inactive")
         case .active:   stateLabel = String(localized: "quest.state.active")
+        case .found:    stateLabel = String(localized: "quest.state.found")
         case .complete: stateLabel = String(localized: "quest.state.complete")
         }
         // Puce d'état pixel : carré plein coloré selon l'état (cohérent

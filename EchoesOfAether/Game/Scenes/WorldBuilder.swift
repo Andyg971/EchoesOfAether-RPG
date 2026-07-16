@@ -26,6 +26,7 @@ final class WorldBuilder {
     private var oreMarker: SKNode?
     private var herbMarker: SKNode?
     private var badgeMarker: SKNode?
+    private var crystalMarker: SKNode?
     private var activeInterior: HouseInteriorKind?
     /// Vrai pendant la veille du réveil : Lyra reste au chevet de Kael
     /// même si `layout()` est rejoué (rotation, resize, premier layout).
@@ -969,6 +970,46 @@ final class WorldBuilder {
 
     func removeBadgeMarker() {
         removeCollectMarker(&badgeMarker)
+    }
+
+    /// Le cristal-mère (quête de Lyra), planté au cœur mort de la forêt.
+    ///
+    /// Violet d'Aether, la couleur de la marque de Kael et de l'Entaille
+    /// Noire : cette chose et lui sont de la même famille, et ça doit se voir
+    /// avant même le dialogue.
+    func addCrystalMarker(in scene: SKScene) {
+        guard crystalMarker == nil else { return }
+        let w = scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+
+        let marker = SKNode()
+        marker.position = CGPoint(x: w * 0.78, y: h * 0.70)
+        marker.zPosition = 60
+
+        // Éclat dressé : losange d'Aether, comme les pastilles du combat.
+        let shard = SKSpriteNode(color: SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1),
+                                 size: CGSize(width: 11, height: 11))
+        shard.zRotation = .pi / 4
+        marker.addChild(shard)
+        let core = SKSpriteNode(color: SKColor(red: 0.90, green: 0.80, blue: 1.00, alpha: 1),
+                                size: CGSize(width: 4, height: 4))
+        core.zRotation = .pi / 4
+        marker.addChild(core)
+
+        let glow = SKShapeNode(circleOfRadius: 15)
+        glow.fillColor = SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 0.10)
+        glow.strokeColor = SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 0.25)
+        glow.lineWidth = 1
+        marker.addChild(glow)
+        JuiceEngine.pulse(glow, scale: 1.4)
+
+        worldNode.addChild(marker)
+        backdropNodes.append(marker)
+        crystalMarker = marker
+    }
+
+    func removeCrystalMarker() {
+        removeCollectMarker(&crystalMarker)
     }
 
     /// Fade + retrait d'un marqueur de collecte (factorisation commune).

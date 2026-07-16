@@ -218,6 +218,19 @@ final class GameManager {
             }
             return
         }
+        // `--quests-active` : arme les quêtes annexes pour que leurs marqueurs
+        // de collecte apparaissent en audit. Sans ça `addSideQuestMarkers` ne
+        // pose rien — une partie neuve n'a aucune quête en cours — et les
+        // points de ramassage de la forêt sont invisibles à l'inspection.
+        if CommandLine.arguments.contains("--quests-active") {
+            player.questLyraShards = .active
+            player.questBramOre    = .active
+            player.questSageHerb   = .active
+            player.questGarenScout = .active
+            player.questMedallion  = .active
+            player.questChildToy   = .active
+        }
+
         // Visualisation pure d'une zone (sans combat), pour audit UI.
         if CommandLine.arguments.contains("--zone-forest") {
             hud.goldValue = player.gold
@@ -1178,22 +1191,22 @@ final class GameManager {
             }
 
         case .active:
-            if player.aetherShards >= 5 {
-                // Turn in shards
-                player.aetherShards -= 5
-                player.gold += 50
-                player.questLyraShards = .complete
-                syncGold()
-                hud.questText = ""
-                AudioEngine.shared.playQuestComplete()
-                GameCenterManager.shared.report(.lyraQuest)
-                dialogue.start(PrototypeContent.lyraQuestCompleteDialogue) { [weak self] in
-                    self?.transition(to: .exploration)
-                }
-            } else {
-                dialogue.start(PrototypeContent.lyraQuestActiveDialogue) { [weak self] in
-                    self?.transition(to: .exploration)
-                }
+            // Lyra relance tant que le cristal n'est pas ramassé. La quête ne
+            // se termine plus à son comptoir contre cinq éclats achetés chez
+            // Mara : elle se termine dans la forêt, en trouvant le cristal —
+            // voir `pickupMotherCrystal`.
+            dialogue.start(PrototypeContent.lyraQuestActiveDialogue) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+
+        case .found:
+            player.questLyraShards = .complete
+            player.gold += 50
+            syncGold()
+            AudioEngine.shared.playQuestComplete()
+            GameCenterManager.shared.report(.lyraQuest)
+            dialogue.start(PrototypeContent.lyraQuestCompleteDialogue) { [weak self] in
+                self?.transition(to: .exploration)
             }
 
         case .complete:
@@ -1268,7 +1281,8 @@ final class GameManager {
         switch player.questBramOre {
         case .inactive: return PrototypeContent.bramGreeting
                              + PrototypeContent.bramOreOfferDialogue
-        case .active:   return PrototypeContent.bramOreActiveDialogue
+        // `.found` n'existe que pour la quête de Lyra ; ailleurs, non rendu = en cours.
+        case .active, .found: return PrototypeContent.bramOreActiveDialogue
         case .complete: return PrototypeContent.bramOreDoneDialogue
         }
     }
@@ -1340,7 +1354,7 @@ final class GameManager {
                     }
                     transition(to: .exploration)
                 }
-            case .active:
+            case .active, .found:
                 dialogue.start(PrototypeContent.garenScoutActiveDialogue) { [weak self] in
                     self?.transition(to: .exploration)
                 }
@@ -1406,7 +1420,7 @@ final class GameManager {
         guard player.talkedToSage, phase == .village else { return base }
         switch player.questSageHerb {
         case .inactive: return base + PrototypeContent.sageHerbOfferDialogue
-        case .active:   return PrototypeContent.sageHerbActiveDialogue
+        case .active, .found: return PrototypeContent.sageHerbActiveDialogue
         case .complete: return PrototypeContent.sageHerbDoneDialogue
         }
     }
@@ -1428,7 +1442,7 @@ final class GameManager {
                 }
             }
 
-        case .active:
+        case .active, .found:
             dialogue.start(PrototypeContent.childQuestActiveDialogue) { [weak self] in
                 self?.transition(to: .exploration)
             }
@@ -1458,7 +1472,7 @@ final class GameManager {
                 }
                 transition(to: .exploration)
             }
-        case .active:
+        case .active, .found:
             dialogue.start(PrototypeContent.villagerQuestActiveDialogue) { [weak self] in
                 self?.transition(to: .exploration)
             }
@@ -1546,6 +1560,26 @@ final class GameManager {
         }
     }
 
+    /// Découverte du cristal-mère (quête de Lyra), au cœur mort de la forêt.
+    ///
+    /// Ne clôt pas la quête : le cristal part dans les mains de Kael, et c'est
+    /// Lyra qui en tirera la chute. D'où `.found` et non `.complete`.
+    func pickupMotherCrystal() {
+        guard let scene else { return }
+        player.questLyraShards = .found
+        hud.questText = ""
+        AudioEngine.shared.playQuestComplete()
+        world.removeCrystalMarker()
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spot = CGPoint(x: scene.size.width * 0.78, y: wh * 0.70)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: spot, color: SKColor(red: 0.68, green: 0.45, blue: 1.00, alpha: 1), count: 14))
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.lyraCrystalFoundDialogue) { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
     // MARK: - Shop Items
 
     /// Forge de Bram : seul le PALIER SUIVANT de chaque catégorie est en
@@ -1597,13 +1631,10 @@ final class GameManager {
                     player.potions += 1
                 }
             ),
-            ShopItem(
-                nameKey: "shop.mara.aetherShard.name",
-                descKey: "shop.mara.aetherShard.desc",
-                price: 25,
-                canBuy: { [weak self] _ in (self?.player.aetherShards ?? 0) < 5 },
-                onBuy: { [weak self] _ in self?.player.aetherShards += 1 }
-            )
+            // Mara vendait ici les Éclats d'Aether de la quête de Lyra — on
+            // pouvait donc acheter au comptoir la réponse à « ma marque va-t-elle
+            // me tuer ». C'est ce qui faisait sonner cette quête comme une
+            // course aux commissions : le cristal se trouve en forêt, à pied.
         ]
     }
 
@@ -2298,6 +2329,7 @@ final class GameManager {
         if player.questBramOre == .active    { world.addOreMarker(in: scene) }
         if player.questSageHerb == .active   { world.addHerbMarker(in: scene) }
         if player.questGarenScout == .active { world.addBadgeMarker(in: scene) }
+        if player.questLyraShards == .active { world.addCrystalMarker(in: scene) }
         world.addMineEntrance(in: scene)
         world.addCaveEntrance(in: scene)   // donjon optionnel (flanc ouest)
     }

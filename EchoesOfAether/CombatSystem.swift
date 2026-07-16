@@ -1012,7 +1012,8 @@ private func perform(_ action: CombatAction) {
             color: SKColor(red: 0.30, green: 0.02, blue: 0.40, alpha: 1),
             duration: 0.2
         )
-        playActorAttackAnimation(on: foe, strong: true)
+        // L'Entaille noire est le coup signature : le GRAND sort du pack.
+        playActorAttackAnimation(on: foe, strong: true, signature: true)
         spawnSlashArc(at: enemyCenter, color: CombatElement.aether.color, strong: true)
         root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
         if isCrit {
@@ -1219,18 +1220,50 @@ private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
 /// Chaque sort a sa mise en scène : projectile de feu, pics de glace,
 /// foudre qui tombe, colonne de soin — plus d'anneau générique.
 private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, boosted: Bool) {
-    // Pose de cast : le lanceur s'imprègne brièvement de la couleur du sort
+    // ── Le lanceur joue sa VRAIE gestuelle de sort ──
+    // Les deux sorts du pack ne sont pas interchangeables :
+    //   skill1 = sphère d'énergie protectrice → soutien, donc le SOIN.
+    //   skill2 = incantation bâton levé, anneau magique → l'OFFENSIF.
+    // L'élément n'est pas porté par la gestuelle mais par le projectile
+    // (feu orange, glace bleue, foudre jaune) : une même incantation sert
+    // les trois, c'est le FX qui les distingue.
+    // Sans pack (ennemi contrôlé), rien : le combat continue.
+    if let actor = actorSprite {
+        CombatSprites.playHeroSkill(on: actor, index: spell == .mend ? 0 : 1)
+    }
+
+    // Teinte de cast : garde une lecture élémentaire même sur un sprite
+    // sans pack, mais discrète — la gestuelle porte l'action désormais.
     let castColor = spell.element?.color
         ?? SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
     actorSprite?.forEachDescendantSprite { sprite in
         let prevColor = sprite.color
         let prevFactor = sprite.colorBlendFactor
         sprite.run(.sequence([
-            .colorize(with: castColor, colorBlendFactor: 0.45, duration: 0.10),
+            .colorize(with: castColor, colorBlendFactor: 0.28, duration: 0.10),
             .wait(forDuration: 0.12),
             .colorize(with: prevColor, colorBlendFactor: prevFactor, duration: 0.22)
         ]))
     }
+
+    // ── Le FX du pack, projeté du lanceur vers la cible ──
+    // Boost : le sort passe à sa forme majeure (blizzard pour la glace,
+    // foudre du ciel pour l'éclair).
+    if let parent = actorSprite?.parent {
+        let from = actorHomePosition
+        let to = foe.homePosition
+        let fx: BattleSprites.Effect? = switch spell {
+        case .ember:   .fire
+        case .frost:   boosted ? .blizzard : .ice
+        case .thunder: boosted ? .thunder : .lightning
+        case .mend:    nil
+        }
+        if let fx {
+            BattleSprites.playEffect(fx, from: from, to: to, in: parent,
+                                     scale: boosted ? 2.0 : 1.6)
+        }
+    }
+
     switch spell {
     case .ember:   playEmberEffect(on: foe, boosted: boosted)
     case .frost:   playFrostEffect(on: foe, boosted: boosted)
@@ -2134,7 +2167,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     // MARK: - Combatant animations
 
-    private func playActorAttackAnimation(on foe: EnemyState, strong: Bool = false) {
+    /// `signature` : l'Entaille noire, qui sort le grand sort du pack (skill2).
+    /// `strong` : coup appuyé par le Boost — skill1.
+    /// Sinon l'attaque normale (Eran enchaîne ses trois attaques).
+    private func playActorAttackAnimation(on foe: EnemyState, strong: Bool = false,
+                                          signature: Bool = false) {
         guard let k = actorSprite else { return }
         let home = actorHomePosition
         let dx: CGFloat = strong ? 110 : 70
@@ -2144,11 +2181,13 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let lungeOut = SKAction.move(to: home, duration: 0.18)
         lungeOut.timingMode = .easeOut
 
-        // Vraie animation du pack : attaque, ou sort si le coup est appuyé.
-        // Sans pack (ennemi contrôlé, node sans corps), rien ne se passe et
-        // seule la ruée subsiste — le combat n'est jamais bloqué.
-        if strong {
-            CombatSprites.playHeroSkill(on: k, index: 0)
+        // Vraie animation du pack. Sans pack (ennemi contrôlé, node sans
+        // corps), rien ne se passe et seule la ruée subsiste — le combat
+        // n'est jamais bloqué.
+        if signature {
+            CombatSprites.playHeroSkill(on: k, index: 1)   // skill2
+        } else if strong {
+            CombatSprites.playHeroSkill(on: k, index: 0)   // skill1
         } else {
             CombatSprites.playHeroAttack(on: k)
         }

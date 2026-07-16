@@ -122,11 +122,23 @@ enum CombatSprites {
         }
     }
 
+    /// Compteur d'enchaînement par node : Eran possède trois attaques, il les
+    /// alterne au lieu de rejouer la même à chaque coup.
+    private static var chainStep: [ObjectIdentifier: Int] = [:]
+
     /// Joue l'attaque du héros/allié ; retombe sur l'idle à la fin.
     /// Sans effet si le node n'est pas un héros à pack (ennemis, boss).
     static func playHeroAttack(on node: SKNode, completion: (() -> Void)? = nil) {
         guard let h = hero(of: node) else { completion?(); return }
-        BattleSprites.play(.attack, hero: h, on: node, completion: completion)
+        var clip: BattleSprites.Clip = .attack
+        if h == .eran {
+            // attack1 → attack2 → attack3 → attack1…
+            let key = ObjectIdentifier(node)
+            let step = (chainStep[key] ?? 0) % 3
+            chainStep[key] = step + 1
+            clip = [.attack, .attack2, .attack3][step]
+        }
+        BattleSprites.play(clip, hero: h, on: node, completion: completion)
     }
 
     /// Joue un sort (0 = skill1, 1 = skill2).
@@ -136,6 +148,9 @@ enum CombatSprites {
         BattleSprites.play(index == 0 ? .skill1 : .skill2, hero: h, on: node,
                            completion: completion)
     }
+
+    /// Nettoie les compteurs d'enchaînement (fin de combat).
+    static func resetChains() { chainStep.removeAll() }
 
     // MARK: - Enemy factory
 

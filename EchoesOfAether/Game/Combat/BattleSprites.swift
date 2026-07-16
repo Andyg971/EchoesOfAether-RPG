@@ -160,6 +160,80 @@ enum BattleSprites {
                  withKey: "clip")
     }
 
+    // MARK: - FX de sort (pack wizard)
+
+    /// Projectiles et effets fournis avec le pack. Chaque élément a ses trois
+    /// étapes (`fire1..3`) : ce sont les frames de l'effet, pas trois variantes.
+    enum Effect {
+        case fire, ice, lightning, thunder, blizzard, ward
+
+        var frameNames: [String] {
+            switch self {
+            case .fire:      return ["fx_fire1", "fx_fire2", "fx_fire3"]
+            case .ice:       return ["fx_ice1", "fx_ice2", "fx_ice3"]
+            case .lightning: return ["fx_lightning1", "fx_lightning2", "fx_lightning3"]
+            case .thunder:   return ["fx_thunder1", "fx_thunder2", "fx_thunder3"]
+            case .blizzard:  return ["fx_blizzard", "fx_blizzard2"]
+            case .ward:      return ["fx_guard"]
+            }
+        }
+
+        /// `thunder` tombe du ciel sur la cible ; les autres sont des
+        /// projectiles qui traversent l'arène.
+        var isProjectile: Bool {
+            switch self {
+            case .thunder, .ward: return false
+            default: return true
+            }
+        }
+    }
+
+    static func effectTextures(_ fx: Effect) -> [SKTexture] {
+        fx.frameNames.compactMap { name in
+            guard UIImage(named: name) != nil else { return nil }
+            let t = SKTexture(imageNamed: name)
+            t.filteringMode = .nearest
+            return t
+        }
+    }
+
+    /// Joue un effet du pack de `from` vers `to`, dans `parent`.
+    /// Sans asset, ne fait rien — l'appelant garde ses propres particules.
+    static func playEffect(_ fx: Effect, from: CGPoint, to: CGPoint,
+                           in parent: SKNode, scale: CGFloat = 1.6) {
+        let frames = effectTextures(fx)
+        guard let first = frames.first else { return }
+
+        let node = SKSpriteNode(texture: first)
+        node.setScale(scale)
+        node.zPosition = 60
+
+        if fx.isProjectile {
+            // Le projectile part de la main du lanceur et file vers la cible.
+            node.position = CGPoint(x: from.x + 40, y: from.y + 30)
+            let dx = to.x - node.position.x
+            node.xScale = dx < 0 ? -abs(node.xScale) : abs(node.xScale)
+            parent.addChild(node)
+            if frames.count > 1 {
+                node.run(.repeatForever(.animate(with: frames, timePerFrame: 0.06,
+                                                 resize: false, restore: false)))
+            }
+            node.run(.sequence([
+                .move(to: CGPoint(x: to.x, y: to.y + 30), duration: 0.22),
+                .fadeOut(withDuration: 0.10),
+                .removeFromParent()
+            ]))
+        } else {
+            // Foudre / garde : l'effet éclôt sur place.
+            node.position = CGPoint(x: to.x, y: to.y + 40)
+            parent.addChild(node)
+            let anim: SKAction = frames.count > 1
+                ? .animate(with: frames, timePerFrame: 0.07, resize: false, restore: false)
+                : .wait(forDuration: 0.24)
+            node.run(.sequence([anim, .fadeOut(withDuration: 0.12), .removeFromParent()]))
+        }
+    }
+
     // MARK: - Node monde
 
     /// Node d'exploration : même personnage que dans l'arène, à l'échelle du

@@ -156,6 +156,18 @@ enum CombatAllyKind {
         }
     }
 
+    /// Réserve de Magie. Elle dit qui est qui : Lyra vit dans le sacré et
+    /// en a le plus ; l'Écho n'est plus qu'un souffle, mais un souffle de
+    /// magie pure ; Eran est un guerrier — sa lame s'embrase, il ne canalise
+    /// pas. Ses techniques coûtent d'ailleurs deux fois moins cher.
+    func maxMP(level: Int) -> Int {
+        switch self {
+        case .lyra:     return 42 + (level - 1) * 5
+        case .lyraEcho: return 38 + (level - 1) * 5
+        case .eran:     return 18 + (level - 1) * 2
+        }
+    }
+
     func attackDamage(level: Int) -> Int {
         switch self {
         case .lyra, .lyraEcho: return 30 + (level - 1) * 3
@@ -254,9 +266,10 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         init(kind: CombatAllyKind, level: Int) {
             self.kind = kind
             let hp = kind.maxHP(level: level)
-            // Les alliés (Lyra, Eran, Écho) ont leur propre réserve de Magie :
-            // on les contrôle, leurs sorts coûtent des MP comme ceux de Kael.
-            let mp = 30 + (level - 1) * 4
+            // Les alliés ont leur propre réserve de Magie. Elle dépend de ce
+            // qu'ils sont : Lyra canalise le sacré à longueur de journée,
+            // Eran est un homme d'acier — sa magie tient dans sa lame.
+            let mp = kind.maxMP(level: level)
             self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp,
                                        mp: mp, maxMP: mp)
         }
@@ -280,6 +293,15 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var actionPanelWidth: CGFloat = 288
     // Curseur de sélection (contrôles classiques, zéro tactile) :
     // rangée 0 = techniques, rangée 1 = BOOST/POTION, rangée 2 = cible.
+    /// Soin en attente d'une cible : le joueur a choisi SOIN, il doit
+    /// maintenant désigner qui soigner. `nil` = pas en mode ciblage de soin.
+    /// Avant, le soin partait tout seul sur le membre le plus blessé — le
+    /// joueur ne décidait rien.
+    private var pendingHealSpell: CombatSpell?
+    private var healTargetIndex = 0
+    /// Cible validée, lue par le cas `.mend` de `perform`. nil = pas de
+    /// choix explicite, on retombe sur l'ancien automatisme.
+    private var chosenHealIndex: Int?
     private var menuRow = 0
     private var menuCol = 0
     private let selectionCursor = SKShapeNode()
@@ -1099,30 +1121,22 @@ private func perform(_ action: CombatAction) {
         if spell == .mend {
             let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 5)
                            * damageMultiplier * spellMult)
-            // Le soin cible le membre du groupe le plus blessé (% PV).
-            let kaelRatio = CGFloat(kael.hp) / CGFloat(kael.maxHP)
-            let worstAlly = aliveAllies.min {
-                CGFloat($0.combatant.hp) / CGFloat($0.combatant.maxHP)
-                    < CGFloat($1.combatant.hp) / CGFloat($1.combatant.maxHP)
-            }
-            let worstRatio = worstAlly.map {
-                CGFloat($0.combatant.hp) / CGFloat($0.combatant.maxHP)
-            } ?? 2
-            let healPos: CGPoint
-            if let ally = worstAlly, worstRatio < kaelRatio {
-                ally.combatant.hp = min(ally.combatant.maxHP,
-                                        ally.combatant.hp + heal)
-                healPos = ally.home
-            } else {
-                kael.hp = min(kael.maxHP, kael.hp + heal)
-                healPos = kaelHomePosition
-            }
+            // Le joueur a désigné sa cible : on la respecte. Sans choix
+            // explicite (IA, sécurité), on retombe sur le plus blessé.
+            let index = chosenHealIndex ?? (healTargets.enumerated().min {
+                Double($0.element.hp) / Double($0.element.maxHP)
+                    < Double($1.element.hp) / Double($1.element.maxHP)
+            }?.offset ?? 0)
+            chosenHealIndex = nil
+            let who = healTargets.indices.contains(index)
+                ? healTargets[index].name : kael.name
+            let healPos = applyHeal(heal, toIndex: index)
             statusLabel.text = boost > 0
-                ? String(localized: "combat.status.healBoosted \(boost + 1) \(heal)")
-                : String(localized: "combat.status.heal \(heal)")
+                ? String(localized: "combat.status.healBoostedOn \(who) \(boost + 1) \(heal)")
+                : String(localized: "combat.status.healOn \(who) \(heal)")
             AudioEngine.shared.playHit()
             HapticsEngine.success()
-            playMendEffect(boosted: boost > 0, at: healPos)
+            playSpellAnimation(spell, on: foe, boosted: boost > 0)
             showFloatingText("+" + String(heal), at: healPos, color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
             endPlayerAction()
             return
@@ -2705,9 +2719,25 @@ private func updateSelectionCursor() {
 
 /// Navigation joystick dans le menu de combat.
 /// dy : +1 monte (techniques → BOOST → cible), -1 descend.
+/// Bouton B pendant un ciblage de soin : annule et rend la main.
+/// Sans ça, choisir SOIN par erreur enfermerait le joueur dans la rangée.
+@discardableResult
+func cancelTargeting() -> Bool {
+    guard pendingHealSpell != nil else { return false }
+    pendingHealSpell = nil
+    menuRow = 0
+    AudioEngine.shared.playTap()
+    updateSelectionCursor()
+    updateVisuals()
+    return true
+}
+
 func menuNav(dx: Int, dy: Int) {
     guard phase == .playerTurn else { return }
     if dy != 0 {
+        // En ciblage de soin, le joystick vertical ne quitte pas la rangée :
+        // on choisit une cible ou on annule au bouton B, rien d'autre.
+        if pendingHealSpell != nil { return }
         let maxRow = aliveEnemies.count > 1 ? 2 : 1
         menuRow = min(max(menuRow + dy, 0), maxRow)
         menuCol = min(menuCol, currentMenuRowButtons.count - 1)
@@ -2729,7 +2759,17 @@ func menuNav(dx: Int, dy: Int) {
 func menuConfirm() {
     guard phase == .playerTurn else { return }
     if menuRow == 2 {
-        // Cible choisie : redescend sur les techniques
+        // Cible d'un soin validée : le sort part enfin, sur QUI on a choisi.
+        if let spell = pendingHealSpell {
+            pendingHealSpell = nil
+            menuRow = 0
+            // La cible voyage jusqu'au cas .mend de perform() : tout le
+            // reste (coût MP, Boost, fin de tour) suit le chemin normal.
+            chosenHealIndex = healTargetIndex
+            perform(.spell(spell))
+            return
+        }
+        // Cible d'attaque choisie : redescend sur les techniques
         menuRow = 0
         updateSelectionCursor()
         return
@@ -2747,7 +2787,30 @@ func menuConfirm() {
     if button === fireButton { perform(.spell(.ember)); return }
     if button === iceButton { perform(.spell(.frost)); return }
     if button === lightningButton { perform(.spell(.thunder)); return }
-    if button === healButton { perform(.spell(.mend)); return }
+    if button === healButton {
+        // Le soin demande une cible : on passe la main au joueur.
+        // Les MP sont vérifiés (et dépensés) par perform() à la validation ;
+        // ici on refuse juste d'entrer en ciblage si la réserve est vide.
+        let mp = actingAlly?.combatant.mp ?? kael.mp
+        guard mp >= CombatSpell.mend.mpCost else {
+            showEffect(String(localized: "combat.mp.insufficient"),
+                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+            AudioEngine.shared.playTap()
+            return
+        }
+        pendingHealSpell = .mend
+        // Curseur posé d'emblée sur le plus blessé : le choix par défaut
+        // reste le bon, mais il devient un choix.
+        healTargetIndex = healTargets.enumerated().min {
+            Double($0.element.hp) / Double($0.element.maxHP)
+                < Double($1.element.hp) / Double($1.element.maxHP)
+        }?.offset ?? 0
+        menuRow = 2
+        AudioEngine.shared.playSelect()
+        updateSelectionCursor()
+        updateVisuals()
+        return
+    }
     if button === blessingButton { perform(.spell(.blessing)); return }
     if button === windButton { perform(.spell(.windBlade)); return }
     if button === emberButton { perform(.spell(.emberStrike)); return }
@@ -2755,9 +2818,48 @@ func menuConfirm() {
 
 /// Fait tourner la cible parmi les ennemis vivants.
 private func cycleTarget(direction: Int) {
+    // Mode soin : on parcourt le GROUPE, pas les ennemis.
+    if pendingHealSpell != nil {
+        let count = healTargets.count
+        guard count > 1 else { return }
+        healTargetIndex = (healTargetIndex + direction + count) % count
+        return
+    }
     let alive = enemies.indices.filter { enemies[$0].combatant.isAlive }
     guard alive.count > 1, let cur = alive.firstIndex(of: targetIndex) else { return }
     targetIndex = alive[(cur + direction + alive.count) % alive.count]
+}
+
+// MARK: - Ciblage du soin
+
+/// Cibles possibles d'un soin : Kael puis les alliés vivants, dans l'ordre
+/// où ils sont posés à l'écran. Chaque entrée porte sa position pour que le
+/// chevron sache où se placer.
+private var healTargets: [(name: String, home: CGPoint, hp: Int, maxHP: Int)] {
+    var list: [(String, CGPoint, Int, Int)] = [
+        (kael.name, kaelHomePosition, kael.hp, kael.maxHP)
+    ]
+    for ally in aliveAllies {
+        list.append((ally.combatant.name, ally.home,
+                     ally.combatant.hp, ally.combatant.maxHP))
+    }
+    return list.map { (name: $0.0, home: $0.1, hp: $0.2, maxHP: $0.3) }
+}
+
+/// Applique le soin à la cible choisie par le joueur.
+private func applyHeal(_ amount: Int, toIndex index: Int) -> CGPoint {
+    if index == 0 {
+        kael.hp = min(kael.maxHP, kael.hp + amount)
+        return kaelHomePosition
+    }
+    let allies = aliveAllies
+    guard allies.indices.contains(index - 1) else {
+        kael.hp = min(kael.maxHP, kael.hp + amount)
+        return kaelHomePosition
+    }
+    let ally = allies[index - 1]
+    ally.combatant.hp = min(ally.combatant.maxHP, ally.combatant.hp + amount)
+    return ally.home
 }
 
 /// Boutons de techniques de l'acteur courant — chacun son domaine.
@@ -3063,12 +3165,24 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             enemyHPBack.strokeColor = foe.brokenTurns > 0
                 ? SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
                 : SKColor(white: 0.3, alpha: 1)
-            // Marqueur de cible au-dessus du sprite visé (multi uniquement)
-            let markerVisible = enemies.count > 1 && c.isAlive && phase != .finished
-            targetMarker.isHidden = !markerVisible
-            if markerVisible {
-                targetMarker.position = CGPoint(x: foe.homePosition.x,
-                                                y: foe.homePosition.y + 64)
+            // Marqueur de cible au-dessus du sprite visé.
+            // En ciblage de soin il désigne un ALLIÉ : il devient vert et se
+            // pose sur le membre du groupe choisi, même s'il n'y a qu'un
+            // ennemi — c'est le curseur du joueur.
+            if let healIdx = pendingHealSpell != nil ? healTargetIndex : nil,
+               healTargets.indices.contains(healIdx) {
+                targetMarker.isHidden = false
+                targetMarker.strokeColor = SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1)
+                let t = healTargets[healIdx]
+                targetMarker.position = CGPoint(x: t.home.x, y: t.home.y + 64)
+            } else {
+                targetMarker.strokeColor = SKColor(red: 1.00, green: 0.85, blue: 0.30, alpha: 1)
+                let markerVisible = enemies.count > 1 && c.isAlive && phase != .finished
+                targetMarker.isHidden = !markerVisible
+                if markerVisible {
+                    targetMarker.position = CGPoint(x: foe.homePosition.x,
+                                                    y: foe.homePosition.y + 64)
+                }
             }
         } else {
             targetMarker.isHidden = true

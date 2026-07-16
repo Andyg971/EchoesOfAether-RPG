@@ -295,13 +295,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "FIRE"
+            "value": "BLAZE"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "FEU"
+            "value": "BRASIER"
           }
         }
       }
@@ -311,13 +311,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "HEAL"
+            "value": "REMISSION"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "SOIN"
+            "value": "RÉMISSION"
           }
         }
       }
@@ -327,13 +327,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "ICE"
+            "value": "BITE"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "GLACE"
+            "value": "MORSURE"
           }
         }
       }
@@ -343,13 +343,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "THUNDER"
+            "value": "FULGUR"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "FOUDRE"
+            "value": "FULGUR"
           }
         }
       }
@@ -1006,13 +1006,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fire"
+            "value": "Blaze"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Feu"
+            "value": "Brasier"
           }
         }
       }
@@ -1022,13 +1022,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Heal"
+            "value": "Remission"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Soin"
+            "value": "Rémission"
           }
         }
       }
@@ -1038,13 +1038,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ice"
+            "value": "White Bite"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Glace"
+            "value": "Morsure Blanche"
           }
         }
       }
@@ -1054,13 +1054,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Thunder"
+            "value": "Fulgurance"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Foudre"
+            "value": "Fulgurance"
           }
         }
       }
@@ -4344,44 +4344,114 @@
     },
     "combat.button.windBlade": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "GALE" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "BOURRASQUE" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GALE"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BOURRASQUE"
+          }
+        }
       }
     },
     "combat.button.emberStrike": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "EMBER" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "BRAISE" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EMBER"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BRAISE"
+          }
+        }
       }
     },
     "combat.spell.windBlade": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Gale Blade" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Lame de Bourrasque" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gale Blade"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lame de Bourrasque"
+          }
+        }
       }
     },
     "combat.spell.emberStrike": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Ember Strike" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Frappe de Braise" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ember Strike"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frappe de Braise"
+          }
+        }
       }
     },
     "combat.button.blessing": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "BLESSING" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "BÉNÉDICTION" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BLESSING"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BÉNÉDICTION"
+          }
+        }
       }
     },
     "combat.spell.blessing": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Blessing" } },
-        "fr": { "stringUnit": { "state": "translated", "value": "Bénédiction" } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blessing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bénédiction"
+          }
+        }
       }
     },
     "combat.status.blessing %lld": {
       "localizations": {
-        "en": { "stringUnit": { "state": "translated", "value": "Blessing restores %lld HP to everyone." } },
-        "fr": { "stringUnit": { "state": "translated", "value": "La Bénédiction rend %lld PV à tout le groupe." } }
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blessing restores %lld HP to everyone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Bénédiction rend %lld PV à tout le groupe."
+          }
+        }
       }
     },
     "paywall.title": {
@@ -14986,6 +15056,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Back to the forest"
+          }
+        }
+      }
+    },
+    "combat.status.healOn %@ %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ recovers %2$lld HP."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ récupère %2$lld PV."
+          }
+        }
+      }
+    },
+    "combat.status.healBoostedOn %@ %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boost ×%2$lld — %1$@ recovers %3$lld HP."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boost ×%2$lld — %1$@ récupère %3$lld PV."
           }
         }
       }

@@ -588,6 +588,9 @@ final class GameManager {
             .scale(to: 1.0, duration: 0.10)
         ]))
         // Ordre : options au-dessus de pause ; dialogue en dernier.
+        // En combat, B annule d'abord un ciblage de soin en cours — sans
+        // quoi choisir SOIN par erreur enfermerait le joueur.
+        if state == .combat, combat.cancelTargeting() { return }
         if paywall.isActive { paywall.dismiss(); return }
         if options.isActive { options.dismiss(); return }
         if pause.isActive { pause.dismiss(); return }

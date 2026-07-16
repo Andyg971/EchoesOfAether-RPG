@@ -2193,10 +2193,12 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
     private func setupCombatants(scene: SKScene) {
-        // Perspective 3/4 à la Octopath : Kael au premier plan (bas-gauche),
-        // ennemis étagés à droite (formation selon leur nombre).
+        // Perspective 3/4 à la Octopath : Kael au premier plan, ennemis
+        // étagés à droite. La formation est remontée et décalée vers le
+        // centre depuis que le menu de commandes occupe le bas-gauche —
+        // sinon la boîte passe devant le groupe.
         let k = CombatSprites.kael()
-        k.position = CGPoint(x: scene.size.width * 0.25, y: scene.size.height * 0.36)
+        k.position = CGPoint(x: scene.size.width * 0.34, y: scene.size.height * 0.50)
         k.setScale(1.10)
         k.zPosition = 6
         root.addChild(k)
@@ -2204,7 +2206,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         kaelHomePosition = k.position
 
         // Alliés en retrait derrière Kael (profondeur 3/4, diagonale)
-        let allySlots: [(x: CGFloat, y: CGFloat)] = [(0.13, 0.45), (0.10, 0.54)]
+        let allySlots: [(x: CGFloat, y: CGFloat)] = [(0.22, 0.58), (0.19, 0.67)]
         for (i, ally) in allies.enumerated() {
             let node = CombatSprites.ally(kind: ally.kind)
             node.position = CGPoint(x: scene.size.width * allySlots[i].x,
@@ -2707,14 +2709,43 @@ private func updateSelectionCursor() {
     guard !row.isEmpty else { selectionCursor.isHidden = true; return }
     menuCol = min(menuCol, row.count - 1)
     let button = row[menuCol]
-    let size = button.frame.size
-    PixelUI.stylePanel(selectionCursor,
-                       size: CGSize(width: size.width + 6, height: size.height + 6),
-                       fill: .clear, accent: PixelUI.gold)
-    selectionCursor.position = button.position
+
+    // Rangée BOOST/POTION : elle reste horizontale, cadre doré comme avant.
+    if menuRow == 1 {
+        let size = button.frame.size
+        PixelUI.stylePanel(selectionCursor,
+                           size: CGSize(width: size.width + 6, height: size.height + 6),
+                           fill: .clear, accent: PixelUI.gold)
+        selectionCursor.position = button.position
+        selectionCursor.isHidden = phase != .playerTurn
+        selectionCursor.removeAllActions()
+        JuiceEngine.pulse(selectionCursor, scale: 1.04)
+        return
+    }
+
+    // Liste de commandes : chevron ► posé devant la ligne, la signature du
+    // menu Final Fantasy. Un cadre autour d'une ligne de liste ferait double
+    // emploi avec la boîte qui l'entoure déjà.
+    let chevron = CGMutablePath()
+    chevron.move(to: CGPoint(x: -3, y: 5))
+    chevron.addLine(to: CGPoint(x: 4, y: 0))
+    chevron.addLine(to: CGPoint(x: -3, y: -5))
+    chevron.closeSubpath()
+    selectionCursor.path = chevron
+    selectionCursor.fillColor = PixelUI.gold
+    selectionCursor.strokeColor = .clear
+    selectionCursor.lineWidth = 0
+    selectionCursor.glowWidth = 0
+    selectionCursor.childNode(withName: "pixelOuter")?.removeFromParent()
+    selectionCursor.position = CGPoint(x: button.position.x - button.frame.width / 2 - 8,
+                                       y: button.position.y)
     selectionCursor.isHidden = phase != .playerTurn
     selectionCursor.removeAllActions()
-    JuiceEngine.pulse(selectionCursor, scale: 1.04)
+    // Battement horizontal : le curseur FF respire vers sa ligne.
+    selectionCursor.run(.repeatForever(.sequence([
+        .moveBy(x: 3, y: 0, duration: 0.45),
+        .moveBy(x: -3, y: 0, duration: 0.45)
+    ])))
 }
 
 /// Navigation joystick dans le menu de combat.
@@ -2738,15 +2769,32 @@ func menuNav(dx: Int, dy: Int) {
         // En ciblage de soin, le joystick vertical ne quitte pas la rangée :
         // on choisit une cible ou on annule au bouton B, rien d'autre.
         if pendingHealSpell != nil { return }
-        let maxRow = aliveEnemies.count > 1 ? 2 : 1
-        menuRow = min(max(menuRow + dy, 0), maxRow)
-        menuCol = min(menuCol, currentMenuRowButtons.count - 1)
+        if menuRow == 0 {
+            // La liste de commandes est verticale : haut/bas la parcourt.
+            // dy>0 = vers le haut de l'écran = vers la ligne précédente.
+            let count = currentActorButtons.count
+            let next = menuCol - dy
+            if next < 0 || next >= count {
+                // Sorti par le haut/bas de la liste : on passe à BOOST/POTION.
+                menuRow = 1
+                menuCol = 0
+            } else {
+                menuCol = next
+            }
+        } else {
+            let maxRow = aliveEnemies.count > 1 ? 2 : 1
+            menuRow = min(max(menuRow + dy, 0), maxRow)
+            menuCol = min(menuCol, max(0, currentMenuRowButtons.count - 1))
+        }
     } else if dx != 0 {
         if menuRow == 2 {
             cycleTarget(direction: dx)
-        } else {
+        } else if menuRow == 1 {
             let count = currentMenuRowButtons.count
             menuCol = (menuCol + dx + count) % count
+        } else {
+            // Liste verticale : gauche/droite change de cible d'ennemi.
+            cycleTarget(direction: dx)
         }
     }
     HapticsEngine.light()
@@ -2879,8 +2927,10 @@ private var currentActorButtons: [SKShapeNode] {
     }
 }
 
-/// Répartit la rangée de boutons de l'acteur courant dans le panneau,
-/// masque ceux de l'autre acteur.
+/// Dispose les commandes de l'acteur en **liste verticale**, façon Final
+/// Fantasy : une seule boîte sombre, une commande par ligne, le coût en
+/// Magie aligné à droite. La rangée horizontale de boîtes colorées se lisait
+/// comme une barre d'outils — rouge, bleu, jaune côte à côte, sans hiérarchie.
 private func layoutActionMenu() {
     guard let scene = parentScene else { return }
     let visible = currentActorButtons
@@ -2890,17 +2940,93 @@ private func layoutActionMenu() {
         .filter { !visible.contains($0) }
     hidden.forEach { $0.isHidden = true }
 
+    let rowH: CGFloat = 26
+    let listW: CGFloat = 152
     let count = CGFloat(visible.count)
-    let gap: CGFloat = 8
-    let buttonW = (actionPanelWidth - 16 - gap * (count - 1)) / count
-    let totalW = buttonW * count + gap * (count - 1)
-    let startX = scene.size.width / 2 - totalW / 2 + buttonW / 2
+    // La liste monte depuis le bas de l'écran, calée à gauche comme un menu
+    // de commandes classique. Le reste de l'arène garde sa place.
+    let listX = 96 + listW / 2
+    let bottomY: CGFloat = 40   // même repère bas que l'ancien panneau
+    let topRowY = bottomY + rowH * (count - 1)
+
     for (i, button) in visible.enumerated() {
         button.isHidden = false
-        resizeButton(button, width: buttonW)
-        button.position = CGPoint(x: startX + CGFloat(i) * (buttonW + gap),
-                                  y: actionPanel.position.y)
+        styleCommandRow(button, width: listW, height: rowH)
+        button.position = CGPoint(x: listX, y: topRowY - CGFloat(i) * rowH)
     }
+
+    // Cadre unique autour de la liste : c'est LUI la boîte, plus les lignes.
+    PixelUI.stylePanel(actionPanel,
+                       size: CGSize(width: listW + 14, height: rowH * count + 14),
+                       fill: SKColor(red: 0.05, green: 0.05, blue: 0.09, alpha: 0.96),
+                       accent: SKColor(red: 0.58, green: 0.50, blue: 0.30, alpha: 1))
+    actionPanel.position = CGPoint(x: listX, y: bottomY + rowH * (count - 1) / 2)
+    actionPanel.zPosition = 850
+    _ = scene
+}
+
+/// Une ligne de commande : pas de boîte, pas de couleur de fond. Le nom à
+/// gauche, la pastille d'élément avant lui, le coût en Magie à droite.
+private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloat) {
+    node.path = CGPath(rect: CGRect(x: -width / 2, y: -height / 2,
+                                    width: width, height: height), transform: nil)
+    node.fillColor = .clear
+    node.strokeColor = .clear
+    node.lineWidth = 0
+    node.glowWidth = 0
+    node.zPosition = 860
+    node.childNode(withName: "pixelOuter")?.removeFromParent()
+
+    guard let label = node.children.compactMap({ $0 as? SKLabelNode })
+            .first(where: { $0.name != "mpCost" }) else { return }
+    label.horizontalAlignmentMode = .left
+    label.verticalAlignmentMode = .center
+    label.fontSize = 13
+    label.position = CGPoint(x: -width / 2 + 20, y: 0)
+
+    // Pastille d'élément, avant le nom.
+    if let diamond = node.children.compactMap({ $0 as? SKSpriteNode }).first {
+        diamond.position = CGPoint(x: -width / 2 + 9, y: 0)
+    }
+
+    // Coût en Magie, aligné à droite : dans un menu FF c'est l'information
+    // qui décide. Grisé quand la réserve ne suit pas.
+    let cost = mpCostForButton(node)
+    var mpLabel = node.childNode(withName: "mpCost") as? SKLabelNode
+    if cost > 0 {
+        if mpLabel == nil {
+            let l = SKLabelNode(fontNamed: PixelUI.uiFont)
+            l.name = "mpCost"
+            l.verticalAlignmentMode = .center
+            l.horizontalAlignmentMode = .right
+            l.fontSize = 11
+            node.addChild(l)
+            mpLabel = l
+        }
+        let mp = actingAlly?.combatant.mp ?? kael.mp
+        mpLabel?.text = String(cost)
+        mpLabel?.fontColor = mp >= cost
+            ? SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1)
+            : SKColor(red: 0.55, green: 0.30, blue: 0.30, alpha: 1)
+        mpLabel?.position = CGPoint(x: width / 2 - 8, y: 0)
+        label.fontColor = mp >= cost ? .white : SKColor(white: 0.45, alpha: 1)
+    } else {
+        mpLabel?.removeFromParent()
+        label.fontColor = .white
+    }
+}
+
+/// Coût en Magie de la commande portée par ce bouton.
+private func mpCostForButton(_ node: SKShapeNode) -> Int {
+    if node === fireButton      { return CombatSpell.ember.mpCost }
+    if node === iceButton       { return CombatSpell.frost.mpCost }
+    if node === lightningButton { return CombatSpell.thunder.mpCost }
+    if node === healButton      { return CombatSpell.mend.mpCost }
+    if node === blessingButton  { return CombatSpell.blessing.mpCost }
+    if node === windButton      { return CombatSpell.windBlade.mpCost }
+    if node === emberButton     { return CombatSpell.emberStrike.mpCost }
+    if node === blackSlashButton { return 14 }   // Entaille noire
+    return 0   // attaque physique : gratuite
 }
 
 /// Redimensionne un bouton existant (repasse le style pixel, recadre

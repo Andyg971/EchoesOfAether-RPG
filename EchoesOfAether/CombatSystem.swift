@@ -58,6 +58,11 @@ enum CombatSpell: CaseIterable {
     /// Bénédiction — le sort signature de Lyra : sa nova sacrée soigne
     /// TOUT le groupe. Kael ne l'a pas : c'est le domaine de la prêtresse.
     case blessing
+    /// TEMPÊTE — l'ultime de Kael. La glace et la foudre ne sont plus deux
+    /// sorts tièdes mais un seul coup : il les fusionne. Frappe les faiblesses
+    /// GLACE **et** FOUDRE à la fois, et ne part qu'UNE FOIS par combat — un
+    /// atout qu'on garde pour le bon moment, pas un bouton qu'on matraque.
+    case tempest
     /// Techniques d'Eran — ce ne sont pas des sorts mais des passes d'armes :
     /// son pack l'anime en frappe tournoyante (vent) et frappe enflammée.
     /// Elles coûtent peu de MP : un guerrier ne canalise pas, il frappe.
@@ -73,6 +78,7 @@ enum CombatSpell: CaseIterable {
         case .blessing: return String(localized: "combat.spell.blessing")
         case .windBlade: return String(localized: "combat.spell.windBlade")
         case .emberStrike: return String(localized: "combat.spell.emberStrike")
+        case .tempest: return String(localized: "combat.spell.tempest")
         }
     }
 
@@ -84,7 +90,17 @@ enum CombatSpell: CaseIterable {
         case .mend, .blessing: return nil   // sacrés : aucune faiblesse à exploiter
         case .windBlade: return .physical   // acier et vent, rien de magique
         case .emberStrike: return .fire     // la lame s'embrase
+        // Tempête : deux éléments à la fois. `element` n'en rend qu'un —
+        // `elements` porte la vérité, et le calcul de faiblesse l'utilise.
+        case .tempest: return .ice
         }
+    }
+
+    /// Éléments réellement portés par le sort. Un seul pour tous, sauf la
+    /// Tempête qui en fusionne deux.
+    var elements: [CombatElement] {
+        if case .tempest = self { return [.ice, .lightning] }
+        return element.map { [$0] } ?? []
     }
 
     var basePower: Int {
@@ -96,6 +112,7 @@ enum CombatSpell: CaseIterable {
         case .blessing: return 52   // moins par tête, mais sur tout le groupe
         case .windBlade: return 70
         case .emberStrike: return 80
+        case .tempest: return 130   // un seul coup, il doit compter
         }
     }
 
@@ -110,6 +127,7 @@ enum CombatSpell: CaseIterable {
         case .blessing: return 20   // le soin de groupe se paie
         case .windBlade: return 6    // techniques d'arme : peu coûteuses
         case .emberStrike: return 10
+        case .tempest: return 26    // cher : c'est l'atout du combat
         }
     }
 
@@ -141,6 +159,7 @@ enum CombatSpell: CaseIterable {
         case .blessing:    keys = ["blessing", "grace", "apotheosis"]
         case .windBlade:   keys = ["gale", "tornado", "hurricane"]
         case .emberStrike: keys = ["ember", "blazing", "immolation"]
+        case .tempest:     keys = ["tempest", "maelstrom", "ragnarok"]
         }
         return String(localized: String.LocalizationValue(
             "combat.spellTier." + keys[tier(at: level) - 1]))
@@ -274,6 +293,8 @@ private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), c
 private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 /// Bénédiction — sort signature de Lyra (nova sacrée, soin de groupe).
 private let blessingButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+/// TEMPÊTE — l'ultime de Kael, une fois par combat.
+private let tempestButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 /// Techniques d'Eran : bourrasque (vent) et lame ardente (feu).
 private let windButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let emberButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
@@ -348,6 +369,9 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var blockBurned = false
     /// Le « ! » affiché au-dessus de l'ennemi qui s'annonce.
     private var blockPrompt: SKLabelNode?
+    /// La Tempête est un atout unique : une fois lancée, elle est épuisée
+    /// jusqu'au prochain combat.
+    private var tempestUsed = false
 
     private var pendingHealSpell: CombatSpell?
     private var healTargetIndex = 0
@@ -499,6 +523,7 @@ private var goldReward = 0
                               shieldMax: tactics.shieldMax)
         }
         self.targetIndex = 0
+        self.tempestUsed = false
 
 let startHP = min(player.currentHP, player.currentMaxHP)
         self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP,
@@ -1359,8 +1384,12 @@ private func perform(_ action: CombatAction) {
         }
 
         guard let element = spell.element else { return }
-        let isWeak = foe.weaknesses.contains(element)
-        let broke = isWeak ? hitWeakness(on: foe, with: element) : false
+        // Tempête : elle porte glace ET foudre — une seule des deux suffit à
+        // toucher la faiblesse. C'est sa raison d'être.
+        let hitElements = spell.elements
+        let isWeak = hitElements.contains { foe.weaknesses.contains($0) }
+        let breakElement = hitElements.first { foe.weaknesses.contains($0) } ?? element
+        let broke = isWeak ? hitWeakness(on: foe, with: breakElement) : false
         var finalDmg = Int(CGFloat(spell.power(at: _player?.level ?? 1))
                            * damageMultiplier * spellMult)
         if isWeak { finalDmg = Int(CGFloat(finalDmg) * 1.35) }
@@ -1491,6 +1520,13 @@ private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
         }
     case .mend, .blessing:
         break   // sorts sacrés : ils soignent, ils n'affligent pas
+    case .tempest:
+        // Fusion des deux : elle gèle ET paralyse. C'est ce qui en fait
+        // un ultime et pas un gros sort de plus.
+        if Double.random(in: 0...1) < (wasWeak ? 0.75 : 0.50) {
+            foe.combatant.stunned = true
+            showEffect(String(localized: "combat.effect.paralyzed"), color: CombatElement.lightning.color)
+        }
     case .windBlade:
         break   // pure puissance, aucun statut
     case .emberStrike:
@@ -1559,12 +1595,25 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
         case .blessing:    .lyraBlessing
         case .windBlade:   .eranWind
         case .emberStrike: .eranEmber
+        case .tempest:     .blizzard   // + la foudre, jouée juste après
         }
         let target = (spell == .mend || spell == .blessing) ? from : to
         if let fx, !BattleSprites.effectTextures(fx).isEmpty {
             BattleSprites.playEffect(fx, from: from, to: target, in: parent,
                                      scale: boosted ? 2.0 : 1.6)
             usedPackFX = true
+        }
+        // Tempête : le blizzard part, la foudre tombe derrière. Les deux
+        // éléments doivent se voir — sinon rien ne dit que c'est une fusion.
+        if spell == .tempest {
+            parent.run(.sequence([
+                .wait(forDuration: 0.16),
+                .run { [weak self] in
+                    guard self != nil else { return }
+                    BattleSprites.playEffect(.thunder, from: from, to: target,
+                                             in: parent, scale: boosted ? 2.4 : 2.0)
+                }
+            ]))
         }
     }
 
@@ -1583,7 +1632,7 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
             for ally in aliveAllies {
                 playMendEffect(boosted: boosted, at: ally.home)
             }
-        case .windBlade, .emberStrike:
+        case .windBlade, .emberStrike, .tempest:
             break   // ces techniques n'existent que par leur pack
         }
     } else if spell == .blessing {
@@ -1605,6 +1654,7 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
         case .thunder: 0.14    // la foudre frappe quasi instantanément
         case .windBlade: 0.20  // le temps du bond
         case .emberStrike: 0.24
+        case .tempest: 0.34    // blizzard puis foudre
         case .mend, .blessing: 0
         }
         root.run(.sequence([
@@ -2826,7 +2876,8 @@ private func setupComboAndStatusUI(scene: SKScene) {
     private func pulseActionPanel() {
         for (i, button) in [attackButton, fireButton, iceButton,
                             blackSlashButton, lightningButton, healButton,
-                            blessingButton, windButton, emberButton].enumerated() {
+                            blessingButton, windButton, emberButton,
+                            tempestButton].enumerated() {
             button.run(.sequence([
                 .wait(forDuration: Double(i) * 0.03),
                 .scale(to: 1.07, duration: 0.10),
@@ -2886,6 +2937,10 @@ private func setupButtons(scene: SKScene) {
     addButton(blessingButton, title: String(localized: "combat.button.blessing"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.16, green: 0.16, blue: 0.05, alpha: 1), stroke: SKColor(red: 0.85, green: 0.78, blue: 0.35, alpha: 1), fontSize: 12,
               chip: SKColor(red: 0.60, green: 0.98, blue: 0.70, alpha: 1))
+    // Tempête : cyan et violet mêlés — la glace et la foudre fondues.
+    addButton(tempestButton, title: String(localized: "combat.button.tempest"), at: .zero, width: 80, height: buttonH,
+              fill: SKColor(red: 0.08, green: 0.14, blue: 0.26, alpha: 1), stroke: SKColor(red: 0.45, green: 0.75, blue: 0.95, alpha: 1), fontSize: 12,
+              chip: SKColor(red: 0.60, green: 0.85, blue: 1.00, alpha: 1))
     // Techniques d'Eran : acier pour la bourrasque, braise pour la lame ardente.
     addButton(windButton, title: String(localized: "combat.button.windBlade"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.14, green: 0.16, blue: 0.14, alpha: 1), stroke: SKColor(red: 0.72, green: 0.80, blue: 0.68, alpha: 1), fontSize: 12,
@@ -3078,6 +3133,18 @@ func menuConfirm() {
     if button === blessingButton { perform(.spell(.blessing)); return }
     if button === windButton { perform(.spell(.windBlade)); return }
     if button === emberButton { perform(.spell(.emberStrike)); return }
+    if button === tempestButton {
+        guard !tempestUsed else {
+            showEffect(String(localized: "combat.tempest.spent"),
+                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+            AudioEngine.shared.playTap()
+            HapticsEngine.error()
+            return
+        }
+        tempestUsed = true
+        perform(.spell(.tempest))
+        return
+    }
 }
 
 /// Fait tourner la cible parmi les ennemis vivants.
@@ -3138,8 +3205,11 @@ private var currentActorButtons: [SKShapeNode] {
     case .lyra:     return [attackButton, healButton, blessingButton]
     case .lyraEcho: return [attackButton, healButton]
     case .eran:     return [attackButton, windButton, emberButton, blackSlashButton]
-    case nil:       return [attackButton, fireButton, iceButton,
-                            lightningButton, blackSlashButton]
+    // Kael : le brasier au quotidien, la Tempête comme atout (1x), et
+    // l'Aether. Glace et foudre ne sont plus des sorts a part - elles
+    // vivent fusionnees dans la Tempete.
+    case nil:       return [attackButton, fireButton, tempestButton,
+                            blackSlashButton]
     }
 }
 
@@ -3152,7 +3222,7 @@ private func layoutActionMenu() {
     let visible = currentActorButtons
     let hidden = [attackButton, fireButton, iceButton,
                   blackSlashButton, lightningButton, healButton, blessingButton,
-                  windButton, emberButton]
+                  windButton, emberButton, tempestButton]
         .filter { !visible.contains($0) }
     hidden.forEach { $0.isHidden = true }
 
@@ -3200,6 +3270,8 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
     if let spell = spellForButton(node) {
         label.text = spell.title(at: _player?.level ?? 1).uppercased()
     }
+    // Tempête épuisée : le menu doit le dire sans qu'on ait à essayer.
+    let spent = node === tempestButton && tempestUsed
     label.horizontalAlignmentMode = .left
     label.verticalAlignmentMode = .center
     label.fontSize = 13
@@ -3230,10 +3302,10 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
             ? SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1)
             : SKColor(red: 0.55, green: 0.30, blue: 0.30, alpha: 1)
         mpLabel?.position = CGPoint(x: width / 2 - 8, y: 0)
-        label.fontColor = mp >= cost ? .white : SKColor(white: 0.45, alpha: 1)
+        label.fontColor = (mp >= cost && !spent) ? .white : SKColor(white: 0.45, alpha: 1)
     } else {
         mpLabel?.removeFromParent()
-        label.fontColor = .white
+        label.fontColor = spent ? SKColor(white: 0.45, alpha: 1) : .white
     }
 }
 
@@ -3246,6 +3318,7 @@ private func spellForButton(_ node: SKShapeNode) -> CombatSpell? {
     if node === blessingButton  { return .blessing }
     if node === windButton      { return .windBlade }
     if node === emberButton     { return .emberStrike }
+    if node === tempestButton   { return .tempest }
     return nil
 }
 
@@ -3258,6 +3331,7 @@ private func mpCostForButton(_ node: SKShapeNode) -> Int {
     if node === blessingButton  { return CombatSpell.blessing.mpCost }
     if node === windButton      { return CombatSpell.windBlade.mpCost }
     if node === emberButton     { return CombatSpell.emberStrike.mpCost }
+    if node === tempestButton   { return CombatSpell.tempest.mpCost }
     if node === blackSlashButton { return 14 }   // Entaille noire
     return 0   // attaque physique : gratuite
 }
@@ -3557,7 +3631,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         let ready = phase == .playerTurn && kael.isAlive && !aliveEnemies.isEmpty
         for button in [attackButton, blackSlashButton, fireButton, iceButton,
                        lightningButton, healButton, blessingButton,
-                       windButton, emberButton] {
+                       windButton, emberButton, tempestButton] {
             button.alpha = ready ? 1 : 0.36
         }
         selectionCursor.isHidden = !ready || menuRow == 2

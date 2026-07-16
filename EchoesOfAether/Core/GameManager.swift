@@ -2166,7 +2166,10 @@ final class GameManager {
         case "inventory": openInventory()
         case "questlog":  openQuestLog()
         case "lore":      openLore()
-        case "tutorial":  tutorial.show(in: scene)
+        // « tutorial » ou « tutorial:2 » pour ouvrir droit sur un panneau.
+        case let n where n == "tutorial" || n.hasPrefix("tutorial:"):
+            tutorial.show(in: scene,
+                          startAt: Int(n.split(separator: ":").last ?? "") ?? 0)
         case "levelup":   levelUp.show(newLevel: 5, isMax: false) {}
         case "death":     death.show(in: scene)
         case "paywall":   openPaywall()

@@ -40,9 +40,12 @@ final class TutorialOverlay {
         scene.addChild(root)
     }
 
-    func show(in scene: SKScene, completion: (() -> Void)? = nil) {
+    /// `startAt` sert à l'audit visuel (`--overlay-test tutorial:2`) : chaque
+    /// panneau a sa propre longueur de texte, il faut pouvoir les regarder un
+    /// par un sans cliquer « Suivant ».
+    func show(in scene: SKScene, startAt: Int = 0, completion: (() -> Void)? = nil) {
         self.scene = scene
-        self.index = 0
+        self.index = min(max(0, startAt), panels.count - 1)
         self.completion = completion
         root.isHidden = false
         build()

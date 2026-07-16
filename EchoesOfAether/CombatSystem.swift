@@ -275,6 +275,11 @@ final class CombatSystem {
     private var lastTargetIndexForGhost = -1
     private let enemyHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let targetNameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    /// Faiblesses (losanges d'élément) + bouclier (pips) de la cible.
+    /// Reconstruit à chaque changement — voir `refreshTargetInfoRow`.
+    private let targetInfoRow = SKNode()
+    /// Dernier état rendu, pour ne pas reconstruire la rangée à chaque frame.
+    private var lastTargetInfoKey = ""
 
     // Tour par tour
     private enum TurnPhase { case intro, playerTurn, playerActing, enemyTurn, finished }
@@ -300,7 +305,6 @@ private let windButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), corner
 private let emberButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let weaknessLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 private let boostLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
@@ -394,8 +398,6 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         var brokenTurns = 0
         var sprite: SKNode?
         var homePosition: CGPoint = .zero
-        let hpBack = SKShapeNode()
-        let hpFill = SKShapeNode()
         let statusIcons = SKNode()   // pictos brûlure/gel/break persistants
 
         init(spec: EnemySpec, weaknesses: Set<CombatElement>, shieldMax: Int) {
@@ -550,11 +552,19 @@ self.phase = .intro
 
         root.removeFromParent()
         root.removeAllChildren()
-        statusLabel.text = ""
+        // Posé une fois, pour la durée de l'intro. `updateVisuals` le remettait
+        // dès que le label était vide — un repli inoffensif tant que la ligne
+        // portait le rappel des touches et n'était donc jamais vide. Depuis
+        // qu'elle l'est entre deux actions, ce repli annonçait « Le combat
+        // commence… » à chaque tour, y compris au douzième.
+        statusLabel.text = String(localized: "combat.status.battleStart")
         statusEffectLabel.text = ""
-        weaknessLabel.text = ""
         boostLabel.text = ""
         breakLabel.alpha = 0
+        // `root.removeAllChildren` a détaché la rangée : sans reset, la clé
+        // ferait croire qu'elle est encore à l'écran au combat suivant.
+        targetInfoRow.removeAllChildren()
+        lastTargetInfoKey = ""
         root.zPosition = 900
         scene.addChild(root)
 
@@ -657,9 +667,13 @@ private func startPlayerTurn() {
         bpRecharging = false
         playerBP = min(3, playerBP + 1)
     }
-    statusLabel.text = aliveEnemies.count > 1
-        ? String(localized: "combat.turn.chooseMulti")
-        : String(localized: "combat.turn.choose")
+    // Le rappel des touches vivait ici, planté au milieu de l'arène à chaque
+    // tour, toute la partie — un tutoriel collé à l'écran. Il est passé dans
+    // le panneau « Combat » du TutorialOverlay, vu une fois et relançable
+    // depuis les Options. Le bandeau de tour dit déjà à qui de jouer ; le
+    // statusLabel reprend son seul vrai rôle : raconter le coup qui vient de
+    // partir.
+    statusLabel.text = ""
     showTurnBanner(String(localized: "combat.turn.player"),
                    color: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 1))
     refreshTurnOrder(currentEnemyIndex: nil)
@@ -682,7 +696,7 @@ private func startAllyTurn(_ index: Int) {
     phase = .playerTurn
     actingAllyIndex = index
     retargetIfNeeded()
-    statusLabel.text = String(localized: "combat.turn.choose")
+    statusLabel.text = ""
     showTurnBanner(String(localized: "combat.turn.ally \(allies[index].kind.displayName)"),
                    color: allies[index].kind.accentColor)
     refreshTurnOrder(currentEnemyIndex: nil)
@@ -1081,8 +1095,6 @@ private func checkEnrage() {
 /// Mort individuelle (combat multi) : animation + retarget.
 private func handleEnemyDeath(_ e: EnemyState) {
     playEnemyDeathAnimation(e)
-    e.hpBack.run(.fadeOut(withDuration: 0.4))
-    e.hpFill.run(.fadeOut(withDuration: 0.4))
     retargetIfNeeded()
 }
 
@@ -2161,12 +2173,6 @@ private func setupComboAndStatusUI(scene: SKScene) {
     statusEffectLabel.alpha = 0
     root.addChild(statusEffectLabel)
 
-    weaknessLabel.fontSize = 15
-    weaknessLabel.fontColor = SKColor(red: 0.94, green: 0.86, blue: 0.62, alpha: 1)
-    weaknessLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.695)
-    weaknessLabel.zPosition = 920
-    root.addChild(weaknessLabel)
-
     boostLabel.fontSize = 16
     boostLabel.fontColor = SKColor(red: 0.72, green: 0.62, blue: 1.00, alpha: 1)
     boostLabel.position = CGPoint(x: scene.size.width / 2, y: 220)
@@ -2713,24 +2719,50 @@ private func setupComboAndStatusUI(scene: SKScene) {
     // MARK: - Setup
 
     private func setupStatus(scene: SKScene) {
-        // Ligne de log dédiée au-dessus de l'arène : jamais en collision
-        // avec les plaques de nom (h-72 chevauchait sur grands iPhone).
+        // Ligne de log, sous la rangée de plates.
+        //
+        // Elle était à 0.645h, ce qui la faisait passer pile sur le label de
+        // Magie de la plate la plus à droite : tant que Kael occupait le
+        // premier créneau (à gauche), le centre restait libre par chance.
+        // Depuis que les plates suivent l'ordre du terrain, Kael est au
+        // créneau central — et la chance a tourné. On descend sous la rangée.
         statusLabel.fontSize = 16
         statusLabel.fontColor = .white
-        statusLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.645)
+        statusLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.61)
         root.addChild(statusLabel)
     }
 
     private func setupHPBars(scene: SKScene) {
-        // Position des plates selon la taille du groupe (1 à 3 héros).
-        let kaelXFrac: CGFloat
-        let allyXFracs: [CGFloat]
+        // Les plates se rangent dans l'ordre des sprites sur le terrain.
+        //
+        // Elles étaient posées à des fractions écrites en dur (Kael 0.13,
+        // alliés 0.335 et 0.54) pendant que la formation place Kael DEVANT,
+        // à droite de son groupe (0.34) et les alliés en retrait (0.22, 0.19).
+        // L'ordre des plates était donc l'exact inverse de celui des corps :
+        // la plate de Kael à gauche, son sprite à droite. Rien ne reliait plus
+        // une barre à son porteur.
+        //
+        // On lit maintenant les positions réelles, posées par
+        // `setupCombatants` juste avant. Déplacer un combattant réordonne ses
+        // plates toutes seules — les deux ne peuvent plus se contredire.
+        let slotFracs: [CGFloat]
         switch allies.count {
-        case 0:  kaelXFrac = 0.28; allyXFracs = []
-        case 1:  kaelXFrac = 0.18; allyXFracs = [0.42]
-        default: kaelXFrac = 0.13; allyXFracs = [0.335, 0.54]
+        case 0:  slotFracs = [0.28]
+        case 1:  slotFracs = [0.18, 0.42]
+        default: slotFracs = [0.13, 0.335, 0.54]
         }
-        let kaelX = scene.size.width * kaelXFrac
+        // Chaque combattant avec le x de son sprite ; nil = Kael.
+        let members: [(home: CGFloat, ally: AllyState?)] =
+            ([(kaelHomePosition.x, nil)] as [(CGFloat, AllyState?)])
+            + allies.map { ($0.home.x, $0) }
+        let ordered = members.sorted { $0.home < $1.home }
+        let slotX: [ObjectIdentifier: CGFloat] = Dictionary(
+            uniqueKeysWithValues: ordered.enumerated().compactMap { i, m in
+                m.ally.map { (ObjectIdentifier($0), scene.size.width * slotFracs[i]) }
+            })
+        let kaelX = ordered.firstIndex { $0.ally == nil }
+            .map { scene.size.width * slotFracs[$0] } ?? scene.size.width * slotFracs[0]
+
         let enemyX = scene.size.width * (allies.count == 2 ? 0.80 : 0.72)
         let barY = scene.size.height * 0.78
 
@@ -2747,13 +2779,15 @@ private func setupComboAndStatusUI(scene: SKScene) {
         kaelHPLabel.position = CGPoint(x: kaelX, y: barY - 18)
         root.addChild(kaelHPLabel)
 
-        // Mini-barre de Magie sous la vie de Kael (bleu clair).
+        // Mini-barre de Magie sous la vie de Kael (bleu clair). Le label est
+        // remonté de 6 pt (et rétréci) pour dégager la bande où passe la ligne
+        // de log — la rangée de plates descendait jusqu'à 262 sur 402.
         configureBar(kaelMPBack, kaelMPFill, width: barWidth * 0.82, height: 7,
                      color: SKColor(red: 0.42, green: 0.62, blue: 1.0, alpha: 1),
                      at: CGPoint(x: kaelX, y: barY - 32))
-        kaelMPLabel.fontSize = 11
+        kaelMPLabel.fontSize = 10
         kaelMPLabel.fontColor = SKColor(red: 0.70, green: 0.82, blue: 1.0, alpha: 1)
-        kaelMPLabel.position = CGPoint(x: kaelX, y: barY - 46)
+        kaelMPLabel.position = CGPoint(x: kaelX, y: barY - 44)
         root.addChild(kaelMPLabel)
 
         enemyHPLabel.fontSize = 15
@@ -2765,8 +2799,8 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
         // Plates des alliés : même gabarit, accent de leur couleur.
         let allyBarWidth = allies.count == 2 ? barWidth * 0.86 : barWidth
-        for (i, ally) in allies.enumerated() {
-            let x = scene.size.width * allyXFracs[i]
+        for ally in allies {
+            let x = slotX[ObjectIdentifier(ally)] ?? kaelX
             configureBar(ally.hpBack, ally.hpFill,
                          width: allyBarWidth, height: barHeight,
                          color: ally.kind.accentColor,
@@ -2779,9 +2813,9 @@ private func setupComboAndStatusUI(scene: SKScene) {
             configureBar(ally.mpBack, ally.mpFill, width: allyBarWidth * 0.82, height: 7,
                          color: SKColor(red: 0.42, green: 0.62, blue: 1.0, alpha: 1),
                          at: CGPoint(x: x, y: barY - 32))
-            ally.mpLabel.fontSize = 11
+            ally.mpLabel.fontSize = 10
             ally.mpLabel.fontColor = SKColor(red: 0.70, green: 0.82, blue: 1.0, alpha: 1)
-            ally.mpLabel.position = CGPoint(x: x, y: barY - 46)
+            ally.mpLabel.position = CGPoint(x: x, y: barY - 44)
             root.addChild(ally.mpLabel)
             addCombatantLabel(ally.combatant.name, at: CGPoint(x: x, y: barY + 16))
         }
@@ -2790,14 +2824,22 @@ private func setupComboAndStatusUI(scene: SKScene) {
         targetNameLabel.position = CGPoint(x: enemyX, y: barY + 16)
         root.addChild(targetNameLabel)
 
-        // Minibars HP sous chaque ennemi (lisibilité multi-cibles)
-        if enemies.count > 1 {
-            for e in enemies {
-                configureBar(e.hpBack, e.hpFill, width: 64, height: 7,
-                             color: SKColor(red: 0.85, green: 0.30, blue: 0.30, alpha: 1),
-                             at: CGPoint(x: e.homePosition.x, y: e.homePosition.y - 46))
-            }
-        }
+        // Faiblesses et bouclier de la cible, sous sa plate.
+        //
+        // C'était une phrase posée au centre de l'arène (« Faiblesses: AETHER
+        // FOUDRE   Bouclier: 3/3 ») qui tombait pile sur les barres de Magie
+        // des alliés — à 2 pt près. Elle nommait les éléments en toutes
+        // lettres alors que le menu d'actions les désigne, lui, par un losange
+        // de couleur. Le joueur devait traduire « FOUDRE » en « le losange
+        // jaune » pour choisir son sort.
+        //
+        // Ce sont donc les mêmes losanges, à la même taille, sous la cible :
+        // losange jaune sous l'ennemi = losange jaune dans le menu.
+        // La plate de la cible n'a pas de barre de Magie : la place sous ses
+        // PV est libre, la rangée s'y loge sans rien croiser.
+        targetInfoRow.position = CGPoint(x: enemyX, y: barY - 36)
+        targetInfoRow.zPosition = 900
+        root.addChild(targetInfoRow)
 
         // Marqueur de cible : chevron doré au-dessus de l'ennemi visé
         let chevron = CGMutablePath()
@@ -3543,6 +3585,58 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         root.addChild(node)
     }
 
+    /// Rangée « faiblesses + bouclier » sous la plate de la cible.
+    ///
+    /// Losanges de 7 pt, identiques à ceux du menu d'actions (`addButton`), et
+    /// dans le même ordre que les commandes : le joueur apparie une couleur,
+    /// pas un mot. Le bouclier suit sous forme de pips — plein = encore
+    /// debout, éteint = entamé ; à zéro l'ennemi est brisé et la rangée
+    /// s'allume en ambre.
+    private func refreshTargetInfoRow(for foe: EnemyState) {
+        // Ordre stable : celui de `CombatElement`, pas celui d'un Set.
+        let order: [CombatElement] = [.physical, .fire, .ice, .lightning, .aether]
+        let weaknesses = order.filter { foe.weaknesses.contains($0) }
+        let broken = foe.brokenTurns > 0
+        // Reconstruire des SKNode à chaque frame ferait clignoter la rangée.
+        // Clé indépendante de la langue : `icon` est traduit, il n'a rien à
+        // faire dans un cache.
+        let key = "\(weaknesses.map { String(describing: $0) }.joined(separator: ","))"
+            + "|\(foe.shield)/\(foe.shieldMax)|\(broken)"
+        guard key != lastTargetInfoKey else { return }
+        lastTargetInfoKey = key
+        targetInfoRow.removeAllChildren()
+
+        let side: CGFloat = 7, gap: CGFloat = 9, pipW: CGFloat = 5, pipGap: CGFloat = 3
+        let shieldW = foe.shieldMax > 0
+            ? CGFloat(foe.shieldMax) * (pipW + pipGap) - pipGap + 12 : 0
+        let totalW = CGFloat(weaknesses.count) * gap - (weaknesses.isEmpty ? 0 : gap - side)
+            + shieldW
+        var x = -totalW / 2
+
+        for element in weaknesses {
+            let diamond = SKSpriteNode(color: element.color,
+                                       size: CGSize(width: side, height: side))
+            diamond.zRotation = .pi / 4
+            diamond.position = CGPoint(x: x + side / 2, y: 0)
+            // Cible brisée : les faiblesses ont fait leur travail, elles
+            // s'effacent au profit des pips éteints.
+            diamond.alpha = broken ? 0.45 : 1
+            targetInfoRow.addChild(diamond)
+            x += gap
+        }
+
+        guard foe.shieldMax > 0 else { return }
+        x += 12
+        for i in 0..<foe.shieldMax {
+            let up = i < foe.shield
+            let pip = SKSpriteNode(color: up ? PixelUI.gold : SKColor(white: 0.22, alpha: 1),
+                                   size: CGSize(width: pipW, height: 10))
+            pip.position = CGPoint(x: x + pipW / 2, y: 0)
+            targetInfoRow.addChild(pip)
+            x += pipW + pipGap
+        }
+    }
+
     private func updateVisuals() {
         let kaelHPRatio = max(0.02, CGFloat(kael.hp) / CGFloat(kael.maxHP))
         kaelHPFill.xScale = kaelHPRatio
@@ -3591,10 +3685,8 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             }
             enemyHPLabel.text = String(c.hp) + "/" + String(c.maxHP)
             targetNameLabel.text = c.name
-            let weaknessText = foe.weaknesses.map { $0.icon }.sorted().joined(separator: "  ")
-            weaknessLabel.text = String(localized: "combat.hud.weakness") + " " + weaknessText
-                + "   " + String(localized: "combat.hud.shield") + " "
-                + String(foe.shield) + "/" + String(foe.shieldMax)
+            refreshTargetInfoRow(for: foe)
+            targetInfoRow.isHidden = false
             enemyHPBack.strokeColor = foe.brokenTurns > 0
                 ? SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
                 : SKColor(white: 0.3, alpha: 1)
@@ -3619,14 +3711,15 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             }
         } else {
             targetMarker.isHidden = true
+            targetInfoRow.isHidden = true
         }
 
-        // Minibars HP par ennemi
-        for e in enemies {
-            let c = e.combatant
-            e.hpFill.xScale = max(0.02, CGFloat(c.hp) / CGFloat(c.maxHP))
-            refreshStatusIcons(for: e)
-        }
+        // Les mini-barres rouges qui doublaient la plate de la cible vivaient
+        // ici. Deux affichages pour une même vie, et celui-ci n'était qu'un
+        // rectangle nu posé sous l'ennemi — sans cadre ni fond, il se lisait
+        // comme un débris du décor. La plate porte le nom, la vie, les
+        // faiblesses et le bouclier ; le chevron désigne qui la remplit.
+        for e in enemies { refreshStatusIcons(for: e) }
 
         let ready = phase == .playerTurn && kael.isAlive && !aliveEnemies.isEmpty
         for button in [attackButton, blackSlashButton, fireButton, iceButton,
@@ -3653,9 +3746,6 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             boostLabel.text = "BP " + bpPips
         }
 
-        if statusLabel.text?.isEmpty ?? true {
-            statusLabel.text = String(localized: "combat.status.battleStart")
-        }
     }
 }
 

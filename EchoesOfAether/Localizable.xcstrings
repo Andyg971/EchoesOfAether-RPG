@@ -1000,38 +1000,6 @@
         }
       }
     },
-    "combat.hud.shield": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Shield:"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bouclier:"
-          }
-        }
-      }
-    },
-    "combat.hud.weakness": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Weaknesses:"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Faiblesses:"
-          }
-        }
-      }
-    },
     "combat.mp.insufficient": {
       "localizations": {
         "en": {
@@ -1948,38 +1916,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Au tour de %@ !"
-          }
-        }
-      }
-    },
-    "combat.turn.choose": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stick: choose · A: confirm."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Joystick : choisir · A : valider."
-          }
-        }
-      }
-    },
-    "combat.turn.chooseMulti": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stick: choose · up: switch target · A: confirm."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Joystick : choisir · haut : changer de cible · A : valider."
           }
         }
       }
@@ -14610,13 +14546,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Combat is turn-based: on your turn, choose Attack, an elemental spell, or Black Slash. Hit weaknesses to BREAK the enemy's guard, and spend BP to boost."
+            "value": "Combat is turn-based. Hit weaknesses to BREAK the enemy's guard, then spend BP to boost.\n\nStick: choose · up: switch target · A: confirm."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Le combat est au tour par tour : à ton tour, choisis Attaque, un sort élémentaire ou l'Entaille Noire. Vise les faiblesses pour briser la garde (BREAK) et dépense tes BP pour booster."
+            "value": "Le combat est au tour par tour. Vise les faiblesses pour briser la garde (BREAK), puis dépense tes BP pour booster.\n\nJoystick : choisir · haut : changer de cible · A : valider."
           }
         }
       }

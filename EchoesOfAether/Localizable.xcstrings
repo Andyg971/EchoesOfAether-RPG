@@ -274,6 +274,22 @@
         }
       }
     },
+    "combat.button.blessing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BLESSING"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BÉNÉDICTION"
+          }
+        }
+      }
+    },
     "combat.button.boost": {
       "localizations": {
         "en": {
@@ -286,6 +302,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "BOOST"
+          }
+        }
+      }
+    },
+    "combat.button.emberStrike": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "EMBER"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BRAISE"
           }
         }
       }
@@ -366,6 +398,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "POTION"
+          }
+        }
+      }
+    },
+    "combat.button.windBlade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GALE"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "BOURRASQUE"
           }
         }
       }
@@ -791,6 +839,22 @@
         }
       }
     },
+    "combat.enemy.echoGuardian": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bone Guardian"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gardien d'ossements"
+          }
+        }
+      }
+    },
     "combat.enemy.ghoul": {
       "localizations": {
         "en": {
@@ -985,6 +1049,22 @@
         }
       }
     },
+    "combat.mp.insufficient": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not enough MP!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Magie insuffisante !"
+          }
+        }
+      }
+    },
     "combat.name.lyraEcho": {
       "localizations": {
         "en": {
@@ -997,6 +1077,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Écho de Lyra"
+          }
+        }
+      }
+    },
+    "combat.spell.blessing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blessing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bénédiction"
+          }
+        }
+      }
+    },
+    "combat.spell.emberStrike": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ember Strike"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Frappe de Braise"
           }
         }
       }
@@ -1061,6 +1173,379 @@
           "stringUnit": {
             "state": "translated",
             "value": "Fulgurance"
+          }
+        }
+      }
+    },
+    "combat.spell.windBlade": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gale Blade"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lame de Bourrasque"
+          }
+        }
+      }
+    },
+    "combat.spellTier.apotheosis": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apotheosis"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Apothéose"
+          }
+        }
+      }
+    },
+    "combat.spellTier.bite": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "White Bite"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Morsure"
+          }
+        }
+      }
+    },
+    "combat.spellTier.blaze": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blaze"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Brasier"
+          }
+        }
+      }
+    },
+    "combat.spellTier.blazing": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blazing Edge"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Flamboiement"
+          }
+        }
+      }
+    },
+    "combat.spellTier.blessing": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blessing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bénédiction"
+          }
+        }
+      }
+    },
+    "combat.spellTier.cataclysm": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cataclysm"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cataclysme"
+          }
+        }
+      }
+    },
+    "combat.spellTier.ember": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ember"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Braise"
+          }
+        }
+      }
+    },
+    "combat.spellTier.fulgur": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fulgur"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fulgur"
+          }
+        }
+      }
+    },
+    "combat.spellTier.furnace": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Furnace"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fournaise"
+          }
+        }
+      }
+    },
+    "combat.spellTier.gale": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gale"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bourrasque"
+          }
+        }
+      }
+    },
+    "combat.spellTier.glaciation": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glaciation"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Glaciation"
+          }
+        }
+      }
+    },
+    "combat.spellTier.grace": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grace"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Grâce"
+          }
+        }
+      }
+    },
+    "combat.spellTier.healing": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Healing"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Guérison"
+          }
+        }
+      }
+    },
+    "combat.spellTier.hurricane": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hurricane"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ouragan"
+          }
+        }
+      }
+    },
+    "combat.spellTier.immolation": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immolation"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Immolation"
+          }
+        }
+      }
+    },
+    "combat.spellTier.inferno": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inferno"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inferno"
+          }
+        }
+      }
+    },
+    "combat.spellTier.rebirth": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rebirth"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Renaissance"
+          }
+        }
+      }
+    },
+    "combat.spellTier.remission": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remission"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rémission"
+          }
+        }
+      }
+    },
+    "combat.spellTier.rime": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rime"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Givre"
+          }
+        }
+      }
+    },
+    "combat.spellTier.storm": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Storm"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Orage"
+          }
+        }
+      }
+    },
+    "combat.spellTier.tornado": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tornado"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tornade"
           }
         }
       }
@@ -1209,6 +1694,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Entaille Noire boostée x%lld"
+          }
+        }
+      }
+    },
+    "combat.status.blessing %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Blessing restores %lld HP to everyone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Bénédiction rend %lld PV à tout le groupe."
           }
         }
       }
@@ -1370,6 +1871,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Soin boosté ×%lld +%lld"
+          }
+        }
+      }
+    },
+    "combat.status.healBoostedOn %@ %lld %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boost ×%2$lld — %1$@ recovers %3$lld HP."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boost ×%2$lld — %1$@ récupère %3$lld PV."
+          }
+        }
+      }
+    },
+    "combat.status.healOn %@ %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ recovers %2$lld HP."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%1$@ récupère %2$lld PV."
           }
         }
       }
@@ -4342,438 +4875,6 @@
         }
       }
     },
-    "combat.button.windBlade": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "GALE"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BOURRASQUE"
-          }
-        }
-      }
-    },
-    "combat.button.emberStrike": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "EMBER"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BRAISE"
-          }
-        }
-      }
-    },
-    "combat.spell.windBlade": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gale Blade"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Lame de Bourrasque"
-          }
-        }
-      }
-    },
-    "combat.spell.emberStrike": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ember Strike"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Frappe de Braise"
-          }
-        }
-      }
-    },
-    "combat.button.blessing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BLESSING"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "BÉNÉDICTION"
-          }
-        }
-      }
-    },
-    "combat.spell.blessing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blessing"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bénédiction"
-          }
-        }
-      }
-    },
-    "combat.status.blessing %lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blessing restores %lld HP to everyone."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La Bénédiction rend %lld PV à tout le groupe."
-          }
-        }
-      }
-    },
-    "paywall.title": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The Story Continues"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L'histoire continue"
-          }
-        }
-      }
-    },
-    "paywall.pitch": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Act I ends here. Unlock Acts II, III and IV — the Ruins, the Threshold, the Heart of the Void, and both endings. One purchase, yours forever."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L'Acte I s'achève ici. Débloque les Actes II, III et IV — les Ruines, le Seuil, le Cœur du Vide, et les deux fins. Un seul achat, à toi pour toujours."
-          }
-        }
-      }
-    },
-    "paywall.price %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Full game — %@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Jeu complet — %@"
-          }
-        }
-      }
-    },
-    "paywall.priceUnavailable": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Store unavailable"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boutique indisponible"
-          }
-        }
-      }
-    },
-    "paywall.purchasing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Purchasing…"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Achat en cours…"
-          }
-        }
-      }
-    },
-    "paywall.button.buy": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlock the full game"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Débloquer le jeu complet"
-          }
-        }
-      }
-    },
-    "paywall.button.restore": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restore purchase"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restaurer l'achat"
-          }
-        }
-      }
-    },
-    "paywall.button.later": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Later"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plus tard"
-          }
-        }
-      }
-    },
-    "paywall.status.restoring": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restoring…"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Restauration…"
-          }
-        }
-      }
-    },
-    "paywall.status.nothingToRestore": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "No previous purchase found on this Apple Account."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Aucun achat trouvé sur ce compte Apple."
-          }
-        }
-      }
-    },
-    "paywall.status.failed": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Purchase failed. You have not been charged."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "L'achat a échoué. Tu n'as pas été débité."
-          }
-        }
-      }
-    },
-    "pause.unlock": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Unlock full game"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Débloquer le jeu"
-          }
-        }
-      }
-    },
-    "store.error.verification": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "This purchase could not be verified with the App Store."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cet achat n'a pas pu être vérifié auprès de l'App Store."
-          }
-        }
-      }
-    },
-    "dialogue.act4.warning1": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Beyond this Threshold, no one returns. Not you, nor what you believe yourself to be."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Au-delà de ce Seuil, nul ne revient. Ni toi, ni ce que tu crois être."
-          }
-        }
-      }
-    },
-    "dialogue.act4.warning2": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "All you leave behind — a vow, a face, a debt — stays unfinished. Forever."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tout ce que tu laisses derrière — un serment, un visage, une dette — le restera. À jamais."
-          }
-        }
-      }
-    },
-    "dialogue.act4.warningPrompt": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cross the Threshold?"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Franchir le Seuil ?"
-          }
-        }
-      }
-    },
-    "dialogue.act4.warningCross": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cross — I've made my peace"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Franchir — j'ai fait mon deuil"
-          }
-        }
-      }
-    },
-    "dialogue.act4.warningCrossResponse": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Nothing holds me back now. I'm going."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Plus rien ne me retient en arrière. J'y vais."
-          }
-        }
-      }
-    },
-    "dialogue.act4.warningStay": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Stay — not yet"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rester — pas encore"
-          }
-        }
-      }
-    },
-    "dialogue.act4.warningStayResponse": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Not like this. I have things to settle first."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Pas comme ça. Il me reste des comptes à régler avant."
-          }
-        }
-      }
-    },
     "dialogue.act4.avatarPost2": {
       "localizations": {
         "en": {
@@ -5784,6 +5885,118 @@
         }
       }
     },
+    "dialogue.act4.warning1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Beyond this Threshold, no one returns. Not you, nor what you believe yourself to be."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Au-delà de ce Seuil, nul ne revient. Ni toi, ni ce que tu crois être."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warning2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "All you leave behind — a vow, a face, a debt — stays unfinished. Forever."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tout ce que tu laisses derrière — un serment, un visage, une dette — le restera. À jamais."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningCross": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross — I've made my peace"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchir — j'ai fait mon deuil"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningCrossResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nothing holds me back now. I'm going."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus rien ne me retient en arrière. J'y vais."
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningPrompt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cross the Threshold?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Franchir le Seuil ?"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningStay": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay — not yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Rester — pas encore"
+          }
+        }
+      }
+    },
+    "dialogue.act4.warningStayResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not like this. I have things to settle first."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pas comme ça. Il me reste des comptes à régler avant."
+          }
+        }
+      }
+    },
     "dialogue.aether.choice1": {
       "localizations": {
         "en": {
@@ -6292,6 +6505,38 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pas de problème. Reviens quand t'as des pièces d'or. La qualité a un prix."
+          }
+        }
+      }
+    },
+    "dialogue.cave.enter.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Voices… they still echo in the stone."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Des voix… elles résonnent encore dans la pierre."
+          }
+        }
+      }
+    },
+    "dialogue.cave.enter.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Something guards this place. Stay sharp."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quelque chose garde cet endroit. Restons sur nos gardes."
           }
         }
       }
@@ -8745,22 +8990,6 @@
         }
       }
     },
-    "dialogue.pact.10": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I didn't ask you to."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Je ne te l'ai pas demandé."
-          }
-        }
-      }
-    },
     "dialogue.pact.2": {
       "localizations": {
         "en": {
@@ -8885,6 +9114,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Je ne te protègerai pas."
+          }
+        }
+      }
+    },
+    "dialogue.pact.10": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I didn't ask you to."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -10640,6 +10885,38 @@
         }
       }
     },
+    "hud.objective.cave": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore the Cave of Echoes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Explore la Caverne aux Échos"
+          }
+        }
+      }
+    },
+    "hud.objective.cave.done": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The cave's treasure is yours"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le trésor de la caverne est à toi"
+          }
+        }
+      }
+    },
     "hud.objective.clearing": {
       "localizations": {
         "en": {
@@ -11537,6 +11814,22 @@
         }
       }
     },
+    "levelUp.spellsEvolved %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Your spells have evolved!\n%@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tes sorts ont évolué !\n%@"
+          }
+        }
+      }
+    },
     "levelUp.stats": {
       "localizations": {
         "en": {
@@ -12350,6 +12643,22 @@
         }
       }
     },
+    "menu.slot.newGamePlus %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✦ New Game+ (Tier %lld)"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "✦ Nouvelle Partie + (Palier %lld)"
+          }
+        }
+      }
+    },
     "menu.subtitle": {
       "localizations": {
         "en": {
@@ -12701,6 +13010,198 @@
           "stringUnit": {
             "state": "translated",
             "value": "Pause"
+          }
+        }
+      }
+    },
+    "pause.unlock": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock full game"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débloquer le jeu"
+          }
+        }
+      }
+    },
+    "paywall.button.buy": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Unlock the full game"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Débloquer le jeu complet"
+          }
+        }
+      }
+    },
+    "paywall.button.later": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Later"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus tard"
+          }
+        }
+      }
+    },
+    "paywall.button.restore": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restore purchase"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restaurer l'achat"
+          }
+        }
+      }
+    },
+    "paywall.pitch": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Act I ends here. Unlock Acts II, III and IV — the Ruins, the Threshold, the Heart of the Void, and both endings. One purchase, yours forever."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'Acte I s'achève ici. Débloque les Actes II, III et IV — les Ruines, le Seuil, le Cœur du Vide, et les deux fins. Un seul achat, à toi pour toujours."
+          }
+        }
+      }
+    },
+    "paywall.price %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Full game — %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jeu complet — %@"
+          }
+        }
+      }
+    },
+    "paywall.priceUnavailable": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Store unavailable"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Boutique indisponible"
+          }
+        }
+      }
+    },
+    "paywall.purchasing": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchasing…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Achat en cours…"
+          }
+        }
+      }
+    },
+    "paywall.status.failed": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchase failed. You have not been charged."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'achat a échoué. Tu n'as pas été débité."
+          }
+        }
+      }
+    },
+    "paywall.status.nothingToRestore": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No previous purchase found on this Apple Account."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aucun achat trouvé sur ce compte Apple."
+          }
+        }
+      }
+    },
+    "paywall.status.restoring": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restoring…"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restauration…"
+          }
+        }
+      }
+    },
+    "paywall.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The Story Continues"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "L'histoire continue"
           }
         }
       }
@@ -14447,6 +14948,22 @@
         }
       }
     },
+    "store.error.verification": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This purchase could not be verified with the App Store."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cet achat n'a pas pu être vérifié auprès de l'App Store."
+          }
+        }
+      }
+    },
     "tutorial.combat.body": {
       "localizations": {
         "en": {
@@ -14635,6 +15152,54 @@
           "stringUnit": {
             "state": "translated",
             "value": "Passer"
+          }
+        }
+      }
+    },
+    "world.cave.entrance": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cave of Echoes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caverne aux Échos"
+          }
+        }
+      }
+    },
+    "world.cave.exit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the forest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remonter à la forêt"
+          }
+        }
+      }
+    },
+    "world.cave.title": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cave of Echoes"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caverne aux Échos"
           }
         }
       }
@@ -14852,6 +15417,22 @@
         }
       }
     },
+    "world.shrine.exit": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Back to the forest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Retour à la forêt"
+          }
+        }
+      }
+    },
     "world.threshold.title": {
       "localizations": {
         "en": {
@@ -14884,562 +15465,50 @@
         }
       }
     },
-    "menu.slot.newGamePlus %lld": {
+    "combat.block.prompt": {
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "✦ Nouvelle Partie + (Palier %lld)"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "✦ New Game+ (Tier %lld)"
+            "value": "!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "!"
           }
         }
       }
     },
-    "world.cave.title": {
+    "combat.block.success": {
       "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Caverne aux Échos"
-          }
-        },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cave of Echoes"
+            "value": "PARRIED"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PARÉ"
           }
         }
       }
     },
-    "world.cave.exit": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remonter à la forêt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Back to the forest"
-          }
-        }
-      }
-    },
-    "world.cave.entrance": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Caverne aux Échos"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cave of Echoes"
-          }
-        }
-      }
-    },
-    "hud.objective.cave": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Explore la Caverne aux Échos"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Explore the Cave of Echoes"
-          }
-        }
-      }
-    },
-    "hud.objective.cave.done": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Le trésor de la caverne est à toi"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "The cave's treasure is yours"
-          }
-        }
-      }
-    },
-    "combat.enemy.echoGuardian": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gardien d'ossements"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bone Guardian"
-          }
-        }
-      }
-    },
-    "dialogue.cave.enter.kael1": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Des voix… elles résonnent encore dans la pierre."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Voices… they still echo in the stone."
-          }
-        }
-      }
-    },
-    "dialogue.cave.enter.kael2": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Quelque chose garde cet endroit. Restons sur nos gardes."
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Something guards this place. Stay sharp."
-          }
-        }
-      }
-    },
-    "combat.mp.insufficient": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Magie insuffisante !"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Not enough MP!"
-          }
-        }
-      }
-    },
-    "world.shrine.exit": {
-      "localizations": {
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Retour à la forêt"
-          }
-        },
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Back to the forest"
-          }
-        }
-      }
-    },
-    "combat.status.healOn %@ %lld": {
+    "combat.status.blocked %lld": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ recovers %2$lld HP."
+            "value": "Parried! Only %lld damage."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "%1$@ récupère %2$lld PV."
-          }
-        }
-      }
-    },
-    "combat.status.healBoostedOn %@ %lld %lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boost ×%2$lld — %1$@ recovers %3$lld HP."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Boost ×%2$lld — %1$@ récupère %3$lld PV."
-          }
-        }
-      }
-    },
-    "combat.spellTier.blaze": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blaze"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Brasier"
-          }
-        }
-      }
-    },
-    "combat.spellTier.furnace": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Furnace"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fournaise"
-          }
-        }
-      }
-    },
-    "combat.spellTier.inferno": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inferno"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Inferno"
-          }
-        }
-      }
-    },
-    "combat.spellTier.bite": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "White Bite"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Morsure"
-          }
-        }
-      }
-    },
-    "combat.spellTier.rime": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rime"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Givre"
-          }
-        }
-      }
-    },
-    "combat.spellTier.glaciation": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Glaciation"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Glaciation"
-          }
-        }
-      }
-    },
-    "combat.spellTier.fulgur": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fulgur"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fulgur"
-          }
-        }
-      }
-    },
-    "combat.spellTier.storm": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Storm"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Orage"
-          }
-        }
-      }
-    },
-    "combat.spellTier.cataclysm": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cataclysm"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Cataclysme"
-          }
-        }
-      }
-    },
-    "combat.spellTier.remission": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Remission"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rémission"
-          }
-        }
-      }
-    },
-    "combat.spellTier.healing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Healing"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Guérison"
-          }
-        }
-      }
-    },
-    "combat.spellTier.rebirth": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Rebirth"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Renaissance"
-          }
-        }
-      }
-    },
-    "combat.spellTier.blessing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blessing"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bénédiction"
-          }
-        }
-      }
-    },
-    "combat.spellTier.grace": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grace"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Grâce"
-          }
-        }
-      }
-    },
-    "combat.spellTier.apotheosis": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apotheosis"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Apothéose"
-          }
-        }
-      }
-    },
-    "combat.spellTier.gale": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Gale"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Bourrasque"
-          }
-        }
-      }
-    },
-    "combat.spellTier.tornado": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tornado"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tornade"
-          }
-        }
-      }
-    },
-    "combat.spellTier.hurricane": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Hurricane"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ouragan"
-          }
-        }
-      }
-    },
-    "combat.spellTier.ember": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Ember"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Braise"
-          }
-        }
-      }
-    },
-    "combat.spellTier.blazing": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Blazing Edge"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Flamboiement"
-          }
-        }
-      }
-    },
-    "combat.spellTier.immolation": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Immolation"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Immolation"
-          }
-        }
-      }
-    },
-    "levelUp.spellsEvolved %@": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Your spells have evolved!\n%@"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tes sorts ont évolué !\n%@"
+            "value": "Paré ! Seulement %lld dégâts."
           }
         }
       }

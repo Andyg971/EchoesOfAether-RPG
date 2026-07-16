@@ -785,6 +785,12 @@ final class GameManager {
                 .scale(to: 0.90, duration: 0.06),
                 .scale(to: 1.0, duration: 0.10)
             ]))
+            // En combat, A pare le coup ennemi en cours s'il y en a un :
+            // c'est la seule action possible pendant le tour adverse, et
+            // elle prime sur tout le reste.
+            if state == .combat, combat.attemptBlock() {
+                return
+            }
             if paywall.isActive {
                 paywall.confirmSelection()
             } else if pause.isActive {

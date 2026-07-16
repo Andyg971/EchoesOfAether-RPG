@@ -1237,33 +1237,62 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         add(strip, to: scene)
     }
 
-    /// Paroi de couloir en maçonnerie ruinée. Chaque pièce est un obstacle
-    /// réel : c'est ce qui transforme l'esplanade en chemin. Le motif alterne
-    /// (colonne, pilier, tombe, stèle) — une même colonne répétée à
-    /// l'identique se lit immédiatement comme du copier-coller.
-    private func addWallRun(in scene: SKScene, x: CGFloat,
-                            y0: CGFloat, y1: CGFloat, flipped: Bool = false) {
+    /// Paroi pleine : masse de roche + **une seule** empreinte de collision
+    /// couvrant tout le bloc.
+    ///
+    /// La version précédente alignait des colonnes espacées de 46 pt : chaque
+    /// empreinte ne faisait que 25 pt de large, laissant 21 pt de trou entre
+    /// deux. Le joueur traversait la « paroi », et visuellement ça se lisait
+    /// comme des tombes alignées, pas comme un mur. Ici le couloir est creusé
+    /// dans la roche : ce qui n'est pas marchable est plein, sans interstice.
+    private func addWall(in scene: SKScene, rect: CGRect) {
+        guard rect.width > 2, rect.height > 2 else { return }
+
+        // Masse : la même pierre que le sol, noyée d'ombre → la roche.
+        if let mass = PixelArtSprites.tiledFloor(
+            tileNames: ["a2_stone"], in: rect.size, tileScale: 1.0,
+            tint: SKColor(red: 0.05, green: 0.04, blue: 0.11, alpha: 1)) {
+            mass.position = CGPoint(x: rect.minX, y: rect.minY)
+            mass.zPosition = -8   // au-dessus du sol et de l'allée, sous les props
+            add(mass, to: scene)
+        }
+
+        // Arête éclairée côté couloir : sans elle, la roche et le sol se
+        // confondent dans le noir et le couloir cesse d'être lisible.
+        let onLeftSide = rect.minX < 1
+        let edge = SKShapeNode(rect: CGRect(
+            x: onLeftSide ? rect.maxX - 3 : rect.minX,
+            y: rect.minY, width: 3, height: rect.height))
+        edge.fillColor = SKColor(red: 0.34, green: 0.28, blue: 0.52, alpha: 1)
+        edge.strokeColor = .clear
+        edge.zPosition = -7
+        add(edge, to: scene)
+
+        // Silhouettes de ruine posées SUR l'arête, denses (pas d'alignement
+        // régulier lisible comme une frise). Purement décoratives : la
+        // collision est déjà portée par le bloc.
         let pieces: [(String, CGFloat)] = [
             ("column_broken_1", 2.0), ("pillar_grey_1", 1.6),
-            ("gy_tomb_black", 0.55), ("column_broken_1", 2.0),
-            ("pillar_grey_2", 1.6), ("gy_stone_2", 0.6)
+            ("column_broken_1", 2.0), ("pillar_grey_2", 1.6)
         ]
-        // Décalage dérivé de la position : deux parois voisines ne démarrent
-        // pas sur la même pièce, la file ne se lit pas comme une frise.
-        var i = Int(abs(x) / 37) % pieces.count
-        var y = y0
-        while y <= y1 {
+        var i = Int(abs(rect.minX) / 29) % pieces.count
+        var y = rect.minY + 12
+        while y < rect.maxY - 12 {
             let (asset, scale) = pieces[i % pieces.count]
-            if PixelArtSprites.exists(asset) {
-                addPixelProp(asset, in: scene, at: CGPoint(x: x, y: y),
-                             scale: scale, flipped: flipped)
-            } else {
-                addPixelProp("column_broken_1", in: scene, at: CGPoint(x: x, y: y),
-                             scale: 2.0, flipped: flipped)
+            let x = onLeftSide ? rect.maxX - 8 : rect.minX + 8
+            if PixelArtSprites.exists(asset),
+               let node = PixelArtSprites.still(name: asset, scale: scale,
+                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
+                node.position = CGPoint(x: x, y: y)
+                node.zPosition = propLayer(for: y, in: scene.size.height)
+                add(node, to: scene)   // pas de registerFootprint : bloc déjà solide
             }
-            y += 46
+            y += 54 + CGFloat((i * 13) % 17)   // pas irrégulier
             i += 1
         }
+
+        // Collision : un seul rectangle, continu, infranchissable.
+        registerObstacle(rect)
     }
 
     /// Eran Solace, le Premier Gardien, debout au centre du Seuil. Vieil homme
@@ -2232,16 +2261,16 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // ── PAROIS : colonnes et tombes qui taillent le couloir ──
-        // Ce sont de vrais obstacles (addPixelProp enregistre leur empreinte) :
-        // le joueur ne traverse pas, il suit — ou contourne vers une alcôve.
+        // ── PAROIS : le couloir est creusé dans la roche ──
+        // Tout ce qui n'est pas marchable est plein. Chaque bloc porte UNE
+        // empreinte continue : aucun interstice, on ne traverse pas.
         for band in plan.corridorBands {
-            if let lx = band.left {
-                addWallRun(in: scene, x: w * lx, y0: h * band.y0, y1: h * band.y1)
-            }
-            if let rx = band.right {
-                addWallRun(in: scene, x: w * rx, y0: h * band.y0, y1: h * band.y1, flipped: true)
-            }
+            let y = h * band.y0
+            let height = h * (band.y1 - band.y0)
+            addWall(in: scene, rect: CGRect(x: 0, y: y,
+                                            width: w * band.left, height: height))
+            addWall(in: scene, rect: CGRect(x: w * band.right, y: y,
+                                            width: w * (1 - band.right), height: height))
         }
 
         // ── LE SEUIL : escalier + portail au bout du couloir ──
@@ -2263,22 +2292,31 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addPixelProp("me_statue_angel", in: scene,
                      at: CGPoint(x: w * 0.64, y: h * 0.845), scale: 0.24, flipped: true)
 
-        // Chandeliers : jalonnent le chemin, pas l'arène. Ils rythment la
-        // montée et rendent le couloir lisible dans le noir.
-        for fy in [CGFloat(0.09), 0.20, 0.30, 0.42, 0.55, 0.66, 0.78] {
-            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.385, y: h * fy), scale: 0.55)
-            addPixelProp("gy_candle", in: scene, at: CGPoint(x: w * 0.615, y: h * fy), scale: 0.55)
+        // Chandeliers : posés le long des parois, au bord du marchable. Ils
+        // rythment la montée et rendent le couloir lisible dans le noir.
+        // Leur x suit la bande — sinon ils finiraient noyés dans la roche.
+        for fy in [CGFloat(0.09), 0.20, 0.30, 0.40, 0.55, 0.63, 0.80] {
+            guard let band = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
+            else { continue }
+            let inset = (band.right - band.left) * 0.12
+            addPixelProp("gy_candle", in: scene,
+                         at: CGPoint(x: w * (band.left + inset), y: h * fy), scale: 0.55)
+            addPixelProp("gy_candle", in: scene,
+                         at: CGPoint(x: w * (band.right - inset), y: h * fy), scale: 0.55)
         }
 
-        // Arche brisée à l'entrée du goulot : on voit le piège avant d'y entrer.
+        // Arche brisée juste avant le goulot : on voit le piège avant d'y entrer.
         addPixelProp("gy_gate_high", in: scene,
-                     at: CGPoint(x: w * 0.50, y: h * 0.305), scale: 0.45)
+                     at: CGPoint(x: w * 0.50, y: h * 0.295), scale: 0.45)
 
-        // Tombes au fond des alcôves + ossements au goulot (là où ça a saigné)
+        // Tombe adossée à chaque stèle (décalée : son empreinte ne doit pas
+        // barrer l'accès à la stèle elle-même) + ossements au goulot.
         for (i, stele) in plan.steles.enumerated() {
             let asset = i == 1 ? "gy_tomb_grey_2" : "gy_tomb_black"
+            let side: CGFloat = stele.pos.x < w * 0.5 ? 1 : -1
             addPixelProp(asset, in: scene,
-                         at: CGPoint(x: stele.pos.x, y: stele.pos.y + h * 0.02), scale: 0.55)
+                         at: CGPoint(x: stele.pos.x + side * 44, y: stele.pos.y + h * 0.018),
+                         scale: 0.55)
         }
         for p in [(0.46, 0.345), (0.55, 0.325), (0.50, 0.36)] {
             guard let bones = PixelArtSprites.still(
@@ -2312,6 +2350,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
         // Cristal de sauvegarde, à l'entrée — dernier répit avant la montée.
         addSaveCrystal(at: plan.saveCrystal, in: scene)
+
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.45)

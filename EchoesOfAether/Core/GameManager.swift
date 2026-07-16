@@ -292,7 +292,7 @@ final class GameManager {
         if CommandLine.arguments.contains("--zone-ruins") {
             hud.goldValue = player.gold
             phase = .ruins
-            world.switchToRuins(in: scene)
+            showRuins(in: scene)
             transition(to: .exploration)
             return
         }
@@ -319,7 +319,7 @@ final class GameManager {
                 self.phase = .act3
                 self.player.act3EchoJoined = true
                 self.player.act3EranMet = true
-                self.world.switchToThreshold(in: scene, echoJoined: true)
+                self.showThreshold(in: scene)
                 self.startVoidShadesCombat()
             }
             return
@@ -327,21 +327,14 @@ final class GameManager {
         if CommandLine.arguments.contains("--zone-voidheart") {
             hud.goldValue = player.gold
             phase = .act4
-            world.switchToVoidHeart(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    reflectionsFreed: player.act4ReflectionsFreed,
-                                    devourersDefeated: player.act4DevourersDefeated,
-                                    bossDefeated: player.act4BossDefeated)
+            showVoidHeart(in: scene)
             transition(to: .exploration)
             return
         }
         if CommandLine.arguments.contains("--zone-threshold") {
             hud.goldValue = player.gold
             phase = .act3
-            world.switchToThreshold(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    spiritsCalmed: player.act3SpiritsCalmed,
-                                    shadesDefeated: player.act3ShadesDefeated)
+            showThreshold(in: scene)
             transition(to: .exploration)
             return
         }
@@ -1823,10 +1816,9 @@ final class GameManager {
                 actionPoint = door.point
             }
         case .ruins:
+            // Gardiens et Archiviste chargent Kael : pas de bulle « Combattre ».
             let w = scene.size.width, h = scene.size.height
             let checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.28, y: h*0.50), "hint.fight"),
-                (CGPoint(x: w*0.62, y: h*0.60), "hint.fight"),
                 (CGPoint(x: w*0.15, y: h*0.65), "hint.examine"),
                 (CGPoint(x: w*0.70, y: h*0.65), "hint.examine")
             ]
@@ -1870,11 +1862,9 @@ final class GameManager {
             where !player.act3StelesRead.contains(stele.0) {
                 checkpoints.append((CGPoint(x: w*stele.1, y: h*stele.2), "hint.examine"))
             }
-            if !player.act3ShadesDefeated, player.act3EchoJoined {
-                checkpoints.append((CGPoint(x: w*0.22, y: h*0.64), "hint.fight"))
-            }
+            // Les Ombres viennent à Kael : aucune bulle « Combattre ».
             if !player.act3EranMet {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.62), "hint.examine"))
+                checkpoints.append((CGPoint(x: w*0.50, y: h*0.62), "hint.talk"))
             } else if !player.act3BossDefeated {
                 checkpoints.append((CGPoint(x: w*0.50, y: h*0.82), "hint.fight"))
             } else {
@@ -1899,9 +1889,7 @@ final class GameManager {
                     checkpoints.append((pos, "hint.talk"))
                 }
             }
-            if !player.act4DevourersDefeated {
-                checkpoints.append((CGPoint(x: w*0.80, y: h*0.66), "hint.fight"))
-            }
+            // Les Dévoreurs viennent à Kael : aucune bulle « Combattre ».
             if !player.act4VoiceConfronted {
                 checkpoints.append((CGPoint(x: w*0.50, y: h*0.58), "hint.examine"))
             } else if !player.act4BossDefeated {
@@ -2044,12 +2032,8 @@ final class GameManager {
             }
         }
 
-        // Ombres du Vide — combat annexe du trio
-        if !player.act3ShadesDefeated, player.act3EchoJoined,
-           point.distance(to: CGPoint(x: w * 0.22, y: h * 0.64)) < 75 {
-            startVoidShadesCombat()
-            return true
-        }
+        // Les Ombres du Vide chargent Kael (cf. spawnAct3Roamers) : plus de
+        // combat au tap.
 
         // 1) Rencontre Eran (centre) tant qu'elle n'a pas eu lieu
         if !player.act3EranMet {
@@ -2391,6 +2375,92 @@ final class GameManager {
         }
     }
 
+    /// Affiche les Ruines ET (re)peuple leurs baladeurs. À utiliser partout
+    /// plutôt que `world.switchToRuins` seul, sinon la zone reste vide.
+    func showRuins(in scene: SKScene) {
+        world.switchToRuins(in: scene)
+        spawnRuinsRoamers()
+    }
+
+    /// Affiche le Seuil ET (re)peuple ses Ombres.
+    func showThreshold(in scene: SKScene) {
+        world.switchToThreshold(in: scene,
+                                echoJoined: player.act3EchoJoined,
+                                spiritsCalmed: player.act3SpiritsCalmed,
+                                shadesDefeated: player.act3ShadesDefeated)
+        spawnAct3Roamers()
+    }
+
+    /// Affiche le Cœur du Vide ET (re)peuple ses Dévoreurs.
+    func showVoidHeart(in scene: SKScene) {
+        world.switchToVoidHeart(in: scene,
+                                echoJoined: player.act3EchoJoined,
+                                reflectionsFreed: player.act4ReflectionsFreed,
+                                devourersDefeated: player.act4DevourersDefeated,
+                                bossDefeated: player.act4BossDefeated)
+        spawnAct4Roamers()
+    }
+
+    /// Ruines (Acte II) : gardiens puis archiviste, selon la progression.
+    func spawnRuinsRoamers() {
+        guard let scene, phase == .ruins || phase == .fallen else { clearRoamers(); return }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        let ruinsTint = SKColor(red: 0.62, green: 0.30, blue: 0.28, alpha: 1)
+        if player.ruinsProgress < 1 {
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.28, y: h * 0.50), wh: h,
+                      tint: ruinsTint, blend: 0.35) { [weak self] in
+                self?.startRuinsCombat1()
+            }
+        } else if player.ruinsProgress == 1 {
+            // L'Archiviste est un mini-boss : patrouille serrée, charge lente.
+            addRoamer("enemy_archivist", at: CGPoint(x: w * 0.62, y: h * 0.60), wh: h,
+                      patrolRadius: 46, chaseSpeed: 78,
+                      tint: SKColor(red: 0.55, green: 0.20, blue: 0.45, alpha: 1),
+                      blend: 0.40) { [weak self] in
+                self?.startRuinsCombat2()
+            }
+        }
+    }
+
+    /// Le Seuil (Acte III) : les Ombres du Vide chargent en meute.
+    /// Elles n'apparaissent qu'une fois l'Écho de Lyra rallié (comme avant).
+    func spawnAct3Roamers() {
+        guard let scene, phase == .act3,
+              !player.act3ShadesDefeated, player.act3EchoJoined else {
+            clearRoamers(); return
+        }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        let shadeTint = SKColor(red: 0.35, green: 0.15, blue: 0.55, alpha: 1)
+        for (i, dx) in [-0.03, 0.04].enumerated() {
+            addRoamer("enemy_bone",
+                      at: CGPoint(x: w * (0.22 + dx), y: h * (0.66 + Double(i) * 0.02)),
+                      wh: h, patrolRadius: 62,
+                      tint: shadeTint, blend: 0.55, alpha: 0.72) { [weak self] in
+                self?.startVoidShadesCombat()
+            }
+        }
+    }
+
+    /// Cœur du Vide (Acte IV) : les Dévoreurs d'échos.
+    func spawnAct4Roamers() {
+        guard let scene, phase == .act4, !player.act4DevourersDefeated else {
+            clearRoamers(); return
+        }
+        clearRoamers()
+        let w = scene.size.width, h = scene.size.height
+        let devourTint = SKColor(red: 0.55, green: 0.12, blue: 0.40, alpha: 1)
+        for (i, dx) in [-0.03, 0.04].enumerated() {
+            addRoamer("enemy_bone",
+                      at: CGPoint(x: w * (0.80 + dx), y: h * (0.68 + Double(i) * 0.02)),
+                      wh: h, patrolRadius: 66,
+                      tint: devourTint, blend: 0.60, alpha: 0.76) { [weak self] in
+                self?.startDevourersCombat()
+            }
+        }
+    }
+
     /// Peuple la caverne du gardien baladeur (si pas encore vaincu).
     func spawnCaveRoamer() {
         guard let scene, !player.caveCleared else { clearRoamers(); return }
@@ -2403,8 +2473,11 @@ final class GameManager {
     /// Crée un monstre baladeur (sprite animé) et l'enregistre.
     func addRoamer(_ asset: String, at pos: CGPoint, wh: CGFloat,
                            patrolRadius: CGFloat = 70, chaseSpeed: CGFloat = 104,
+                           tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
+                           blend: CGFloat = 0.22, alpha: CGFloat = 1,
                            startCombat: @escaping () -> Void) {
-        guard let node = world.makeRoamingMonster(asset: asset) else { return }
+        guard let node = world.makeRoamingMonster(asset: asset, tint: tint,
+                                                  blend: blend, alpha: alpha) else { return }
         world.worldNode.addChild(node)
         roamers.append(RoamingMonster(
             node: node, home: pos, worldHeight: wh,
@@ -2590,13 +2663,13 @@ final class GameManager {
             hud.objectiveText = player.ruinsProgress >= 2
                 ? String(localized: "hud.objective.discovery")
                 : String(localized: "hud.objective.ruins")
-            world.switchToRuins(in: scene)
+            showRuins(in: scene)
             world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
 
         case .fallen:
             hud.objectiveText = String(localized: "hud.objective.fallen")
-            world.switchToRuins(in: scene)
+            showRuins(in: scene)
             world.applyKaelCorruption(level: player.kaelCorruptionLevel)
             transition(to: .exploration)
             // Save interrompue à la fin de l'Acte II : re-propose la suite.
@@ -2610,10 +2683,7 @@ final class GameManager {
                 : (player.act3EranMet
                     ? String(localized: "hud.objective.act3Boss")
                     : String(localized: "hud.objective.act3"))
-            world.switchToThreshold(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    spiritsCalmed: player.act3SpiritsCalmed,
-                                    shadesDefeated: player.act3ShadesDefeated)
+            showThreshold(in: scene)
             world.applyKaelCorruption(level: 3)
             corruptionCinematicShown = true
             transition(to: .exploration)
@@ -2624,11 +2694,7 @@ final class GameManager {
                 : (player.act4VoiceConfronted
                     ? String(localized: "hud.objective.act4Boss")
                     : String(localized: "hud.objective.act4"))
-            world.switchToVoidHeart(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    reflectionsFreed: player.act4ReflectionsFreed,
-                                    devourersDefeated: player.act4DevourersDefeated,
-                                    bossDefeated: player.act4BossDefeated)
+            showVoidHeart(in: scene)
             world.applyKaelCorruption(level: 3)
             corruptionCinematicShown = true
             transition(to: .exploration)

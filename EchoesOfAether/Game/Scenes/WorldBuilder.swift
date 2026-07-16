@@ -1222,25 +1222,26 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     // MARK: - Forest Building Blocks
 
-    private func makeDangerZone(at pos: CGPoint, radius: CGFloat, color: SKColor) -> SKNode {
-        let zone = SKNode()
-        zone.position = pos
-        zone.zPosition = -2
+    /// Eran Solace, le Premier Gardien, debout au centre du Seuil. Vieil homme
+    /// marqué par le Vide : sprite de sage, teinté du violet du Seuil.
+    func addEran(in scene: SKScene, at pos: CGPoint) {
+        guard let eran = PixelArtSprites.animated(
+            name: "npc_sage", frames: 6, scale: 0.62,
+            timePerFrame: 0.24, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        eran.name = "eran"
+        eran.position = pos
+        eran.zPosition = actorLayer(for: pos.y)
+        eran.forEachDescendantSprite { s in
+            s.color = SKColor(red: 0.55, green: 0.45, blue: 0.85, alpha: 1)
+            s.colorBlendFactor = 0.30
+        }
+        addGroundShadow(under: eran, width: 26, height: 7)
+        add(eran, to: scene)
+    }
 
-        let circle = SKShapeNode(circleOfRadius: radius)
-        circle.fillColor = color.withAlphaComponent(0.06)
-        circle.strokeColor = color.withAlphaComponent(0.18)
-        circle.lineWidth = 1.5
-        zone.addChild(circle)
-        JuiceEngine.pulse(circle, scale: 1.2)
-
-        // Crâne pixel art (zone de chasse)
-        let icon = PixelIcons.node(.skull, pixel: 2.2)
-        icon.position = CGPoint(x: 0, y: 2)
-        zone.addChild(icon)
-        JuiceEngine.float(icon, distance: 4)
-
-        return zone
+    /// Position d'Eran au Seuil (nil s'il n'est pas dans la scène).
+    var eranPosition: CGPoint? {
+        worldNode.childNode(withName: "eran")?.position
     }
 
     // MARK: - Mines de Cendreval (excursion optionnelle, forêt)
@@ -1578,14 +1579,20 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Crée un sprite de monstre baladeur (ennemi idle animé, teinté cendre,
     /// ancré aux pieds + ombre) SANS le placer — le GameManager le pilote via
     /// `RoamingMonster`. Renvoie nil si l'asset manque.
-    func makeRoamingMonster(asset: String) -> SKNode? {
+    /// `tint`/`blend` : teinte du sprite. Défaut = cendre (mines, forêt) ; les
+    /// zones du Vide passent leur propre teinte (violet, magenta).
+    func makeRoamingMonster(asset: String,
+                            tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
+                            blend: CGFloat = 0.22,
+                            alpha: CGFloat = 1) -> SKNode? {
         guard let monster = PixelArtSprites.animated(
             name: asset, frames: 6, scale: 0.55,
             timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         monster.forEachDescendantSprite { s in
-            s.color = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1)
-            s.colorBlendFactor = 0.22
+            s.color = tint
+            s.colorBlendFactor = blend
         }
+        monster.alpha = alpha
         addGroundShadow(under: monster, width: 26, height: 7)
         return monster
     }
@@ -2106,21 +2113,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // Zone combat 1 : Gardiens (centre-gauche)
-        let zone1 = makeDangerZone(
-            at: CGPoint(x: w * 0.28, y: h * 0.50),
-            radius: 38,
-            color: SKColor(red: 0.70, green: 0.15, blue: 0.10, alpha: 1)
-        )
-        add(zone1, to: scene)
-
-        // Zone combat 2 : Âmes piégées (centre-droite)
-        let zone2 = makeDangerZone(
-            at: CGPoint(x: w * 0.62, y: h * 0.60),
-            radius: 38,
-            color: SKColor(red: 0.55, green: 0.10, blue: 0.35, alpha: 1)
-        )
-        add(zone2, to: scene)
+        // Les combats des Ruines sont portés par des monstres baladeurs
+        // (cf. GameManager.spawnRuinsRoamers) : ils patrouillent et chargent
+        // Kael. Plus de halo ni de crâne flottant à taper.
 
         // Inscription secondaire d'Eran (coins bas-gauche)
         let eranInscription = makeEranInscription(at: CGPoint(x: w * 0.15, y: h * 0.65))
@@ -2226,11 +2221,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             add(bones, to: scene)
         }
 
-        // Marqueur de rencontre Eran (centre) — réutilise makeDangerZone (bleu)
-        let eranMark = makeDangerZone(
-            at: CGPoint(x: w * 0.50, y: h * 0.62), radius: 34,
-            color: SKColor(red: 0.40, green: 0.55, blue: 0.95, alpha: 1))
-        add(eranMark, to: scene)
+        // Eran Solace en personne (centre) — le Premier Gardien attend Kael.
+        // Un vrai PNJ, plus un marqueur : on parle à quelqu'un, pas à un halo.
+        addEran(in: scene, at: CGPoint(x: w * 0.50, y: h * 0.62))
 
         // ── L'Écho de Lyra attend à l'entrée tant qu'il n'a pas rejoint ──
         if !echoJoined {
@@ -2250,26 +2243,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
 
         // ── Ombres hostiles : échos corrompus qui refusent l'apaisement ──
-        if !shadesDefeated {
-            let shadeZone = makeDangerZone(
-                at: CGPoint(x: w * 0.22, y: h * 0.64), radius: 36,
-                color: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 1))
-            add(shadeZone, to: scene)
-            for (dx, flip) in [(-0.03, false), (0.04, true)] {
-                guard let shade = PixelArtSprites.animated(
-                    name: "enemy_bone", frames: 6, scale: 0.5,
-                    timePerFrame: 0.2, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-                shade.position = CGPoint(x: w * (0.22 + dx), y: h * 0.66)
-                shade.zPosition = actorLayer(for: shade.position.y)
-                if flip { shade.xScale = -abs(shade.xScale) }
-                shade.alpha = 0.65
-                shade.forEachDescendantSprite { sp in
-                    sp.color = SKColor(red: 0.35, green: 0.15, blue: 0.55, alpha: 1)
-                    sp.colorBlendFactor = 0.55
-                }
-                add(shade, to: scene)
-            }
-        }
+        // Portées par des monstres baladeurs (cf. GameManager.spawnAct3Roamers) :
+        // elles patrouillent et chargent Kael au lieu d'attendre un tap.
 
         // Cristal de sauvegarde (entrée du Seuil, bas droite)
         addSaveCrystal(at: CGPoint(x: w * 0.85, y: h * 0.20), in: scene)
@@ -2377,34 +2352,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
 
         // ── Dévoreurs d'échos : combat annexe ──
-        if !devourersDefeated {
-            let devourZone = makeDangerZone(
-                at: CGPoint(x: w * 0.80, y: h * 0.66), radius: 36,
-                color: SKColor(red: 0.85, green: 0.25, blue: 0.60, alpha: 1))
-            add(devourZone, to: scene)
-            for (dx, flip) in [(-0.03, false), (0.04, true)] {
-                guard let devourer = PixelArtSprites.animated(
-                    name: "enemy_bone", frames: 6, scale: 0.5,
-                    timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-                devourer.position = CGPoint(x: w * (0.80 + dx), y: h * 0.68)
-                devourer.zPosition = actorLayer(for: devourer.position.y)
-                if flip { devourer.xScale = -abs(devourer.xScale) }
-                devourer.alpha = 0.70
-                devourer.forEachDescendantSprite { sp in
-                    sp.color = SKColor(red: 0.55, green: 0.12, blue: 0.40, alpha: 1)
-                    sp.colorBlendFactor = 0.60
-                }
-                add(devourer, to: scene)
-            }
-        }
+        // Monstres baladeurs (cf. GameManager.spawnAct4Roamers).
 
-        // Marqueur de confrontation de la Voix (devant l'escalier)
-        if !bossDefeated {
-            let voiceMark = makeDangerZone(
-                at: CGPoint(x: w * 0.50, y: h * 0.58), radius: 34,
-                color: SKColor(red: 0.75, green: 0.35, blue: 0.95, alpha: 1))
-            add(voiceMark, to: scene)
-        }
+        // La confrontation de la Voix n'a pas de marqueur au sol : la Voix
+        // n'a pas de corps. La bulle « A · Examiner » suffit à la signaler
+        // quand Kael approche de l'escalier.
 
         // Cristal de sauvegarde (entrée, bas gauche)
         addSaveCrystal(at: CGPoint(x: w * 0.14, y: h * 0.18), in: scene)

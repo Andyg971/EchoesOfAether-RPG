@@ -18,11 +18,7 @@ extension GameManager {
             phase = .act4
             player.loreDiscovered.insert("voidheart")
             hud.objectiveText = String(localized: "hud.objective.act4")
-            world.switchToVoidHeart(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    reflectionsFreed: player.act4ReflectionsFreed,
-                                    devourersDefeated: player.act4DevourersDefeated,
-                                    bossDefeated: player.act4BossDefeated)
+            showVoidHeart(in: scene)
             world.applyKaelCorruption(level: 3)
         } completion: { [weak self] in
             guard let self else { return }
@@ -60,12 +56,8 @@ extension GameManager {
             }
         }
 
-        // Dévoreurs d'échos — combat annexe du trio
-        if !player.act4DevourersDefeated,
-           point.distance(to: CGPoint(x: w * 0.80, y: h * 0.66)) < 75 {
-            startDevourersCombat()
-            return true
-        }
+        // Les Dévoreurs chargent Kael (cf. spawnAct4Roamers) : plus de
+        // combat au tap.
 
         // 1) Confrontation de la Voix (le choix final est capturé ici)
         if !player.act4VoiceConfronted {
@@ -187,11 +179,7 @@ extension GameManager {
     func refreshVoidHeartBackdrop() {
         guard let scene, phase == .act4 else { return }
         let kaelPos = world.kael.position
-        world.switchToVoidHeart(in: scene,
-                                echoJoined: player.act3EchoJoined,
-                                reflectionsFreed: player.act4ReflectionsFreed,
-                                devourersDefeated: player.act4DevourersDefeated,
-                                bossDefeated: player.act4BossDefeated)
+        showVoidHeart(in: scene)
         world.kael.position = kaelPos
     }
 

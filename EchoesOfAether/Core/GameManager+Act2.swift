@@ -154,7 +154,7 @@ extension GameManager {
             guard let self else { return }
             phase = .ruins
             hud.objectiveText = String(localized: "hud.objective.ruins")
-            world.switchToRuins(in: scene)
+            showRuins(in: scene)
         } completion: { [weak self] in
             guard let self else { return }
             transition(to: .dialogue)
@@ -185,21 +185,9 @@ extension GameManager {
         let w = scene.size.width
         let h = scene.size.height
 
-        // Zone 1 : Gardiens des Ruines (centre-gauche)
-        if player.ruinsProgress < 1 {
-            if point.distance(to: CGPoint(x: w * 0.28, y: h * 0.50)) < 75 {
-                startRuinsCombat1()
-                return true
-            }
-        }
-
-        // Zone 2 : Archiviste mini-boss (centre-droite)
-        if player.ruinsProgress == 1 {
-            if point.distance(to: CGPoint(x: w * 0.62, y: h * 0.60)) < 75 {
-                startRuinsCombat2()
-                return true
-            }
-        }
+        // Les combats ne se déclenchent plus au tap : les gardiens et
+        // l'Archiviste chargent Kael, le contact ouvre le combat
+        // (cf. spawnRuinsRoamers / RoamingMonster).
 
         // Inscription d'Eran (bas-gauche) — accessible dès l'entrée
         if !player.act2EranFound {
@@ -260,6 +248,8 @@ extension GameManager {
             hud.objectiveText = String(localized: "hud.objective.ruins")
             transition(to: .dialogue)
             dialogue.start(PrototypeContent.act2RuinsCombat1Dialogue) { [weak self] in
+                // Gardiens vaincus → l'Archiviste prend le relais.
+                self?.spawnRuinsRoamers()
                 self?.transition(to: .exploration)
             }
         }
@@ -302,6 +292,7 @@ extension GameManager {
                 player.ruinsProgress = 2
                 player.kaelCorruptionLevel = max(player.kaelCorruptionLevel, 2)
                 player.loreDiscovered.insert("archivist")
+                clearRoamers()   // Archiviste vaincu : les Ruines sont calmes.
                 syncGold()
                 hud.resonanceValue = resonanceTotal
                 hud.objectiveText = String(localized: "hud.objective.discovery")

@@ -126,10 +126,7 @@ extension GameManager {
     func refreshThresholdBackdrop() {
         guard let scene, phase == .act3 else { return }
         let kaelPos = world.kael.position
-        world.switchToThreshold(in: scene,
-                                echoJoined: player.act3EchoJoined,
-                                spiritsCalmed: player.act3SpiritsCalmed,
-                                shadesDefeated: player.act3ShadesDefeated)
+        showThreshold(in: scene)
         world.kael.position = kaelPos
     }
 
@@ -145,10 +142,7 @@ extension GameManager {
             guard let self else { return }
             phase = .act3
             hud.objectiveText = String(localized: "hud.objective.act3")
-            world.switchToThreshold(in: scene,
-                                    echoJoined: player.act3EchoJoined,
-                                    spiritsCalmed: player.act3SpiritsCalmed,
-                                    shadesDefeated: player.act3ShadesDefeated)
+            showThreshold(in: scene)
             world.applyKaelCorruption(level: 3)
         } completion: { [weak self] in
             guard let self else { return }

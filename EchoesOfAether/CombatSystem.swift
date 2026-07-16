@@ -55,6 +55,9 @@ enum CombatSpell: CaseIterable {
     case frost
     case thunder
     case mend
+    /// Bénédiction — le sort signature de Lyra : sa nova sacrée soigne
+    /// TOUT le groupe. Kael ne l'a pas : c'est le domaine de la prêtresse.
+    case blessing
 
     var title: String {
         switch self {
@@ -62,6 +65,7 @@ enum CombatSpell: CaseIterable {
         case .frost: return String(localized: "combat.spell.ice")
         case .thunder: return String(localized: "combat.spell.lightning")
         case .mend: return String(localized: "combat.spell.heal")
+        case .blessing: return String(localized: "combat.spell.blessing")
         }
     }
 
@@ -70,7 +74,7 @@ enum CombatSpell: CaseIterable {
         case .ember: return .fire
         case .frost: return .ice
         case .thunder: return .lightning
-        case .mend: return nil
+        case .mend, .blessing: return nil   // sacrés : aucune faiblesse à exploiter
         }
     }
 
@@ -80,6 +84,7 @@ enum CombatSpell: CaseIterable {
         case .frost: return 58
         case .thunder: return 72
         case .mend: return 78
+        case .blessing: return 52   // moins par tête, mais sur tout le groupe
         }
     }
 
@@ -91,6 +96,7 @@ enum CombatSpell: CaseIterable {
         case .frost: return 10
         case .thunder: return 12
         case .mend: return 12
+        case .blessing: return 20   // le soin de groupe se paie
         }
     }
 }
@@ -200,6 +206,8 @@ private let fireButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), corner
 private let iceButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+/// Bénédiction — sort signature de Lyra (nova sacrée, soin de groupe).
+private let blessingButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 private let weaknessLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -1049,6 +1057,29 @@ private func perform(_ action: CombatAction) {
 
     case .spell(let spell):
         comboCount = 0
+        if spell == .blessing {
+            // Nova sacrée de Lyra : soigne TOUT le groupe d'un coup.
+            let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 3)
+                           * damageMultiplier * spellMult)
+            kael.hp = min(kael.maxHP, kael.hp + heal)
+            for ally in aliveAllies {
+                ally.combatant.hp = min(ally.combatant.maxHP,
+                                        ally.combatant.hp + heal)
+            }
+            statusLabel.text = String(localized: "combat.status.blessing \(heal)")
+            AudioEngine.shared.playQuestComplete()
+            HapticsEngine.success()
+            playSpellAnimation(spell, on: foe, boosted: boost > 0)
+            // Un chiffre par soigné : on voit le groupe entier remonter.
+            showFloatingText("+" + String(heal), at: kaelHomePosition,
+                             color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+            for ally in aliveAllies {
+                showFloatingText("+" + String(heal), at: ally.home,
+                                 color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+            }
+            endPlayerAction()
+            return
+        }
         if spell == .mend {
             let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 5)
                            * damageMultiplier * spellMult)
@@ -1212,8 +1243,8 @@ private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
             foe.combatant.stunned = true
             showEffect(String(localized: "combat.effect.paralyzed"), color: CombatElement.lightning.color)
         }
-    case .mend:
-        break
+    case .mend, .blessing:
+        break   // sorts sacrés : ils soignent, ils n'affligent pas
     }
 }
 
@@ -1228,6 +1259,8 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
     // (feu orange, glace bleue, foudre jaune) : une même incantation sert
     // les trois, c'est le FX qui les distingue.
     // Sans pack (ennemi contrôlé), rien : le combat continue.
+    // Soin → skill1 (sphère/étincelles protectrices) ; Bénédiction et sorts
+    // offensifs → skill2 (la grande incantation).
     if let actor = actorSprite {
         CombatSprites.playHeroSkill(on: actor, index: spell == .mend ? 0 : 1)
     }
@@ -1252,14 +1285,18 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
     if let parent = actorSprite?.parent {
         let from = actorHomePosition
         let to = foe.homePosition
+        // Les sorts sacrés de Lyra éclosent sur le GROUPE, pas sur l'ennemi :
+        // leur cible est le lanceur, pas la Bête.
         let fx: BattleSprites.Effect? = switch spell {
-        case .ember:   .fire
-        case .frost:   boosted ? .blizzard : .ice
-        case .thunder: boosted ? .thunder : .lightning
-        case .mend:    nil
+        case .ember:    .fire
+        case .frost:    boosted ? .blizzard : .ice
+        case .thunder:  boosted ? .thunder : .lightning
+        case .mend:     .lyraHeal
+        case .blessing: .lyraBlessing
         }
+        let target = (spell == .mend || spell == .blessing) ? from : to
         if let fx {
-            BattleSprites.playEffect(fx, from: from, to: to, in: parent,
+            BattleSprites.playEffect(fx, from: from, to: target, in: parent,
                                      scale: boosted ? 2.0 : 1.6)
         }
     }
@@ -1269,14 +1306,21 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
     case .frost:   playFrostEffect(on: foe, boosted: boosted)
     case .thunder: playThunderEffect(on: foe, boosted: boosted)
     case .mend:    playMendEffect(boosted: boosted)
+    case .blessing:
+        // Bénédiction : la nova s'ouvre sur chaque membre du groupe.
+        playMendEffect(boosted: boosted, at: kaelHomePosition)
+        for ally in aliveAllies {
+            playMendEffect(boosted: boosted, at: ally.home)
+        }
     }
-    if spell != .mend {
+    // Les sorts sacrés ne frappent personne : aucun recul d'ennemi.
+    if spell != .mend && spell != .blessing {
         // L'impact arrive avec un léger retard (le temps du projectile/effet)
         let impactDelay: TimeInterval = switch spell {
         case .ember: 0.46      // charge + vol de la boule de feu
         case .frost: 0.30      // jaillissement des stalactites
         case .thunder: 0.14    // la foudre frappe quasi instantanément
-        case .mend: 0
+        case .mend, .blessing: 0
         }
         root.run(.sequence([
             .wait(forDuration: impactDelay),
@@ -2494,7 +2538,8 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Petit pulse du panneau d'actions quand la main revient au joueur.
     private func pulseActionPanel() {
         for (i, button) in [attackButton, fireButton, iceButton,
-                            blackSlashButton, lightningButton, healButton].enumerated() {
+                            blackSlashButton, lightningButton, healButton,
+                            blessingButton].enumerated() {
             button.run(.sequence([
                 .wait(forDuration: Double(i) * 0.03),
                 .scale(to: 1.07, duration: 0.10),
@@ -2550,6 +2595,10 @@ private func setupButtons(scene: SKScene) {
     addButton(healButton, title: String(localized: "combat.button.heal"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.03, green: 0.20, blue: 0.09, alpha: 1), stroke: SKColor(red: 0.38, green: 0.80, blue: 0.48, alpha: 1), fontSize: 12,
               chip: SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1))
+    // Bénédiction : or et vert sacré, les couleurs de ses propres FX.
+    addButton(blessingButton, title: String(localized: "combat.button.blessing"), at: .zero, width: 80, height: buttonH,
+              fill: SKColor(red: 0.16, green: 0.16, blue: 0.05, alpha: 1), stroke: SKColor(red: 0.85, green: 0.78, blue: 0.35, alpha: 1), fontSize: 12,
+              chip: SKColor(red: 0.60, green: 0.98, blue: 0.70, alpha: 1))
 
     addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 46, y: panelY + 56), width: 84, height: 22,
               fill: SKColor(red: 0.15, green: 0.09, blue: 0.24, alpha: 1), stroke: SKColor(red: 0.62, green: 0.48, blue: 0.82, alpha: 1), fontSize: 12)
@@ -2637,6 +2686,7 @@ func menuConfirm() {
     if button === iceButton { perform(.spell(.frost)); return }
     if button === lightningButton { perform(.spell(.thunder)); return }
     if button === healButton { perform(.spell(.mend)); return }
+    if button === blessingButton { perform(.spell(.blessing)); return }
 }
 
 /// Fait tourner la cible parmi les ennemis vivants.
@@ -2646,15 +2696,20 @@ private func cycleTarget(direction: Int) {
     targetIndex = alive[(cur + direction + alive.count) % alive.count]
 }
 
-/// Boutons de techniques de l'acteur courant — kits complémentaires.
-/// Kael : feu + Aether. Lyra : glace/foudre/soin. Écho de Lyra :
-/// glace/soin. Eran : foudre + Aether.
+/// Boutons de techniques de l'acteur courant — chacun son domaine.
+///
+/// Kael est le mage élémentaire : son pack fournit feu, glace ET foudre,
+/// il les a toutes, plus l'Aether qui lui est propre. Lyra est prêtresse :
+/// la glace et la foudre ne sont pas à elle — ses sorts sont sacrés (soin,
+/// bénédiction), et ce sont ceux que son pack anime. Eran est un guerrier :
+/// il frappe, et son Aether tranche.
 private var currentActorButtons: [SKShapeNode] {
     switch actingAlly?.kind {
-    case .lyra:     return [attackButton, iceButton, lightningButton, healButton]
-    case .lyraEcho: return [attackButton, iceButton, healButton]
-    case .eran:     return [attackButton, lightningButton, blackSlashButton]
-    case nil:       return [attackButton, fireButton, blackSlashButton]
+    case .lyra:     return [attackButton, healButton, blessingButton]
+    case .lyraEcho: return [attackButton, healButton]
+    case .eran:     return [attackButton, blackSlashButton]
+    case nil:       return [attackButton, fireButton, iceButton,
+                            lightningButton, blackSlashButton]
     }
 }
 
@@ -2664,7 +2719,7 @@ private func layoutActionMenu() {
     guard let scene = parentScene else { return }
     let visible = currentActorButtons
     let hidden = [attackButton, fireButton, iceButton,
-                  blackSlashButton, lightningButton, healButton]
+                  blackSlashButton, lightningButton, healButton, blessingButton]
         .filter { !visible.contains($0) }
     hidden.forEach { $0.isHidden = true }
 
@@ -2962,7 +3017,8 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         }
 
         let ready = phase == .playerTurn && kael.isAlive && !aliveEnemies.isEmpty
-        for button in [attackButton, blackSlashButton, fireButton, iceButton, lightningButton, healButton] {
+        for button in [attackButton, blackSlashButton, fireButton, iceButton,
+                       lightningButton, healButton, blessingButton] {
             button.alpha = ready ? 1 : 0.36
         }
         selectionCursor.isHidden = !ready || menuRow == 2

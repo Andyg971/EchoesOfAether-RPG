@@ -4342,6 +4342,24 @@
         }
       }
     },
+    "combat.button.blessing": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "BLESSING" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "BÉNÉDICTION" } }
+      }
+    },
+    "combat.spell.blessing": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Blessing" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Bénédiction" } }
+      }
+    },
+    "combat.status.blessing %lld": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Blessing restores %lld HP to everyone." } },
+        "fr": { "stringUnit": { "state": "translated", "value": "La Bénédiction rend %lld PV à tout le groupe." } }
+      }
+    },
     "paywall.title": {
       "localizations": {
         "en": {

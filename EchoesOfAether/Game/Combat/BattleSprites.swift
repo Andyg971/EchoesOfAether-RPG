@@ -165,7 +165,11 @@ enum BattleSprites {
     /// Projectiles et effets fournis avec le pack. Chaque élément a ses trois
     /// étapes (`fire1..3`) : ce sont les frames de l'effet, pas trois variantes.
     enum Effect {
+        // Pack wizard — les éléments de Kael.
         case fire, ice, lightning, thunder, blizzard, ward
+        // Pack priest — le sacré de Lyra. Ses sorts ne sont pas élémentaires :
+        // ni glace ni foudre, mais bénédiction et soin, en vert et or.
+        case lyraHeal, lyraBlessing, lyraBolt
 
         var frameNames: [String] {
             switch self {
@@ -175,14 +179,21 @@ enum BattleSprites {
             case .thunder:   return ["fx_thunder1", "fx_thunder2", "fx_thunder3"]
             case .blizzard:  return ["fx_blizzard", "fx_blizzard2"]
             case .ward:      return ["fx_guard"]
+            case .lyraHeal:  return ["fx_lyra_skill1_fx1", "fx_lyra_skill1_fx2",
+                                     "fx_lyra_skill1_fx3", "fx_lyra_skill1_fx4"]
+            case .lyraBlessing: return ["fx_lyra_skill2_fx1", "fx_lyra_skill2_fx2",
+                                        "fx_lyra_skill2_fx3"]
+            case .lyraBolt:  return ["fx_lyra_attack_bolt", "fx_lyra_attack_fx",
+                                     "fx_lyra_attack_hit"]
             }
         }
 
-        /// `thunder` tombe du ciel sur la cible ; les autres sont des
-        /// projectiles qui traversent l'arène.
+        /// Projectile = traverse l'arène vers la cible. Les autres éclosent
+        /// sur place : la foudre tombe du ciel, les sorts sacrés s'épanouissent
+        /// autour du soigné.
         var isProjectile: Bool {
             switch self {
-            case .thunder, .ward: return false
+            case .thunder, .ward, .lyraHeal, .lyraBlessing: return false
             default: return true
             }
         }

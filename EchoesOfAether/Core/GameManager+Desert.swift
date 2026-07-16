@@ -18,8 +18,11 @@ extension GameManager {
             AudioEngine.shared.setMood(.tense)
             world.switchToDesert(in: scene, progress: player.desertProgress,
                                  chestTaken: player.desertChestTaken)
+            // Coordonnées MONDE : Ossara scrolle sur trois écrans depuis
+            // qu'elle a une cité. `scene.size.height` posait Kael au tiers de
+            // la traversée, loin du sable d'entrée.
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
-                                          y: scene.size.height * 0.14)
+                                          y: world.worldHeight * 0.09)
         } completion: { [weak self] in
             guard let self else { return }
             spawnDesertRoamers()
@@ -47,16 +50,19 @@ extension GameManager {
     func spawnDesertRoamers() {
         guard let scene, inDesert else { clearRoamers(); return }
         clearRoamers()
-        let w = scene.size.width, h = scene.size.height
+        let w = scene.size.width
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        // Un rôdeur par tronçon : dunes du sud, abords de la cité, canyon du
+        // nord. Ils se partageaient le même écran.
         switch player.desertProgress {
         case 0:
-            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.28, y: h * 0.55),
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.30, y: h * 0.22),
                       wh: h) { [weak self] in self?.startDesertCombat1() }
         case 1:
-            addRoamer("enemy_bone", at: CGPoint(x: w * 0.55, y: h * 0.68),
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.60, y: h * 0.66),
                       wh: h) { [weak self] in self?.startDesertCombat2() }
         case 2 where player.questDesert != .complete:
-            addRoamer("enemy_bone", at: CGPoint(x: w * 0.80, y: h * 0.55),
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.40, y: h * 0.86),
                       wh: h, patrolRadius: 44, chaseSpeed: 78) { [weak self] in
                 self?.startDesertBossSequence()
             }
@@ -104,10 +110,12 @@ extension GameManager {
 
     func tryDesertInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
         let w = scene.size.width
-        let h = scene.size.height
+        // Hauteur MONDE, et repères partagés avec `WorldBuilder` : chaque
+        // fichier plaçait les mêmes POI avec sa propre formule.
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
 
         // Sortie (halo sud) : retour vers la zone d'origine
-        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.08)) < 60 {
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * DesertPOI.exitY)) < DesertPOI.reach {
             exitDesert()
             return true
         }
@@ -117,14 +125,14 @@ extension GameManager {
 
         // Coffre enfoui (une seule fois)
         if !player.desertChestTaken,
-           point.distance(to: CGPoint(x: w * 0.12, y: h * 0.56)) < 60 {
+           point.distance(to: CGPoint(x: w * 0.10, y: h * DesertPOI.chestY)) < DesertPOI.reach {
             pickupBuriedChest()
             return true
         }
 
         // Oasis : restaure tous les PV, une fois par visite
         if !player.desertOasisUsed,
-           point.distance(to: CGPoint(x: w * 0.85, y: h * 0.20)) < 60 {
+           point.distance(to: DesertPOI.oasis.scaled(w: w, h: h)) < DesertPOI.reach {
             drinkAtOasis()
             return true
         }
@@ -303,7 +311,8 @@ extension GameManager {
         syncGold()
         AudioEngine.shared.playGoldGain()
         world.removeBuriedChest()
-        let spot = CGPoint(x: scene.size.width * 0.12, y: scene.size.height * 0.56)
+        let spot = CGPoint(x: scene.size.width * 0.10,
+                           y: world.worldHeight * DesertPOI.chestY)
         world.worldNode.addChild(ParticleFactory.impactSparks(
             at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
         transition(to: .dialogue)
@@ -321,7 +330,7 @@ extension GameManager {
         JuiceEngine.flashOverlay(in: scene, size: scene.size,
                                  color: SKColor(red: 0.30, green: 0.75, blue: 0.85, alpha: 1),
                                  duration: 0.25)
-        let spot = CGPoint(x: scene.size.width * 0.85, y: scene.size.height * 0.20)
+        let spot = DesertPOI.oasis.scaled(w: scene.size.width, h: world.worldHeight)
         world.worldNode.addChild(ParticleFactory.impactSparks(
             at: spot, color: SKColor(red: 0.55, green: 0.90, blue: 1.0, alpha: 1), count: 12))
         transition(to: .dialogue)

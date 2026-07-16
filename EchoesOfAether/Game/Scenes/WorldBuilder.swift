@@ -1,5 +1,34 @@
 import SpriteKit
 
+/// Repères d'Ossara, en fractions de la hauteur du MONDE (pas de l'écran).
+///
+/// Source unique : `WorldBuilder` y pose les décors, `GameManager+Desert` y
+/// teste les interactions. Les deux les écrivaient chacun de leur côté, en
+/// fractions de `scene.size.height` — tant que le désert tenait sur un écran
+/// les deux formules donnaient le même point, par coïncidence. Le jour où la
+/// zone a scrollé, le coffre et l'oasis seraient restés joignables depuis le
+/// vide, à un tiers de leur sprite.
+enum DesertPOI {
+    /// Sortie sud, vers la carte du monde.
+    static let exitY: CGFloat = 0.04
+    /// Coffre enfoui, à l'ombre du canyon (flanc ouest).
+    static let chestY: CGFloat = 0.64
+    /// Oasis, tout au nord.
+    static let oasis = CGPoint(x: 0.85, y: 0.92)
+    /// Cité des caravanes : centre de la place.
+    static let town = CGPoint(x: 0.50, y: 0.46)
+    /// Rayon d'interaction commun aux POI de la zone.
+    static let reach: CGFloat = 60
+}
+
+extension CGPoint {
+    /// Fractions (x, y) → point monde. Évite d'écrire `w * p.x, h * p.y` des
+    /// deux côtés et de se tromper de hauteur en chemin.
+    func scaled(w: CGFloat, h: CGFloat) -> CGPoint {
+        CGPoint(x: x * w, y: y * h)
+    }
+}
+
 @MainActor
 final class WorldBuilder {
     // Personnages principaux
@@ -1993,14 +2022,28 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// de caravanes, oasis au nord-est. Une hauteur d'écran, pas de scroll.
     private func buildDesert(in scene: SKScene, progress: Int, chestTaken: Bool) {
         let w = scene.size.width
-        let h = scene.size.height
+        // Ossara devient un trek, comme la forêt. Elle tenait sur un écran —
+        // `worldHeight` valait `scene.size.height`, la caméra ne bougeait pas —
+        // pendant que le village en fait 4,2 et la forêt 2,8 : trois POI collés
+        // les uns aux autres, et le désert le plus petit de la carte.
+        //
+        // Trois hauteurs d'écran, et une traversée qui raconte quelque chose :
+        // on entre par le sud, on franchit les dunes, on trouve la cité des
+        // caravanes, on longe le canyon, on atteint l'oasis au nord.
+        let h = scene.size.height * 3.0
+        worldHeight = h
 
-        // Sol : terre teintée sable chaud
+        // Sol : le sable du pack désert, pas de la terre de forêt reteintée.
+        //
+        // Un seul sable en fond. Mélanger les quatre variantes donnait un
+        // damier : `ds_sand` est lisse, `ds_dune` est strié — côte à côte au
+        // hasard, on voit la grille au lieu du désert. Les variantes servent
+        // de plaques posées exprès (voir plus bas), pas de bruit de fond.
         addTiledFloor(in: scene,
-                      tileNames: ["a2_dirt"],
+                      tileNames: ["ds_sand"],
                       fallbackColor: SKColor(red: 0.72, green: 0.56, blue: 0.30, alpha: 1),
                       tileScale: 1.0,
-                      tint: SKColor(red: 0.82, green: 0.66, blue: 0.36, alpha: 1),
+                      tint: nil,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
@@ -2009,73 +2052,75 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zoneLabel.text = String(localized: "world.desert.title")
         zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.45, green: 0.32, blue: 0.14, alpha: 0.8)
-        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.90)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.045)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // Crêtes de dunes : bandes de sable clair qui ondulent
-        for (y, alpha) in [(0.26, 0.35), (0.46, 0.28), (0.66, 0.32), (0.82, 0.25)] {
-            let dune = SKShapeNode(rectOf: CGSize(width: w * 0.7, height: 5))
-            dune.fillColor = SKColor(red: 0.92, green: 0.80, blue: 0.52, alpha: CGFloat(alpha))
-            dune.strokeColor = .clear
-            dune.position = CGPoint(x: w * CGFloat.random(in: 0.35...0.65),
-                                    y: h * CGFloat(y))
-            dune.zPosition = -8
-            add(dune, to: scene)
+        // ── Plaques de terrain : le sable n'est pas le même partout ──
+        // Terre craquelée au milieu, roche vers le canyon nord.
+        for (tile, x, y, cols, rows) in [("ds_cracked", 0.20, 0.30, 6, 4),
+                                         ("ds_cracked2", 0.74, 0.33, 5, 4),
+                                         ("ds_dune2", 0.46, 0.18, 6, 3),
+                                         ("ds_pebbles", 0.52, 0.63, 5, 3),
+                                         ("ds_gravel", 0.24, 0.70, 5, 4),
+                                         ("ds_rock", 0.80, 0.74, 6, 5),
+                                         ("ds_rock2", 0.60, 0.88, 4, 3),
+                                         ("ds_cracked3", 0.14, 0.88, 4, 4)] {
+            addTerrainPatch(tile, in: scene, at: CGPoint(x: w * x, y: h * y),
+                            cols: cols, rows: rows)
         }
 
-        // Roches érodées et pierres — le squelette du désert
-        let rocks: [(String, CGFloat, CGFloat, CGFloat)] = [
-            ("rock_7", 0.10, 0.30, 0.70), ("rock_3", 0.34, 0.22, 0.60),
-            ("rock_9", 0.64, 0.34, 0.65), ("rock_1", 0.90, 0.70, 0.60),
-            ("rock_5", 0.22, 0.84, 0.55), ("gy_stone_1", 0.46, 0.44, 0.55),
-            ("gy_stone_3", 0.70, 0.82, 0.55), ("ext_pebbles", 0.30, 0.62, 0.8),
-            ("ext_pebbles", 0.58, 0.18, 0.8), ("ext_pebbles", 0.78, 0.42, 0.8)
-        ]
-        for (asset, x, y, s) in rocks {
-            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
+        // ── Sud : les dunes d'entrée, semées de cactus et d'ossements ──
+        for (asset, x, y, s) in [("ds_cactus_tall", 0.14, 0.16, 1.0),
+                                 ("ds_cactus_med", 0.86, 0.12, 1.0),
+                                 ("ds_bush_dead", 0.30, 0.10, 1.0),
+                                 ("ds_cactus_barrel", 0.70, 0.20, 1.0),
+                                 ("ds_tumbleweed", 0.44, 0.24, 1.0),
+                                 ("ds_skull_cow", 0.22, 0.24, 1.0),
+                                 ("ds_bush_dead2", 0.62, 0.28, 1.0),
+                                 ("ds_cactus_tall2", 0.90, 0.26, 1.0)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                          scale: s, solid: asset.hasPrefix("ds_cactus"))
         }
 
-        // Arbres morts calcinés par le soleil — gy_tree (mv_dead_tree est
-        // une spritesheet entière, cf. forêt), petits et loin du HUD
-        for (x, y, s) in [(0.07, 0.32, 0.55), (0.40, 0.32, 0.5), (0.70, 0.26, 0.5)] {
-            guard let tree = PixelArtSprites.still(
-                name: "gy_tree", scale: CGFloat(s),
-                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            tree.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
-            tree.zPosition = depthLayer(for: tree.position.y, sceneHeight: h)
-            tree.forEachDescendantSprite { sp in
-                sp.color = SKColor(red: 0.62, green: 0.46, blue: 0.22, alpha: 1)
-                sp.colorBlendFactor = 0.55
-            }
-            addGroundShadow(under: tree, width: 40 * CGFloat(s), height: 11 * CGFloat(s))
-            add(tree, to: scene)
-            // Tronc infranchissable, comme en forêt. Il manquait : les arbres
-            // du désert se traversaient de part en part.
-            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
+        // ── Cité des caravanes (centre) : le cœur de la zone ──
+        addDesertTown(in: scene, w: w, h: h)
+
+        // ── Nord : le canyon, ses éboulis et ses caravanes perdues ──
+        for (asset, x, y, s) in [("ds_boulder", 0.14, 0.62, 1.0),
+                                 ("ds_rock_big", 0.88, 0.66, 1.0),
+                                 ("ds_boulder2", 0.34, 0.74, 1.0),
+                                 ("ds_rock_spire", 0.70, 0.78, 1.0),
+                                 ("ds_bones", 0.24, 0.70, 1.0),
+                                 ("ds_skull_cow2", 0.56, 0.72, 1.0),
+                                 ("ds_bone", 0.44, 0.80, 1.0),
+                                 ("ds_ruin_column", 0.78, 0.86, 1.0),
+                                 ("ds_ruin_stone", 0.30, 0.88, 1.0),
+                                 ("ds_cactus_tall3", 0.10, 0.78, 1.0),
+                                 ("ds_agave", 0.64, 0.64, 1.0),
+                                 ("ds_tumbleweed2", 0.50, 0.84, 1.0)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                          scale: s, solid: asset.hasPrefix("ds_boulder")
+                                        || asset.hasPrefix("ds_rock")
+                                        || asset.hasPrefix("ds_ruin"))
         }
 
-        // Ossements des caravanes perdues
-        for p in [(0.36, 0.50), (0.62, 0.60), (0.20, 0.44), (0.74, 0.26)] {
-            guard let bones = PixelArtSprites.still(
-                name: "bones_1", scale: 2.0,
-                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            bones.position = CGPoint(x: w * p.0, y: h * p.1)
-            bones.zPosition = -2
-            bones.alpha = 0.85
-            add(bones, to: scene)
+        // ── Oasis (nord) : bassin pixel + halo de fraîcheur ──
+        addOasis(in: scene, at: DesertPOI.oasis.scaled(w: w, h: h))
+        for (asset, x, y) in [("ds_flowers", 0.74, 0.90), ("ds_flowers_red", 0.94, 0.88),
+                              ("ds_pot", 0.78, 0.94), ("ds_flower_orange", 0.68, 0.94)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                          scale: 1.0, solid: false)
         }
-
-        // ── Oasis (nord-est) : bassin pixel + halo de fraîcheur ──
-        addOasis(in: scene, at: CGPoint(x: w * 0.85, y: h * 0.20))
 
         // Les combats du désert sont portés par des monstres baladeurs
         // (GameManager.spawnDesertRoamers) : plus de halos de danger ni de
         // crânes statiques.
 
-        // Coffre enfoui (flanc ouest) : les pillards ne l'ont jamais trouvé
+        // Coffre enfoui (flanc ouest, à l'ombre du canyon) : les pillards ne
+        // l'ont jamais trouvé.
         if !chestTaken {
-            let chest = makeBuriedChest(at: CGPoint(x: w * 0.12, y: h * 0.56))
+            let chest = makeBuriedChest(at: CGPoint(x: w * 0.10, y: DesertPOI.chestY * h))
             chest.name = "desertChest"
             add(chest, to: scene)
         }
@@ -2085,18 +2130,18 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exitGlow.fillColor = SKColor(red: 0.55, green: 0.75, blue: 0.55, alpha: 0.10)
         exitGlow.strokeColor = SKColor(red: 0.70, green: 0.90, blue: 0.70, alpha: 0.25)
         exitGlow.lineWidth = 1.5
-        exitGlow.position = CGPoint(x: w * 0.50, y: h * 0.08)
+        exitGlow.position = CGPoint(x: w * 0.50, y: h * DesertPOI.exitY)
         add(exitGlow, to: scene)
         JuiceEngine.pulse(exitGlow, scale: 1.15)
         let exitLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         exitLabel.text = String(localized: "world.desert.exit")
         exitLabel.fontSize = 12
         exitLabel.fontColor = SKColor(red: 0.40, green: 0.28, blue: 0.12, alpha: 0.85)
-        exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
+        exitLabel.position = CGPoint(x: w * 0.50, y: h * DesertPOI.exitY + 42)
         add(exitLabel, to: scene)
 
-        // Cristal de sauvegarde, près de la sortie du désert.
-        addSaveCrystal(at: CGPoint(x: w * 0.68, y: h * 0.14), in: scene)
+        // Cristal de sauvegarde, à l'entrée de la cité.
+        addSaveCrystal(at: CGPoint(x: w * 0.62, y: h * 0.40), in: scene)
 
         // Poussière en suspension : chaleur d'Ossara + rares ombres de nuages
         let desertAmbiance = SKNode()
@@ -2108,6 +2153,102 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         debugDrawObstacles(in: scene)   // --show-obstacles : audit (desert)
         LightingEngine.startDayCycle(in: scene, day: .desert, phaseSeconds: 90)
         AudioEngine.shared.setAmbience(.desert)
+    }
+
+    /// Plaque de terrain : un îlot de tuiles posé sur le sable, pour que le sol
+    /// change en traversant (terre craquelée, gravier, roche) au lieu d'être
+    /// une nappe uniforme sur trois écrans.
+    ///
+    /// L'îlot est ovale, pas carré : une plaque rectangulaire se lit comme un
+    /// rectangle, et le pack n'a pas de tuiles de transition à poser sur ses
+    /// bords. On garde les tuiles dont le centre tombe dans l'ellipse, et on
+    /// laisse tomber celles du pourtour au hasard — le bord devient irrégulier
+    /// et le sable reprend ses droits sans couture visible.
+    private func addTerrainPatch(_ tile: String, in scene: SKScene,
+                                 at centre: CGPoint, cols: Int, rows: Int) {
+        guard PixelArtSprites.exists(tile) else { return }
+        let side: CGFloat = 96
+        let origin = CGPoint(x: centre.x - CGFloat(cols) * side / 2,
+                             y: centre.y - CGFloat(rows) * side / 2)
+        let rx = CGFloat(cols) / 2, ry = CGFloat(rows) / 2
+        for r in 0..<rows {
+            for c in 0..<cols {
+                // Distance normalisée au centre de l'ellipse (1 = sur le bord).
+                let dx = (CGFloat(c) + 0.5 - rx) / rx
+                let dy = (CGFloat(r) + 0.5 - ry) / ry
+                let d = (dx * dx + dy * dy).squareRoot()
+                if d > 1.0 { continue }                       // hors de l'îlot
+                if d > 0.62, Bool.random() { continue }       // pourtour : effrité
+                guard let t = PixelArtSprites.still(name: tile, scale: 1.0,
+                                                    anchor: CGPoint(x: 0, y: 0)) else { continue }
+                t.position = CGPoint(x: origin.x + CGFloat(c) * side,
+                                     y: origin.y + CGFloat(r) * side)
+                t.zPosition = -9   // sur le sable, sous tout le reste
+                add(t, to: scene)
+            }
+        }
+    }
+
+    /// Prop du désert : posé aux pieds, ombre au sol, profondeur selon y.
+    /// `solid` enregistre une empreinte — un cactus ou un rocher se contourne.
+    private func addDesertProp(_ name: String, in scene: SKScene, at pos: CGPoint,
+                               scale: CGFloat, solid: Bool) {
+        guard let node = PixelArtSprites.still(name: name, scale: scale,
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        node.position = pos
+        node.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
+        addGroundShadow(under: node, width: 26 * scale, height: 8 * scale)
+        add(node, to: scene)
+        if solid { registerFootprint(of: node, widthRatio: 0.55, depthRatio: 0.4, maxDepth: 26) }
+    }
+
+    /// La cité des caravanes : maisons d'adobe, tentes, souk et puits.
+    ///
+    /// C'est le contenu qui manquait à Ossara. La zone n'avait qu'un coffre,
+    /// une oasis et trois rôdeurs — le scénario parle pourtant d'une route de
+    /// caravanes, et le joueur ne croisait jamais personne qui l'ait empruntée.
+    private func addDesertTown(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        // Remparts et porte : on entre par le sud, ça se voit de loin.
+        addDesertProp("ds_gate", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.375),
+                      scale: 1.0, solid: false)
+
+        // Maisons, en retrait de part et d'autre de la place.
+        for (asset, x, y) in [("ds_house_red", 0.18, 0.50),
+                              ("ds_house_sand", 0.80, 0.49),
+                              ("ds_house_large", 0.30, 0.58),
+                              ("ds_house_red", 0.68, 0.58)] {
+            guard let house = PixelArtSprites.still(name: asset, scale: 1.0,
+                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            house.position = CGPoint(x: w * x, y: h * y)
+            house.zPosition = depthLayer(for: house.position.y, sceneHeight: scene.size.height)
+            add(house, to: scene)
+            // Un mur ne se traverse pas. L'empreinte couvre la façade, pas le
+            // toit : on doit pouvoir passer derrière.
+            registerFootprint(of: house, widthRatio: 0.92, depthRatio: 0.34, maxDepth: 48)
+        }
+
+        // Tentes de caravaniers autour de la place.
+        for (asset, x, y) in [("ds_tent_big", 0.62, 0.43),
+                              ("ds_tent_canvas", 0.34, 0.42),
+                              ("ds_tent_round", 0.22, 0.45),
+                              ("ds_tent_small", 0.76, 0.44)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                          scale: 1.0, solid: true)
+        }
+
+        // Le souk, le puits, le feu : la place vit.
+        addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.47),
+                      scale: 1.0, solid: false)
+        addDesertProp("ds_well", in: scene, at: DesertPOI.town.scaled(w: w, h: h),
+                      scale: 1.0, solid: true)
+        addDesertProp("ds_campfire", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.50),
+                      scale: 1.0, solid: false)
+        for (asset, x, y) in [("ds_pot", 0.40, 0.52), ("ds_pot2", 0.61, 0.54),
+                              ("ds_fence", 0.14, 0.42), ("ds_fence", 0.88, 0.41),
+                              ("ds_ladder", 0.24, 0.53), ("ds_cactus_barrel2", 0.92, 0.53)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                          scale: 1.0, solid: false)
+        }
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.

@@ -1290,23 +1290,32 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
         CombatSprites.playHeroSkill(on: actor, index: spell == .mend ? 0 : 1)
     }
 
-    // Teinte de cast : garde une lecture élémentaire même sur un sprite
-    // sans pack, mais discrète — la gestuelle porte l'action désormais.
-    let castColor = spell.element?.color
-        ?? SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
-    actorSprite?.forEachDescendantSprite { sprite in
-        let prevColor = sprite.color
-        let prevFactor = sprite.colorBlendFactor
-        sprite.run(.sequence([
-            .colorize(with: castColor, colorBlendFactor: 0.28, duration: 0.10),
-            .wait(forDuration: 0.12),
-            .colorize(with: prevColor, colorBlendFactor: prevFactor, duration: 0.22)
-        ]))
+    // Teinte de cast : repli pour un sprite sans pack (ennemi contrôlé).
+    // Sur un héros à pack, sa propre animation porte déjà le sort — le
+    // repeindre en orange par-dessus salissait ses couleurs d'origine.
+    let hasPack = actorSprite?.childNode(withName: "body") != nil
+    if !hasPack {
+        let castColor = spell.element?.color
+            ?? SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
+        actorSprite?.forEachDescendantSprite { sprite in
+            let prevColor = sprite.color
+            let prevFactor = sprite.colorBlendFactor
+            sprite.run(.sequence([
+                .colorize(with: castColor, colorBlendFactor: 0.45, duration: 0.10),
+                .wait(forDuration: 0.12),
+                .colorize(with: prevColor, colorBlendFactor: prevFactor, duration: 0.22)
+            ]))
+        }
     }
 
     // ── Le FX du pack, projeté du lanceur vers la cible ──
     // Boost : le sort passe à sa forme majeure (blizzard pour la glace,
     // foudre du ciel pour l'éclair).
+    //
+    // `usedPackFX` retient si le pack a fourni l'effet : dans ce cas les
+    // anciens effets codés à la main ne doivent PAS se jouer par-dessus.
+    // Sinon on empile deux boules de feu — celle du pack et la mienne.
+    var usedPackFX = false
     if let parent = actorSprite?.parent {
         let from = actorHomePosition
         let to = foe.homePosition
@@ -1322,27 +1331,40 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
         case .emberStrike: .eranEmber
         }
         let target = (spell == .mend || spell == .blessing) ? from : to
-        if let fx {
+        if let fx, !BattleSprites.effectTextures(fx).isEmpty {
             BattleSprites.playEffect(fx, from: from, to: target, in: parent,
                                      scale: boosted ? 2.0 : 1.6)
+            usedPackFX = true
         }
     }
 
-    switch spell {
-    case .ember:   playEmberEffect(on: foe, boosted: boosted)
-    case .frost:   playFrostEffect(on: foe, boosted: boosted)
-    case .thunder: playThunderEffect(on: foe, boosted: boosted)
-    case .mend:    playMendEffect(boosted: boosted)
-    case .blessing:
-        // Bénédiction : la nova s'ouvre sur chaque membre du groupe.
-        playMendEffect(boosted: boosted, at: kaelHomePosition)
-        for ally in aliveAllies {
+    // Anciens effets, codés à la main avant l'arrivée des packs (boule de
+    // braise, stalactites, colonne de foudre). Ils ne servent PLUS que de
+    // repli : quand le pack fournit son propre effet, jouer les deux
+    // empilait deux sorts l'un sur l'autre.
+    if !usedPackFX {
+        switch spell {
+        case .ember:   playEmberEffect(on: foe, boosted: boosted)
+        case .frost:   playFrostEffect(on: foe, boosted: boosted)
+        case .thunder: playThunderEffect(on: foe, boosted: boosted)
+        case .mend:    playMendEffect(boosted: boosted)
+        case .blessing:
+            playMendEffect(boosted: boosted, at: kaelHomePosition)
+            for ally in aliveAllies {
+                playMendEffect(boosted: boosted, at: ally.home)
+            }
+        case .windBlade, .emberStrike:
+            break   // ces techniques n'existent que par leur pack
+        }
+    } else if spell == .blessing {
+        // La nova du pack éclot sur le lanceur ; l'anneau de soin marque
+        // chaque autre membre pour qu'on voie bien que TOUT le groupe monte.
+        for ally in aliveAllies where ally.home != actorHomePosition {
             playMendEffect(boosted: boosted, at: ally.home)
         }
-    case .windBlade, .emberStrike:
-        // Passes d'armes : le FX du pack porte tout, pas de mise en scène
-        // supplémentaire — Eran bondit sur sa cible.
-        break
+        if actorHomePosition != kaelHomePosition {
+            playMendEffect(boosted: boosted, at: kaelHomePosition)
+        }
     }
     // Les sorts sacrés ne frappent personne : aucun recul d'ennemi.
     if spell != .mend && spell != .blessing {

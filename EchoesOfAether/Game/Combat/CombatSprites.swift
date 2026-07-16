@@ -73,15 +73,17 @@ enum CombatSprites {
     static func kael() -> SKNode {
         let root = BattleSprites.node(.kael)
         root.name = "combatKael"
-        addShadow(to: root, width: 56)
+        addShadow(to: root, width: BattleSprites.Hero.kael.combatShadowWidth)
         return root
     }
 
     // MARK: - Alliés en combat
 
-    /// Sprite d'allié selon sa nature. L'écho de Lyra est son sprite
-    /// teinté de cyan spectral et translucide ; Eran est un esprit
-    /// encapuchonné (sprite villageois noyé de bleu-nuit, spectral).
+    /// Sprite d'allié selon sa nature. L'écho de Lyra est son sprite teinté de
+    /// cyan spectral et translucide ; Eran porte son pack tel quel.
+    ///
+    /// Les largeurs d'ombre viennent du pack : elles étaient codées en dur
+    /// (56 / 52 / 48) pour des sprites qui ont depuis changé de taille.
     static func ally(kind: CombatAllyKind) -> SKNode {
         switch kind {
         case .lyra:
@@ -98,7 +100,7 @@ enum CombatSprites {
         case .eran:
             let root = BattleSprites.node(.eran)
             root.name = "combatEran"
-            addShadow(to: root, width: 52)
+            addShadow(to: root, width: BattleSprites.Hero.eran.combatShadowWidth)
             return root
         }
     }
@@ -106,7 +108,7 @@ enum CombatSprites {
     static func lyra() -> SKNode {
         let root = BattleSprites.node(.lyra)
         root.name = "combatLyra"
-        addShadow(to: root, width: 48)
+        addShadow(to: root, width: BattleSprites.Hero.lyra.combatShadowWidth)
         return root
     }
 
@@ -122,8 +124,8 @@ enum CombatSprites {
         }
     }
 
-    /// Compteur d'enchaînement par node : Eran possède trois attaques, il les
-    /// alterne au lieu de rejouer la même à chaque coup.
+    /// Compteur d'enchaînement par node : le pack fighter fournit trois
+    /// attaques, on les alterne au lieu de rejouer la même à chaque coup.
     private static var chainStep: [ObjectIdentifier: Int] = [:]
 
     /// Joue l'attaque du héros/allié ; retombe sur l'idle à la fin.
@@ -131,7 +133,9 @@ enum CombatSprites {
     static func playHeroAttack(on node: SKNode, completion: (() -> Void)? = nil) {
         guard let h = hero(of: node) else { completion?(); return }
         var clip: BattleSprites.Clip = .attack
-        if h == .eran {
+        // L'enchaînement appartient au pack, pas au personnage : il suit le
+        // fighter chez qui il est dessiné, quel que soit celui qui le porte.
+        if h.pack.hasAttackChain {
             // attack1 → attack2 → attack3 → attack1…
             let key = ObjectIdentifier(node)
             let step = (chainStep[key] ?? 0) % 3

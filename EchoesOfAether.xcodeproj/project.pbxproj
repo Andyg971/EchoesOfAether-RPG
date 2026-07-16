@@ -91,6 +91,7 @@
 		71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */; };
 		BB20STORY00000000000TEST /* StoryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB10STORY00000000000TEST /* StoryFlowTests.swift */; };
 		AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10FLOW000000000000TEST /* DialogueFlowTests.swift */; };
+		AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10SPRT000000000000TEST /* BattleSpritesTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9946241C401B2A418D271A /* Foundation.framework */; };
 /* End PBXBuildFile section */
@@ -109,6 +110,7 @@
 		4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SaveDataTests.swift; sourceTree = "<group>"; };
 		BB10STORY00000000000TEST /* StoryFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryFlowTests.swift; sourceTree = "<group>"; };
 		AA10FLOW000000000000TEST /* DialogueFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DialogueFlowTests.swift; sourceTree = "<group>"; };
+		AA10SPRT000000000000TEST /* BattleSpritesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BattleSpritesTests.swift; sourceTree = "<group>"; };
 		6D7E1000B8A741B0A0000001 /* EchoesOfAetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoesOfAetherApp.swift; sourceTree = "<group>"; };
 		6D7E1002B8A741B0A0000001 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		6D7E1004B8A741B0A0000001 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */,
 				BB10STORY00000000000TEST /* StoryFlowTests.swift */,
 				AA10FLOW000000000000TEST /* DialogueFlowTests.swift */,
+				AA10SPRT000000000000TEST /* BattleSpritesTests.swift */,
 			);
 			path = EchoesOfAetherTests;
 			sourceTree = SOURCE_ROOT;
@@ -574,6 +577,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */,
 				BB20STORY00000000000TEST /* StoryFlowTests.swift in Sources */,
 				AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */,
+				AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

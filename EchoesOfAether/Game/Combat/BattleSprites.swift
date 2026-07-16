@@ -7,88 +7,187 @@ import SpriteKit
 /// dans une arène vue de côté. Ces packs sont de vrais sprites de bataille,
 /// tournés vers la droite, avec leurs animations d'attaque et de sorts.
 ///
-/// Correspondance des packs : wizard → Kael, priest → Lyra, fighter → Eran.
-/// Pour Lyra et Eran, les effets sont déjà intégrés aux frames (`char+fx`) :
-/// les sorts s'affichent sans FX à coder.
+/// Deux notions distinctes, à ne pas confondre :
+/// - `Pack` — un lot d'assets acheté (canevas, nombre de frames, nommage).
+/// - `Hero` — un personnage de l'histoire, qui *porte* un pack.
+///
+/// Elles étaient mélangées en un seul enum : chaque échelle, chaque compte de
+/// frames était indexé sur le personnage alors que ce sont des propriétés du
+/// lot d'assets. Résultat, réattribuer un pack demandait de toucher cinq
+/// `switch`. Les séparer rend l'attribution triviale — voir `Hero.pack`.
+///
+/// Les FX sont cuits dans les frames de `skill1`/`skill2` des trois packs
+/// (halo violet pour le wizard, arcs orange pour le fighter) : un pack porte
+/// donc sa propre couleur, en plus de sa silhouette.
 @MainActor
 enum BattleSprites {
+
+    /// Lot d'assets. Tout ce qui dépend du dessin vit ici.
+    enum Pack {
+        case wizard, priest, fighter
+
+        var prefix: String {
+            switch self {
+            case .wizard:  return "battle_kael"
+            case .priest:  return "battle_lyra"
+            case .fighter: return "battle_eran"
+            }
+        }
+
+        /// Hauteur du personnage réellement dessiné, en pixels du canevas —
+        /// mesurée sur la frame d'idle (boîte englobante alpha).
+        ///
+        /// Le canevas ne dit rien de la taille du personnage : le fighter a le
+        /// plus GRAND canevas (153×127) et le plus PETIT bonhomme (32×54),
+        /// parce que ses arcs de FX sont dessinés dans le même cadre. Caler
+        /// l'échelle sur le canevas rapetissait donc le fighter d'un cinquième
+        /// à l'écran. C'est la hauteur du corps qui fait foi.
+        var bodyHeight: CGFloat {
+            switch self {
+            case .wizard:  return 56    // canevas 109×128, corps 46×56
+            case .priest:  return 50    // canevas 111×105, corps 57×50
+            case .fighter: return 54    // canevas 153×127, corps 32×54
+            }
+        }
+
+        /// Largeur du personnage dessiné, en pixels du canevas (même mesure
+        /// que `bodyHeight`). Sert à poser une ombre à la bonne largeur : le
+        /// fighter est étroit, le priest large (bâton tendu).
+        var bodyWidth: CGFloat {
+            switch self {
+            case .wizard:  return 46
+            case .priest:  return 57
+            case .fighter: return 32
+            }
+        }
+
+        /// Décalage du centre du corps par rapport au centre du canevas, en
+        /// pixels du canevas (+ = le corps est à droite du centre).
+        ///
+        /// Un pack ne centre pas son personnage : il réserve la place de ses
+        /// FX. Le fighter dessine le sien tout à gauche (x 6…38 d'un canevas de
+        /// 153) et garde tout le reste pour ses arcs. Ancré au centre du
+        /// canevas, son corps apparaît à 55 px à gauche de sa case — c'est ce
+        /// qui « reculait » le porteur du fighter et l'entassait sur ses
+        /// voisins. On ancre donc sur le corps.
+        var bodyOffsetX: CGFloat {
+            switch self {
+            case .wizard:  return 6.5     // corps x 38…84, canevas 109
+            case .priest:  return -8.0    // corps x 19…76, canevas 111
+            case .fighter: return -54.5   // corps x 6…38,  canevas 153
+            }
+        }
+
+        /// Hauteur de vide sous les pieds, en pixels du canevas. Sans elle, les
+        /// trois packs ne posent pas les pieds sur la même ligne de sol.
+        var bodyBottomGap: CGFloat {
+            switch self {
+            case .wizard:  return 9    // pieds y 119, canevas 128
+            case .priest:  return 3    // pieds y 102, canevas 105
+            case .fighter: return 9    // pieds y 118, canevas 127
+            }
+        }
+
+        /// Le pack fournit-il trois enchaînements d'attaque (`attack1..3`) ?
+        /// Le fighter alterne ses passes ; wizard et priest n'en ont qu'une.
+        var hasAttackChain: Bool { self == .fighter }
+
+        /// Nombre de frames réel par clip. 0 = le pack ne fournit pas ce clip.
+        func frames(_ clip: Clip) -> Int {
+            switch (self, clip) {
+            case (.wizard, .idle):    return 5
+            case (.wizard, .move):    return 6
+            case (.wizard, .attack):  return 7
+            case (.wizard, .skill1):  return 7
+            case (.wizard, .skill2):  return 14
+
+            case (.priest, .idle):    return 5
+            case (.priest, .move):    return 6
+            case (.priest, .attack):  return 9
+            case (.priest, .skill1):  return 16
+            case (.priest, .skill2):  return 10
+
+            case (.fighter, .idle):    return 5
+            case (.fighter, .move):    return 6
+            case (.fighter, .attack):  return 8    // attack1
+            case (.fighter, .attack2): return 8
+            case (.fighter, .attack3): return 14
+            case (.fighter, .skill1):  return 13
+            case (.fighter, .skill2):  return 15
+
+            // Seul le fighter enchaîne.
+            case (_, .attack2), (_, .attack3): return 0
+            }
+        }
+    }
+
+    /// Hauteur à l'écran du corps d'un héros, en points. Les trois packs y
+    /// sont ramenés : sans ça, chacun apparaît à la taille de son propre
+    /// dessin et le groupe n'a aucune unité.
+    nonisolated private static let combatBodyHeight: CGFloat = 72
+    /// Idem hors combat, à l'échelle du monde (les héros dominent un peu les
+    /// PNJ chibi : ce sont eux qu'on suit).
+    nonisolated private static let worldBodyHeight: CGFloat = 43
 
     /// Héros jouables/alliés de l'arène.
     enum Hero {
         case kael, lyra, eran
 
-        var prefix: String {
+        /// Attribution des packs. **C'est ici, et nulle part ailleurs, qu'on
+        /// change l'apparence d'un personnage.**
+        ///
+        /// Kael porte le fighter et Eran le wizard : le scénario fait de Kael un
+        /// jeune amnésique ramassé sur un chemin et d'Eran un « vieil homme »
+        /// qui garde le Seuil et appelle Kael « gamin ». Les packs disaient
+        /// exactement l'inverse — le vieux grisonnant jouait le héros, le jeune
+        /// torse nu jouait le vieillard.
+        ///
+        /// Les kits de sorts ne suivent PAS : ils appartiennent au personnage,
+        /// pas au dessin. Kael garde Brasier / Tempête / Black Slash, Eran
+        /// garde Bourrasque / Lame ardente.
+        var pack: Pack {
             switch self {
-            case .kael: return "battle_kael"
-            case .lyra: return "battle_lyra"
-            case .eran: return "battle_eran"
+            case .kael: return .fighter
+            case .lyra: return .priest
+            case .eran: return .wizard
             }
         }
 
-        /// Échelle en combat. Les canevas diffèrent d'un pack à l'autre
-        /// (Kael 109×128, Lyra 111×105, Eran 153×127) : l'échelle compense
-        /// pour que les trois fassent la même taille à l'écran.
-        var scale: CGFloat {
-            switch self {
-            case .kael: return 1.30
-            case .lyra: return 1.30
-            case .eran: return 1.10
-            }
-        }
+        var prefix: String { pack.prefix }
 
-        /// Échelle dans le monde. Calée d'abord sur les PNJ chibi (~48 pt),
-        /// elle rendait les héros trop menus : dans une zone large ils se
-        /// perdaient dans le décor. Remontée d'environ un quart — ils
-        /// dominent légèrement les PNJ, ce qui est juste : ce sont eux
-        /// qu'on suit.
-        var worldScale: CGFloat {
-            switch self {
-            case .kael: return 0.76
-            case .lyra: return 0.76
-            case .eran: return 0.65
-            }
+        /// Échelle en combat — dérivée de la hauteur du corps, pas du canevas.
+        var scale: CGFloat { combatBodyHeight / pack.bodyHeight }
+
+        /// Échelle dans le monde, même principe.
+        var worldScale: CGFloat { worldBodyHeight / pack.bodyHeight }
+
+        /// Largeur de l'ombre en combat, calée sur la largeur réelle du
+        /// personnage une fois mis à l'échelle.
+        var combatShadowWidth: CGFloat { pack.bodyWidth * scale }
+
+        /// Position à donner au sprite pour que le CORPS — et non le centre du
+        /// canevas — tombe sur la position du node, pieds sur `groundY`.
+        func spriteOffset(scale: CGFloat, groundY: CGFloat) -> CGPoint {
+            CGPoint(x: -pack.bodyOffsetX * scale,
+                    y: groundY - pack.bodyBottomGap * scale)
         }
     }
 
-    /// Animations disponibles, avec leur nombre de frames réel.
+    /// Animations disponibles.
     enum Clip {
         case idle, move, attack, skill1, skill2
-        /// Eran possède trois enchaînements d'attaque distincts.
+        /// Trois enchaînements d'attaque distincts (packs qui les fournissent).
         case attack2, attack3
 
-        func frames(for hero: Hero) -> Int {
-            switch (hero, self) {
-            case (.kael, .idle):    return 5
-            case (.kael, .move):    return 6
-            case (.kael, .attack):  return 7
-            case (.kael, .skill1):  return 7
-            case (.kael, .skill2):  return 14
+        func frames(for hero: Hero) -> Int { hero.pack.frames(self) }
 
-            case (.lyra, .idle):    return 5
-            case (.lyra, .move):    return 6
-            case (.lyra, .attack):  return 9
-            case (.lyra, .skill1):  return 16
-            case (.lyra, .skill2):  return 10
-
-            case (.eran, .idle):    return 5
-            case (.eran, .move):    return 6
-            case (.eran, .attack):  return 8    // attack1
-            case (.eran, .attack2): return 8
-            case (.eran, .attack3): return 14
-            case (.eran, .skill1):  return 13
-            case (.eran, .skill2):  return 15
-
-            // Kael et Lyra n'ont qu'un enchaînement d'attaque.
-            case (_, .attack2), (_, .attack3): return 0
-            }
-        }
-
-        /// Suffixe d'asset. Eran nomme sa première attaque `attack1`.
+        /// Suffixe d'asset. Les packs qui enchaînent nomment leur première
+        /// attaque `attack1` ; les autres, simplement `attack`.
         func assetGroup(for hero: Hero) -> String {
             switch self {
             case .idle:    return "idle"
             case .move:    return "move"
-            case .attack:  return hero == .eran ? "attack1" : "attack"
+            case .attack:  return hero.pack.hasAttackChain ? "attack1" : "attack"
             case .attack2: return "attack2"
             case .attack3: return "attack3"
             case .skill1:  return "skill1"
@@ -138,9 +237,10 @@ enum BattleSprites {
         let sprite = SKSpriteNode(texture: first)
         sprite.name = "body"
         sprite.setScale(hero.scale)
-        // Ancrage aux pieds : le pack pose le personnage en bas du canevas.
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        sprite.position = CGPoint(x: 0, y: -32)
+        // Recalé sur le corps : le canevas d'un pack n'est ni centré sur son
+        // personnage ni serré sur ses pieds.
+        sprite.position = hero.spriteOffset(scale: hero.scale, groundY: -32)
         root.addChild(sprite)
 
         loop(.idle, hero: hero, on: root)
@@ -163,17 +263,21 @@ enum BattleSprites {
                  withKey: "clip")
     }
 
-    // MARK: - FX de sort (pack wizard)
+    // MARK: - FX de sort (assets overlay)
 
-    /// Projectiles et effets fournis avec le pack. Chaque élément a ses trois
-    /// étapes (`fire1..3`) : ce sont les frames de l'effet, pas trois variantes.
+    /// Projectiles et effets posés PAR-DESSUS le sprite. Chaque élément a ses
+    /// trois étapes (`fire1..3`) : ce sont les frames de l'effet, pas trois
+    /// variantes.
+    ///
+    /// Ils suivent le personnage, pas son pack : c'est ce qui donne son élément
+    /// à un sort. Le pack n'apporte que la gestuelle et sa couleur cuite.
     enum Effect {
-        // Pack wizard — les éléments de Kael.
+        // Les éléments de Kael.
         case fire, ice, lightning, thunder, blizzard, ward
-        // Pack priest — le sacré de Lyra. Ses sorts ne sont pas élémentaires :
-        // ni glace ni foudre, mais bénédiction et soin, en vert et or.
+        // Le sacré de Lyra. Ses sorts ne sont pas élémentaires : ni glace ni
+        // foudre, mais bénédiction et soin, en vert et or.
         case lyraHeal, lyraBlessing, lyraBolt
-        // Pack fighter — les passes d'armes d'Eran : bourrasque et lame ardente.
+        // Les passes d'armes d'Eran : bourrasque et lame ardente.
         case eranWind, eranEmber
 
         var frameNames: [String] {
@@ -269,7 +373,8 @@ enum BattleSprites {
         sprite.name = "body"
         sprite.setScale(hero.worldScale)
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)
-        sprite.position = CGPoint(x: 0, y: -16)   // convention monde : ancré aux pieds
+        // Convention monde : pieds à -16, corps centré sur le node.
+        sprite.position = hero.spriteOffset(scale: hero.worldScale, groundY: -16)
         sprite.zPosition = 1
         root.addChild(sprite)
 
@@ -293,7 +398,13 @@ enum BattleSprites {
         // Orientation : seul un déplacement horizontal franc la change.
         if abs(velocity.dx) > 0.5 {
             let mag = abs(body.xScale == 0 ? hero.worldScale : body.xScale)
-            body.xScale = velocity.dx < 0 ? -mag : mag
+            let facingLeft = velocity.dx < 0
+            body.xScale = facingLeft ? -mag : mag
+            // Le miroir se fait autour du centre du CANEVAS ; comme le corps y
+            // est décalé, il faut retourner le décalage avec lui — sinon le
+            // personnage saute de côté à chaque demi-tour.
+            let dx = hero.spriteOffset(scale: hero.worldScale, groundY: 0).x
+            body.position.x = facingLeft ? -dx : dx
         }
     }
 

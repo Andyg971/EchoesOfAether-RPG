@@ -8,9 +8,10 @@ enum WorldNode {
     /// Kael dans le monde — le sprite du pack, celui de l'arène.
     ///
     /// Il utilisait avant `kael_idle_*` : un cowboy vu de face, sans cycle de
-    /// marche, alors que le Kael du combat est le mage du pack. Deux
-    /// personnages différents pour un seul héros. Le pack règle les deux
-    /// défauts d'un coup : même visage partout, et une vraie marche.
+    /// marche, alors que le Kael du combat sort d'un pack. Deux personnages
+    /// différents pour un seul héros. Le pack règle les deux défauts d'un
+    /// coup : même visage partout, et une vraie marche. Quel pack Kael porte
+    /// se décide dans `BattleSprites.Hero.pack`.
     static func kael() -> SKNode {
         if let node = BattleSprites.worldNode(.kael, name: "kael") { return node }
         return legacyKael()

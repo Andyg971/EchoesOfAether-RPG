@@ -161,6 +161,38 @@
         }
       }
     },
+    "combat.block.prompt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "!"
+          }
+        }
+      }
+    },
+    "combat.block.success": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PARRIED"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "PARÉ"
+          }
+        }
+      }
+    },
     "combat.boost.recharging": {
       "localizations": {
         "en": {
@@ -381,6 +413,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "POTION"
+          }
+        }
+      }
+    },
+    "combat.button.tempest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TEMPEST"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "TEMPÊTE"
           }
         }
       }
@@ -1128,6 +1176,22 @@
         }
       }
     },
+    "combat.spell.tempest": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempête"
+          }
+        }
+      }
+    },
     "combat.spell.windBlade": {
       "localizations": {
         "en": {
@@ -1416,6 +1480,40 @@
         }
       }
     },
+    "combat.spellTier.maelstrom": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maelstrom"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Maelström"
+          }
+        }
+      }
+    },
+    "combat.spellTier.ragnarok": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "White End"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fin Blanche"
+          }
+        }
+      }
+    },
     "combat.spellTier.rebirth": {
       "extractionState": "stale",
       "localizations": {
@@ -1480,6 +1578,23 @@
           "stringUnit": {
             "state": "translated",
             "value": "Orage"
+          }
+        }
+      }
+    },
+    "combat.spellTier.tempest": {
+      "extractionState": "stale",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempest"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempête"
           }
         }
       }
@@ -1625,6 +1740,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "La Bénédiction rend %lld PV à tout le groupe."
+          }
+        }
+      }
+    },
+    "combat.status.blocked %lld": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Parried! Only %lld damage."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Paré ! Seulement %lld dégâts."
           }
         }
       }
@@ -1884,6 +2015,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Étourdi"
+          }
+        }
+      }
+    },
+    "combat.tempest.spent": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tempest already unleashed."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La Tempête est déjà passée."
           }
         }
       }
@@ -2901,13 +3048,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "E... Eran. She was here."
+            "value": "E... Eran. He was here."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "E... Eran. Elle a été ici."
+            "value": "E... Eran. Il a été ici."
           }
         }
       }
@@ -2917,13 +3064,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Or she knew what was going to happen."
+            "value": "Or he knew what was going to happen."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ou elle savait ce qui allait arriver."
+            "value": "Ou il savait ce qui allait arriver."
           }
         }
       }
@@ -2971,7 +3118,7 @@
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Eran Solace ? La chercheuse disparue ? Mais... c'est impossible."
+            "value": "Eran Solace ? Le chercheur disparu ? Mais... c'est impossible."
           }
         }
       }
@@ -4037,13 +4184,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "I am already an echo, Kael. Let me finish what I began a century ago."
+            "value": "I am already an echo, Kael. Let me finish what I began twenty years ago."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je suis déjà un écho, Kael. Laisse-moi finir ce que j'ai commencé il y a un siècle."
+            "value": "Je suis déjà un écho, Kael. Laisse-moi finir ce que j'ai commencé il y a vingt ans."
           }
         }
       }
@@ -4293,13 +4440,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "I'll carry them awake. Lyra. Eran. Every name. That's the only echo worth keeping."
+            "value": "I'll carry them awake. Lyra. Every name. That's the only echo worth keeping."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Je les porterai éveillé. Lyra. Eran. Chaque nom. C'est le seul écho qui vaille d'être gardé."
+            "value": "Je les porterai éveillé. Lyra. Chaque nom. C'est le seul écho qui vaille d'être gardé."
           }
         }
       }
@@ -4501,13 +4648,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lyra. Eran. Everyone I burned to reach this step."
+            "value": "Lyra. Everyone I burned to reach this step."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Lyra. Eran. Tous ceux que j'ai brûlés pour atteindre cette marche."
+            "value": "Lyra. Tous ceux que j'ai brûlés pour atteindre cette marche."
           }
         }
       }
@@ -5077,13 +5224,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Fifty years I searched for this hall. It is more terrible than in my dreams."
+            "value": "Twenty years I searched for this hall. It is more terrible than in my dreams."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Cinquante ans que je cherche cette salle. Elle est plus terrible que dans mes rêves."
+            "value": "Vingt ans que je cherche cette salle. Elle est plus terrible que dans mes rêves."
           }
         }
       }
@@ -5291,13 +5438,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kael, no! It is the same trap that took my fifty years!"
+            "value": "Kael, no! It is the same trap that took my twenty years!"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Kael, non ! C'est le même piège qui m'a pris cinquante ans !"
+            "value": "Kael, non ! C'est le même piège qui m'a pris vingt ans !"
           }
         }
       }
@@ -7884,6 +8031,38 @@
         }
       }
     },
+    "dialogue.lyra.crystal.found1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "An untouched crystal, driven into the dead earth. It resonates with your mark — the same note, an octave lower."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Un cristal intact, planté dans la terre morte. Il résonne avec ta marque — le même son, une octave plus bas."
+          }
+        }
+      }
+    },
+    "dialogue.lyra.crystal.found2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…So it isn't the forest that's sick. It's the same thing I am."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Alors ce n'est pas la forêt qui est malade. C'est la même chose que moi."
+          }
+        }
+      }
+    },
     "dialogue.lyra.quest.active1": {
       "localizations": {
         "en": {
@@ -8024,6 +8203,22 @@
           "stringUnit": {
             "state": "translated",
             "value": "Combien de temps il me reste, Lyra ?"
+          }
+        }
+      }
+    },
+    "dialogue.lyra.quest.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…You're not answering."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "…Tu ne réponds pas."
           }
         }
       }
@@ -13717,6 +13912,22 @@
         }
       }
     },
+    "quest.state.found": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "To report"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "À rapporter"
+          }
+        }
+      }
+    },
     "quest.state.inactive": {
       "localizations": {
         "en": {
@@ -14020,6 +14231,7 @@
       }
     },
     "questlog.shards.desc": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -14036,6 +14248,7 @@
       }
     },
     "questlog.shards.title": {
+      "extractionState": "stale",
       "localizations": {
         "en": {
           "stringUnit": {
@@ -15004,214 +15217,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Le Cœur du Vide"
-          }
-        }
-      }
-    },
-    "combat.block.prompt": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "!"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "!"
-          }
-        }
-      }
-    },
-    "combat.block.success": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PARRIED"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "PARÉ"
-          }
-        }
-      }
-    },
-    "combat.status.blocked %lld": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Parried! Only %lld damage."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Paré ! Seulement %lld dégâts."
-          }
-        }
-      }
-    },
-    "combat.button.tempest": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "TEMPEST"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "TEMPÊTE"
-          }
-        }
-      }
-    },
-    "combat.spell.tempest": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tempest"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tempête"
-          }
-        }
-      }
-    },
-    "combat.tempest.spent": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tempest already unleashed."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "La Tempête est déjà passée."
-          }
-        }
-      }
-    },
-    "combat.spellTier.tempest": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tempest"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Tempête"
-          }
-        }
-      }
-    },
-    "combat.spellTier.maelstrom": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Maelstrom"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Maelström"
-          }
-        }
-      }
-    },
-    "combat.spellTier.ragnarok": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "White End"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Fin Blanche"
-          }
-        }
-      }
-    },
-    "dialogue.lyra.crystal.found1": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "An untouched crystal, driven into the dead earth. It resonates with your mark — the same note, an octave lower."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Un cristal intact, planté dans la terre morte. Il résonne avec ta marque — le même son, une octave plus bas."
-          }
-        }
-      }
-    },
-    "dialogue.lyra.crystal.found2": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "…So it isn't the forest that's sick. It's the same thing I am."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "…Alors ce n'est pas la forêt qui est malade. C'est la même chose que moi."
-          }
-        }
-      }
-    },
-    "dialogue.lyra.quest.kael2": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "…You're not answering."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "…Tu ne réponds pas."
-          }
-        }
-      }
-    },
-    "quest.state.found": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "To report"
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "À rapporter"
           }
         }
       }

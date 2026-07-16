@@ -1571,6 +1571,10 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
         add(exitLabel, to: scene)
 
+        // Cristal de sauvegarde près de la sortie : les mines sont mortelles,
+        // on doit pouvoir souffler avant de replonger.
+        addSaveCrystal(at: CGPoint(x: w * 0.72, y: h * 0.12), in: scene)
+
         // Cendre en suspension : même atmosphère que les ruines
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.68)   // mines : galeries noires
@@ -1757,6 +1761,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.02, green: 0.02, blue: 0.04, alpha: 1)
         buildCave(in: scene, cleared: cleared, chestTaken: chestTaken)
+        // Cristal près de l'entrée de la caverne.
+        addSaveCrystal(at: CGPoint(x: scene.size.width * 0.20,
+                                   y: scene.size.height * 0.18), in: scene)
         LightingEngine.applyGrade(.mines, in: scene)
         LightingEngine.attachHeroLight(to: kael)
         setZoneVignette(in: scene, alpha: 0.50)
@@ -2020,6 +2027,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         exitLabel.fontColor = SKColor(red: 0.40, green: 0.28, blue: 0.12, alpha: 0.85)
         exitLabel.position = CGPoint(x: w * 0.50, y: h * 0.08 + 42)
         add(exitLabel, to: scene)
+
+        // Cristal de sauvegarde, près de la sortie du désert.
+        addSaveCrystal(at: CGPoint(x: w * 0.68, y: h * 0.14), in: scene)
 
         // Poussière en suspension : chaleur d'Ossara + rares ombres de nuages
         let desertAmbiance = SKNode()
@@ -3302,50 +3312,83 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     // MARK: - Save Crystal
 
-    /// Ajoute un cristal de sauvegarde dans la scène courante.
-    /// Retourne la position du cristal pour que GameManager puisse détecter le tap.
+    /// Cristal d'Aether — point de sauvegarde. Présent dans **toutes** les
+    /// zones : c'est le repère qui dit « ici on souffle et on sauvegarde ».
+    ///
+    /// Entièrement en pixel art (grille de pixels + socle de pierre), là où
+    /// il était un losange vectoriel cerclé d'une aura lisse — le halo flou
+    /// que la charte proscrit. Il vit maintenant dans le monde et non dans la
+    /// scène : posé en espace écran, il ne scrollait pas et restait planté
+    /// devant le HUD dans les zones hautes.
     @discardableResult
     func addSaveCrystal(at position: CGPoint, in scene: SKScene) -> CGPoint {
         let crystal = SKNode()
         crystal.position = position
-        crystal.zPosition = 2
+        crystal.zPosition = actorLayer(for: position.y)
         crystal.name = "saveCrystal"
 
-        // Corps du cristal (losange)
-        let gem = SKShapeNode()
-        let path = CGMutablePath()
-        path.move(to: CGPoint(x: 0, y: 18))
-        path.addLine(to: CGPoint(x: 10, y: 0))
-        path.addLine(to: CGPoint(x: 0, y: -10))
-        path.addLine(to: CGPoint(x: -10, y: 0))
-        path.closeSubpath()
-        gem.path = path
-        gem.fillColor = SKColor(red: 0.50, green: 0.80, blue: 1.0, alpha: 0.85)
-        gem.strokeColor = SKColor(red: 0.70, green: 0.90, blue: 1.0, alpha: 1.0)
-        gem.lineWidth = 1.5
-        gem.glowWidth = 0
+        // Socle de pierre : ancre le cristal au sol, il ne flotte pas.
+        let base = PixelIcons.custom(map: [
+            "..####..",
+            ".######.",
+            "########",
+            ".######."
+        ], palette: [
+            "#": SKColor(red: 0.30, green: 0.32, blue: 0.42, alpha: 1)
+        ], pixel: 3)
+        base.position = CGPoint(x: 0, y: -14)
+        crystal.addChild(base)
+
+        // Gemme : facettes claires/sombres pour le volume, contour net.
+        let gem = PixelIcons.custom(map: [
+            "...ll...",
+            "..lLLc..",
+            ".lLLccd.",
+            "lLLccdd.",
+            "lLccddd.",
+            ".Lccdd..",
+            "..cdd...",
+            "...d...."
+        ], palette: [
+            "l": SKColor(red: 0.80, green: 0.95, blue: 1.00, alpha: 1),   // reflet
+            "L": SKColor(red: 0.58, green: 0.86, blue: 1.00, alpha: 1),   // clair
+            "c": SKColor(red: 0.32, green: 0.62, blue: 0.92, alpha: 1),   // corps
+            "d": SKColor(red: 0.18, green: 0.36, blue: 0.68, alpha: 1)    // ombre
+        ], pixel: 3)
+        gem.position = CGPoint(x: 0, y: 6)
         crystal.addChild(gem)
-        JuiceEngine.pulse(gem, scale: 1.12)
+        // Respiration verticale : la gemme flotte, le socle reste posé.
+        JuiceEngine.float(gem, distance: 3)
 
-        // Aura externe
-        let aura = SKShapeNode(circleOfRadius: 22)
-        aura.fillColor = SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 0.06)
-        aura.strokeColor = SKColor(red: 0.55, green: 0.80, blue: 1.0, alpha: 0.18)
-        aura.lineWidth = 1.5
-        crystal.addChild(aura)
-        JuiceEngine.pulse(aura, scale: 1.25)
+        // Halo à paliers (gros pixels assumés, jamais de dégradé lisse).
+        let halo = PixelIcons.custom(map: [
+            "..#..#..",
+            "........",
+            "#......#",
+            "........",
+            "........",
+            "#......#",
+            "........",
+            "..#..#.."
+        ], palette: [
+            "#": SKColor(red: 0.55, green: 0.85, blue: 1.0, alpha: 0.55)
+        ], pixel: 3)
+        halo.position = CGPoint(x: 0, y: 6)
+        halo.zPosition = -0.5
+        crystal.addChild(halo)
+        halo.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.25, duration: 1.1),
+            .fadeAlpha(to: 0.9, duration: 1.1)
+        ])))
 
-        // Label
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.saveCrystal.label")
         label.fontSize = 12
         label.fontColor = SKColor(red: 0.65, green: 0.88, blue: 1.0, alpha: 0.80)
-        label.position = CGPoint(x: 0, y: -26)
+        label.position = CGPoint(x: 0, y: -30)
         crystal.addChild(label)
-        JuiceEngine.float(label, distance: 3)
 
-        scene.addChild(crystal)
-        backdropNodes.append(crystal)
+        add(crystal, to: scene)   // espace MONDE : il scrolle avec la zone
         return position
     }
 

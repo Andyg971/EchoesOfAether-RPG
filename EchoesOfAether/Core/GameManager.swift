@@ -1016,6 +1016,9 @@ final class GameManager {
         }
     }
 
+    /// Le cristal vit en espace monde ; `point` est déjà converti en coords
+    /// monde par l'appelant. La recherche dans la scène reste en repli pour
+    /// les sauvegardes de zones construites avant la bascule.
     private func trySaveCrystalTap(_ point: CGPoint, in scene: SKScene) -> Bool {
         guard let crystal = world.worldNode.childNode(withName: "saveCrystal")
                 ?? scene.childNode(withName: "saveCrystal") else { return false }

@@ -27,6 +27,7 @@ final class GameManager {
     let levelUp   = LevelUpOverlay()
     let bubble    = InteractionBubble()
     let tutorial  = TutorialOverlay()
+    let paywall   = PaywallOverlay()
     let player    = PlayerState()
 
     var onReturnToMenu: (() -> Void)?
@@ -41,6 +42,8 @@ final class GameManager {
     weak var scene: SKScene?
     var resonanceTotal = 0
     var lastCombatStarter: (() -> Void)?   // pour le bouton Réessayer
+    /// Suite du récit mise en attente pendant que le mur d'achat est ouvert.
+    var pendingUnlockAction: (() -> Void)?
 
     /// Lyra combat aux côtés de Kael dans les zones du pacte (tant qu'elle vit).
     var lyraInParty: Bool {
@@ -109,7 +112,18 @@ final class GameManager {
         bubble.attach(to: scene)
         setupActionButton(in: scene)
         tutorial.attach(to: scene)
+        paywall.attach(to: scene)
         syncLevelHUD()
+
+        // Droits d'achat : chargés en tâche de fond, le jeu ne l'attend pas.
+        Task { [weak self] in
+            await StoreManager.shared.start()
+            self?.paywall.refreshTexts()
+        }
+
+        paywall.onBuy     = { [weak self] in self?.buyFullGame() }
+        paywall.onRestore = { [weak self] in self?.restorePurchases() }
+        paywall.onLater   = { [weak self] in self?.dismissPaywall() }
 
         hud.onInventoryTap = { [weak self] in self?.openInventory() }
         hud.onPauseTap     = { [weak self] in self?.openPause() }
@@ -131,6 +145,10 @@ final class GameManager {
         pause.onMainMenu  = { [weak self] in
             self?.pause.hide()
             self?.onReturnToMenu?()
+        }
+        pause.onUnlock    = { [weak self] in
+            self?.pause.hide()
+            self?.openPaywall()
         }
 
         options.onClose       = { [weak self] in self?.closeOptions() }
@@ -402,6 +420,7 @@ final class GameManager {
         minimap.layout(in: size, safeBottom: safeBottom, safeLeft: safeLeft)
         levelUp.layout(in: size)
         worldMap.layout(in: size)
+        paywall.layout(in: size, safeBottom: safeBottom)
     }
 
     /// Pousse l'état niveau/XP du joueur vers le HUD. À appeler après
@@ -576,6 +595,7 @@ final class GameManager {
             .scale(to: 1.0, duration: 0.10)
         ]))
         // Ordre : options au-dessus de pause ; dialogue en dernier.
+        if paywall.isActive { paywall.dismiss(); return }
         if options.isActive { options.dismiss(); return }
         if pause.isActive { pause.dismiss(); return }
         if worldMap.isActive { worldMap.dismiss(); return }
@@ -637,6 +657,7 @@ final class GameManager {
     }
 
     private func routeMenuNav(dx: Int, dy: Int) {
+        if paywall.isActive { paywall.moveSelection(dy); return }
         if options.isActive { return }              // sliders : tactile assumé
         if pause.isActive { pause.moveSelection(dy); return }
         if shop.isActive { shop.moveSelection(dy); return }
@@ -749,6 +770,9 @@ final class GameManager {
         if questLog.handleTap(at: point, in: scene) { return }
         // Prologue : n'importe quel tap le passe.
         if prologueNode != nil { endPrologue(); return }
+        // Le mur d'achat capture tout tant qu'il est ouvert (fermeture par
+        // « Plus tard », par le bouton B, ou après un achat réussi).
+        if paywall.isActive, paywall.handleTap(at: point, in: scene) { return }
         if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
         if TransitionManager.handleCreditsTap(at: point, in: scene) { return }
@@ -765,7 +789,9 @@ final class GameManager {
                 .scale(to: 0.90, duration: 0.06),
                 .scale(to: 1.0, duration: 0.10)
             ]))
-            if pause.isActive {
+            if paywall.isActive {
+                paywall.confirmSelection()
+            } else if pause.isActive {
                 pause.confirmSelection()
             } else if shop.isActive {
                 shop.confirmSelection()
@@ -1593,6 +1619,8 @@ final class GameManager {
     private func openPause() {
         guard state == .exploration || state == .dialogue else { return }
         guard let scene else { return }
+        // Le joueur qui a dit « plus tard » doit pouvoir revenir à l'achat.
+        pause.showsUnlockButton = !isFullGameUnlocked
         pause.show(in: scene)
         pause.resetSelection()
     }
@@ -2047,6 +2075,85 @@ final class GameManager {
         return false
     }
 
+    // MARK: - Achat du jeu complet
+
+    /// L'Acte I est gratuit ; la suite est derrière l'achat.
+    var isFullGameUnlocked: Bool { StoreManager.shared.isUnlocked }
+
+    /// Point d'entrée unique du mur d'achat. `onUnlocked` n'est appelé que si
+    /// le joueur possède (ou vient d'acheter) le jeu complet ; sinon le joueur
+    /// reste libre dans l'Acte I et pourra racheter depuis le menu Pause.
+    func requireFullGame(onUnlocked: @escaping () -> Void) {
+        guard !isFullGameUnlocked else { onUnlocked(); return }
+        pendingUnlockAction = onUnlocked
+        openPaywall()
+    }
+
+    func openPaywall() {
+        guard scene != nil else { return }
+        transition(to: .shop)   // même verrouillage d'entrées qu'une boutique
+        paywall.open()
+    }
+
+    private func dismissPaywall() {
+        paywall.hide()
+        pendingUnlockAction = nil
+        transition(to: .exploration)
+    }
+
+    private func buyFullGame() {
+        paywall.refreshTexts()
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                let unlocked = try await StoreManager.shared.purchase()
+                paywall.refreshTexts()
+                if unlocked {
+                    completeUnlock()
+                } else {
+                    // Annulation ou achat en attente : aucun message d'échec,
+                    // le joueur n'a rien fait de mal.
+                    paywall.showStatus("")
+                }
+            } catch {
+                paywall.showStatus(String(localized: "paywall.status.failed"))
+                HapticsEngine.error()
+            }
+        }
+    }
+
+    private func restorePurchases() {
+        paywall.showStatus(String(localized: "paywall.status.restoring"))
+        Task { [weak self] in
+            guard let self else { return }
+            do {
+                try await StoreManager.shared.restore()
+                if StoreManager.shared.isUnlocked {
+                    completeUnlock()
+                } else {
+                    paywall.showStatus(String(localized: "paywall.status.nothingToRestore"))
+                }
+            } catch {
+                paywall.showStatus(String(localized: "paywall.status.failed"))
+            }
+        }
+    }
+
+    /// Achat/restauration réussis : on ferme le mur et on reprend exactement
+    /// là où le joueur voulait aller.
+    private func completeUnlock() {
+        AudioEngine.shared.playPurchase()
+        HapticsEngine.success()
+        paywall.hide()
+        let resume = pendingUnlockAction
+        pendingUnlockAction = nil
+        if let resume {
+            resume()
+        } else {
+            transition(to: .exploration)
+        }
+    }
+
     // MARK: - Inventory
 
     func openInventory() {
@@ -2071,6 +2178,7 @@ final class GameManager {
         case "tutorial":  tutorial.show(in: scene)
         case "levelup":   levelUp.show(newLevel: 5, isMax: false) {}
         case "death":     death.show(in: scene)
+        case "paywall":   openPaywall()
         case "shop":
             transition(to: .shop)
             shop.open(title: String(localized: "shop.bram.title"),
@@ -2469,7 +2577,7 @@ final class GameManager {
             // même famille que le boss forêt déjà vaincu). On reprend la suite.
             hud.objectiveText = String(localized: "hud.objective.complete")
             transition(to: .exploration)
-            beginAct2()
+            requireFullGame { [weak self] in self?.beginAct2() }
 
         case .act2:
             hud.objectiveText = String(localized: "hud.objective.act2")

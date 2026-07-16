@@ -1,0 +1,35 @@
+{
+  "identifier" : "A1B2C3D4",
+  "nonRenewingSubscriptions" : [ ],
+  "products" : [
+    {
+      "displayPrice" : "3.99",
+      "familyShareable" : true,
+      "internalID" : "EOA0000000000001",
+      "localizations" : [
+        {
+          "description" : "Unlock Acts II, III and IV: the Ruins, the Threshold, the Heart of the Void, and both endings.",
+          "displayName" : "Echoes of Aether — Full Game",
+          "locale" : "en_US"
+        },
+        {
+          "description" : "Débloque les Actes II, III et IV : les Ruines, le Seuil, le Cœur du Vide, et les deux fins.",
+          "displayName" : "Echoes of Aether — Jeu complet",
+          "locale" : "fr_FR"
+        }
+      ],
+      "productID" : "com.appmakerstudio.echoesofaether.fullgame",
+      "referenceName" : "Full Game Unlock",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_askToBuyEnabled" : false,
+    "_storeKitErrors" : [ ]
+  },
+  "subscriptionGroups" : [ ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}

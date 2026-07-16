@@ -306,7 +306,8 @@ extension GameManager {
                 hud.objectiveText = String(localized: "hud.objective.complete")
                 transition(to: .exploration)
                 TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal) { [weak self] in
-                    self?.beginAct2()
+                    // Fin de l'Acte I : la suite est derrière l'achat.
+                    self?.requireFullGame { [weak self] in self?.beginAct2() }
                 }
             }
             return
@@ -369,7 +370,8 @@ extension GameManager {
                         hud.objectiveText = String(localized: "hud.objective.complete")
                         transition(to: .exploration)
                         TransitionManager.showEndScreen(in: scene, resonance: resonanceTotal) { [weak self] in
-                            self?.beginAct2()
+                            // Fin de l'Acte I : la suite est derrière l'achat.
+                            self?.requireFullGame { [weak self] in self?.beginAct2() }
                         }
                     }
                 }

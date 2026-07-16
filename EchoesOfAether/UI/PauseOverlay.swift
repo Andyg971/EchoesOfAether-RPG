@@ -9,6 +9,10 @@ final class PauseOverlay {
     var onSave: (() -> Void)?
     var onOptions: (() -> Void)?
     var onMainMenu: (() -> Void)?
+    /// Rouvre le mur d'achat. Le bouton n'existe que si le jeu complet n'est
+    /// pas encore débloqué — sinon rien ne rappelle l'achat au joueur payant.
+    var onUnlock: (() -> Void)?
+    var showsUnlockButton = false
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -32,7 +36,7 @@ final class PauseOverlay {
 
         // Panel central — cadre pixel SNES (coins carrés, double bordure)
         let panelW: CGFloat = 280
-        let panelH: CGFloat = 360
+        let panelH: CGFloat = showsUnlockButton ? 420 : 360
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
                            fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.96),
@@ -89,6 +93,19 @@ final class PauseOverlay {
         menuBtn.alpha = 0
         root.addChild(menuBtn)
 
+        // Débloquer le jeu complet — uniquement pour les joueurs de l'Acte I.
+        var unlockBtn: SKNode?
+        if showsUnlockButton {
+            let btn = makeButton(String(localized: "pause.unlock"),
+                fill: SKColor(red: 0.16, green: 0.12, blue: 0.05, alpha: 1),
+                stroke: PixelUI.gold,
+                name: "pauseUnlock")
+            btn.position = CGPoint(x: centerX, y: centerY - 176)
+            btn.alpha = 0
+            root.addChild(btn)
+            unlockBtn = btn
+        }
+
         // Animate
         let fadeIn = SKAction.fadeIn(withDuration: 0.25)
         panel.run(fadeIn)
@@ -96,7 +113,13 @@ final class PauseOverlay {
         resumeBtn.run(.sequence([.wait(forDuration: 0.08), fadeIn]))
         saveBtn.run(.sequence([.wait(forDuration: 0.14), fadeIn]))
         optionsBtn.run(.sequence([.wait(forDuration: 0.18), fadeIn]))
-        menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn, .run { [weak self] in self?.buttonsReady = true }]))
+        let ready = SKAction.run { [weak self] in self?.buttonsReady = true }
+        if let unlockBtn {
+            menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn]))
+            unlockBtn.run(.sequence([.wait(forDuration: 0.26), fadeIn, ready]))
+        } else {
+            menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn, ready]))
+        }
 
         // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
         UIScale.apply(to: root, sceneSize: scene.size)
@@ -111,9 +134,13 @@ final class PauseOverlay {
     /// Bouton B : reprendre la partie (équivalent de « Reprendre »).
     func dismiss() { onResume?() }
 
-    // Curseur (contrôles classiques) sur les 4 boutons du menu pause.
+    // Curseur (contrôles classiques) sur les boutons du menu pause.
+    // « Débloquer » n'entre dans le cycle que s'il est affiché.
     private var selection = 0
-    private let buttonNames = ["pauseResume", "pauseSave", "pauseOptions", "pauseMenu"]
+    private var buttonNames: [String] {
+        let base = ["pauseResume", "pauseSave", "pauseOptions", "pauseMenu"]
+        return showsUnlockButton ? base + ["pauseUnlock"] : base
+    }
 
     /// Joystick haut/bas : déplace le curseur.
     func moveSelection(_ dy: Int) {
@@ -132,6 +159,7 @@ final class PauseOverlay {
         case "pauseSave": onSave?()
         case "pauseOptions": onOptions?()
         case "pauseMenu": onMainMenu?()
+        case "pauseUnlock": onUnlock?()
         default: break
         }
     }
@@ -177,6 +205,11 @@ final class PauseOverlay {
         if let btn = root.childNode(withName: "pauseOptions") as? SKShapeNode,
            btn.contains(local) {
             onOptions?()
+            return true
+        }
+        if let btn = root.childNode(withName: "pauseUnlock") as? SKShapeNode,
+           btn.contains(local) {
+            onUnlock?()
             return true
         }
         if let btn = root.childNode(withName: "pauseMenu") as? SKShapeNode,

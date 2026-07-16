@@ -752,7 +752,9 @@ final class WorldBuilder {
 
         let toy = SKNode()
         toy.position = CGPoint(x: w * 0.80, y: h * 0.45)
-        toy.zPosition = 3
+        // Objet posé au sol : trié comme le reste du monde, sinon Kael
+        // passe derrière un jouet qui est devant lui.
+        toy.zPosition = depthLayer(for: toy.position.y)
 
         // Petit ours en bois — grille pixel (charte : zéro coin arrondi/glow)
         let bear = PixelIcons.custom(map: [
@@ -814,7 +816,7 @@ final class WorldBuilder {
 
         let marker = SKNode()
         marker.position = CGPoint(x: w * 0.28, y: h * 0.72)
-        marker.zPosition = 3
+        marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
         if let cross = PixelArtSprites.still(name: "gy_cross_wood", scale: 0.30,
                                              anchor: CGPoint(x: 0.5, y: 0.0)) {
             marker.addChild(cross)
@@ -855,7 +857,7 @@ final class WorldBuilder {
         // ATTENTION : loin du campement+cristal (0.52, 0.52) — le tap du
         // cristal de save est prioritaire et volerait le ramassage.
         marker.position = CGPoint(x: w * 0.40, y: h * 0.63)
-        marker.zPosition = 3
+        marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
         // Bloc de minerai sombre (placeholder pixel)
         // Bloc de fer corrompu — grille pixel, filons violets (zéro glow)
@@ -903,7 +905,7 @@ final class WorldBuilder {
 
         let marker = SKNode()
         marker.position = CGPoint(x: w * 0.12, y: h * 0.40)
-        marker.zPosition = 3
+        marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
         // Brins luminescents
         for (dx, height) in [(-4, 10), (0, 14), (4, 9)] {
@@ -942,7 +944,7 @@ final class WorldBuilder {
 
         let marker = SKNode()
         marker.position = CGPoint(x: w * 0.68, y: h * 0.18)
-        marker.zPosition = 3
+        marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
         // Écusson métallique terni
         let shield = SKShapeNode(rectOf: CGSize(width: 10, height: 12), cornerRadius: 4)
@@ -1332,7 +1334,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let entrance = SKNode()
         entrance.name = "mineEntrance"
         entrance.position = CGPoint(x: w * 0.88, y: h * 0.30)
-        entrance.zPosition = 2
+        entrance.zPosition = depthLayer(for: entrance.position.y)
 
         // Ouverture sombre (bouche de galerie)
         let mouth = SKShapeNode(rect: CGRect(x: -26, y: 0, width: 52, height: 40),
@@ -1389,7 +1391,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let entrance = SKNode()
         entrance.name = "caveEntrance"
         entrance.position = CGPoint(x: w * 0.12, y: h * 0.80)
-        entrance.zPosition = 2
+        entrance.zPosition = depthLayer(for: entrance.position.y)
 
         // Bouche de caverne : trapèze sombre (rect net empilé)
         for (wdt, yy) in [(58, 6), (46, 26), (32, 42)] {
@@ -1581,6 +1583,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         LightingEngine.applyGrade(.mines, in: scene)
         LightingEngine.attachHeroLight(to: kael)  // seul point chaud mobile
         AudioEngine.shared.setAmbience(.mines)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit (mines)
     }
 
     /// Rails de mine : deux longerons métalliques + traverses de bois.
@@ -1682,7 +1685,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func makeMinersPlaque(at pos: CGPoint) -> SKNode {
         let node = SKNode()
         node.position = pos
-        node.zPosition = 1
+        node.zPosition = depthLayer(for: pos.y)
 
         let board = SKShapeNode(rectOf: CGSize(width: 64, height: 42), cornerRadius: 4)
         board.fillColor = SKColor(red: 0.24, green: 0.17, blue: 0.09, alpha: 1)
@@ -1718,7 +1721,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func makeGoldVein(at pos: CGPoint) -> SKNode {
         let node = SKNode()
         node.position = pos
-        node.zPosition = 1
+        node.zPosition = depthLayer(for: pos.y)
 
         let rock = SKShapeNode(rectOf: CGSize(width: 40, height: 26), cornerRadius: 6)
         rock.fillColor = SKColor(red: 0.14, green: 0.14, blue: 0.17, alpha: 1)
@@ -1980,12 +1983,16 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                 name: "gy_tree", scale: CGFloat(s),
                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
             tree.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
-            tree.zPosition = actorLayer(for: tree.position.y)
+            tree.zPosition = depthLayer(for: tree.position.y, sceneHeight: h)
             tree.forEachDescendantSprite { sp in
                 sp.color = SKColor(red: 0.62, green: 0.46, blue: 0.22, alpha: 1)
                 sp.colorBlendFactor = 0.55
             }
+            addGroundShadow(under: tree, width: 40 * CGFloat(s), height: 11 * CGFloat(s))
             add(tree, to: scene)
+            // Tronc infranchissable, comme en forêt. Il manquait : les arbres
+            // du désert se traversaient de part en part.
+            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
         }
 
         // Ossements des caravanes perdues
@@ -2038,6 +2045,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(desertAmbiance, to: scene)
         setZoneVignette(in: scene, alpha: 0.30)   // plein soleil, vignette légère
         LightingEngine.applyGrade(.desert, in: scene)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit (desert)
         LightingEngine.startDayCycle(in: scene, day: .desert, phaseSeconds: 90)
         AudioEngine.shared.setAmbience(.desert)
     }
@@ -2083,7 +2091,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func makeBuriedChest(at pos: CGPoint) -> SKNode {
         let node = SKNode()
         node.position = pos
-        node.zPosition = 1
+        node.zPosition = depthLayer(for: pos.y)
 
         // Monticule de sable
         let mound = SKShapeNode(rectOf: CGSize(width: 52, height: 12))
@@ -2597,7 +2605,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func makeInscriptionWall(at pos: CGPoint) -> SKNode {
         let wall = SKNode()
         wall.position = pos
-        wall.zPosition = 1
+        wall.zPosition = depthLayer(for: pos.y)
 
         let stone = SKShapeNode(rectOf: CGSize(width: 72, height: 55), cornerRadius: 5)
         stone.fillColor = SKColor(red: 0.14, green: 0.08, blue: 0.10, alpha: 1)
@@ -2635,7 +2643,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func makeEranInscription(at pos: CGPoint) -> SKNode {
         let wall = SKNode()
         wall.position = pos
-        wall.zPosition = 1
+        wall.zPosition = depthLayer(for: pos.y)
 
         // Pierre plus petite, style griffonné
         let stone = SKShapeNode(rectOf: CGSize(width: 44, height: 34), cornerRadius: 3)
@@ -2805,6 +2813,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addAtmosphere(ParticleFactory.shrineAura(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.40)
         LightingEngine.applyGrade(.shrine, in: scene)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit (shrine)
         AudioEngine.shared.setAmbience(.none)
     }
 
@@ -3018,6 +3027,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         buildInterior(kind, in: scene)
         setZoneVignette(in: scene, alpha: 0.38)   // pièce éclairée au feu
         LightingEngine.applyGrade(.interior, in: scene)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit (interior)
         AudioEngine.shared.setAmbience(.interior)
         kael.position = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.23)
         kael.zPosition = 20
@@ -3323,7 +3333,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         label.fontColor = SKColor(red: 0.96, green: 0.84, blue: 0.52, alpha: 0.9)
         label.horizontalAlignmentMode = .center
         label.position = position
-        label.zPosition = 3
+        label.zPosition = 60   // libellé flottant : lisible au-dessus du monde
         add(label, to: scene)
         JuiceEngine.float(label, distance: 3)
     }

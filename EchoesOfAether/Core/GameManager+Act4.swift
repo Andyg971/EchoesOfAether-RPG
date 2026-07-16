@@ -32,15 +32,12 @@ extension GameManager {
 
     /// Dispatch des interactions du Cœur du Vide.
     func tryAct4Interaction(_ point: CGPoint, in scene: SKScene) -> Bool {
-        let w = scene.size.width, h = scene.size.height
-        let heart = CGPoint(x: w * 0.50, y: h * 0.80)
+        let plan = VoidHeartLayout(sceneSize: scene.size)
+        let heart = plan.heart
 
         // Fragments de mémoire (quête « Les souvenirs de Kael »)
-        let memories: [(id: String, x: CGFloat, y: CGFloat)] = [
-            ("1", 0.20, 0.46), ("2", 0.62, 0.30), ("3", 0.80, 0.52)
-        ]
-        for memory in memories where !player.act4MemoriesSeen.contains(memory.id) {
-            if point.distance(to: CGPoint(x: w * memory.x, y: h * memory.y)) < 55 {
+        for memory in plan.memories where !player.act4MemoriesSeen.contains(memory.id) {
+            if point.distance(to: memory.pos) < 55 {
                 openAct4Memory(id: memory.id)
                 return true
             }
@@ -61,7 +58,7 @@ extension GameManager {
 
         // 1) Confrontation de la Voix (le choix final est capturé ici)
         if !player.act4VoiceConfronted {
-            if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.58)) < 80 {
+            if point.distance(to: plan.voiceConfront) < 80 {
                 openAct4VoiceConfront()
                 return true
             }
@@ -178,9 +175,7 @@ extension GameManager {
     /// Reconstruit le décor du Cœur selon la progression.
     func refreshVoidHeartBackdrop() {
         guard let scene, phase == .act4 else { return }
-        let kaelPos = world.kael.position
-        showVoidHeart(in: scene)
-        world.kael.position = kaelPos
+        showVoidHeart(in: scene, placeKael: false)
     }
 
     /// Confrontation de la Voix — capture le choix final de Kael :

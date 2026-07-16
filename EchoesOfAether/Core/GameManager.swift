@@ -1879,11 +1879,10 @@ final class GameManager {
                 actionPoint = nearest.point
             }
         case .act4:
-            let w = scene.size.width, h = scene.size.height
+            let plan = VoidHeartLayout(sceneSize: scene.size)
             var checkpoints: [(CGPoint, String)] = []
-            for m in [("1", 0.20, 0.46), ("2", 0.62, 0.30), ("3", 0.80, 0.52)]
-            where !player.act4MemoriesSeen.contains(m.0) {
-                checkpoints.append((CGPoint(x: w*m.1, y: h*m.2), "hint.examine"))
+            for m in plan.memories where !player.act4MemoriesSeen.contains(m.id) {
+                checkpoints.append((m.pos, "hint.examine"))
             }
             for id in ["elder", "smith", "lost"]
             where !player.act4ReflectionsFreed.contains(id) {
@@ -1893,11 +1892,11 @@ final class GameManager {
             }
             // Les Dévoreurs viennent à Kael : aucune bulle « Combattre ».
             if !player.act4VoiceConfronted {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.58), "hint.examine"))
+                checkpoints.append((plan.voiceConfront, "hint.examine"))
             } else if !player.act4BossDefeated {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.80), "hint.fight"))
+                checkpoints.append((plan.heart, "hint.fight"))
             } else {
-                checkpoints.append((CGPoint(x: w*0.50, y: h*0.80), "hint.examine"))
+                checkpoints.append((plan.heart, "hint.examine"))
             }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -2396,13 +2395,18 @@ final class GameManager {
         spawnAct3Roamers()
     }
 
-    /// Affiche le Cœur du Vide ET (re)peuple ses Dévoreurs.
-    func showVoidHeart(in scene: SKScene) {
+    /// Affiche le Cœur du Vide ET (re)peuple ses Dévoreurs. `placeKael: false`
+    /// préserve la position (reconstruction du décor après un combat).
+    func showVoidHeart(in scene: SKScene, placeKael: Bool = true) {
         world.switchToVoidHeart(in: scene,
                                 echoJoined: player.act3EchoJoined,
                                 reflectionsFreed: player.act4ReflectionsFreed,
                                 devourersDefeated: player.act4DevourersDefeated,
                                 bossDefeated: player.act4BossDefeated)
+        if placeKael {
+            world.kael.position = VoidHeartLayout(sceneSize: scene.size).entrance
+            world.snapCamera()
+        }
         spawnAct4Roamers()
     }
 
@@ -2456,12 +2460,14 @@ final class GameManager {
             clearRoamers(); return
         }
         clearRoamers()
-        let w = scene.size.width, h = scene.size.height
+        // Embusqués au premier virage du serpentin.
+        let plan = VoidHeartLayout(sceneSize: scene.size)
         let devourTint = SKColor(red: 0.55, green: 0.12, blue: 0.40, alpha: 1)
-        for (i, dx) in [-0.03, 0.04].enumerated() {
+        for (i, dx) in [CGFloat(-0.05), 0.05].enumerated() {
             addRoamer("enemy_bone",
-                      at: CGPoint(x: w * (0.80 + dx), y: h * (0.68 + Double(i) * 0.02)),
-                      wh: h, patrolRadius: 66,
+                      at: CGPoint(x: plan.devourerAmbush.x + plan.width * dx,
+                                  y: plan.devourerAmbush.y + plan.height * CGFloat(i) * 0.012),
+                      wh: plan.height, patrolRadius: 60,
                       tint: devourTint, blend: 0.60, alpha: 0.76) { [weak self] in
                 self?.startDevourersCombat()
             }

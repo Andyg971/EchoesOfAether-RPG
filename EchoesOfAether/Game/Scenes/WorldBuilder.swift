@@ -323,8 +323,8 @@ final class WorldBuilder {
                            devourersDefeated: Bool = false,
                            bossDefeated: Bool = false) {
         clearBackdrop()
-        worldHeight = scene.size.height
         worldNode.position = .zero
+        // worldHeight est défini par buildVoidHeart (serpentin scrollable).
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.04, green: 0.01, blue: 0.07, alpha: 1)
         buildVoidHeart(in: scene, reflectionsFreed: reflectionsFreed,
@@ -2379,8 +2379,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                                 reflectionsFreed: Set<String> = [],
                                 devourersDefeated: Bool = false,
                                 bossDefeated: Bool = false) {
-        let w = scene.size.width
-        let h = scene.size.height
+        // Plan unique de la zone (décor, hit-tests, bulles, spawns).
+        let plan = VoidHeartLayout(sceneSize: scene.size)
+        let w = plan.width
+        let h = plan.height
+        worldHeight = h   // serpentin vertical : la caméra scrolle
 
         // Sol : pierre a2 teintée pourpre — plus profond que le Seuil
         addTiledFloor(in: scene,
@@ -2391,18 +2394,36 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
-        // Titre de zone
+        // Allée : la même pierre, éclaircie. Elle serpente de bande en bande.
+        for band in plan.corridorBands {
+            addPathStrip(in: scene, rect: CGRect(
+                x: w * (band.left + (band.right - band.left) * 0.30),
+                y: h * band.y0,
+                width: w * (band.right - band.left) * 0.40,
+                height: h * (band.y1 - band.y0)))
+        }
+
+        // ── PAROIS : le serpentin est creusé dans la roche ──
+        for band in plan.corridorBands {
+            let y = h * band.y0
+            let height = h * (band.y1 - band.y0)
+            addWall(in: scene, rect: CGRect(x: 0, y: y,
+                                            width: w * band.left, height: height))
+            addWall(in: scene, rect: CGRect(x: w * band.right, y: y,
+                                            width: w * (1 - band.right), height: height))
+        }
+
+        // Titre de zone, à l'entrée
         let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.voidheart.title")
         zoneLabel.fontSize = 14
         zoneLabel.fontColor = SKColor(red: 0.75, green: 0.45, blue: 0.90, alpha: 0.65)
-        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.93)
+        zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.012)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // ── LE CŒUR : orbe géant au sommet de l'escalier central ──
-        addPixelProp("me_stairs", in: scene,
-                     at: CGPoint(x: w * 0.50, y: h * 0.70), scale: 0.60)
+        // ── LE CŒUR : orbe géant au sommet de l'escalier final ──
+        addPixelProp("me_stairs", in: scene, at: plan.stairsBase, scale: 0.60)
         let heart = SKShapeNode(circleOfRadius: bossDefeated ? 34 : 46)
         let heartColor: SKColor = bossDefeated
             ? SKColor(red: 0.40, green: 0.85, blue: 0.95, alpha: 1)   // apaisé : cyan
@@ -2412,60 +2433,38 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         heart.lineWidth = 2
         heart.glowWidth = 10
         heart.name = "voidHeartCore"
-        heart.position = CGPoint(x: w * 0.50, y: h * 0.86)
+        heart.position = plan.heart
         heart.zPosition = -2
         add(heart, to: scene)
         JuiceEngine.pulse(heart, scale: bossDefeated ? 1.06 : 1.25)
 
-        // Anneau de colonnes brisées autour du Cœur
-        for (px, py, flip) in [(0.30, 0.78, false), (0.70, 0.78, true),
-                               (0.22, 0.60, false), (0.78, 0.60, true)] {
-            addPixelProp("column_broken_1", in: scene,
-                         at: CGPoint(x: w * CGFloat(px), y: h * CGFloat(py)),
-                         scale: 2.0, flipped: flip)
-        }
-
-        // Statues d'anges renversées — les gardiens sont tombés ici
+        // Statues d'anges renversées flanquant la descente finale
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.40, y: h * 0.52), scale: 0.24)
+                     at: CGPoint(x: w * 0.36, y: h * 0.815), scale: 0.24)
         addPixelProp("me_statue_angel", in: scene,
-                     at: CGPoint(x: w * 0.60, y: h * 0.52), scale: 0.24, flipped: true)
+                     at: CGPoint(x: w * 0.64, y: h * 0.815), scale: 0.24, flipped: true)
 
-        // Fissures d'énergie convergeant vers le Cœur + mares d'Aether
-        for (px, py) in [(0.18, 0.40), (0.82, 0.44), (0.50, 0.28)] {
-            add(makeCrack(from: CGPoint(x: w * px, y: h * py),
-                          to: CGPoint(x: w * 0.50, y: h * 0.74)), to: scene)
+        // Fissures d'énergie remontant le serpentin vers le Cœur
+        for fy in [CGFloat(0.30), 0.50, 0.68] {
+            guard let band = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
+            else { continue }
+            add(makeCrack(from: CGPoint(x: w * (band.left + band.right) / 2, y: h * fy),
+                          to: CGPoint(x: plan.heart.x, y: h * 0.76)), to: scene)
         }
-        for (px, py) in [(0.14, 0.30), (0.86, 0.34)] {
-            add(makeRedAetherPool(at: CGPoint(x: w * px, y: h * py)), to: scene)
+        for m in plan.memories.prefix(2) {
+            add(makeRedAetherPool(at: CGPoint(x: m.pos.x, y: m.pos.y - h * 0.03)), to: scene)
         }
 
         // ── Fragments de mémoire (quête « Les souvenirs de Kael ») ──
-        // Chandelles spectrales aux trois points d'examen — toujours
-        // visibles ; l'état "vu" ne gate que l'interaction.
-        for (px, py) in [(0.20, 0.46), (0.62, 0.30), (0.80, 0.52)] {
-            addPixelProp("gy_candle", in: scene,
-                         at: CGPoint(x: w * px, y: h * py), scale: 0.55)
-            let mGlow = SKShapeNode(circleOfRadius: 16)
-            mGlow.fillColor = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 0.08)
-            mGlow.strokeColor = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 0.30)
-            mGlow.lineWidth = 1
-            mGlow.glowWidth = 4
-            mGlow.position = CGPoint(x: w * px, y: h * py)
-            mGlow.zPosition = -3
-            add(mGlow, to: scene)
-            JuiceEngine.pulse(mGlow, scale: 1.15)
+        // Une chandelle marque chaque recoin : toujours visible, l'état
+        // « vu » ne gate que l'interaction.
+        for m in plan.memories {
+            addPixelProp("gy_candle", in: scene, at: m.pos, scale: 0.55)
         }
 
         // ── Reflets absorbés (quête « Les visages du Vide ») ──
-        let reflectionDefs: [(id: String, asset: String, x: CGFloat, y: CGFloat)] = [
-            ("elder", "npc_dorin", 0.28, 0.36),
-            ("smith", "npc_bram",  0.68, 0.44),
-            ("lost",  "npc_child", 0.46, 0.24)
-        ]
-        for def in reflectionDefs where !reflectionsFreed.contains(def.id) {
-            addWanderingSpirit(id: def.id, asset: def.asset, in: scene,
-                               at: CGPoint(x: w * def.x, y: h * def.y))
+        for def in plan.reflections where !reflectionsFreed.contains(def.id) {
+            addWanderingSpirit(id: def.id, asset: def.asset, in: scene, at: def.pos)
         }
 
         // ── Dévoreurs d'échos : combat annexe ──
@@ -2475,13 +2474,14 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // n'a pas de corps. La bulle « A · Examiner » suffit à la signaler
         // quand Kael approche de l'escalier.
 
-        // Cristal de sauvegarde (entrée, bas gauche)
-        addSaveCrystal(at: CGPoint(x: w * 0.14, y: h * 0.18), in: scene)
+        // Cristal de sauvegarde au vestibule — dernier répit.
+        addSaveCrystal(at: plan.saveCrystal, in: scene)
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
         setZoneVignette(in: scene, alpha: 0.50)
         LightingEngine.applyGrade(.voidheart, in: scene)
         AudioEngine.shared.setAmbience(.none)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois
     }
 
     /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.

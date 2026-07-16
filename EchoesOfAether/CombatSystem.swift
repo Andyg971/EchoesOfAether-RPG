@@ -112,6 +112,47 @@ enum CombatSpell: CaseIterable {
         case .emberStrike: return 10
         }
     }
+
+    // MARK: - Paliers
+
+    /// Palier du sort selon le niveau de Kael. Trois paliers sur les 30
+    /// niveaux : à 10 et à 20, le sort ne gonfle pas — il **devient autre
+    /// chose**, change de nom et fait un bond de puissance. Entre deux
+    /// paliers il progresse doucement, pour que chaque niveau serve à
+    /// quelque chose.
+    static let tierThresholds = [1, 10, 20]
+
+    func tier(at level: Int) -> Int {
+        switch level {
+        case ..<10: return 1
+        case ..<20: return 2
+        default:    return 3
+        }
+    }
+
+    /// Nom du sort à ce niveau. C'est ce que voit le joueur dans le menu.
+    func title(at level: Int) -> String {
+        let keys: [String]
+        switch self {
+        case .ember:       keys = ["blaze", "furnace", "inferno"]
+        case .frost:       keys = ["bite", "rime", "glaciation"]
+        case .thunder:     keys = ["fulgur", "storm", "cataclysm"]
+        case .mend:        keys = ["remission", "healing", "rebirth"]
+        case .blessing:    keys = ["blessing", "grace", "apotheosis"]
+        case .windBlade:   keys = ["gale", "tornado", "hurricane"]
+        case .emberStrike: keys = ["ember", "blazing", "immolation"]
+        }
+        return String(localized: String.LocalizationValue(
+            "combat.spellTier." + keys[tier(at: level) - 1]))
+    }
+
+    /// Puissance effective. Le palier donne le bond, le niveau la pente.
+    func power(at level: Int) -> Int {
+        let t = tier(at: level)
+        let multiplier = [1.0, 1.7, 2.6][t - 1]
+        let within = level - Self.tierThresholds[t - 1]
+        return Int(Double(basePower) * multiplier) + within * 4
+    }
 }
 
 enum StatusEffect {
@@ -1097,7 +1138,7 @@ private func perform(_ action: CombatAction) {
         comboCount = 0
         if spell == .blessing {
             // Nova sacrée de Lyra : soigne TOUT le groupe d'un coup.
-            let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 3)
+            let heal = Int(CGFloat(spell.power(at: _player?.level ?? 1))
                            * damageMultiplier * spellMult)
             kael.hp = min(kael.maxHP, kael.hp + heal)
             for ally in aliveAllies {
@@ -1119,7 +1160,7 @@ private func perform(_ action: CombatAction) {
             return
         }
         if spell == .mend {
-            let heal = Int(CGFloat(spell.basePower + ((_player?.level ?? 1) - 1) * 5)
+            let heal = Int(CGFloat(spell.power(at: _player?.level ?? 1))
                            * damageMultiplier * spellMult)
             // Le joueur a désigné sa cible : on la respecte. Sans choix
             // explicite (IA, sécurité), on retombe sur le plus blessé.
@@ -1145,16 +1186,16 @@ private func perform(_ action: CombatAction) {
         guard let element = spell.element else { return }
         let isWeak = foe.weaknesses.contains(element)
         let broke = isWeak ? hitWeakness(on: foe, with: element) : false
-        let levelBonus = ((_player?.level ?? 1) - 1) * 5
-        var finalDmg = Int(CGFloat(spell.basePower + levelBonus) * damageMultiplier * spellMult)
+        var finalDmg = Int(CGFloat(spell.power(at: _player?.level ?? 1))
+                           * damageMultiplier * spellMult)
         if isWeak { finalDmg = Int(CGFloat(finalDmg) * 1.35) }
         // Payoff Break uniforme (était ×1.25, incohérent avec attaque/slash).
         let hitBroken = foe.brokenTurns > 0 || broke
         if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         statusLabel.text = isWeak
-            ? String(localized: "combat.status.spellWeak \(spell.title) \(finalDmg)")
-            : String(localized: "combat.status.spellHit \(spell.title) \(finalDmg)")
+            ? String(localized: "combat.status.spellWeak \(spell.title(at: _player?.level ?? 1)) \(finalDmg)")
+            : String(localized: "combat.status.spellHit \(spell.title(at: _player?.level ?? 1)) \(finalDmg)")
         applySpellSideEffect(spell, on: foe, wasWeak: isWeak, boosted: boost > 0)
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
@@ -2979,6 +3020,11 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
 
     guard let label = node.children.compactMap({ $0 as? SKLabelNode })
             .first(where: { $0.name != "mpCost" }) else { return }
+    // Le nom suit le palier : à 10 et 20, BRASIER devient FOURNAISE puis
+    // INFERNO. Le menu doit dire ce que le sort EST devenu.
+    if let spell = spellForButton(node) {
+        label.text = spell.title(at: _player?.level ?? 1).uppercased()
+    }
     label.horizontalAlignmentMode = .left
     label.verticalAlignmentMode = .center
     label.fontSize = 13
@@ -3014,6 +3060,18 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
         mpLabel?.removeFromParent()
         label.fontColor = .white
     }
+}
+
+/// Sort porté par ce bouton (nil = attaque physique, sans palier).
+private func spellForButton(_ node: SKShapeNode) -> CombatSpell? {
+    if node === fireButton      { return .ember }
+    if node === iceButton       { return .frost }
+    if node === lightningButton { return .thunder }
+    if node === healButton      { return .mend }
+    if node === blessingButton  { return .blessing }
+    if node === windButton      { return .windBlade }
+    if node === emberButton     { return .emberStrike }
+    return nil
 }
 
 /// Coût en Magie de la commande portée par ce bouton.

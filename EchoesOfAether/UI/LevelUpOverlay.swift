@@ -86,6 +86,16 @@ final class LevelUpOverlay {
         statsLabel.text = isMax
             ? String(localized: "levelUp.maxReached")
             : String(localized: "levelUp.stats")
+        // Palier de sorts franchi : c'est l'évènement du niveau, il doit
+        // être annoncé. Sans ça le joueur ne remarque pas que BRASIER est
+        // devenu FOURNAISE.
+        if let evolved = CombatSpell.tierThresholds.contains(newLevel)
+            ? CombatSpell.allCases.filter({ $0.tier(at: newLevel) > 1 }) : nil,
+           !evolved.isEmpty, newLevel > 1 {
+            let names = evolved.map { $0.title(at: newLevel).uppercased() }
+                .joined(separator: " · ")
+            statsLabel.text = String(localized: "levelUp.spellsEvolved \(names)")
+        }
         statsLabel.fontColor = isMax
             ? SKColor(red: 0.95, green: 0.70, blue: 0.30, alpha: 1)
             : SKColor(red: 0.55, green: 0.85, blue: 0.65, alpha: 1)

@@ -13,6 +13,18 @@ final class StoreManager {
     /// Doit correspondre à l'identifiant créé dans App Store Connect.
     static let fullGameID = "com.appmakerstudio.echoesofaether.fullgame"
 
+    /// Le produit `fullGameID` existe-t-il et est-il approuvé dans App Store
+    /// Connect ?
+    ///
+    /// Tant que non : le mur d'achat s'ouvrirait sans prix ni bouton valide et
+    /// le joueur resterait coincé à la fin de l'Acte I, **sans aucun moyen de
+    /// payer** — les Actes II à IV existent et se terminent, mais rien ne peut
+    /// y mener. On débloque donc tout par défaut, et l'on repassera ce drapeau
+    /// à `true` le jour où l'achat est réellement en place.
+    ///
+    /// Une seule ligne à changer, aucun code de paywall supprimé.
+    static let isStoreKitConfigured = false
+
     private(set) var product: Product?
     private(set) var isUnlocked = false
     private(set) var isPurchasing = false
@@ -30,6 +42,12 @@ final class StoreManager {
     func start() async {
         // `--unlock-all` : tests et captures d'écran sans passer par l'achat.
         if CommandLine.arguments.contains("--unlock-all") {
+            isUnlocked = true
+            return
+        }
+        // Achat pas encore en place : le jeu entier est ouvert (Actes I à IV).
+        // Voir `isStoreKitConfigured`.
+        guard Self.isStoreKitConfigured else {
             isUnlocked = true
             return
         }

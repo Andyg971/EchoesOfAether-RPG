@@ -1298,17 +1298,20 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Eran Solace, le Premier Gardien, debout au centre du Seuil. Vieil homme
     /// marqué par le Vide : sprite de sage, teinté du violet du Seuil.
     func addEran(in scene: SKScene, at pos: CGPoint) {
-        guard let eran = PixelArtSprites.animated(
-            name: "npc_sage", frames: 6, scale: 0.62,
-            timePerFrame: 0.24, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        // Le sprite de son pack (fighter) — le même qu'en combat.
+        let eran = BattleSprites.worldNode(.eran, name: "eran")
+            ?? PixelArtSprites.animated(name: "npc_sage", frames: 6, scale: 0.62,
+                                        timePerFrame: 0.24,
+                                        anchor: CGPoint(x: 0.5, y: 0.0))
+        guard let eran else { return }
         eran.name = "eran"
         eran.position = pos
         eran.zPosition = actorLayer(for: pos.y)
+        // Marqué par le Vide : teinte violette légère.
         eran.forEachDescendantSprite { s in
             s.color = SKColor(red: 0.55, green: 0.45, blue: 0.85, alpha: 1)
             s.colorBlendFactor = 0.30
         }
-        addGroundShadow(under: eran, width: 26, height: 7)
         add(eran, to: scene)
     }
 

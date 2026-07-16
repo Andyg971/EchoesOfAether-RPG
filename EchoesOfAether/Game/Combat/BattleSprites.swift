@@ -25,7 +25,7 @@ enum BattleSprites {
             }
         }
 
-        /// Échelle de rendu. Les canevas diffèrent d'un pack à l'autre
+        /// Échelle en combat. Les canevas diffèrent d'un pack à l'autre
         /// (Kael 109×128, Lyra 111×105, Eran 153×127) : l'échelle compense
         /// pour que les trois fassent la même taille à l'écran.
         var scale: CGFloat {
@@ -33,6 +33,16 @@ enum BattleSprites {
             case .kael: return 1.30
             case .lyra: return 1.30
             case .eran: return 1.10
+            }
+        }
+
+        /// Échelle dans le monde : les PNJ chibi font ~48 pt de haut, les
+        /// héros doivent se tenir à leur hauteur, pas les écraser.
+        var worldScale: CGFloat {
+            switch self {
+            case .kael: return 0.62
+            case .lyra: return 0.62
+            case .eran: return 0.52
             }
         }
     }
@@ -134,15 +144,65 @@ enum BattleSprites {
         return root
     }
 
-    /// Boucle un clip indéfiniment (idle, marche).
+    /// Boucle un clip indéfiniment (idle, marche). Sans effet si le clip
+    /// tourne déjà : rejouer `move` à chaque frame figerait la marche sur
+    /// sa première image.
     static func loop(_ clip: Clip, hero: Hero, on root: SKNode) {
         guard let body = root.childNode(withName: "body") as? SKSpriteNode else { return }
+        guard body.userData?["clip"] as? String != String(describing: clip) else { return }
         let frames = textures(hero, clip)
         guard !frames.isEmpty else { return }
+        body.userData = body.userData ?? [:]
+        body.userData?["clip"] = String(describing: clip)
         body.removeAction(forKey: "clip")
         body.run(.repeatForever(.animate(with: frames, timePerFrame: clip.timePerFrame,
                                          resize: false, restore: true)),
                  withKey: "clip")
+    }
+
+    // MARK: - Node monde
+
+    /// Node d'exploration : même personnage que dans l'arène, à l'échelle du
+    /// monde. Les packs sont de profil (tournés vers la droite) : hors combat
+    /// on retourne le sprite selon le sens de marche, et on garde la dernière
+    /// orientation horizontale quand Kael monte ou descend.
+    static func worldNode(_ hero: Hero, name: String) -> SKNode? {
+        let idle = textures(hero, .idle)
+        guard let first = idle.first else { return nil }
+
+        let root = SKNode()
+        root.name = name
+
+        let sprite = SKSpriteNode(texture: first)
+        sprite.name = "body"
+        sprite.setScale(hero.worldScale)
+        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+        sprite.position = CGPoint(x: 0, y: -16)   // convention monde : ancré aux pieds
+        sprite.zPosition = 1
+        root.addChild(sprite)
+
+        let shadow = SKShapeNode(ellipseOf: CGSize(width: 24, height: 7))
+        shadow.fillColor = SKColor(white: 0, alpha: 0.25)
+        shadow.strokeColor = .clear
+        shadow.position = CGPoint(x: 0, y: -15)
+        shadow.zPosition = -1
+        root.addChild(shadow)
+
+        loop(.idle, hero: hero, on: root)
+        return root
+    }
+
+    /// Met à jour la marche d'un node monde : `velocity` nul → idle.
+    /// Ne fait rien si le node n'a pas de corps (silhouette de secours).
+    static func updateWalk(_ hero: Hero, on root: SKNode, velocity: CGVector) {
+        guard let body = root.childNode(withName: "body") as? SKSpriteNode else { return }
+        let moving = abs(velocity.dx) > 0.5 || abs(velocity.dy) > 0.5
+        loop(moving ? .move : .idle, hero: hero, on: root)
+        // Orientation : seul un déplacement horizontal franc la change.
+        if abs(velocity.dx) > 0.5 {
+            let mag = abs(body.xScale == 0 ? hero.worldScale : body.xScale)
+            body.xScale = velocity.dx < 0 ? -mag : mag
+        }
     }
 
     /// Joue un clip une fois puis revient à l'idle. `completion` est appelée

@@ -5,31 +5,35 @@ enum WorldNode {
 
     // MARK: - Kael (protagoniste — sprite pixel art animé)
 
+    /// Kael dans le monde — le sprite du pack, celui de l'arène.
+    ///
+    /// Il utilisait avant `kael_idle_*` : un cowboy vu de face, sans cycle de
+    /// marche, alors que le Kael du combat est le mage du pack. Deux
+    /// personnages différents pour un seul héros. Le pack règle les deux
+    /// défauts d'un coup : même visage partout, et une vraie marche.
     static func kael() -> SKNode {
+        if let node = BattleSprites.worldNode(.kael, name: "kael") { return node }
+        return legacyKael()
+    }
+
+    /// Repli si le pack manque à l'appel (asset absent) : l'ancien sprite.
+    private static func legacyKael() -> SKNode {
         let root = SKNode()
         root.name = "kael"
-
-        // Sprite animé 6 frames idle
         let textures: [SKTexture] = (1...6).map { i in
             let t = SKTexture(imageNamed: "kael_idle_\(i)")
-            t.filteringMode = .nearest   // pixel-crisp sans blur
+            t.filteringMode = .nearest
             return t
         }
         let sprite = SKSpriteNode(texture: textures[0])
         sprite.name = "kaelSprite"
-        // Frames 108×60px @1x → 108×60pt dans SpriteKit.
-        // Scale 0.85 → personnage visible ~46×50pt, à hauteur des PNJ
-        // chibi (48pt) — à 0.55 Kael paraissait plus petit qu'eux.
         sprite.setScale(0.85)
-        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)   // ancre aux pieds
-        sprite.position = CGPoint(x: 0, y: -16)        // centre vertical du node
+        sprite.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+        sprite.position = CGPoint(x: 0, y: -16)
         sprite.zPosition = 1
         sprite.run(.repeatForever(.animate(with: textures, timePerFrame: 0.11,
                                            resize: false, restore: true)))
         root.addChild(sprite)
-
-        // Pas d'aura ni de marque lumineuse : le sprite pixel reste pur
-        // (l'aura scintillante cassait le rendu pixel art).
         return root
     }
 
@@ -58,7 +62,10 @@ enum WorldNode {
         return node
     }
 
+    /// Lyra dans le monde — le sprite de son pack (prêtresse), le même qu'en
+    /// combat. Replis successifs : pack → sprite PNJ → silhouette.
     static func lyra() -> SKNode {
+        if let n = BattleSprites.worldNode(.lyra, name: "lyra") { return n }
         if let n = pixelNPC("npc_lyra", nodeName: "lyra") { return n }
 
         let root = SKNode()

@@ -908,23 +908,19 @@ final class WorldBuilder {
         marker.position = CGPoint(x: w * 0.12, y: h * 0.40)
         marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
-        // Brins luminescents
+        // Brins luminescents. Carrés nets : un `cornerRadius: 1` sur un brin
+        // de 2 pt de large le transformait en gélule.
         for (dx, height) in [(-4, 10), (0, 14), (4, 9)] {
-            let blade = SKShapeNode(rectOf: CGSize(width: 2, height: CGFloat(height)), cornerRadius: 1)
-            blade.fillColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.95)
-            blade.strokeColor = .clear
+            let blade = SKSpriteNode(color: SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.95),
+                                     size: CGSize(width: 2, height: CGFloat(height)))
             blade.position = CGPoint(x: CGFloat(dx), y: CGFloat(height) / 2)
-            blade.zRotation = CGFloat(dx) * 0.03
             marker.addChild(blade)
         }
 
-        let glow = SKShapeNode(circleOfRadius: 16)
-        glow.fillColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.10)
-        glow.strokeColor = SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 0.25)
-        glow.lineWidth = 1
-        glow.position = CGPoint(x: 0, y: 6)
-        marker.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.5)
+        let halo = pixelHalo(color: SKColor(red: 0.70, green: 0.95, blue: 0.85, alpha: 1),
+                             radius: 13)
+        halo.position = CGPoint(x: 0, y: 6)
+        marker.addChild(halo)
 
         worldNode.addChild(marker)
         backdropNodes.append(marker)
@@ -947,21 +943,21 @@ final class WorldBuilder {
         marker.position = CGPoint(x: w * 0.68, y: h * 0.18)
         marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
-        // Écusson métallique terni
-        let shield = SKShapeNode(rectOf: CGSize(width: 10, height: 12), cornerRadius: 4)
-        shield.fillColor = SKColor(red: 0.55, green: 0.55, blue: 0.60, alpha: 1)
-        shield.strokeColor = SKColor(red: 0.75, green: 0.75, blue: 0.80, alpha: 0.8)
-        shield.lineWidth = 1
+        // Écusson métallique terni. Coins vifs : `cornerRadius: 4` sur 10×12
+        // arrondissait l'écusson jusqu'à en faire une pastille.
+        let shield = SKSpriteNode(color: SKColor(red: 0.55, green: 0.55, blue: 0.60, alpha: 1),
+                                  size: CGSize(width: 9, height: 12))
         shield.zRotation = 0.5   // à moitié planté dans le sol
         marker.addChild(shield)
+        // Éclat de métal poli, un pixel plus clair.
+        let sheen = SKSpriteNode(color: SKColor(red: 0.80, green: 0.82, blue: 0.88, alpha: 1),
+                                 size: CGSize(width: 3, height: 5))
+        sheen.zRotation = 0.5
+        sheen.position = CGPoint(x: -1, y: 2)
+        marker.addChild(sheen)
 
-        // Reflet froid
-        let glow = SKShapeNode(circleOfRadius: 15)
-        glow.fillColor = SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 0.08)
-        glow.strokeColor = SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 0.20)
-        glow.lineWidth = 1
-        marker.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.4)
+        marker.addChild(pixelHalo(color: SKColor(red: 0.60, green: 0.70, blue: 0.90, alpha: 1),
+                                  radius: 12))
 
         worldNode.addChild(marker)
         backdropNodes.append(marker)
@@ -996,12 +992,8 @@ final class WorldBuilder {
         core.zRotation = .pi / 4
         marker.addChild(core)
 
-        let glow = SKShapeNode(circleOfRadius: 15)
-        glow.fillColor = SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 0.10)
-        glow.strokeColor = SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 0.25)
-        glow.lineWidth = 1
-        marker.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.4)
+        marker.addChild(pixelHalo(color: SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1),
+                                  radius: 13))
 
         worldNode.addChild(marker)
         backdropNodes.append(marker)
@@ -1010,6 +1002,33 @@ final class WorldBuilder {
 
     func removeCrystalMarker() {
         removeCollectMarker(&crystalMarker)
+    }
+
+    /// Halo de repérage, en pixel strict.
+    ///
+    /// Les marqueurs de collecte signalaient leur objet avec un
+    /// `SKShapeNode(circleOfRadius:)` rempli d'un alpha faible et animé en
+    /// échelle : un disque dégradé, à bords lissés, qui grossissait et
+    /// rétrécissait. C'est exactement ce que la charte pixel exclut — et à
+    /// l'écran ça se lisait comme une tache grise qui scintille, sans rapport
+    /// avec le reste du jeu.
+    ///
+    /// Ici : quatre pastilles carrées posées en losange, qui clignotent
+    /// ensemble. Les angles sont droits, donc les positions tombent sur des
+    /// entiers et les carrés restent nets. Aucun dégradé, aucune échelle
+    /// animée — seulement l'alpha, qui ne floute rien.
+    private func pixelHalo(color: SKColor, radius: CGFloat) -> SKNode {
+        let halo = SKNode()
+        for (dx, dy) in [(0.0, 1.0), (1.0, 0.0), (0.0, -1.0), (-1.0, 0.0)] {
+            let pip = SKSpriteNode(color: color, size: CGSize(width: 3, height: 3))
+            pip.position = CGPoint(x: CGFloat(dx) * radius, y: CGFloat(dy) * radius)
+            halo.addChild(pip)
+        }
+        halo.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.30, duration: 0.55),
+            .fadeAlpha(to: 1.00, duration: 0.55)
+        ])))
+        return halo
     }
 
     /// Fade + retrait d'un marqueur de collecte (factorisation commune).

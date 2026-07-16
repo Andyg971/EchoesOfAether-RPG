@@ -11463,13 +11463,13 @@
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "HP +12  ·  ATK +2  ·  Slash +4"
+            "value": "HP +12 · MP +5 · ATK +2 · Slash +4"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "PV +12  ·  ATQ +2  ·  Entaille +4"
+            "value": "PV +12 · PM +5 · ATQ +2 · Entaille +4"
           }
         }
       }

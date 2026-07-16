@@ -4342,6 +4342,30 @@
         }
       }
     },
+    "combat.button.windBlade": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "GALE" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "BOURRASQUE" } }
+      }
+    },
+    "combat.button.emberStrike": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "EMBER" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "BRAISE" } }
+      }
+    },
+    "combat.spell.windBlade": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Gale Blade" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Lame de Bourrasque" } }
+      }
+    },
+    "combat.spell.emberStrike": {
+      "localizations": {
+        "en": { "stringUnit": { "state": "translated", "value": "Ember Strike" } },
+        "fr": { "stringUnit": { "state": "translated", "value": "Frappe de Braise" } }
+      }
+    },
     "combat.button.blessing": {
       "localizations": {
         "en": { "stringUnit": { "state": "translated", "value": "BLESSING" } },

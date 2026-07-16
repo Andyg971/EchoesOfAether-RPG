@@ -36,13 +36,16 @@ enum BattleSprites {
             }
         }
 
-        /// Échelle dans le monde : les PNJ chibi font ~48 pt de haut, les
-        /// héros doivent se tenir à leur hauteur, pas les écraser.
+        /// Échelle dans le monde. Calée d'abord sur les PNJ chibi (~48 pt),
+        /// elle rendait les héros trop menus : dans une zone large ils se
+        /// perdaient dans le décor. Remontée d'environ un quart — ils
+        /// dominent légèrement les PNJ, ce qui est juste : ce sont eux
+        /// qu'on suit.
         var worldScale: CGFloat {
             switch self {
-            case .kael: return 0.62
-            case .lyra: return 0.62
-            case .eran: return 0.52
+            case .kael: return 0.76
+            case .lyra: return 0.76
+            case .eran: return 0.65
             }
         }
     }
@@ -170,6 +173,8 @@ enum BattleSprites {
         // Pack priest — le sacré de Lyra. Ses sorts ne sont pas élémentaires :
         // ni glace ni foudre, mais bénédiction et soin, en vert et or.
         case lyraHeal, lyraBlessing, lyraBolt
+        // Pack fighter — les passes d'armes d'Eran : bourrasque et lame ardente.
+        case eranWind, eranEmber
 
         var frameNames: [String] {
             switch self {
@@ -185,6 +190,8 @@ enum BattleSprites {
                                         "fx_lyra_skill2_fx3"]
             case .lyraBolt:  return ["fx_lyra_attack_bolt", "fx_lyra_attack_fx",
                                      "fx_lyra_attack_hit"]
+            case .eranWind:  return ["fx_eran_wind1", "fx_eran_wind2", "fx_eran_skill1"]
+            case .eranEmber: return ["fx_eran_skill2", "fx_eran_attack2"]
             }
         }
 

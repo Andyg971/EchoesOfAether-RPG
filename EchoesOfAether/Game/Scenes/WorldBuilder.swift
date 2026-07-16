@@ -2967,15 +2967,26 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     /// Profondeur acteurs : plage [20, 40], normalisée par la hauteur du
     /// MONDE (pas de l'écran) — sinon tout y > ~1,3 écran passe sous le sol.
+    /// Profondeur d'un acteur — **même échelle que les props** (cf. propLayer).
+    ///
+    /// Les deux vivaient sur des plages disjointes : acteurs 20→40, props
+    /// −8→−2. Résultat, Kael passait devant TOUS les arbres quel que soit
+    /// l'endroit — il avait l'air de marcher dessus. Sur une échelle commune,
+    /// c'est la position en y qui tranche : ce qui est plus bas est devant.
     private func actorLayer(for y: CGFloat) -> CGFloat {
-        let span = worldHeight > 0 ? worldHeight : 402
-        return 40 - (y / span) * 20
+        depthLayer(for: y)
+    }
+
+    /// Tri en profondeur unique du monde. Plus bas à l'écran = plus proche =
+    /// devant. Le sol (−10), l'allée (−9) et la roche (−8) restent sous tout.
+    private func depthLayer(for y: CGFloat, sceneHeight: CGFloat = 0) -> CGFloat {
+        let span = worldHeight > 0 ? worldHeight : max(sceneHeight, 402)
+        return 40 - (y / span) * 40
     }
 
     /// Profondeur props : plage [-2, -8], même normalisation monde.
     private func propLayer(for y: CGFloat, in sceneHeight: CGFloat) -> CGFloat {
-        let span = worldHeight > 0 ? worldHeight : max(sceneHeight, 1)
-        return -2 - (y / span) * 6
+        depthLayer(for: y, sceneHeight: sceneHeight)
     }
 
     // MARK: - House Interiors

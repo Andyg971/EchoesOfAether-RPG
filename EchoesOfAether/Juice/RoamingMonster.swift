@@ -95,9 +95,11 @@ final class RoamingMonster {
             let mag = abs(sprite.xScale == 0 ? 1 : sprite.xScale)
             sprite.xScale = dx < 0 ? -mag : mag
         }
-        // Tri en profondeur comme les acteurs (plus bas = devant).
+        // Tri en profondeur : MÊME échelle que les acteurs et les props
+        // (cf. WorldBuilder.depthLayer). Sur son ancienne plage (20→40) le
+        // monstre passait devant tous les arbres, où qu'il soit.
         let span = worldHeight > 0 ? worldHeight : 402
-        node.zPosition = 40 - (node.position.y / span) * 20
+        node.zPosition = 40 - (node.position.y / span) * 40
     }
 
     /// Point d'exclamation rouge au moment du repérage (feedback d'aggro).

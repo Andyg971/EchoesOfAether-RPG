@@ -32,11 +32,11 @@ final class PlayerStateTests: XCTestCase {
     func testMaxMPScalesWithLevel() {
         let p = PlayerState()
         p.level = 1
-        XCTAssertEqual(p.maxMP, 30)
+        XCTAssertEqual(p.maxMP, 46)
         p.level = 10
-        XCTAssertEqual(p.maxMP, 30 + 9 * 4)   // 66
+        XCTAssertEqual(p.maxMP, 46 + 9 * 5)   // 91
         p.level = PlayerState.maxLevel
-        XCTAssertEqual(p.maxMP, 30 + (PlayerState.maxLevel - 1) * 4)   // 146
+        XCTAssertEqual(p.maxMP, 46 + (PlayerState.maxLevel - 1) * 5)   // 191
     }
 
     func testXPForLevelOutOfBounds() {

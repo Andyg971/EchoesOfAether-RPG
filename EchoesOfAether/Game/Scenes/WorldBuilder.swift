@@ -2071,46 +2071,41 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
 
         // ── Sud : les dunes d'entrée, semées de cactus et d'ossements ──
-        for (asset, x, y, s) in [("ds_cactus_tall", 0.14, 0.16, 1.0),
-                                 ("ds_cactus_med", 0.86, 0.12, 1.0),
-                                 ("ds_bush_dead", 0.30, 0.10, 1.0),
-                                 ("ds_cactus_barrel", 0.70, 0.20, 1.0),
-                                 ("ds_tumbleweed", 0.44, 0.24, 1.0),
-                                 ("ds_skull_cow", 0.22, 0.24, 1.0),
-                                 ("ds_bush_dead2", 0.62, 0.28, 1.0),
-                                 ("ds_cactus_tall2", 0.90, 0.26, 1.0)] {
-            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
-                          scale: s, solid: asset.hasPrefix("ds_cactus"))
+        for (asset, x, y) in [("ds_cactus_tall", 0.14, 0.16),
+                              ("ds_cactus_med", 0.86, 0.12),
+                              ("ds_bush_dead", 0.30, 0.10),
+                              ("ds_cactus_barrel", 0.70, 0.20),
+                              ("ds_tumbleweed", 0.44, 0.24),
+                              ("ds_skull_cow", 0.22, 0.24),
+                              ("ds_bush_dead2", 0.62, 0.28),
+                              ("ds_cactus_tall2", 0.90, 0.26)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
         // ── Cité des caravanes (centre) : le cœur de la zone ──
         addDesertTown(in: scene, w: w, h: h)
 
         // ── Nord : le canyon, ses éboulis et ses caravanes perdues ──
-        for (asset, x, y, s) in [("ds_boulder", 0.14, 0.62, 1.0),
-                                 ("ds_rock_big", 0.88, 0.66, 1.0),
-                                 ("ds_boulder2", 0.34, 0.74, 1.0),
-                                 ("ds_rock_spire", 0.70, 0.78, 1.0),
-                                 ("ds_bones", 0.24, 0.70, 1.0),
-                                 ("ds_skull_cow2", 0.56, 0.72, 1.0),
-                                 ("ds_bone", 0.44, 0.80, 1.0),
-                                 ("ds_ruin_column", 0.78, 0.86, 1.0),
-                                 ("ds_ruin_stone", 0.30, 0.88, 1.0),
-                                 ("ds_cactus_tall3", 0.10, 0.78, 1.0),
-                                 ("ds_agave", 0.64, 0.64, 1.0),
-                                 ("ds_tumbleweed2", 0.50, 0.84, 1.0)] {
-            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
-                          scale: s, solid: asset.hasPrefix("ds_boulder")
-                                        || asset.hasPrefix("ds_rock")
-                                        || asset.hasPrefix("ds_ruin"))
+        for (asset, x, y) in [("ds_boulder", 0.14, 0.62),
+                              ("ds_rock_big", 0.88, 0.66),
+                              ("ds_boulder2", 0.34, 0.74),
+                              ("ds_rock_spire", 0.70, 0.78),
+                              ("ds_bones", 0.24, 0.70),
+                              ("ds_skull_cow2", 0.56, 0.72),
+                              ("ds_bone", 0.44, 0.80),
+                              ("ds_ruin_column", 0.78, 0.86),
+                              ("ds_ruin_stone", 0.30, 0.88),
+                              ("ds_cactus_tall3", 0.10, 0.78),
+                              ("ds_agave", 0.64, 0.64),
+                              ("ds_tumbleweed2", 0.50, 0.84)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
         // ── Oasis (nord) : bassin pixel + halo de fraîcheur ──
         addOasis(in: scene, at: DesertPOI.oasis.scaled(w: w, h: h))
         for (asset, x, y) in [("ds_flowers", 0.74, 0.90), ("ds_flowers_red", 0.94, 0.88),
                               ("ds_pot", 0.78, 0.94), ("ds_flower_orange", 0.68, 0.94)] {
-            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
-                          scale: 1.0, solid: false)
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
         // Les combats du désert sont portés par des monstres baladeurs
@@ -2189,17 +2184,79 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
     }
 
+    /// Emprise au sol d'un décor : sur quelle surface il arrête Kael.
+    private struct Footprint {
+        let widthRatio: CGFloat
+        let depthRatio: CGFloat
+        let maxDepth: CGFloat
+    }
+
+    /// Ce qui arrête Kael à Ossara, décidé d'après l'ASSET.
+    ///
+    /// La solidité se décidait au point d'appel : chaque pose passait un
+    /// `solid:` calculé sur un préfixe de nom. Trois s'étaient trompées — la
+    /// porte des remparts se traversait de part en part, les palissades aussi,
+    /// et un cactus du nord passait au travers parce que son groupe testait
+    /// « ds_boulder ». Une table : un seul endroit à tenir quand un pack
+    /// arrive, et l'oubli devient visible au lieu d'être silencieux.
+    ///
+    /// Absent de la table = on marche dessus (ossements, empreintes, fleurs,
+    /// tapis, échelle couchée, broussailles sèches). Tout ce qui a un volume
+    /// y figure.
+    private static let desertFootprints: [String: Footprint] = [
+        // Bâti : l'empreinte couvre la façade, pas le toit — on passe derrière.
+        "ds_house_red":     Footprint(widthRatio: 0.92, depthRatio: 0.34, maxDepth: 48),
+        "ds_house_sand":    Footprint(widthRatio: 0.92, depthRatio: 0.34, maxDepth: 48),
+        "ds_house_large":   Footprint(widthRatio: 0.92, depthRatio: 0.34, maxDepth: 48),
+        // Toile tendue : on la contourne.
+        "ds_tent_big":      Footprint(widthRatio: 0.62, depthRatio: 0.45, maxDepth: 30),
+        "ds_tent_canvas":   Footprint(widthRatio: 0.62, depthRatio: 0.45, maxDepth: 30),
+        "ds_tent_round":    Footprint(widthRatio: 0.62, depthRatio: 0.45, maxDepth: 30),
+        "ds_tent_small":    Footprint(widthRatio: 0.62, depthRatio: 0.45, maxDepth: 30),
+        // Épines.
+        "ds_cactus_tall":   Footprint(widthRatio: 0.42, depthRatio: 0.35, maxDepth: 20),
+        "ds_cactus_tall2":  Footprint(widthRatio: 0.42, depthRatio: 0.35, maxDepth: 20),
+        "ds_cactus_tall3":  Footprint(widthRatio: 0.42, depthRatio: 0.35, maxDepth: 20),
+        "ds_cactus_med":    Footprint(widthRatio: 0.42, depthRatio: 0.35, maxDepth: 20),
+        "ds_cactus_med2":   Footprint(widthRatio: 0.42, depthRatio: 0.35, maxDepth: 20),
+        "ds_cactus_small":  Footprint(widthRatio: 0.40, depthRatio: 0.35, maxDepth: 16),
+        "ds_cactus_barrel": Footprint(widthRatio: 0.55, depthRatio: 0.45, maxDepth: 16),
+        "ds_cactus_barrel2": Footprint(widthRatio: 0.55, depthRatio: 0.45, maxDepth: 16),
+        "ds_cactus_flower": Footprint(widthRatio: 0.55, depthRatio: 0.45, maxDepth: 16),
+        "ds_agave":         Footprint(widthRatio: 0.50, depthRatio: 0.40, maxDepth: 16),
+        // Pierre.
+        "ds_boulder":       Footprint(widthRatio: 0.72, depthRatio: 0.45, maxDepth: 26),
+        "ds_boulder2":      Footprint(widthRatio: 0.72, depthRatio: 0.45, maxDepth: 26),
+        "ds_rock_big":      Footprint(widthRatio: 0.72, depthRatio: 0.45, maxDepth: 30),
+        "ds_rock_pile":     Footprint(widthRatio: 0.72, depthRatio: 0.45, maxDepth: 22),
+        "ds_rock_spire":    Footprint(widthRatio: 0.60, depthRatio: 0.45, maxDepth: 26),
+        "ds_ruin_column":   Footprint(widthRatio: 0.60, depthRatio: 0.45, maxDepth: 22),
+        "ds_ruin_stone":    Footprint(widthRatio: 0.70, depthRatio: 0.45, maxDepth: 22),
+        // Mobilier de la place.
+        "ds_well":          Footprint(widthRatio: 0.70, depthRatio: 0.50, maxDepth: 22),
+        "ds_market":        Footprint(widthRatio: 0.85, depthRatio: 0.40, maxDepth: 24),
+        "ds_campfire":      Footprint(widthRatio: 0.50, depthRatio: 0.50, maxDepth: 16),
+        "ds_fence":         Footprint(widthRatio: 0.95, depthRatio: 0.28, maxDepth: 14),
+        "ds_pot":           Footprint(widthRatio: 0.55, depthRatio: 0.50, maxDepth: 12),
+        "ds_pot2":          Footprint(widthRatio: 0.55, depthRatio: 0.50, maxDepth: 12),
+    ]
+
     /// Prop du désert : posé aux pieds, ombre au sol, profondeur selon y.
-    /// `solid` enregistre une empreinte — un cactus ou un rocher se contourne.
+    /// Son emprise vient de `desertFootprints`, pas de l'appelant.
+    @discardableResult
     private func addDesertProp(_ name: String, in scene: SKScene, at pos: CGPoint,
-                               scale: CGFloat, solid: Bool) {
+                               scale: CGFloat = 1.0) -> SKNode? {
         guard let node = PixelArtSprites.still(name: name, scale: scale,
-                                               anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         node.position = pos
         node.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
         addGroundShadow(under: node, width: 26 * scale, height: 8 * scale)
         add(node, to: scene)
-        if solid { registerFootprint(of: node, widthRatio: 0.55, depthRatio: 0.4, maxDepth: 26) }
+        if let f = Self.desertFootprints[name] {
+            registerFootprint(of: node, widthRatio: f.widthRatio,
+                              depthRatio: f.depthRatio, maxDepth: f.maxDepth)
+        }
+        return node
     }
 
     /// La cité des caravanes : maisons d'adobe, tentes, souk et puits.
@@ -2209,22 +2266,14 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// caravanes, et le joueur ne croisait jamais personne qui l'ait empruntée.
     private func addDesertTown(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // Remparts et porte : on entre par le sud, ça se voit de loin.
-        addDesertProp("ds_gate", in: scene, at: CGPoint(x: w * 0.50, y: h * 0.375),
-                      scale: 1.0, solid: false)
+        addDesertGate(in: scene, at: CGPoint(x: w * 0.50, y: h * 0.375))
 
         // Maisons, en retrait de part et d'autre de la place.
         for (asset, x, y) in [("ds_house_red", 0.18, 0.50),
                               ("ds_house_sand", 0.80, 0.49),
                               ("ds_house_large", 0.30, 0.58),
                               ("ds_house_red", 0.68, 0.58)] {
-            guard let house = PixelArtSprites.still(name: asset, scale: 1.0,
-                                                    anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            house.position = CGPoint(x: w * x, y: h * y)
-            house.zPosition = depthLayer(for: house.position.y, sceneHeight: scene.size.height)
-            add(house, to: scene)
-            // Un mur ne se traverse pas. L'empreinte couvre la façade, pas le
-            // toit : on doit pouvoir passer derrière.
-            registerFootprint(of: house, widthRatio: 0.92, depthRatio: 0.34, maxDepth: 48)
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
         // Tentes de caravaniers autour de la place.
@@ -2232,23 +2281,42 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_tent_canvas", 0.34, 0.42),
                               ("ds_tent_round", 0.22, 0.45),
                               ("ds_tent_small", 0.76, 0.44)] {
-            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
-                          scale: 1.0, solid: true)
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
         // Le souk, le puits, le feu : la place vit.
-        addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.47),
-                      scale: 1.0, solid: false)
-        addDesertProp("ds_well", in: scene, at: DesertPOI.town.scaled(w: w, h: h),
-                      scale: 1.0, solid: true)
-        addDesertProp("ds_campfire", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.50),
-                      scale: 1.0, solid: false)
+        addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.47))
+        addDesertProp("ds_well", in: scene, at: DesertPOI.town.scaled(w: w, h: h))
+        addDesertProp("ds_campfire", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.50))
         for (asset, x, y) in [("ds_pot", 0.40, 0.52), ("ds_pot2", 0.61, 0.54),
                               ("ds_fence", 0.14, 0.42), ("ds_fence", 0.88, 0.41),
                               ("ds_ladder", 0.24, 0.53), ("ds_cactus_barrel2", 0.92, 0.53)] {
-            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
-                          scale: 1.0, solid: false)
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
+    }
+
+    /// La porte des remparts : un mur percé d'une arche.
+    ///
+    /// Elle ne peut pas prendre une empreinte pleine — on ne passerait plus —
+    /// ni aucune, ce qui était le cas : Kael franchissait la muraille de part
+    /// en part, à côté de la porte. Deux emprises, une par pilier, et l'arche
+    /// reste ouverte. Mesuré sur l'asset (193 px de large) : le passage occupe
+    /// les colonnes 74 à 131, soit 38 % à 68 % de la largeur.
+    private func addDesertGate(in scene: SKScene, at pos: CGPoint) {
+        guard let gate = PixelArtSprites.still(name: "ds_gate", scale: 1.0,
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        gate.position = pos
+        gate.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
+        add(gate, to: scene)
+
+        let f = gate.calculateAccumulatedFrame()
+        let depth: CGFloat = 26
+        // Pilier gauche : du bord au début de l'arche.
+        registerObstacle(CGRect(x: f.minX, y: pos.y - 4,
+                                width: f.width * 0.38, height: depth))
+        // Pilier droit : de la fin de l'arche au bord.
+        registerObstacle(CGRect(x: f.minX + f.width * 0.68, y: pos.y - 4,
+                                width: f.width * 0.32, height: depth))
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.

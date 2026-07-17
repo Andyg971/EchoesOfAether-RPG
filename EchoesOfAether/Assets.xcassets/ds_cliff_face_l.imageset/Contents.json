@@ -1,0 +1,16 @@
+{
+  "images": [
+    {
+      "filename": "ds_cliff_face_l.png",
+      "idiom": "universal",
+      "scale": "1x"
+    }
+  ],
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "properties": {
+    "template-rendering-intent": "original"
+  }
+}

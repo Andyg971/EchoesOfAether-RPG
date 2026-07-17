@@ -2198,8 +2198,14 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               radiusX: w * (0.03 + rockNext() * 0.04),
                               radiusY: h * (0.012 + rockNext() * 0.016))
         }
-        renderTileMap(rock, fullTile: "ds_rock", edgePrefix: "ds_rockedge_",
+        // Dessus de paroi : la terre craquelée SOMBRE du pack (celle des
+        // murs du canyon dans la carte de référence), pas le gravier
+        // ds_rock — en nappe, il se lisait comme une moquette grise.
+        renderTileMap(rock, fullTile: "ds_cracked_dark", edgePrefix: "ds_rockedge_",
                       in: scene, z: -9.5)
+        // La HAUTEUR : chaque bord sud de paroi reçoit sa face de pierres
+        // empilées — c'est elle qui fait lire la roche comme un relief.
+        addCliffFaces(for: rock, cell: cell, in: scene)
 
         // ── Ceinture de falaises : Ossara est un canyon, pas une nappe ──
         addDesertCliffs(in: scene, w: w, h: h)
@@ -2695,6 +2701,34 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         registerObstacle(CGRect(x: 0, y: h * 0.952, width: w, height: h * 0.048))
         registerObstacle(CGRect(x: 0, y: 0, width: w * 0.34, height: h * 0.018))
         registerObstacle(CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.018))
+    }
+
+    /// Faces de falaise : sous chaque cellule de paroi dont le sud est
+    /// vide, la pierre empilée du pack (48 px → 24 pt, deux par cellule
+    /// de 48 pt). C'est l'indice de hauteur qui manquait : sans face, une
+    /// paroi vue de dessus n'est qu'une texture posée sur le sable.
+    private func addCliffFaces(for map: VillageTileMap, cell: CGFloat, in scene: SKScene) {
+        let half = cell / 2
+        for r in 1..<map.rows {
+            for c in 0..<map.cols where map.matter(c, r) && !map.matter(c, r - 1) {
+                for i in 0..<2 {
+                    let name: String
+                    if i == 0, !map.matter(c - 1, r) {
+                        name = "ds_cliff_face_l"
+                    } else if i == 1, !map.matter(c + 1, r) {
+                        name = "ds_cliff_face_r"
+                    } else {
+                        name = "ds_cliff_face"
+                    }
+                    guard let t = PixelArtSprites.still(name: name, scale: 0.5,
+                                                        anchor: CGPoint(x: 0, y: 1)) else { continue }
+                    t.position = CGPoint(x: CGFloat(c) * cell + CGFloat(i) * half,
+                                         y: CGFloat(r) * cell)
+                    t.zPosition = -9.4
+                    add(t, to: scene)
+                }
+            }
+        }
     }
 
     /// Détails semés sur le sable libre (LCG seedé, hors cité/oasis/bords) —
@@ -4547,6 +4581,10 @@ struct VillageTileMap {
         guard c >= 0, c < cols, r >= 0, r < rows else { return false }
         return cells[r * cols + c]
     }
+
+    /// Lecture publique : la passe des falaises (faces sud) a besoin de
+    /// connaître la matière cellule par cellule, pas seulement les pièces.
+    func matter(_ c: Int, _ r: Int) -> Bool { isSet(c, r) }
 
     /// Marque toutes les cellules intersectant le rectangle (points).
     mutating func stamp(rect: CGRect) {

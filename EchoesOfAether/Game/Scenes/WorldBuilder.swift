@@ -2147,18 +2147,38 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         cracked.stampEllipse(center: CGPoint(x: w * 0.14, y: h * 0.88),
                              radiusX: w * 0.20, radiusY: h * 0.06)
         // La place de la cité : de la terre battue sous le souk et le puits.
-        // Les bâtiments étaient posés à même le sable, comme des décors de
-        // théâtre — un sol qui leur appartient ancre la cité dans la zone.
-        cracked.stampEllipse(center: CGPoint(x: w * 0.50, y: h * 0.480),
-                             radiusX: w * 0.30, radiusY: h * 0.052)
+        // Trois ellipses qui se chevauchent, pas un rectangle mou — le sol
+        // suit la vie (camp à l'ouest, place au centre, cour des maisons).
+        cracked.stampEllipse(center: CGPoint(x: w * 0.35, y: h * 0.455),
+                             radiusX: w * 0.20, radiusY: h * 0.042)
+        cracked.stampEllipse(center: CGPoint(x: w * 0.55, y: h * 0.485),
+                             radiusX: w * 0.24, radiusY: h * 0.048)
+        cracked.stampEllipse(center: CGPoint(x: w * 0.68, y: h * 0.545),
+                             radiusX: w * 0.16, radiusY: h * 0.038)
+        // L'allée : de la porte sud à la porte nord, à travers la place.
+        cracked.stamp(rect: CGRect(x: w * 0.46, y: h * 0.372, width: w * 0.08,
+                                   height: h * 0.265))
         renderTileMap(cracked, fullTile: "ds_cracked", edgePrefix: "ds_edge_",
                       in: scene, z: -9.6)
 
         var rock = VillageTileMap(width: w, height: h, tile: cell)
-        rock.stampEllipse(center: CGPoint(x: w * 0.80, y: h * 0.74),
-                          radiusX: w * 0.24, radiusY: h * 0.085)
-        rock.stampEllipse(center: CGPoint(x: w * 0.24, y: h * 0.70),
-                          radiusX: w * 0.20, radiusY: h * 0.06)
+        // Îlots, pas une dalle : les deux plaques du canyon couvraient un
+        // demi-écran chacune — en masse, la tuile rocheuse se lit comme un
+        // mur. Réduites pour laisser le sable respirer entre les affleure-
+        // ments.
+        rock.stampEllipse(center: CGPoint(x: w * 0.78, y: h * 0.73),
+                          radiusX: w * 0.14, radiusY: h * 0.050)
+        rock.stampEllipse(center: CGPoint(x: w * 0.26, y: h * 0.70),
+                          radiusX: w * 0.12, radiusY: h * 0.042)
+        // Pieds des falaises : la roche déborde des mesas sur le sable —
+        // sans ces plaques, la crête a l'air posée sur une nappe.
+        for (fx, fy, rx, ry) in [(0.035, 0.16, 0.055, 0.09), (0.03, 0.47, 0.06, 0.11),
+                                 (0.04, 0.80, 0.055, 0.08), (0.965, 0.24, 0.055, 0.10),
+                                 (0.97, 0.57, 0.06, 0.09), (0.96, 0.86, 0.055, 0.08)] {
+            rock.stampEllipse(center: CGPoint(x: w * fx, y: h * fy),
+                              radiusX: w * rx, radiusY: h * ry)
+        }
+        rock.stamp(rect: CGRect(x: 0, y: h * 0.955, width: w, height: h * 0.045))
         renderTileMap(rock, fullTile: "ds_rock", edgePrefix: "ds_rockedge_",
                       in: scene, z: -9.5)
 
@@ -2224,6 +2244,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // près des plaques de terre craquelée.
         addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.315))
         addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.330))
+
+        // ── Détails semés sur le sable libre (hors cité/oasis/bords) ──
+        scatterDesertDetails(in: scene, w: w, h: h)
 
         // Les combats du désert sont portés par des monstres baladeurs
         // (GameManager.spawnDesertRoamers) : plus de halos de danger ni de
@@ -2435,13 +2458,28 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_tent_small", 0.81, 0.450)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
+        // L'enclos des bêtes : deux barrières, les chameaux derrière.
+        addDesertProp("ds_fence", in: scene, at: CGPoint(x: w * 0.22, y: h * 0.418))
+        addDesertProp("ds_fence", in: scene, at: CGPoint(x: w * 0.28, y: h * 0.418))
         addDesertProp("ds_camel_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.428))
         addDesertProp("ds_camel_2", in: scene, at: CGPoint(x: w * 0.77, y: h * 0.437), flipped: true)
+
+        // ── Le souk s'étale : tapis, sacs de grain, rouleaux d'étoffes.
+        addDesertProp("ds_rug", in: scene, at: CGPoint(x: w * 0.455, y: h * 0.463))
+        addDesertProp("ds_sacks", in: scene, at: CGPoint(x: w * 0.365, y: h * 0.452))
+        addDesertProp("ds_carpet_rolls", in: scene, at: CGPoint(x: w * 0.475, y: h * 0.492))
+        addDesertProp("ds_scroll", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.497))
 
         // ── Palmiers intra-muros : la cité vit sur sa nappe d'eau.
         addDesertProp("ds_palm_tall1", in: scene, at: CGPoint(x: w * 0.135, y: h * 0.500))
         addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.865, y: h * 0.505))
         addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.445, y: h * 0.617))
+
+        // ── Un peu de vert et de couleur aux pieds des murs.
+        addDesertProp("ds_flowers", in: scene, at: CGPoint(x: w * 0.535, y: h * 0.468))
+        addDesertProp("ds_oasis_flower", in: scene, at: CGPoint(x: w * 0.335, y: h * 0.548))
+        addDesertProp("ds_oasis_flower", in: scene, at: CGPoint(x: w * 0.755, y: h * 0.552))
+        addDesertProp("ds_agave", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.560))
 
         // ── La place : souk, puits, feu de camp — le cœur qui vit.
         addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.468))
@@ -2500,6 +2538,17 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
         addWallColumn(in: scene, x: leftX, fromY: southY, toY: northY)
         addWallColumn(in: scene, x: rightX, fromY: southY, toY: northY)
+
+        // Tours d'angle : un embout de mur coiffe chaque coin — sans elles,
+        // les jointures des courtines se lisaient comme un bug de tuiles.
+        for (cx, cy) in [(leftX, southY), (rightX, southY),
+                         (leftX, northY), (rightX, northY)] {
+            addDesertProp("ds_wall_end", in: scene, at: CGPoint(x: cx, y: cy - 4))
+        }
+        // Porte de service à l'est : une palissade fermée dans la courtine
+        // (purement visuelle — l'obstacle du flanc reste continu).
+        addDesertProp("ds_palisade_gate", in: scene,
+                      at: CGPoint(x: rightX, y: h * 0.520))
     }
 
     /// Courtine horizontale : tuiles ds_wall_h enchaînées + obstacle continu.
@@ -2561,33 +2610,67 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// former une crête continue ; la marche est bloquée par des bandes
     /// d'obstacles, pas par les sprites.
     private func addDesertCliffs(in scene: SKScene, w: CGFloat, h: CGFloat) {
-        // Flancs est/ouest : mesas qui se chevauchent sur toute la hauteur.
-        var y = h * 0.015
-        var i = 0
-        while y < h * 0.955 {
-            let jitter: CGFloat = (i % 2 == 0) ? -10 : 8
-            addDesertProp("ds_cliff_big", in: scene,
-                          at: CGPoint(x: w * 0.030 + jitter, y: y))
-            addDesertProp("ds_cliff_big", in: scene,
-                          at: CGPoint(x: w * 0.970 - jitter, y: y), flipped: true)
-            y += h * 0.052
-            i += 1
+        // La crête ne se répète pas : chaque mesa tire son décalage, son
+        // échelle et ses accents d'un LCG seedé — même recette que les
+        // fleurs du village. Une grande mesa porte la ligne ; devant elle,
+        // parfois, une petite en contrebas et un éboulis au pied.
+        var seed: UInt64 = 0x055A_44A7
+        func next() -> CGFloat {
+            seed = seed &* 6364136223846793005 &+ 1442695040888963407
+            return CGFloat(seed >> 40) / CGFloat(1 << 24)
         }
+        let rubble = ["ds_boulder", "ds_rock_pile", "ds_boulder2", "ds_rock_big"]
+
+        var y = h * 0.012
+        while y < h * 0.945 {
+            let jL = (next() - 0.5) * 30
+            let jR = (next() - 0.5) * 30
+            addDesertProp("ds_cliff_big", in: scene,
+                          at: CGPoint(x: w * 0.028 + jL, y: y),
+                          scale: 0.46 + next() * 0.12)
+            addDesertProp("ds_cliff_big", in: scene,
+                          at: CGPoint(x: w * 0.972 + jR, y: y + next() * 12),
+                          scale: 0.46 + next() * 0.12, flipped: true)
+            if next() > 0.55 {
+                addDesertProp("ds_cliff_left", in: scene,
+                              at: CGPoint(x: w * 0.062 + jL * 0.5, y: y - h * 0.011),
+                              scale: 0.48, flipped: next() > 0.5)
+            }
+            if next() > 0.55 {
+                addDesertProp("ds_cliff_left", in: scene,
+                              at: CGPoint(x: w * 0.938 + jR * 0.5, y: y - h * 0.009),
+                              scale: 0.48, flipped: next() > 0.5)
+            }
+            if next() > 0.45 {
+                addDesertProp(rubble[Int(next() * 4) % 4], in: scene,
+                              at: CGPoint(x: w * 0.078, y: y + next() * 16))
+            }
+            if next() > 0.45 {
+                addDesertProp(rubble[Int(next() * 4) % 4], in: scene,
+                              at: CGPoint(x: w * 0.922, y: y + next() * 16))
+            }
+            y += h * (0.042 + next() * 0.020)
+        }
+
         // Fond nord : la crête ferme le monde derrière l'oasis.
-        var x = w * 0.05
-        i = 0
+        var x = w * 0.04
         while x < w * 0.98 {
             addDesertProp("ds_cliff_big", in: scene,
-                          at: CGPoint(x: x, y: h * (i % 2 == 0 ? 0.968 : 0.978)),
-                          flipped: i % 2 == 1)
-            x += w * 0.105
-            i += 1
+                          at: CGPoint(x: x, y: h * (0.962 + next() * 0.016)),
+                          scale: 0.46 + next() * 0.12, flipped: next() > 0.5)
+            x += w * (0.085 + next() * 0.040)
         }
-        // Épaules de l'entrée sud : le canyon s'ouvre sur le centre.
+
+        // Épaules de l'entrée sud : le canyon s'ouvre sur le centre,
+        // épaissi de blocs pour ne pas laisser des tours isolées.
         for (fx, flip) in [(0.09, false), (0.20, true), (0.30, false),
                            (0.70, true), (0.80, false), (0.91, true)] {
             addDesertProp("ds_cliff_left", in: scene,
                           at: CGPoint(x: w * fx, y: h * 0.004), flipped: flip)
+            if next() > 0.4 {
+                addDesertProp(rubble[Int(next() * 4) % 4], in: scene,
+                              at: CGPoint(x: w * fx + (next() - 0.5) * 40, y: h * 0.020))
+            }
         }
 
         // La marche : bandes continues, indépendantes des sprites.
@@ -2596,6 +2679,37 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         registerObstacle(CGRect(x: 0, y: h * 0.952, width: w, height: h * 0.048))
         registerObstacle(CGRect(x: 0, y: 0, width: w * 0.34, height: h * 0.018))
         registerObstacle(CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.018))
+    }
+
+    /// Détails semés sur le sable libre (LCG seedé, hors cité/oasis/bords) —
+    /// la technique des fleurs du village, portée au désert : c'est ce qui
+    /// sépare une zone habillée d'un fond vide.
+    private func scatterDesertDetails(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        let reserved: [CGRect] = [
+            CGRect(x: 0, y: h * 0.355, width: w, height: h * 0.30),        // cité
+            CGRect(x: w * 0.58, y: h * 0.85, width: w * 0.42, height: h * 0.15), // oasis
+            CGRect(x: 0, y: 0, width: w, height: h * 0.065),               // entrée
+            CGRect(x: 0, y: 0, width: w * 0.10, height: h),                // falaises O
+            CGRect(x: w * 0.90, y: 0, width: w * 0.10, height: h),         // falaises E
+            CGRect(x: 0, y: h * 0.93, width: w, height: h * 0.07)          // crête N
+        ]
+        let details = ["ds_grass_dry", "ds_bush_dead3", "ds_tumbleweed", "ds_skull",
+                       "ds_bone", "ds_flower_orange", "ds_cactus_small", "ds_rock_pile"]
+        var seed: UInt64 = 0x0D45_E27B
+        func next() -> CGFloat {
+            seed = seed &* 6364136223846793005 &+ 1442695040888963407
+            return CGFloat(seed >> 40) / CGFloat(1 << 24)
+        }
+        var placed = 0
+        var attempts = 0
+        while placed < 34 && attempts < 300 {
+            attempts += 1
+            let p = CGPoint(x: w * 0.08 + next() * w * 0.84,
+                            y: h * 0.07 + next() * h * 0.86)
+            if reserved.contains(where: { $0.contains(p) }) { continue }
+            addDesertProp(details[Int(next() * 8) % 8], in: scene, at: p)
+            placed += 1
+        }
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.

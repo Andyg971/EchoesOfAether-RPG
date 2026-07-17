@@ -255,6 +255,7 @@ final class GameManager {
             world.kael.position = CGPoint(
                 x: scene.size.width * 0.5,
                 y: world.worldHeight * camYFraction(default: 0.05))
+            world.refreshKaelDepth()
             return
         }
         if CommandLine.arguments.contains("--zone-mines") {
@@ -268,6 +269,7 @@ final class GameManager {
             world.kael.position = CGPoint(
                 x: scene.size.width * 0.50,
                 y: world.worldHeight * camYFraction(default: 0.05))
+            world.refreshKaelDepth()
             spawnMineRoamers()
             transition(to: .exploration)
             return
@@ -300,6 +302,7 @@ final class GameManager {
             world.kael.position = CGPoint(
                 x: scene.size.width * 0.50,
                 y: world.worldHeight * camYFraction(default: 0.05))
+            world.refreshKaelDepth()
             spawnDesertRoamers()
             transition(to: .exploration)
             return
@@ -389,6 +392,7 @@ final class GameManager {
                     world.kael.position = CGPoint(
                         x: scene.size.width * 0.5,
                         y: world.worldHeight * CGFloat(frac))
+                    world.refreshKaelDepth()
                 }
             }
             return

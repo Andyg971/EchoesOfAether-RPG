@@ -18,8 +18,9 @@ extension GameManager {
             AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
+            // Coordonnées MONDE : les mines scrollent sur 2,5 écrans.
             world.kael.position = CGPoint(x: scene.size.width * 0.50,
-                                          y: scene.size.height * 0.14)
+                                          y: world.worldHeight * 0.07)
         } completion: { [weak self] in
             guard let self else { return }
             spawnMineRoamers()
@@ -60,10 +61,12 @@ extension GameManager {
 
     func tryMinesInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
         let w = scene.size.width
-        let h = scene.size.height
+        // Hauteur MONDE et repères MinesPOI, comme au désert : les POI
+        // dataient des mines à un écran.
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
 
         // Sortie (halo sud)
-        if point.distance(to: CGPoint(x: w * 0.50, y: h * 0.08)) < 60 {
+        if point.distance(to: CGPoint(x: w * 0.50, y: h * MinesPOI.exitY)) < MinesPOI.reach {
             exitMines()
             return true
         }
@@ -73,14 +76,14 @@ extension GameManager {
         // (cf. spawnMineRoamers / RoamingMonster).
 
         // Plaque des mineurs : lore de Cendreval
-        if point.distance(to: CGPoint(x: w * 0.18, y: h * 0.68)) < 60 {
+        if point.distance(to: MinesPOI.plaque.scaled(w: w, h: h)) < MinesPOI.reach {
             openMinesInscription()
             return true
         }
 
         // Veine d'or (une seule fois)
         if !player.minesGoldTaken,
-           point.distance(to: CGPoint(x: w * 0.80, y: h * 0.40)) < 60 {
+           point.distance(to: MinesPOI.goldVein.scaled(w: w, h: h)) < MinesPOI.reach {
             pickupGoldVein()
             return true
         }

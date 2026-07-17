@@ -198,7 +198,7 @@ extension GameManager {
         syncGold()
         AudioEngine.shared.playGoldGain()
         world.removeGoldVein()
-        let spot = CGPoint(x: scene.size.width * 0.80, y: scene.size.height * 0.40)
+        let spot = MinesPOI.goldVein.scaled(w: scene.size.width, h: world.worldHeight)
         world.worldNode.addChild(ParticleFactory.impactSparks(
             at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
         transition(to: .dialogue)

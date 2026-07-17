@@ -1781,21 +1781,17 @@ final class GameManager {
                 }
             }
         } else if inMines {
-            // POI des mines : combats, plaque, veine, sortie
-            let w = scene.size.width, h = scene.size.height
+            // POI des mines : plaque, veine, sortie — en coordonnées MONDE
+            // via MinesPOI (la descente scrolle sur 2,5 écrans). Les combats
+            // n'ont plus de hint : ils partent au contact des rôdeurs.
+            let w = scene.size.width
+            let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
             var checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.18, y: h*0.68), "hint.examine"),
-                (CGPoint(x: w*0.50, y: h*0.08), "hint.exit")
+                (MinesPOI.plaque.scaled(w: w, h: h), "hint.examine"),
+                (CGPoint(x: w * 0.50, y: h * MinesPOI.exitY), "hint.exit")
             ]
-            if player.minesProgress < 1 {
-                checkpoints.append((CGPoint(x: w*0.30, y: h*0.48), "hint.fight"))
-            } else if player.minesProgress == 1 {
-                checkpoints.append((CGPoint(x: w*0.46, y: h*0.64), "hint.fight"))
-            } else if player.minesProgress == 2 {
-                checkpoints.append((CGPoint(x: w*0.62, y: h*0.68), "hint.fight"))
-            }
             if !player.minesGoldTaken {
-                checkpoints.append((CGPoint(x: w*0.80, y: h*0.40), "hint.examine"))
+                checkpoints.append((MinesPOI.goldVein.scaled(w: w, h: h), "hint.examine"))
             }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
@@ -2375,18 +2371,20 @@ final class GameManager {
     func spawnMineRoamers() {
         guard let scene else { return }
         clearRoamers()
-        let w = scene.size.width, h = scene.size.height
-        let wh = world.worldHeight > 0 ? world.worldHeight : h
+        let w = scene.size.width
+        let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        // Un rôdeur par tronçon de la descente : corridor aux rails,
+        // salle effondrée, fond nord (le golem garde les morts).
         switch player.minesProgress {
         case 0:
-            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.30, y: h * 0.48),
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.42, y: wh * 0.30),
                       wh: wh) { [weak self] in self?.startMinesCombat1() }
         case 1:
-            addRoamer("enemy_bone", at: CGPoint(x: w * 0.46, y: h * 0.62),
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.55, y: wh * 0.56),
                       wh: wh) { [weak self] in self?.startMinesCombat2() }
         case 2 where player.questMines != .complete:
             // Le golem est un boss : plus lent, patrouille plus large.
-            addRoamer("enemy_bone", at: CGPoint(x: w * 0.62, y: h * 0.66),
+            addRoamer("enemy_bone", at: CGPoint(x: w * 0.55, y: wh * 0.88),
                       wh: wh, patrolRadius: 40, chaseSpeed: 74) { [weak self] in
                 self?.startMinesBossSequence()
             }

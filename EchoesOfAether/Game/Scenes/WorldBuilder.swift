@@ -2042,7 +2042,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addTiledFloor(in: scene,
                       tileNames: ["ds_sand"],
                       fallbackColor: SKColor(red: 0.72, green: 0.56, blue: 0.30, alpha: 1),
-                      tileScale: 1.0,
+                      tileScale: WorldBuilder.desertScale,
                       tint: nil,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
@@ -2056,19 +2056,31 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
 
-        // ── Plaques de terrain : le sable n'est pas le même partout ──
-        // Terre craquelée au milieu, roche vers le canyon nord.
-        for (tile, x, y, cols, rows) in [("ds_cracked", 0.20, 0.30, 6, 4),
-                                         ("ds_cracked2", 0.74, 0.33, 5, 4),
-                                         ("ds_dune2", 0.46, 0.18, 6, 3),
-                                         ("ds_pebbles", 0.52, 0.63, 5, 3),
-                                         ("ds_gravel", 0.24, 0.70, 5, 4),
-                                         ("ds_rock", 0.80, 0.74, 6, 5),
-                                         ("ds_rock2", 0.60, 0.88, 4, 3),
-                                         ("ds_cracked3", 0.14, 0.88, 4, 4)] {
-            addTerrainPatch(tile, in: scene, at: CGPoint(x: w * x, y: h * y),
-                            cols: cols, rows: rows)
-        }
+        // ── Terrains : terre craquelée au sud, roche vers le canyon nord ──
+        //
+        // Par l'autotiler, comme les chemins du village et de la forêt. Ils
+        // étaient posés en plaques rectangulaires de tuiles pleines : sans
+        // transition, la terre craquelée s'arrêtait net sur le sable et se
+        // lisait comme un bloc en escalier. Les tuiles `ds_edge_*` sont
+        // générées (sable + bordure dentelée) faute d'en trouver dans le pack.
+        let cell: CGFloat = 96 * WorldBuilder.desertScale
+        var cracked = VillageTileMap(width: w, height: h, tile: cell)
+        cracked.stampEllipse(center: CGPoint(x: w * 0.22, y: h * 0.30),
+                             radiusX: w * 0.26, radiusY: h * 0.075)
+        cracked.stampEllipse(center: CGPoint(x: w * 0.74, y: h * 0.33),
+                             radiusX: w * 0.22, radiusY: h * 0.065)
+        cracked.stampEllipse(center: CGPoint(x: w * 0.14, y: h * 0.88),
+                             radiusX: w * 0.20, radiusY: h * 0.06)
+        renderTileMap(cracked, fullTile: "ds_cracked", edgePrefix: "ds_edge_",
+                      in: scene, z: -9.6)
+
+        var rock = VillageTileMap(width: w, height: h, tile: cell)
+        rock.stampEllipse(center: CGPoint(x: w * 0.80, y: h * 0.74),
+                          radiusX: w * 0.24, radiusY: h * 0.085)
+        rock.stampEllipse(center: CGPoint(x: w * 0.24, y: h * 0.70),
+                          radiusX: w * 0.20, radiusY: h * 0.06)
+        renderTileMap(rock, fullTile: "ds_rock", edgePrefix: "ds_rockedge_",
+                      in: scene, z: -9.5)
 
         // ── Sud : les dunes d'entrée, semées de cactus et d'ossements ──
         for (asset, x, y) in [("ds_cactus_tall", 0.14, 0.16),
@@ -2150,39 +2162,18 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         AudioEngine.shared.setAmbience(.desert)
     }
 
-    /// Plaque de terrain : un îlot de tuiles posé sur le sable, pour que le sol
-    /// change en traversant (terre craquelée, gravier, roche) au lieu d'être
-    /// une nappe uniforme sur trois écrans.
+    /// Échelle d'affichage du pack désert.
     ///
-    /// L'îlot est ovale, pas carré : une plaque rectangulaire se lit comme un
-    /// rectangle, et le pack n'a pas de tuiles de transition à poser sur ses
-    /// bords. On garde les tuiles dont le centre tombe dans l'ellipse, et on
-    /// laisse tomber celles du pourtour au hasard — le bord devient irrégulier
-    /// et le sable reprend ses droits sans couture visible.
-    private func addTerrainPatch(_ tile: String, in scene: SKScene,
-                                 at centre: CGPoint, cols: Int, rows: Int) {
-        guard PixelArtSprites.exists(tile) else { return }
-        let side: CGFloat = 96
-        let origin = CGPoint(x: centre.x - CGFloat(cols) * side / 2,
-                             y: centre.y - CGFloat(rows) * side / 2)
-        let rx = CGFloat(cols) / 2, ry = CGFloat(rows) / 2
-        for r in 0..<rows {
-            for c in 0..<cols {
-                // Distance normalisée au centre de l'ellipse (1 = sur le bord).
-                let dx = (CGFloat(c) + 0.5 - rx) / rx
-                let dy = (CGFloat(r) + 0.5 - ry) / ry
-                let d = (dx * dx + dy * dy).squareRoot()
-                if d > 1.0 { continue }                       // hors de l'îlot
-                if d > 0.62, Bool.random() { continue }       // pourtour : effrité
-                guard let t = PixelArtSprites.still(name: tile, scale: 1.0,
-                                                    anchor: CGPoint(x: 0, y: 0)) else { continue }
-                t.position = CGPoint(x: origin.x + CGFloat(c) * side,
-                                     y: origin.y + CGFloat(r) * side)
-                t.zPosition = -9   // sur le sable, sous tout le reste
-                add(t, to: scene)
-            }
-        }
-    }
+    /// Le pack est dessiné plus gros que le reste du jeu : posé à 1.0, une
+    /// maison faisait 226 pt — CINQ fois Kael (43 pt), quand le village pose
+    /// les siennes à 1,9× et son chalet à 2,9×. Le désert écrasait tout.
+    ///
+    /// À 0,5 les proportions retombent dans la fourchette du village (maison
+    /// 1,7×, chalet 2,6×, cactus 1,1×) et la densité de pixels devient exacte-
+    /// ment la sienne : 0,50 pt par pixel source, comme `me_grass` (48 px
+    /// affiché en 24 pt). C'est ce qui rend un tileset cohérent avec le
+    /// voisin — pas la taille du sprite, la taille du PIXEL.
+    static let desertScale: CGFloat = 0.5
 
     /// Emprise au sol d'un décor : sur quelle surface il arrête Kael.
     private struct Footprint {
@@ -2245,7 +2236,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Son emprise vient de `desertFootprints`, pas de l'appelant.
     @discardableResult
     private func addDesertProp(_ name: String, in scene: SKScene, at pos: CGPoint,
-                               scale: CGFloat = 1.0) -> SKNode? {
+                               scale: CGFloat = WorldBuilder.desertScale) -> SKNode? {
         guard let node = PixelArtSprites.still(name: name, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         node.position = pos
@@ -2303,7 +2294,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// reste ouverte. Mesuré sur l'asset (193 px de large) : le passage occupe
     /// les colonnes 74 à 131, soit 38 % à 68 % de la largeur.
     private func addDesertGate(in scene: SKScene, at pos: CGPoint) {
-        guard let gate = PixelArtSprites.still(name: "ds_gate", scale: 1.0,
+        guard let gate = PixelArtSprites.still(name: "ds_gate", scale: WorldBuilder.desertScale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         gate.position = pos
         gate.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)

@@ -2162,6 +2162,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         renderTileMap(rock, fullTile: "ds_rock", edgePrefix: "ds_rockedge_",
                       in: scene, z: -9.5)
 
+        // ── Ceinture de falaises : Ossara est un canyon, pas une nappe ──
+        addDesertCliffs(in: scene, w: w, h: h)
+
         // ── Sud : les dunes d'entrée, semées de cactus et d'ossements ──
         // Densité alignée sur la forêt (~11 props par écran) : le sable plat
         // pardonne moins le vide que l'herbe.
@@ -2207,12 +2210,20 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
-        // ── Oasis (nord) : bassin pixel + halo de fraîcheur ──
+        // ── Oasis (nord) : bassin pixel, palmeraie, fraîcheur ──
         addOasis(in: scene, at: DesertPOI.oasis.scaled(w: w, h: h))
-        for (asset, x, y) in [("ds_flowers", 0.74, 0.90), ("ds_flowers_red", 0.94, 0.88),
-                              ("ds_pot", 0.78, 0.94), ("ds_flower_orange", 0.68, 0.94)] {
+        addDesertProp("ds_palm_tall1", in: scene, at: CGPoint(x: w * 0.79, y: h * 0.945))
+        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.905, y: h * 0.900))
+        addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.705, y: h * 0.905))
+        for (asset, x, y) in [("ds_flowers", 0.74, 0.90), ("ds_flowers_red", 0.90, 0.88),
+                              ("ds_pot", 0.78, 0.94), ("ds_flower_orange", 0.68, 0.94),
+                              ("ds_oasis_flower", 0.745, 0.892), ("ds_oasis_flower", 0.915, 0.945)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
+        // Deux palmiers isolés sur la route : la nappe d'eau affleure
+        // près des plaques de terre craquelée.
+        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.315))
+        addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.330))
 
         // Les combats du désert sont portés par des monstres baladeurs
         // (GameManager.spawnDesertRoamers) : plus de halos de danger ni de
@@ -2287,7 +2298,20 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         "ds_tent_small":  0.58,
         "ds_market":      0.85,
         "ds_well":        0.85,
-        "ds_campfire":    0.70
+        "ds_campfire":    0.70,
+        // Enceinte, palmeraie et bêtes : sur l'échelle du bâti.
+        "ds_wall_h":      0.65,
+        "ds_wall_v":      0.65,
+        "ds_wall_cnr":    0.65,
+        "ds_wall_end":    0.65,
+        "ds_gate2":       0.65,
+        "ds_palisade_gate": 0.65,
+        "ds_palm_tall1":  0.65,
+        "ds_palm_tall2":  0.65,
+        "ds_palm_small":  0.65,
+        "ds_camel_1":     0.65,
+        "ds_camel_2":     0.65,
+        "ds_oasis_flower": 0.55
     ]
 
     /// Échelle d'affichage d'un asset du désert (table, sinon densité).
@@ -2350,16 +2374,26 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         "ds_fence":         Footprint(widthRatio: 0.95, depthRatio: 0.28, maxDepth: 14),
         "ds_pot":           Footprint(widthRatio: 0.55, depthRatio: 0.50, maxDepth: 12),
         "ds_pot2":          Footprint(widthRatio: 0.55, depthRatio: 0.50, maxDepth: 12),
+        // Palmeraie : seul le tronc arrête Kael, on passe sous les palmes.
+        "ds_palm_tall1":    Footprint(widthRatio: 0.30, depthRatio: 0.30, maxDepth: 12),
+        "ds_palm_tall2":    Footprint(widthRatio: 0.30, depthRatio: 0.30, maxDepth: 12),
+        "ds_palm_small":    Footprint(widthRatio: 0.35, depthRatio: 0.35, maxDepth: 12),
+        // Bêtes du camp : on les contourne.
+        "ds_camel_1":       Footprint(widthRatio: 0.70, depthRatio: 0.45, maxDepth: 14),
+        "ds_camel_2":       Footprint(widthRatio: 0.70, depthRatio: 0.45, maxDepth: 14),
+        // Les falaises et l'enceinte ont des obstacles explicites
+        // (bandes continues) — pas d'entrée ici.
     ]
 
     /// Prop du désert : posé aux pieds, ombre au sol, profondeur selon y.
     /// Son emprise vient de `desertFootprints`, pas de l'appelant.
     @discardableResult
     private func addDesertProp(_ name: String, in scene: SKScene, at pos: CGPoint,
-                               scale: CGFloat? = nil) -> SKNode? {
+                               scale: CGFloat? = nil, flipped: Bool = false) -> SKNode? {
         let scale = scale ?? Self.desertDisplayScale(for: name)
         guard let node = PixelArtSprites.still(name: name, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
+        if flipped { node.xScale = -abs(node.xScale == 0 ? 1 : node.xScale) }
         node.position = pos
         node.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
         addGroundShadow(under: node, width: 26 * scale, height: 8 * scale)
@@ -2377,33 +2411,37 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// une oasis et trois rôdeurs — le scénario parle pourtant d'une route de
     /// caravanes, et le joueur ne croisait jamais personne qui l'ait empruntée.
     private func addDesertTown(in scene: SKScene, w: CGFloat, h: CGFloat) {
-        // ── Remparts : la porte au centre, des palissades qui prolongent
-        // le mur de chaque côté. Avant, la porte flottait seule dans le
-        // sable — une arche sans muraille, ça ne protège de rien.
-        addDesertGate(in: scene, at: CGPoint(x: w * 0.50, y: h * 0.375))
-        for x in [0.10, 0.24, 0.76, 0.90] {
-            addDesertProp("ds_fence", in: scene, at: CGPoint(x: w * x, y: h * 0.377))
-        }
+        // ── L'enceinte : la cité est FERMÉE — courtines d'adobe sur les
+        // quatre côtés, porte au sud (l'arrivée) et porte au nord (vers le
+        // canyon et l'oasis). Avant, une arche flottait seule dans le sable
+        // avec quatre bouts de palissade — ça ne protégeait de rien.
+        addDesertRamparts(in: scene, w: w, h: h)
 
         // ── Maisons d'adobe : un croissant autour de la place, la grande
-        // bâtisse en fond de perspective. Elles se lisaient comme quatre
-        // cubes posés au hasard ; ici chaque façade regarde la place.
-        for (asset, x, y) in [("ds_house_red", 0.13, 0.545),
-                              ("ds_house_sand", 0.29, 0.585),
+        // bâtisse en fond de perspective, en retrait des courtines.
+        for (asset, x, y) in [("ds_house_red", 0.16, 0.545),
+                              ("ds_house_sand", 0.31, 0.585),
                               ("ds_house_large", 0.50, 0.615),
-                              ("ds_house_sand", 0.71, 0.585),
-                              ("ds_house_red", 0.87, 0.545)] {
+                              ("ds_house_sand", 0.69, 0.585),
+                              ("ds_house_red", 0.84, 0.545)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
-        // ── Camp des caravaniers : les tentes juste derrière les remparts,
-        // là où on gare les bêtes et les chariots en arrivant.
+        // ── Camp des caravaniers : tentes et bêtes juste derrière les
+        // remparts, là où on gare les chariots en arrivant.
         for (asset, x, y) in [("ds_tent_canvas", 0.30, 0.420),
-                              ("ds_tent_round", 0.17, 0.455),
+                              ("ds_tent_round", 0.19, 0.455),
                               ("ds_tent_big", 0.70, 0.425),
-                              ("ds_tent_small", 0.83, 0.450)] {
+                              ("ds_tent_small", 0.81, 0.450)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
+        addDesertProp("ds_camel_1", in: scene, at: CGPoint(x: w * 0.25, y: h * 0.428))
+        addDesertProp("ds_camel_2", in: scene, at: CGPoint(x: w * 0.77, y: h * 0.437), flipped: true)
+
+        // ── Palmiers intra-muros : la cité vit sur sa nappe d'eau.
+        addDesertProp("ds_palm_tall1", in: scene, at: CGPoint(x: w * 0.135, y: h * 0.500))
+        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.865, y: h * 0.505))
+        addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.445, y: h * 0.617))
 
         // ── La place : souk, puits, feu de camp — le cœur qui vit.
         addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.468))
@@ -2413,7 +2451,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         // ── Le petit bazar du quotidien : jarres aux portes, échelle contre
         // un mur, herbes sèches entre les maisons.
         for (asset, x, y) in [("ds_pot", 0.355, 0.510), ("ds_pot2", 0.645, 0.515),
-                              ("ds_ladder", 0.245, 0.560), ("ds_cactus_barrel2", 0.93, 0.520),
+                              ("ds_ladder", 0.245, 0.560), ("ds_cactus_barrel2", 0.88, 0.530),
                               ("ds_grass_dry", 0.19, 0.520), ("ds_grass_dry", 0.81, 0.520),
                               ("ds_skull_cow2", 0.55, 0.435), ("ds_pot", 0.45, 0.44)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
@@ -2442,29 +2480,122 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         add(npc, to: scene)
     }
 
-    /// La porte des remparts : un mur percé d'une arche.
+    /// L'enceinte de la cité : courtines d'adobe (kit ds_wall_*) fermées
+    /// sur les quatre côtés, percées de deux portes (sud et nord).
     ///
-    /// Elle ne peut pas prendre une empreinte pleine — on ne passerait plus —
-    /// ni aucune, ce qui était le cas : Kael franchissait la muraille de part
-    /// en part, à côté de la porte. Deux emprises, une par pilier, et l'arche
-    /// reste ouverte. Mesuré sur l'asset (193 px de large) : le passage occupe
-    /// les colonnes 74 à 131, soit 38 % à 68 % de la largeur.
-    private func addDesertGate(in scene: SKScene, at pos: CGPoint) {
-        guard let gate = PixelArtSprites.still(name: "ds_gate",
-                                               scale: WorldBuilder.desertDisplayScale(for: "ds_gate"),
+    /// Andy voulait la cité « bien fermée avec les remparts tout autour »
+    /// (référence : TDRPG Desert de Raou, dont ces murs sont extraits).
+    private func addDesertRamparts(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        let southY = h * 0.375
+        let northY = h * 0.635
+        let leftX  = w * 0.10
+        let rightX = w * 0.90
+        // ds_gate2 : 197 px × 0,65 = 128 pt de façade.
+        let gateHalf: CGFloat = 64
+
+        for y in [southY, northY] {
+            addWallGate(in: scene, at: CGPoint(x: w * 0.50, y: y))
+            addWallRun(in: scene, fromX: leftX, toX: w * 0.50 - gateHalf, y: y)
+            addWallRun(in: scene, fromX: w * 0.50 + gateHalf, toX: rightX, y: y)
+        }
+        addWallColumn(in: scene, x: leftX, fromY: southY, toY: northY)
+        addWallColumn(in: scene, x: rightX, fromY: southY, toY: northY)
+    }
+
+    /// Courtine horizontale : tuiles ds_wall_h enchaînées + obstacle continu.
+    private func addWallRun(in scene: SKScene, fromX x0: CGFloat, toX x1: CGFloat, y: CGFloat) {
+        guard x1 > x0 else { return }
+        let scale = WorldBuilder.desertDisplayScale(for: "ds_wall_h")
+        let tileW = 48 * scale
+        var x = x0 + tileW / 2
+        while x < x1 + 1 {
+            guard let t = PixelArtSprites.still(name: "ds_wall_h", scale: scale,
+                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { break }
+            t.position = CGPoint(x: min(x, x1 - tileW / 2), y: y)
+            t.zPosition = depthLayer(for: y, sceneHeight: scene.size.height)
+            add(t, to: scene)
+            x += tileW
+        }
+        registerObstacle(CGRect(x: x0, y: y - 2, width: x1 - x0, height: 16))
+    }
+
+    /// Flanc vertical : tuiles ds_wall_v empilées + obstacle continu.
+    private func addWallColumn(in scene: SKScene, x: CGFloat, fromY y0: CGFloat, toY y1: CGFloat) {
+        guard y1 > y0 else { return }
+        let scale = WorldBuilder.desertDisplayScale(for: "ds_wall_v")
+        let tileH = 48 * scale
+        var y = y0
+        while y < y1 {
+            guard let t = PixelArtSprites.still(name: "ds_wall_v", scale: scale,
+                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { break }
+            t.position = CGPoint(x: x, y: min(y, y1 - tileH))
+            t.zPosition = depthLayer(for: t.position.y, sceneHeight: scene.size.height)
+            add(t, to: scene)
+            y += tileH
+        }
+        registerObstacle(CGRect(x: x - 10, y: y0, width: 20, height: y1 - y0))
+    }
+
+    /// Porte de l'enceinte : arche beige, deux emprises (une par pilier),
+    /// le passage central reste ouvert. Mesuré sur l'asset (197 px) : l'arche
+    /// occupe ~36 % à 64 % de la largeur.
+    private func addWallGate(in scene: SKScene, at pos: CGPoint) {
+        guard let gate = PixelArtSprites.still(name: "ds_gate2",
+                                               scale: WorldBuilder.desertDisplayScale(for: "ds_gate2"),
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         gate.position = pos
         gate.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
         add(gate, to: scene)
 
         let f = gate.calculateAccumulatedFrame()
-        let depth: CGFloat = 26
-        // Pilier gauche : du bord au début de l'arche.
-        registerObstacle(CGRect(x: f.minX, y: pos.y - 4,
-                                width: f.width * 0.38, height: depth))
-        // Pilier droit : de la fin de l'arche au bord.
-        registerObstacle(CGRect(x: f.minX + f.width * 0.68, y: pos.y - 4,
-                                width: f.width * 0.32, height: depth))
+        let depth: CGFloat = 16
+        registerObstacle(CGRect(x: f.minX, y: pos.y - 2,
+                                width: f.width * 0.36, height: depth))
+        registerObstacle(CGRect(x: f.minX + f.width * 0.64, y: pos.y - 2,
+                                width: f.width * 0.36, height: depth))
+    }
+
+    /// Ceinture de falaises : le désert est un canyon, ses bords ont du
+    /// volume (mesas ds_cliff_* du pack, plus un simple sable plat qui
+    /// s'arrête au bord de l'écran). Chaînées avec chevauchement pour
+    /// former une crête continue ; la marche est bloquée par des bandes
+    /// d'obstacles, pas par les sprites.
+    private func addDesertCliffs(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        // Flancs est/ouest : mesas qui se chevauchent sur toute la hauteur.
+        var y = h * 0.015
+        var i = 0
+        while y < h * 0.955 {
+            let jitter: CGFloat = (i % 2 == 0) ? -10 : 8
+            addDesertProp("ds_cliff_big", in: scene,
+                          at: CGPoint(x: w * 0.030 + jitter, y: y))
+            addDesertProp("ds_cliff_big", in: scene,
+                          at: CGPoint(x: w * 0.970 - jitter, y: y), flipped: true)
+            y += h * 0.052
+            i += 1
+        }
+        // Fond nord : la crête ferme le monde derrière l'oasis.
+        var x = w * 0.05
+        i = 0
+        while x < w * 0.98 {
+            addDesertProp("ds_cliff_big", in: scene,
+                          at: CGPoint(x: x, y: h * (i % 2 == 0 ? 0.968 : 0.978)),
+                          flipped: i % 2 == 1)
+            x += w * 0.105
+            i += 1
+        }
+        // Épaules de l'entrée sud : le canyon s'ouvre sur le centre.
+        for (fx, flip) in [(0.09, false), (0.20, true), (0.30, false),
+                           (0.70, true), (0.80, false), (0.91, true)] {
+            addDesertProp("ds_cliff_left", in: scene,
+                          at: CGPoint(x: w * fx, y: h * 0.004), flipped: flip)
+        }
+
+        // La marche : bandes continues, indépendantes des sprites.
+        registerObstacle(CGRect(x: 0, y: 0, width: w * 0.072, height: h))
+        registerObstacle(CGRect(x: w * 0.928, y: 0, width: w * 0.072, height: h))
+        registerObstacle(CGRect(x: 0, y: h * 0.952, width: w, height: h * 0.048))
+        registerObstacle(CGRect(x: 0, y: 0, width: w * 0.34, height: h * 0.018))
+        registerObstacle(CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.018))
     }
 
     /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.

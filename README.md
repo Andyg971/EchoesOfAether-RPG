@@ -174,6 +174,10 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 ---
 
+## Crédits assets
+
+- **TDRPG Desert — Pixel Art Top Down** par [Raou](https://raou.itch.io) — tuiles et props d'Ossara (`ds_*`), extraits des planches du pack acheté (`ASSET ECHOES OF AETHER/Desert`).
+
 ## Bundle ID
 
 ```

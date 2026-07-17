@@ -311,6 +311,19 @@ final class GameManager {
             transition(to: .exploration)
             return
         }
+        // Audit de la cinématique de la mort de Lyra : ruines + compagne,
+        // la scène se déclenche seule après une seconde.
+        if CommandLine.arguments.contains("--lyra-death") {
+            hud.goldValue = player.gold
+            phase = .ruins
+            showRuins(in: scene)
+            world.showLyraCompanion()
+            transition(to: .exploration)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                self?.triggerLyraDeath()
+            }
+            return
+        }
         if CommandLine.arguments.contains("--zone-ruins") {
             hud.goldValue = player.gold
             phase = .ruins

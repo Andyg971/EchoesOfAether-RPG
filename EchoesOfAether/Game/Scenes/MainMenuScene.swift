@@ -38,7 +38,7 @@ final class MainMenuScene: SKScene {
                              "--zone-forest", "--zone-shrine", "--zone-ruins",
                              "--zone-village", "--zone-threshold", "--zone-voidheart",
                              "--zone-mines", "--zone-desert", "--zone-cave",
-                             "--combat-trio", "--interior"]
+                             "--combat-trio", "--interior", "--lyra-death"]
         if CommandLine.arguments.contains(where: debugZoneArgs.contains) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                 SaveManager.delete(slot: 2)

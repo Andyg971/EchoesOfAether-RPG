@@ -349,49 +349,126 @@ extension GameManager {
 
     func triggerLyraDeath() {
         guard let scene else { return }
-        // Fade total vers le noir
-        let blackOut = SKShapeNode(rectOf: scene.size)
-        blackOut.fillColor = .black
-        blackOut.strokeColor = .clear
-        blackOut.alpha = 0
-        blackOut.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
-        // Sous le dialogue (1000) mais au-dessus du monde et du HUD (≤ 500) :
-        // les derniers mots de Lyra doivent rester lisibles sur le noir.
-        blackOut.zPosition = 950
-        scene.addChild(blackOut)
-        blackOut.run(.sequence([.fadeAlpha(to: 1, duration: 0.8), .wait(forDuration: 0.3)]))
+        // Andy : « on doit VOIR Kael l'attaquer — pas de voile noir. »
+        // La scène se joue à découvert : Kael libère la Tempête (blizzard
+        // puis foudre, comme en combat), Lyra est frappée et tombe, ses
+        // derniers mots se disent sur son corps, puis elle se dissout dans
+        // la lumière — c'est la ligne du script (« …avant de disparaître
+        // dans la lumière »).
+        transition(to: .transition)
+        let kael = world.kael
+        let lyra = world.lyra
+        lyra.isHidden = false
+        // Fin du suivi de compagne : c'est son dernier instant debout.
+        // Posé avant le dialogue, sinon la boucle d'update la remettrait
+        // au pas derrière Kael pendant qu'elle gît au sol.
+        player.lyraDeceased = true
+        // `facing` : direction de Kael VERS Lyra (+1 = droite).
+        let facing: CGFloat = lyra.position.x < kael.position.x ? -1 : 1
+        kael.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+        lyra.forEachDescendantSprite { $0.xScale = -facing * abs($0.xScale) }
 
-        // Dialogue mort après le noir
-        blackOut.run(.sequence([.wait(forDuration: 0.4)])) { [weak self] in
-            guard let self else { return }
-            transition(to: .dialogue)
-            // Si Eran trouvé : Lyra prononce ses derniers mots en écho
-            let startDeath: () -> Void = { [weak self] in
+        // L'élan : un pas de recul, la charge, la frappe.
+        kael.run(.sequence([
+            .moveBy(x: -facing * 8, y: 0, duration: 0.22),
+            .wait(forDuration: 0.12),
+            .moveBy(x: facing * 14, y: 0, duration: 0.10)
+        ]))
+
+        scene.run(.sequence([
+            .wait(forDuration: 0.50),
+            .run { [weak self] in
                 guard let self else { return }
-                dialogue.start(PrototypeContent.act2LyraDeathDialogue) { [weak self] in
-                    guard let self else { return }
-                    player.lyraDeceased = true
-                    world.lyra.isHidden = true
-                    dialogue.start(PrototypeContent.act2KaelAloneDialogue) { [weak self] in
-                        guard let self, let scene = self.scene else { return }
-                        blackOut.removeFromParent()
-                        phase = .fallen
-                        transition(to: .exploration)
-                        saveGame()
-                        TransitionManager.showAct2EndScreen(in: scene) { [weak self] in
-                            guard let self, let sc = self.scene else { return }
-                            TransitionManager.showCredits(in: sc) { [weak self] in
-                                self?.beginAct3()
-                            }
+                BattleSprites.playEffect(.blizzard, from: kael.position,
+                                         to: lyra.position,
+                                         in: world.worldNode, scale: 1.8)
+                AudioEngine.shared.playBlackSlash()
+            },
+            .wait(forDuration: 0.18),
+            .run { [weak self] in
+                guard let self, let scene = self.scene else { return }
+                BattleSprites.playEffect(.thunder, from: kael.position,
+                                         to: lyra.position,
+                                         in: world.worldNode, scale: 1.8)
+                JuiceEngine.screenShake(scene, intensity: 7)
+                HapticsEngine.heavy()
+            },
+            .wait(forDuration: 0.34),
+            .run { [weak self] in
+                guard let self else { return }
+                // Lyra est frappée : flash blanc, souffle, elle tombe.
+                AudioEngine.shared.playDamage()
+                lyra.forEachDescendantSprite { s in
+                    s.run(.sequence([
+                        .colorize(with: .white, colorBlendFactor: 0.9, duration: 0.06),
+                        .colorize(with: SKColor(red: 0.55, green: 0.10, blue: 0.10, alpha: 1),
+                                  colorBlendFactor: 0.45, duration: 0.30)
+                    ]))
+                }
+                lyra.run(.group([
+                    .moveBy(x: facing * 24, y: -4, duration: 0.30),
+                    .sequence([
+                        .wait(forDuration: 0.10),
+                        .rotate(toAngle: -facing * .pi / 2, duration: 0.38,
+                                shortestUnitArc: true)
+                    ])
+                ]))
+            },
+            .wait(forDuration: 1.15),
+            .run { [weak self] in self?.playLyraLastWords() }
+        ]))
+    }
+
+    /// Les derniers mots, prononcés sur le corps — la scène reste visible.
+    private func playLyraLastWords() {
+        transition(to: .dialogue)
+        let startDeath: () -> Void = { [weak self] in
+            guard let self else { return }
+            dialogue.start(PrototypeContent.act2LyraDeathDialogue) { [weak self] in
+                self?.dissolveLyraAndEndAct2()
+            }
+        }
+        if player.act2EranFound {
+            dialogue.start(PrototypeContent.act2LyraEranLastWordDialogue) { startDeath() }
+        } else {
+            startDeath()
+        }
+    }
+
+    /// Lyra se dissout dans la lumière, puis Kael reste seul.
+    private func dissolveLyraAndEndAct2() {
+        guard let scene else { return }
+        let lyra = world.lyra
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: lyra.position,
+            color: SKColor(red: 0.95, green: 0.88, blue: 0.55, alpha: 1), count: 20))
+        lyra.run(.sequence([
+            .fadeOut(withDuration: 1.2),
+            .run { [weak lyra] in
+                // Le node ressert pour son Écho (Acte III) : rendu intact.
+                lyra?.isHidden = true
+                lyra?.alpha = 1
+                lyra?.zRotation = 0
+                lyra?.forEachDescendantSprite { $0.colorBlendFactor = 0 }
+            }
+        ]))
+        scene.run(.sequence([
+            .wait(forDuration: 1.5),
+            .run { [weak self] in
+                guard let self else { return }
+                dialogue.start(PrototypeContent.act2KaelAloneDialogue) { [weak self] in
+                    guard let self, let scene = self.scene else { return }
+                    phase = .fallen
+                    transition(to: .exploration)
+                    saveGame()
+                    TransitionManager.showAct2EndScreen(in: scene) { [weak self] in
+                        guard let self, let sc = self.scene else { return }
+                        TransitionManager.showCredits(in: sc) { [weak self] in
+                            self?.beginAct3()
                         }
                     }
                 }
             }
-            if player.act2EranFound {
-                dialogue.start(PrototypeContent.act2LyraEranLastWordDialogue) { startDeath() }
-            } else {
-                startDeath()
-            }
-        }
+        ]))
     }
 }

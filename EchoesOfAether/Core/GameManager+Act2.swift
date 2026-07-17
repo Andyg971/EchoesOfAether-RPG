@@ -355,7 +355,9 @@ extension GameManager {
         blackOut.strokeColor = .clear
         blackOut.alpha = 0
         blackOut.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
-        blackOut.zPosition = 1999
+        // Sous le dialogue (1000) mais au-dessus du monde et du HUD (≤ 500) :
+        // les derniers mots de Lyra doivent rester lisibles sur le noir.
+        blackOut.zPosition = 950
         scene.addChild(blackOut)
         blackOut.run(.sequence([.fadeAlpha(to: 1, duration: 0.8), .wait(forDuration: 0.3)]))
 

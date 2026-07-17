@@ -2170,15 +2170,34 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                           radiusX: w * 0.14, radiusY: h * 0.050)
         rock.stampEllipse(center: CGPoint(x: w * 0.26, y: h * 0.70),
                           radiusX: w * 0.12, radiusY: h * 0.042)
-        // Pieds des falaises : la roche déborde des mesas sur le sable —
-        // sans ces plaques, la crête a l'air posée sur une nappe.
-        for (fx, fy, rx, ry) in [(0.035, 0.16, 0.055, 0.09), (0.03, 0.47, 0.06, 0.11),
-                                 (0.04, 0.80, 0.055, 0.08), (0.965, 0.24, 0.055, 0.10),
-                                 (0.97, 0.57, 0.06, 0.09), (0.96, 0.86, 0.055, 0.08)] {
-            rock.stampEllipse(center: CGPoint(x: w * fx, y: h * fy),
-                              radiusX: w * rx, radiusY: h * ry)
+        // Parois du canyon : des BANDES de plateau continues sur les deux
+        // flancs, le fond et les épaules de l'entrée — pas des mesas
+        // flottantes posées sur le sable (Andy : « la roche, tu l'as mal
+        // faite »). Le bord déchiré vient de l'autotiler ; des bosses
+        // seedées le font onduler vers l'intérieur.
+        var rockSeed: UInt64 = 0x0C11_FF5E
+        func rockNext() -> CGFloat {
+            rockSeed = rockSeed &* 6364136223846793005 &+ 1442695040888963407
+            return CGFloat(rockSeed >> 40) / CGFloat(1 << 24)
         }
+        rock.stamp(rect: CGRect(x: 0, y: 0, width: w * 0.062, height: h))
+        rock.stamp(rect: CGRect(x: w * 0.938, y: 0, width: w * 0.062, height: h))
         rock.stamp(rect: CGRect(x: 0, y: h * 0.955, width: w, height: h * 0.045))
+        rock.stamp(rect: CGRect(x: 0, y: 0, width: w * 0.32, height: h * 0.014))
+        rock.stamp(rect: CGRect(x: w * 0.68, y: 0, width: w * 0.32, height: h * 0.014))
+        for _ in 0..<8 {
+            rock.stampEllipse(center: CGPoint(x: w * 0.062, y: h * (0.06 + rockNext() * 0.85)),
+                              radiusX: w * (0.018 + rockNext() * 0.030),
+                              radiusY: h * (0.015 + rockNext() * 0.028))
+            rock.stampEllipse(center: CGPoint(x: w * 0.938, y: h * (0.06 + rockNext() * 0.85)),
+                              radiusX: w * (0.018 + rockNext() * 0.030),
+                              radiusY: h * (0.015 + rockNext() * 0.028))
+        }
+        for _ in 0..<4 {
+            rock.stampEllipse(center: CGPoint(x: w * (0.10 + rockNext() * 0.80), y: h * 0.955),
+                              radiusX: w * (0.03 + rockNext() * 0.04),
+                              radiusY: h * (0.012 + rockNext() * 0.016))
+        }
         renderTileMap(rock, fullTile: "ds_rock", edgePrefix: "ds_rockedge_",
                       in: scene, z: -9.5)
 
@@ -2621,35 +2640,32 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
         let rubble = ["ds_boulder", "ds_rock_pile", "ds_boulder2", "ds_rock_big"]
 
-        var y = h * 0.012
-        while y < h * 0.945 {
-            let jL = (next() - 0.5) * 30
-            let jR = (next() - 0.5) * 30
-            addDesertProp("ds_cliff_big", in: scene,
-                          at: CGPoint(x: w * 0.028 + jL, y: y),
-                          scale: 0.46 + next() * 0.12)
-            addDesertProp("ds_cliff_big", in: scene,
-                          at: CGPoint(x: w * 0.972 + jR, y: y + next() * 12),
-                          scale: 0.46 + next() * 0.12, flipped: true)
-            if next() > 0.55 {
-                addDesertProp("ds_cliff_left", in: scene,
-                              at: CGPoint(x: w * 0.062 + jL * 0.5, y: y - h * 0.011),
-                              scale: 0.48, flipped: next() > 0.5)
+        // Les flancs sont portés par les BANDES de plateau (autotiler, dans
+        // buildDesert) : ici on ne pose que des surplombs — quelques mesas
+        // ASSISES SUR la bande, jamais sur le sable — et des éboulis à la
+        // frontière sable/roche. Empilées sur le sable, elles se lisaient
+        // comme des dalles flottantes.
+        var y = h * 0.05
+        while y < h * 0.92 {
+            if next() > 0.35 {
+                addDesertProp("ds_cliff_big", in: scene,
+                              at: CGPoint(x: w * (0.012 + next() * 0.022), y: y),
+                              scale: 0.42 + next() * 0.10)
             }
-            if next() > 0.55 {
-                addDesertProp("ds_cliff_left", in: scene,
-                              at: CGPoint(x: w * 0.938 + jR * 0.5, y: y - h * 0.009),
-                              scale: 0.48, flipped: next() > 0.5)
+            if next() > 0.35 {
+                addDesertProp("ds_cliff_big", in: scene,
+                              at: CGPoint(x: w * (0.966 + next() * 0.022), y: y + next() * 20),
+                              scale: 0.42 + next() * 0.10, flipped: true)
             }
-            if next() > 0.45 {
+            if next() > 0.40 {
                 addDesertProp(rubble[Int(next() * 4) % 4], in: scene,
-                              at: CGPoint(x: w * 0.078, y: y + next() * 16))
+                              at: CGPoint(x: w * (0.076 + next() * 0.014), y: y + next() * 30))
             }
-            if next() > 0.45 {
+            if next() > 0.40 {
                 addDesertProp(rubble[Int(next() * 4) % 4], in: scene,
-                              at: CGPoint(x: w * 0.922, y: y + next() * 16))
+                              at: CGPoint(x: w * (0.910 + next() * 0.014), y: y + next() * 30))
             }
-            y += h * (0.042 + next() * 0.020)
+            y += h * (0.075 + next() * 0.045)
         }
 
         // Fond nord : la crête ferme le monde derrière l'oasis.

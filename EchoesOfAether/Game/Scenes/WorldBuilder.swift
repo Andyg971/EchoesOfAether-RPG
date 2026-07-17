@@ -17,6 +17,10 @@ enum DesertPOI {
     static let oasis = CGPoint(x: 0.85, y: 0.92)
     /// Cité des caravanes : centre de la place.
     static let town = CGPoint(x: 0.50, y: 0.46)
+    /// Habitants de la cité, terrés depuis que les monstres rôdent.
+    static let npcCaravanier = CGPoint(x: 0.30, y: 0.445)
+    static let npcMerchant   = CGPoint(x: 0.435, y: 0.47)
+    static let npcChild      = CGPoint(x: 0.545, y: 0.465)
     /// Rayon d'interaction commun aux POI de la zone.
     static let reach: CGFloat = 60
 }
@@ -60,6 +64,9 @@ final class WorldBuilder {
     /// Vrai pendant la veille du réveil : Lyra reste au chevet de Kael
     /// même si `layout()` est rejoué (rotation, resize, premier layout).
     private var lyraKeepsVigil = false
+    /// Vrai tant que le décor courant est le village : seul cas où
+    /// `layout()` a le droit de replacer les acteurs sur son plan.
+    private var villagePlanActive = false
 
     init() {
         kael    = WorldNode.kael()
@@ -77,6 +84,7 @@ final class WorldBuilder {
         worldNode.name = "worldNode"
         scene.addChild(worldNode)
         buildVillage(in: scene)
+        villagePlanActive = true
         for node in [kael, lyra, dorin, bram, mara, garen, sage, child, villager] {
             worldNode.addChild(node)
         }
@@ -141,6 +149,12 @@ final class WorldBuilder {
     }
 
     func layout(in size: CGSize) {
+        // Le plan ci-dessous est celui du VILLAGE. Il s'appliquait quelle
+        // que soit la zone : au premier `layout()` après un `--zone-…` ou
+        // un voyage, Kael était renvoyé au spawn du village (wh * 0.10) —
+        // c'est ce qui rendait `--cam-y` inopérant partout sauf au village,
+        // où le plan et l'argument coïncidaient.
+        guard villagePlanActive else { return }
         let w = size.width
         let wh = worldHeight > 0 ? worldHeight : size.height
 
@@ -317,6 +331,8 @@ final class WorldBuilder {
         scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
         buildVillage(in: scene)
+        villagePlanActive = true
+        layout(in: scene.size)
     }
 
     func switchToRuins(in scene: SKScene) {
@@ -2071,6 +2087,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                              radiusX: w * 0.22, radiusY: h * 0.065)
         cracked.stampEllipse(center: CGPoint(x: w * 0.14, y: h * 0.88),
                              radiusX: w * 0.20, radiusY: h * 0.06)
+        // La place de la cité : de la terre battue sous le souk et le puits.
+        // Les bâtiments étaient posés à même le sable, comme des décors de
+        // théâtre — un sol qui leur appartient ancre la cité dans la zone.
+        cracked.stampEllipse(center: CGPoint(x: w * 0.50, y: h * 0.480),
+                             radiusX: w * 0.30, radiusY: h * 0.052)
         renderTileMap(cracked, fullTile: "ds_cracked", edgePrefix: "ds_edge_",
                       in: scene, z: -9.6)
 
@@ -2083,6 +2104,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                       in: scene, z: -9.5)
 
         // ── Sud : les dunes d'entrée, semées de cactus et d'ossements ──
+        // Densité alignée sur la forêt (~11 props par écran) : le sable plat
+        // pardonne moins le vide que l'herbe.
         for (asset, x, y) in [("ds_cactus_tall", 0.14, 0.16),
                               ("ds_cactus_med", 0.86, 0.12),
                               ("ds_bush_dead", 0.30, 0.10),
@@ -2090,7 +2113,15 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_tumbleweed", 0.44, 0.24),
                               ("ds_skull_cow", 0.22, 0.24),
                               ("ds_bush_dead2", 0.62, 0.28),
-                              ("ds_cactus_tall2", 0.90, 0.26)] {
+                              ("ds_cactus_tall2", 0.90, 0.26),
+                              ("ds_cactus_small", 0.52, 0.13),
+                              ("ds_rock_pile", 0.08, 0.205),
+                              ("ds_bush_dead3", 0.78, 0.155),
+                              ("ds_cactus_flower", 0.36, 0.185),
+                              ("ds_rock_pile", 0.60, 0.095),
+                              ("ds_tumbleweed2", 0.20, 0.33),
+                              ("ds_cactus_med2", 0.80, 0.315),
+                              ("ds_bones", 0.60, 0.345)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
@@ -2109,7 +2140,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_ruin_stone", 0.30, 0.88),
                               ("ds_cactus_tall3", 0.10, 0.78),
                               ("ds_agave", 0.64, 0.64),
-                              ("ds_tumbleweed2", 0.50, 0.84)] {
+                              ("ds_tumbleweed2", 0.50, 0.84),
+                              ("ds_skull", 0.16, 0.84),
+                              ("ds_rock_pile", 0.60, 0.685),
+                              ("ds_bush_dead", 0.40, 0.66),
+                              ("ds_cactus_med2", 0.90, 0.80)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
@@ -2175,6 +2210,32 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// voisin — pas la taille du sprite, la taille du PIXEL.
     static let desertScale: CGFloat = 0.5
 
+    /// Échelles dérogatoires, par asset.
+    ///
+    /// La densité de pixels vaut pour le sol et la végétation ; sur le bâti
+    /// elle donnait des maisons à peine plus hautes que Kael (72 pt contre
+    /// 43) et un puits qui lui arrivait au genou. Andy : « c'était mieux
+    /// légèrement plus gros ». Le bâti monte donc d'un cran — assez pour
+    /// dominer Kael, loin du ×1,0 d'origine qui écrasait la zone.
+    private static let desertScales: [String: CGFloat] = [
+        "ds_house_red":   0.65,
+        "ds_house_sand":  0.65,
+        "ds_house_large": 0.65,
+        "ds_gate":        0.65,
+        "ds_tent_big":    0.58,
+        "ds_tent_canvas": 0.58,
+        "ds_tent_round":  0.58,
+        "ds_tent_small":  0.58,
+        "ds_market":      0.85,
+        "ds_well":        0.85,
+        "ds_campfire":    0.70
+    ]
+
+    /// Échelle d'affichage d'un asset du désert (table, sinon densité).
+    static func desertDisplayScale(for name: String) -> CGFloat {
+        desertScales[name] ?? desertScale
+    }
+
     /// Emprise au sol d'un décor : sur quelle surface il arrête Kael.
     private struct Footprint {
         let widthRatio: CGFloat
@@ -2236,7 +2297,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Son emprise vient de `desertFootprints`, pas de l'appelant.
     @discardableResult
     private func addDesertProp(_ name: String, in scene: SKScene, at pos: CGPoint,
-                               scale: CGFloat = WorldBuilder.desertScale) -> SKNode? {
+                               scale: CGFloat? = nil) -> SKNode? {
+        let scale = scale ?? Self.desertDisplayScale(for: name)
         guard let node = PixelArtSprites.still(name: name, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         node.position = pos
@@ -2256,34 +2318,69 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// une oasis et trois rôdeurs — le scénario parle pourtant d'une route de
     /// caravanes, et le joueur ne croisait jamais personne qui l'ait empruntée.
     private func addDesertTown(in scene: SKScene, w: CGFloat, h: CGFloat) {
-        // Remparts et porte : on entre par le sud, ça se voit de loin.
+        // ── Remparts : la porte au centre, des palissades qui prolongent
+        // le mur de chaque côté. Avant, la porte flottait seule dans le
+        // sable — une arche sans muraille, ça ne protège de rien.
         addDesertGate(in: scene, at: CGPoint(x: w * 0.50, y: h * 0.375))
+        for x in [0.10, 0.24, 0.76, 0.90] {
+            addDesertProp("ds_fence", in: scene, at: CGPoint(x: w * x, y: h * 0.377))
+        }
 
-        // Maisons, en retrait de part et d'autre de la place.
-        for (asset, x, y) in [("ds_house_red", 0.18, 0.50),
-                              ("ds_house_sand", 0.80, 0.49),
-                              ("ds_house_large", 0.30, 0.58),
-                              ("ds_house_red", 0.68, 0.58)] {
+        // ── Maisons d'adobe : un croissant autour de la place, la grande
+        // bâtisse en fond de perspective. Elles se lisaient comme quatre
+        // cubes posés au hasard ; ici chaque façade regarde la place.
+        for (asset, x, y) in [("ds_house_red", 0.13, 0.545),
+                              ("ds_house_sand", 0.29, 0.585),
+                              ("ds_house_large", 0.50, 0.615),
+                              ("ds_house_sand", 0.71, 0.585),
+                              ("ds_house_red", 0.87, 0.545)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
-        // Tentes de caravaniers autour de la place.
-        for (asset, x, y) in [("ds_tent_big", 0.62, 0.43),
-                              ("ds_tent_canvas", 0.34, 0.42),
-                              ("ds_tent_round", 0.22, 0.45),
-                              ("ds_tent_small", 0.76, 0.44)] {
+        // ── Camp des caravaniers : les tentes juste derrière les remparts,
+        // là où on gare les bêtes et les chariots en arrivant.
+        for (asset, x, y) in [("ds_tent_canvas", 0.30, 0.420),
+                              ("ds_tent_round", 0.17, 0.455),
+                              ("ds_tent_big", 0.70, 0.425),
+                              ("ds_tent_small", 0.83, 0.450)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
-        // Le souk, le puits, le feu : la place vit.
-        addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.44, y: h * 0.47))
+        // ── La place : souk, puits, feu de camp — le cœur qui vit.
+        addDesertProp("ds_market", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.468))
         addDesertProp("ds_well", in: scene, at: DesertPOI.town.scaled(w: w, h: h))
-        addDesertProp("ds_campfire", in: scene, at: CGPoint(x: w * 0.58, y: h * 0.50))
-        for (asset, x, y) in [("ds_pot", 0.40, 0.52), ("ds_pot2", 0.61, 0.54),
-                              ("ds_fence", 0.14, 0.42), ("ds_fence", 0.88, 0.41),
-                              ("ds_ladder", 0.24, 0.53), ("ds_cactus_barrel2", 0.92, 0.53)] {
+        addDesertProp("ds_campfire", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.478))
+
+        // ── Le petit bazar du quotidien : jarres aux portes, échelle contre
+        // un mur, herbes sèches entre les maisons.
+        for (asset, x, y) in [("ds_pot", 0.355, 0.510), ("ds_pot2", 0.645, 0.515),
+                              ("ds_ladder", 0.245, 0.560), ("ds_cactus_barrel2", 0.93, 0.520),
+                              ("ds_grass_dry", 0.19, 0.520), ("ds_grass_dry", 0.81, 0.520),
+                              ("ds_skull_cow2", 0.55, 0.435), ("ds_pot", 0.45, 0.44)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
+
+        // ── Les habitants : trois silhouettes terrées derrière les remparts.
+        // Ils ne vagabondent pas comme au village — on ne flâne pas quand
+        // des goules rôdent aux portes. Le dialogue est dans
+        // `GameManager.tryDesertInteraction`, aux mêmes repères.
+        addDesertVillager("npc_villager", in: scene,
+                          at: DesertPOI.npcCaravanier.scaled(w: w, h: h))
+        addDesertVillager("npc_extra", in: scene,
+                          at: DesertPOI.npcMerchant.scaled(w: w, h: h))
+        addDesertVillager("npc_child", in: scene,
+                          at: DesertPOI.npcChild.scaled(w: w, h: h))
+    }
+
+    /// Figurant de la cité : animation d'idle, pas d'errance (ils ont peur).
+    private func addDesertVillager(_ asset: String, in scene: SKScene, at pos: CGPoint) {
+        guard let npc = PixelArtSprites.animated(
+            name: asset, frames: 6, scale: 0.5,
+            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
+        npc.position = pos
+        npc.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
+        addGroundShadow(under: npc, width: 13, height: 4)
+        add(npc, to: scene)
     }
 
     /// La porte des remparts : un mur percé d'une arche.
@@ -2294,7 +2391,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// reste ouverte. Mesuré sur l'asset (193 px de large) : le passage occupe
     /// les colonnes 74 à 131, soit 38 % à 68 % de la largeur.
     private func addDesertGate(in scene: SKScene, at pos: CGPoint) {
-        guard let gate = PixelArtSprites.still(name: "ds_gate", scale: WorldBuilder.desertScale,
+        guard let gate = PixelArtSprites.still(name: "ds_gate",
+                                               scale: WorldBuilder.desertDisplayScale(for: "ds_gate"),
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         gate.position = pos
         gate.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
@@ -3929,6 +4027,7 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
 
     private func clearBackdrop() {
         obstacles.removeAll()
+        villagePlanActive = false    // chaque zone replace Kael elle-même
         snapCameraNextFrame = true   // nouvelle zone : recadrage instantané
         backdropNodes.forEach { $0.removeFromParent() }
         backdropNodes.removeAll()

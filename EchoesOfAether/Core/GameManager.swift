@@ -231,6 +231,20 @@ final class GameManager {
             player.questChildToy   = .active
         }
 
+        // `--cam-y <frac>` : fraction de hauteur MONDE où poser Kael pour
+        // l'audit d'une zone qui scrolle (la caméra le suit). Chaque zone
+        // relisait les arguments à sa façon — le désert et les mines
+        // l'ignoraient tout court : tout ce qui vivait au nord de l'écran
+        // d'entrée était invisible à l'inspection.
+        func camYFraction(default def: Double) -> Double {
+            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
+               CommandLine.arguments.indices.contains(idx + 1),
+               let f = Double(CommandLine.arguments[idx + 1]) {
+                return f
+            }
+            return def
+        }
+
         // Visualisation pure d'une zone (sans combat), pour audit UI.
         if CommandLine.arguments.contains("--zone-forest") {
             hud.goldValue = player.gold
@@ -238,16 +252,9 @@ final class GameManager {
             showForest(in: scene)
             addSideQuestMarkers(in: scene)
             transition(to: .exploration)
-            let frac: Double
-            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
-               CommandLine.arguments.indices.contains(idx + 1),
-               let f = Double(CommandLine.arguments[idx + 1]) {
-                frac = f
-            } else {
-                frac = 0.05
-            }
-            world.kael.position = CGPoint(x: scene.size.width * 0.5,
-                                          y: world.worldHeight * CGFloat(frac))
+            world.kael.position = CGPoint(
+                x: scene.size.width * 0.5,
+                y: world.worldHeight * camYFraction(default: 0.05))
             return
         }
         if CommandLine.arguments.contains("--zone-mines") {
@@ -258,8 +265,9 @@ final class GameManager {
             AudioEngine.shared.setMood(.mines)
             world.switchToMines(in: scene, progress: player.minesProgress,
                                 goldTaken: player.minesGoldTaken)
-            world.kael.position = CGPoint(x: scene.size.width * 0.50,
-                                          y: scene.size.height * 0.14)
+            world.kael.position = CGPoint(
+                x: scene.size.width * 0.50,
+                y: world.worldHeight * camYFraction(default: 0.05))
             spawnMineRoamers()
             transition(to: .exploration)
             return
@@ -289,8 +297,9 @@ final class GameManager {
             AudioEngine.shared.setMood(.tense)
             world.switchToDesert(in: scene, progress: player.desertProgress,
                                  chestTaken: player.desertChestTaken)
-            world.kael.position = CGPoint(x: scene.size.width * 0.50,
-                                          y: scene.size.height * 0.14)
+            world.kael.position = CGPoint(
+                x: scene.size.width * 0.50,
+                y: world.worldHeight * camYFraction(default: 0.05))
             spawnDesertRoamers()
             transition(to: .exploration)
             return
@@ -357,11 +366,17 @@ final class GameManager {
             hud.goldValue = player.gold
             phase = .village
             transition(to: .exploration)
-            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
-               CommandLine.arguments.indices.contains(idx + 1),
-               let frac = Double(CommandLine.arguments[idx + 1]) {
-                world.kael.position = CGPoint(x: scene.size.width * 0.5,
-                                              y: world.worldHeight * CGFloat(frac))
+            if CommandLine.arguments.contains("--cam-y") {
+                // Différé : le `layout()` initial (GameScene.didMove) replace
+                // Kael sur le plan du village juste après ce handler — le
+                // placement d'audit doit passer en dernier.
+                let frac = camYFraction(default: 0.05)
+                DispatchQueue.main.async { [weak self] in
+                    guard let self, let scene = self.scene else { return }
+                    world.kael.position = CGPoint(
+                        x: scene.size.width * 0.5,
+                        y: world.worldHeight * CGFloat(frac))
+                }
             }
             return
         }
@@ -1789,23 +1804,25 @@ final class GameManager {
                 actionPoint = nearest.point
             }
         } else if inDesert {
-            // POI du désert : combats, coffre, oasis, sortie
-            let w = scene.size.width, h = scene.size.height
+            // POI du désert : PNJ, coffre, oasis, sortie. En coordonnées
+            // MONDE et par `DesertPOI` : ces points dataient du désert à un
+            // écran — depuis qu'Ossara scrolle sur trois, le coffre et
+            // l'oasis s'allumaient à un tiers de leur sprite. Les combats
+            // n'ont plus de hint : ils partent au contact des rôdeurs.
+            let w = scene.size.width
+            let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
             var checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.50, y: h*0.08), "hint.exit")
+                (CGPoint(x: w * 0.50, y: h * DesertPOI.exitY), "hint.exit"),
+                (DesertPOI.npcCaravanier.scaled(w: w, h: h), "hint.talk"),
+                (DesertPOI.npcMerchant.scaled(w: w, h: h), "hint.talk"),
+                (DesertPOI.npcChild.scaled(w: w, h: h), "hint.talk")
             ]
-            if player.desertProgress < 1 {
-                checkpoints.append((CGPoint(x: w*0.28, y: h*0.55), "hint.fight"))
-            } else if player.desertProgress == 1 {
-                checkpoints.append((CGPoint(x: w*0.55, y: h*0.68), "hint.fight"))
-            } else if player.desertProgress == 2, player.questDesert != .complete {
-                checkpoints.append((CGPoint(x: w*0.80, y: h*0.55), "hint.fight"))
-            }
             if !player.desertChestTaken {
-                checkpoints.append((CGPoint(x: w*0.12, y: h*0.56), "hint.examine"))
+                checkpoints.append((CGPoint(x: w * 0.10, y: h * DesertPOI.chestY),
+                                    "hint.examine"))
             }
             if !player.desertOasisUsed {
-                checkpoints.append((CGPoint(x: w*0.85, y: h*0.20), "hint.examine"))
+                checkpoints.append((DesertPOI.oasis.scaled(w: w, h: h), "hint.examine"))
             }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)

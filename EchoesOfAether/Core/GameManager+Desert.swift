@@ -123,6 +123,22 @@ extension GameManager {
         // Les combats du désert se déclenchent au contact d'un monstre
         // baladeur (spawnDesertRoamers), plus au tap.
 
+        // Habitants de la cité : trois voix terrées derrière les remparts,
+        // qui racontent la même peur — les monstres ont coupé la route.
+        let npcs: [(CGPoint, [DialogueStep])] = [
+            (DesertPOI.npcCaravanier, PrototypeContent.desertCaravanierDialogue),
+            (DesertPOI.npcMerchant, PrototypeContent.desertMerchantDialogue),
+            (DesertPOI.npcChild, PrototypeContent.desertChildDialogue)
+        ]
+        for (poi, steps) in npcs
+        where point.distance(to: poi.scaled(w: w, h: h)) < DesertPOI.reach {
+            transition(to: .dialogue)
+            dialogue.start(steps) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+            return true
+        }
+
         // Coffre enfoui (une seule fois)
         if !player.desertChestTaken,
            point.distance(to: CGPoint(x: w * 0.10, y: h * DesertPOI.chestY)) < DesertPOI.reach {

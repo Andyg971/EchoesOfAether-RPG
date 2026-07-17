@@ -389,6 +389,34 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.desert.ambush.kael1"))
     ]
 
+    // Habitants d'Ossara : la cité vit terrée depuis que les monstres
+    // rôdent. Trois voix, une même peur — le locuteur est un rôle localisé
+    // (pas un prénom) : le portrait générique s'y accroche par mot-clé.
+
+    /// Le caravanier, près des tentes : ses bêtes ne repartiront pas.
+    static let desertCaravanierDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.caravanier.name"),
+              text: String(localized: "dialogue.desert.npc.caravanier1")),
+        .line(speaker: String(localized: "npc.desert.caravanier.name"),
+              text: String(localized: "dialogue.desert.npc.caravanier2"))
+    ]
+
+    /// La marchande, au souk : plus rien à vendre, plus personne à qui.
+    static let desertMerchantDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.merchant.name"),
+              text: String(localized: "dialogue.desert.npc.merchant1")),
+        .line(speaker: String(localized: "npc.desert.merchant.name"),
+              text: String(localized: "dialogue.desert.npc.merchant2"))
+    ]
+
+    /// L'enfant, près du puits : il répète ce que les grands murmurent.
+    static let desertChildDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.child.name"),
+              text: String(localized: "dialogue.desert.npc.child1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.desert.npc.child.kael1"))
+    ]
+
     // MARK: - Forêt — jouet trouvé
 
     static let toyFoundDialogue: [DialogueStep] = [

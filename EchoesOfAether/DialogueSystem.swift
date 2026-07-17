@@ -252,7 +252,11 @@ final class DialogueSystem {
             ("enfant", "portrait_child"),
             ("child", "portrait_child"),
             ("villageois", "portrait_villager"),
-            ("villager", "portrait_villager")
+            ("villager", "portrait_villager"),
+            // Habitants d'Ossara : rôles localisés → portrait générique.
+            ("caravan", "portrait_villager"),
+            ("marchand", "portrait_villager"),
+            ("merchant", "portrait_villager")
         ]
         for (needle, asset) in table where key.contains(needle) { return asset }
         return nil

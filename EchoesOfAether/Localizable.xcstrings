@@ -6910,6 +6910,108 @@
         }
       }
     },
+    "dialogue.desert.npc.caravanier1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Stay close to the walls, stranger. Those creatures have been prowling the north road for weeks."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Reste près des remparts, étranger. Ces créatures rôdent sur la route du nord depuis des semaines."
+          }
+        }
+      }
+    },
+    "dialogue.desert.npc.caravanier2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No one dares set out anymore. My beasts sleep under the tent and the wagons rot where they stand."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus personne n'ose sortir. Mes bêtes dorment sous la tente et les chariots pourrissent sur place."
+          }
+        }
+      }
+    },
+    "dialogue.desert.npc.child.kael1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Not for much longer. Stay close to the well."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Plus pour longtemps. Reste près du puits."
+          }
+        }
+      }
+    },
+    "dialogue.desert.npc.child1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Have you seen the monsters? Papa says they eat travelers..."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu as vu les monstres, toi ? Papa dit qu'ils mangent les voyageurs..."
+          }
+        }
+      }
+    },
+    "dialogue.desert.npc.merchant1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Looking to buy? Look at my stall... empty. Not one caravan has passed the gate since those things came."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu veux acheter ? Regarde mon étal... vide. Plus une caravane n'a passé la porte depuis que ces choses sont là."
+          }
+        }
+      }
+    },
+    "dialogue.desert.npc.merchant2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "If you're headed up the canyon, say your farewells in advance. No one has come back."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Si tu montes vers le canyon, fais tes adieux d'avance. Personne n'en est revenu."
+          }
+        }
+      }
+    },
     "dialogue.desert.oasis.kael1": {
       "extractionState": "manual",
       "localizations": {
@@ -8847,6 +8949,22 @@
         }
       }
     },
+    "dialogue.pact.10": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I didn't ask you to."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne te l'ai pas demandé."
+          }
+        }
+      }
+    },
     "dialogue.pact.2": {
       "localizations": {
         "en": {
@@ -8971,22 +9089,6 @@
           "stringUnit": {
             "state": "translated",
             "value": "Je ne te protègerai pas."
-          }
-        }
-      }
-    },
-    "dialogue.pact.10": {
-      "localizations": {
-        "en": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "I didn't ask you to."
-          }
-        },
-        "fr": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -12492,6 +12594,57 @@
           "stringUnit": {
             "state": "translated",
             "value": "v0.3 (Actes I à IV)"
+          }
+        }
+      }
+    },
+    "npc.desert.caravanier.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caravaneer"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Caravanier"
+          }
+        }
+      }
+    },
+    "npc.desert.child.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Child of Ossara"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Enfant d'Ossara"
+          }
+        }
+      }
+    },
+    "npc.desert.merchant.name": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Merchant"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Marchande"
           }
         }
       }

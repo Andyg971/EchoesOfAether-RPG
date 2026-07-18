@@ -56,7 +56,9 @@ extension GameManager {
         // nord. Ils se partageaient le même écran.
         switch player.desertProgress {
         case 0:
-            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.30, y: h * 0.22),
+            // À l'est de l'allée : l'oasis (ouest) est un havre, pas un
+            // terrain de chasse.
+            addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.62, y: h * 0.25),
                       wh: h) { [weak self] in self?.startDesertCombat1() }
         case 1:
             addRoamer("enemy_bone", at: CGPoint(x: w * 0.60, y: h * 0.66),

@@ -13,8 +13,10 @@ enum DesertPOI {
     static let exitY: CGFloat = 0.04
     /// Coffre enfoui, à l'ombre du canyon (flanc ouest).
     static let chestY: CGFloat = 0.64
-    /// Oasis, tout au nord.
-    static let oasis = CGPoint(x: 0.85, y: 0.92)
+    /// Oasis, sur la route AVANT la cité (Andy : « beaucoup trop haut sur
+    /// la map ») — une halte de caravane, pas une récompense de fond de
+    /// carte.
+    static let oasis = CGPoint(x: 0.24, y: 0.22)
     /// Cité des caravanes : centre de la place.
     static let town = CGPoint(x: 0.50, y: 0.46)
     /// Habitants de la cité, terrés depuis que les monstres rôdent.
@@ -2217,8 +2219,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_cactus_med", 0.86, 0.12),
                               ("ds_bush_dead", 0.30, 0.10),
                               ("ds_cactus_barrel", 0.70, 0.20),
-                              ("ds_tumbleweed", 0.44, 0.24),
-                              ("ds_skull_cow", 0.22, 0.24),
+                              ("ds_tumbleweed", 0.585, 0.245),
+                              ("ds_skull_cow", 0.135, 0.315),
                               ("ds_bush_dead2", 0.62, 0.28),
                               ("ds_cactus_tall2", 0.90, 0.26),
                               ("ds_cactus_small", 0.52, 0.13),
@@ -2255,19 +2257,24 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 
-        // ── Oasis (nord) : bassin pixel, palmeraie, fraîcheur ──
+        // ── L'allée pavée : de l'entrée à la porte sud, crochet compris ──
+        addDesertPathTiles(in: scene, w: w, h: h)
+
+        // ── Oasis : la halte sur la route, palmeraie autour du bassin ──
         addOasis(in: scene, at: DesertPOI.oasis.scaled(w: w, h: h))
-        addDesertProp("ds_palm_tall1", in: scene, at: CGPoint(x: w * 0.79, y: h * 0.945))
-        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.905, y: h * 0.900))
-        addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.705, y: h * 0.905))
-        for (asset, x, y) in [("ds_flowers", 0.74, 0.90), ("ds_flowers_red", 0.90, 0.88),
-                              ("ds_pot", 0.78, 0.94), ("ds_flower_orange", 0.68, 0.94),
-                              ("ds_oasis_flower", 0.745, 0.892), ("ds_oasis_flower", 0.915, 0.945)] {
+        addDesertProp("ds_palm_tall1", in: scene, at: CGPoint(x: w * 0.155, y: h * 0.252))
+        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.315, y: h * 0.250))
+        addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.180, y: h * 0.163))
+        for (asset, x, y) in [("ds_flowers", 0.305, 0.172), ("ds_flowers_red", 0.145, 0.195),
+                              ("ds_pot", 0.315, 0.208), ("ds_flower_orange", 0.205, 0.272),
+                              ("ds_oasis_flower", 0.275, 0.168), ("ds_oasis_flower", 0.165, 0.285),
+                              ("ds_grass_dry", 0.335, 0.235)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
-        // Deux palmiers isolés sur la route : la nappe d'eau affleure
-        // près des plaques de terre craquelée.
-        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.24, y: h * 0.315))
+        // Le nord garde une trace de vert : un palmier esseulé au canyon.
+        addDesertProp("ds_palm_tall2", in: scene, at: CGPoint(x: w * 0.905, y: h * 0.900))
+        addDesertProp("ds_flowers_red", in: scene, at: CGPoint(x: w * 0.885, y: h * 0.885))
+        // Et un petit près de la cité, côté est.
         addDesertProp("ds_palm_small", in: scene, at: CGPoint(x: w * 0.68, y: h * 0.330))
 
         // ── Détails semés sur le sable libre (hors cité/oasis/bords) ──
@@ -2737,7 +2744,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func scatterDesertDetails(in scene: SKScene, w: CGFloat, h: CGFloat) {
         let reserved: [CGRect] = [
             CGRect(x: 0, y: h * 0.355, width: w, height: h * 0.30),        // cité
-            CGRect(x: w * 0.58, y: h * 0.85, width: w * 0.42, height: h * 0.15), // oasis
+            CGRect(x: w * 0.11, y: h * 0.13, width: w * 0.27, height: h * 0.17), // oasis
+            CGRect(x: w * 0.40, y: 0, width: w * 0.14, height: h * 0.38),  // allée pavée
+            CGRect(x: w * 0.28, y: h * 0.21, width: w * 0.16, height: h * 0.07), // branche oasis
             CGRect(x: 0, y: 0, width: w, height: h * 0.065),               // entrée
             CGRect(x: 0, y: 0, width: w * 0.10, height: h),                // falaises O
             CGRect(x: w * 0.90, y: 0, width: w * 0.10, height: h),         // falaises E
@@ -2762,40 +2771,105 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         }
     }
 
-    /// Bassin d'oasis : eau pixel bordée de pierre, éclats de lumière.
+    /// Bassin d'oasis : la VRAIE eau du pack — tuiles 48 px assemblées
+    /// cellule par cellule sur une ellipse (eau pleine au centre, berges
+    /// nommées par leur(s) côté(s) sable), et la source qui jaillit posée
+    /// dessus. Le rectangle SKShapeNode dessiné en code était le dernier
+    /// élément de la zone à ne pas venir du pack.
     private func addOasis(in scene: SKScene, at pos: CGPoint) {
-        let oasis = SKNode()
-        oasis.name = "desertOasis"
-        oasis.position = pos
-        oasis.zPosition = -4
-
-        let rim = SKShapeNode(rectOf: CGSize(width: 92, height: 62))
-        rim.fillColor = SKColor(red: 0.52, green: 0.42, blue: 0.24, alpha: 1)
-        rim.strokeColor = .clear
-        oasis.addChild(rim)
-
-        let water = SKShapeNode(rectOf: CGSize(width: 80, height: 50))
-        water.fillColor = SKColor(red: 0.24, green: 0.62, blue: 0.72, alpha: 1)
-        water.strokeColor = SKColor(red: 0.55, green: 0.85, blue: 0.90, alpha: 0.8)
-        water.lineWidth = 1.5
-        oasis.addChild(water)
-
-        for (dx, dy) in [(-22, 10), (6, -8), (24, 6), (-8, 14)] {
-            let sparkle = SKSpriteNode(color: SKColor(red: 0.80, green: 0.95, blue: 1.0, alpha: 0.9),
-                                       size: CGSize(width: 3, height: 3))
-            sparkle.position = CGPoint(x: CGFloat(dx), y: CGFloat(dy))
-            oasis.addChild(sparkle)
-            JuiceEngine.pulse(sparkle, scale: 1.5)
+        // Rectangle de cellules, pas une ellipse : les coins arrondis sont
+        // DANS les tuiles du pack, et une ellipse crée des pointes d'une
+        // cellule (sable sur trois côtés) qu'aucune berge ne sait dessiner.
+        let cell: CGFloat = 24
+        let cols = 6
+        let rows = 4
+        let x0 = pos.x - CGFloat(cols) * cell / 2
+        let y0 = pos.y - CGFloat(rows) * cell / 2
+        func m(_ c: Int, _ r: Int) -> Bool {
+            r >= 0 && r < rows && c >= 0 && c < cols
         }
+        for r in 0..<rows {
+            for c in 0..<cols {
+                let n = m(c, r + 1), s = m(c, r - 1)
+                let e = m(c + 1, r), w = m(c - 1, r)
+                let name: String
+                switch (n, s, e, w) {
+                case (false, _, _, false): name = "ds_water_nw"
+                case (false, _, false, _): name = "ds_water_ne"
+                case (_, false, _, false): name = "ds_water_sw"
+                case (_, false, false, _): name = "ds_water_se"
+                case (false, _, _, _):     name = "ds_water_n"
+                case (_, false, _, _):     name = "ds_water_s"
+                case (_, _, false, _):     name = "ds_water_e"
+                case (_, _, _, false):     name = "ds_water_w"
+                default:                   name = "ds_water"
+                }
+                guard let t = PixelArtSprites.still(name: name, scale: 0.5,
+                                                    anchor: .zero) else { continue }
+                t.position = CGPoint(x: x0 + CGFloat(c) * cell,
+                                     y: y0 + CGFloat(r) * cell)
+                t.zPosition = -9.3
+                add(t, to: scene)
+            }
+        }
+
+        // La source, posée sur l'eau (même texture : le raccord se fond).
+        if let spring = PixelArtSprites.still(name: "ds_water_spring", scale: 0.5,
+                                              anchor: CGPoint(x: 0.5, y: 0.5)) {
+            spring.position = CGPoint(x: pos.x - 8, y: pos.y + 4)
+            spring.zPosition = -9.25
+            add(spring, to: scene)
+            JuiceEngine.pulse(spring, scale: 1.04)
+        }
+
+        // On ne marche pas dans l'eau.
+        registerObstacle(CGRect(x: x0 + 4, y: y0 + 4,
+                                width: CGFloat(cols) * cell - 8,
+                                height: CGFloat(rows) * cell - 8))
 
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.desert.oasis")
         label.fontSize = 12
         label.fontColor = SKColor(red: 0.30, green: 0.50, blue: 0.55, alpha: 0.9)
-        label.position = CGPoint(x: 0, y: 40)
-        oasis.addChild(label)
+        label.position = CGPoint(x: pos.x, y: y0 + CGFloat(rows) * cell + 14)
+        label.zPosition = -1
+        add(label, to: scene)
+    }
 
-        add(oasis, to: scene)
+    /// Chemin pavé du pack (ds_path_v/h) : l'allée qui guide de l'entrée
+    /// à la porte sud, avec un crochet et une branche vers l'oasis. Les
+    /// jonctions se recouvrent — le pavé organique le pardonne.
+    private func addDesertPathTiles(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        let t: CGFloat = 24
+        func vSeg(_ x: CGFloat, _ yFrom: CGFloat, _ yTo: CGFloat) {
+            var y = yFrom
+            while y < yTo {
+                guard let tile = PixelArtSprites.still(name: "ds_path_v", scale: 0.5,
+                                                       anchor: .zero) else { return }
+                tile.position = CGPoint(x: x - t / 2, y: y)
+                tile.zPosition = -9.55
+                add(tile, to: scene)
+                y += t
+            }
+        }
+        func hSeg(_ y: CGFloat, _ xFrom: CGFloat, _ xTo: CGFloat) {
+            var x = xFrom
+            while x < xTo {
+                guard let tile = PixelArtSprites.still(name: "ds_path_h", scale: 0.5,
+                                                       anchor: .zero) else { return }
+                tile.position = CGPoint(x: x, y: y - t / 2)
+                tile.zPosition = -9.55
+                add(tile, to: scene)
+                x += t
+            }
+        }
+        vSeg(w * 0.50, h * 0.050, h * 0.195)
+        hSeg(h * 0.195, w * 0.435, w * 0.505)
+        vSeg(w * 0.44, h * 0.195, h * 0.300)
+        hSeg(h * 0.300, w * 0.435, w * 0.505)
+        vSeg(w * 0.50, h * 0.300, h * 0.373)
+        // Branche vers l'oasis, depuis le crochet.
+        hSeg(h * 0.242, w * 0.315, w * 0.44)
     }
 
     /// Monstre visible dans les dunes : sprite ennemi idle, teinté sable.

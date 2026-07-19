@@ -93,6 +93,7 @@
 		AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10FLOW000000000000TEST /* DialogueFlowTests.swift */; };
 		AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10SPRT000000000000TEST /* BattleSpritesTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
+		AA20WRLD000000000000TEST /* WorldLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10WRLD000000000000TEST /* WorldLayoutTests.swift */; };
 		9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9946241C401B2A418D271A /* Foundation.framework */; };
 /* End PBXBuildFile section */
 
@@ -196,6 +197,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7EFF02B8A741B0A0000001 /* Strings+References.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Strings+References.swift"; sourceTree = "<group>"; };
 		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
+		AA10WRLD000000000000TEST /* WorldLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WorldLayoutTests.swift; sourceTree = "<group>"; };
 		BD9946241C401B2A418D271A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
@@ -380,6 +382,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			isa = PBXGroup;
 			children = (
 				B090FF8964809699D851868F /* PlayerStateTests.swift */,
+				AA10WRLD000000000000TEST /* WorldLayoutTests.swift */,
 				4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */,
 				BB10STORY00000000000TEST /* StoryFlowTests.swift */,
 				AA10FLOW000000000000TEST /* DialogueFlowTests.swift */,
@@ -574,6 +577,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			buildActionMask = 2147483647;
 			files = (
 				8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */,
+				AA20WRLD000000000000TEST /* WorldLayoutTests.swift in Sources */,
 				71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */,
 				BB20STORY00000000000TEST /* StoryFlowTests.swift in Sources */,
 				AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */,

@@ -82,7 +82,11 @@ final class WorldBuilder {
     private var lyraKeepsVigil = false
     /// Vrai tant que le décor courant est le village : seul cas où
     /// `layout()` a le droit de replacer les acteurs sur son plan.
-    private var villagePlanActive = false
+    /// Vrai tant que le décor courant est le village : `layout()` n'a le
+    /// droit de replacer Kael (et les PNJ) que dans ce cas. `internal`
+    /// plutôt que `private` pour que `WorldLayoutTests` puisse simuler un
+    /// changement de zone (le flag est mis à false par `clearBackdrop()`).
+    var villagePlanActive = false
 
     init() {
         kael    = WorldNode.kael()

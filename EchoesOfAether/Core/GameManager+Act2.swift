@@ -395,7 +395,9 @@ extension GameManager {
             },
             .wait(forDuration: 0.34),
             .run { [weak self] in
-                guard let self else { return }
+                // Le manager peut avoir disparu (scène détruite) ; sinon on
+                // n'a besoin que de `lyra` et `facing`, capturés localement.
+                guard self != nil else { return }
                 // Lyra est frappée : flash blanc, souffle, elle tombe.
                 AudioEngine.shared.playDamage()
                 lyra.forEachDescendantSprite { s in

@@ -96,20 +96,13 @@ final class InteractionBubble {
         if iconChanged {
             currentAction = action
             iconHolder.removeAllChildren()
-            // Glyphe RPG classique : « … » parle, « ! » danger, « ? » examine
-            let glyph = SKLabelNode(fontNamed: PixelUI.uiFont)
-            switch action {
-            case .talk, .shop: glyph.text = "…"
-            case .fight:       glyph.text = "!"
-            case .examine:     glyph.text = "?"
-            case .enter:       glyph.text = "»"
-            }
-            glyph.fontSize = action == .talk || action == .shop ? 30 : 24
-            glyph.fontColor = SKColor(red: 0.12, green: 0.10, blue: 0.14, alpha: 1)
-            glyph.verticalAlignmentMode = .center
-            glyph.horizontalAlignmentMode = .center
-            glyph.position = CGPoint(x: 0, y: action == .talk || action == .shop ? 4 : 0)
-            iconHolder.addChild(glyph)
+            // Icône pixel art dessinée en code (parler/commercer/combattre/
+            // examiner/entrer), encrée en sombre pour ressortir sur la bulle
+            // crème — remplace les glyphes texte « … ! ? » d'antan.
+            let icon = PixelIcons.node(action.pixelIcon, pixel: 2)
+            let ink = SKColor(red: 0.12, green: 0.10, blue: 0.14, alpha: 1)
+            icon.forEachDescendantSprite { $0.color = ink }
+            iconHolder.addChild(icon)
             // Petit pop quand l'action change
             root.run(.sequence([
                 .scale(to: 1.2, duration: 0.08),

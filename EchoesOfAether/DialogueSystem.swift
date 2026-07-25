@@ -480,10 +480,11 @@ final class DialogueSystem {
                 "index": offset
             ]
 
-            let bullet = SKShapeNode(circleOfRadius: 3)
-            bullet.fillColor = SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1)
-            bullet.strokeColor = .clear
-            bullet.glowWidth = 2
+            // Puce en losange pixel (carré tourné) — plus de cercle ni de
+            // glow, cohérent avec le reste de l'UI rétro.
+            let bullet = SKSpriteNode(color: SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1),
+                                      size: CGSize(width: 5, height: 5))
+            bullet.zRotation = .pi / 4
             bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)
             button.addChild(bullet)
 

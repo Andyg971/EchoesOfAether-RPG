@@ -5,6 +5,8 @@ struct QuestEntry {
     let title: String
     let desc: String
     let state: QuestState   // .active ou .complete (les .inactive ne s'affichent pas)
+    /// Vignette pixel art par type de quête (colis, gemme, potion…).
+    var icon: PixelIcons.Kind = .bag
 }
 
 /// Journal des quêtes — overlay pixel art listant les quêtes en cours
@@ -79,19 +81,28 @@ final class QuestLogOverlay {
             var y = panelHeight / 2 - 70
             for entry in entries {
                 let done = entry.state == .complete
-                // Puce d'état pixel (carré) + libellé
+                // Vignette pixel art du type de quête (grisée une fois rendue).
+                let icon = PixelIcons.node(entry.icon, pixel: 2)
+                icon.position = CGPoint(x: -panelWidth / 2 + 24, y: y + 2)
+                if done {
+                    icon.forEachDescendantSprite { $0.color = SKColor(white: 0.42, alpha: 1) }
+                }
+                root.addChild(icon)
+                nodes.append(icon)
+
+                // Puce d'état pixel (petit carré coloré) à côté de la vignette.
                 let bullet = SKSpriteNode(
                     color: done ? SKColor(red: 0.45, green: 0.85, blue: 0.50, alpha: 1)
                                 : SKColor(red: 1.0, green: 0.82, blue: 0.28, alpha: 1),
-                    size: CGSize(width: 8, height: 8))
-                bullet.position = CGPoint(x: -panelWidth / 2 + 22, y: y + 5)
+                    size: CGSize(width: 5, height: 5))
+                bullet.position = CGPoint(x: -panelWidth / 2 + 40, y: y + 6)
                 root.addChild(bullet)
                 nodes.append(bullet)
 
                 let titleL = label(entry.title, size: 16,
                                    color: done ? SKColor(white: 0.55, alpha: 1) : .white)
                 titleL.horizontalAlignmentMode = .left
-                titleL.position = CGPoint(x: -panelWidth / 2 + 38, y: y)
+                titleL.position = CGPoint(x: -panelWidth / 2 + 50, y: y)
                 root.addChild(titleL)
                 nodes.append(titleL)
 
@@ -108,8 +119,8 @@ final class QuestLogOverlay {
                 let bodyL = label(entry.desc, size: 13, color: SKColor(white: 0.62, alpha: 1))
                 bodyL.horizontalAlignmentMode = .left
                 bodyL.numberOfLines = 2
-                bodyL.preferredMaxLayoutWidth = panelWidth - 56
-                bodyL.position = CGPoint(x: -panelWidth / 2 + 38, y: y - 20)
+                bodyL.preferredMaxLayoutWidth = panelWidth - 68
+                bodyL.position = CGPoint(x: -panelWidth / 2 + 50, y: y - 20)
                 root.addChild(bodyL)
                 nodes.append(bodyL)
 

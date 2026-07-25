@@ -5,8 +5,9 @@ import SpriteKit
 final class MinimapOverlay {
     private let root = SKNode()
     private let mapBg = SKShapeNode()
-    private let kaelDot = SKShapeNode(circleOfRadius: 3.5)
-    private var npcDots: [SKShapeNode] = []
+    // Losange pixel (carré tourné) pour Kael — plus de cercle en pixel art.
+    private let kaelDot = SKShapeNode(rectOf: CGSize(width: 6, height: 6))
+    private var npcDots: [SKSpriteNode] = []
 
     private let mapW: CGFloat = 80
     private let mapH: CGFloat = 60
@@ -30,13 +31,11 @@ final class MinimapOverlay {
         let ny = (kaelPosition.y / sceneSize.height) * mapH - mapH / 2
         kaelDot.position = CGPoint(x: nx, y: ny)
 
-        // Reconstruire points NPC
+        // Reconstruire points NPC (petits carrés pixel, pas de ronds)
         npcDots.forEach { $0.removeFromParent() }
         npcDots.removeAll()
         for npc in npcs {
-            let dot = SKShapeNode(circleOfRadius: 2)
-            dot.fillColor = npc.color
-            dot.strokeColor = .clear
+            let dot = SKSpriteNode(color: npc.color, size: CGSize(width: 4, height: 4))
             let dx = (npc.position.x / sceneSize.width) * mapW - mapW / 2
             let dy = (npc.position.y / sceneSize.height) * mapH - mapH / 2
             dot.position = CGPoint(x: dx, y: dy)
@@ -53,18 +52,22 @@ final class MinimapOverlay {
     // MARK: - Private
 
     private func buildBase() {
-        mapBg.path = CGPath(roundedRect: CGRect(x: -mapW/2, y: -mapH/2,
-                                                width: mapW, height: mapH),
-                            cornerWidth: 6, cornerHeight: 6, transform: nil)
+        // Cadre rectangulaire net (coins carrés) — cohérent pixel art.
+        mapBg.path = CGPath(rect: CGRect(x: -mapW/2, y: -mapH/2,
+                                         width: mapW, height: mapH), transform: nil)
         mapBg.fillColor = SKColor(red: 0, green: 0, blue: 0, alpha: 0.55)
         mapBg.strokeColor = SKColor(red: 0.35, green: 0.30, blue: 0.55, alpha: 0.6)
         mapBg.lineWidth = 1
+        mapBg.glowWidth = 0
         mapBg.zPosition = 0
         root.addChild(mapBg)
 
+        // Losange pixel pour Kael (carré tourné à 45°).
         kaelDot.fillColor = SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1)
         kaelDot.strokeColor = .white
         kaelDot.lineWidth = 1
+        kaelDot.glowWidth = 0
+        kaelDot.zRotation = .pi / 4
         kaelDot.zPosition = 3
         root.addChild(kaelDot)
         JuiceEngine.pulse(kaelDot, scale: 1.3)

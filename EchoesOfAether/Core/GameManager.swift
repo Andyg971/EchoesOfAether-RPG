@@ -1634,7 +1634,7 @@ final class GameManager {
             let next = weapons[player.weaponLevel]
             let targetLevel = player.weaponLevel + 1
             items.append(ShopItem(
-                nameKey: next.name, descKey: next.desc, price: next.price,
+                nameKey: next.name, descKey: next.desc, price: next.price, icon: .sword,
                 canBuy: { [weak self] _ in (self?.player.weaponLevel ?? 3) < targetLevel },
                 onBuy: { [weak self] _ in self?.player.weaponLevel = targetLevel }
             ))
@@ -1643,7 +1643,7 @@ final class GameManager {
             let next = armors[player.armorLevel]
             let targetLevel = player.armorLevel + 1
             items.append(ShopItem(
-                nameKey: next.name, descKey: next.desc, price: next.price,
+                nameKey: next.name, descKey: next.desc, price: next.price, icon: .shield,
                 canBuy: { [weak self] _ in (self?.player.armorLevel ?? 3) < targetLevel },
                 onBuy: { [weak self] _ in self?.player.armorLevel = targetLevel }
             ))
@@ -1657,6 +1657,7 @@ final class GameManager {
                 nameKey: "shop.mara.potion.name",
                 descKey: "shop.mara.potion.desc",
                 price: 15,
+                icon: .potion,
                 canBuy: { [weak self] _ in !(self?.player.potionsFull ?? false) },
                 onBuy: { [weak self] _ in
                     guard let self, player.potions < 3 else { return }
@@ -1676,6 +1677,7 @@ final class GameManager {
                 nameKey: "shop.inn.rest.name",
                 descKey: "shop.inn.rest.desc",
                 price: 10,
+                icon: .heart,
                 canBuy: { [weak self] _ in !(self?.player.innRested ?? false) },
                 onBuy: { [weak self] _ in self?.player.innRested = true }
             )
@@ -1728,23 +1730,23 @@ final class GameManager {
 
     /// Compile les quêtes visibles (actives + terminées) pour le journal.
     private func buildQuestEntries() -> [QuestEntry] {
-        let all: [(QuestState, String, String)] = [
-            (player.questChildToy,   "questlog.toy.title",       "questlog.toy.desc"),
-            (player.questDelivery,   "questlog.delivery.title",  "questlog.delivery.desc"),
-            (player.questMushroom,   "questlog.mushroom.title",  "questlog.mushroom.desc"),
-            (player.questLyraShards, "questlog.shards.title",    "questlog.shards.desc"),
-            (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc"),
-            (player.questBramOre,    "questlog.bramOre.title",   "questlog.bramOre.desc"),
-            (player.questSageHerb,   "questlog.sageHerb.title",  "questlog.sageHerb.desc"),
-            (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc"),
-            (player.questMines,      "questlog.mines.title",      "questlog.mines.desc")
+        let all: [(QuestState, String, String, PixelIcons.Kind)] = [
+            (player.questChildToy,   "questlog.toy.title",       "questlog.toy.desc",       .bag),
+            (player.questDelivery,   "questlog.delivery.title",  "questlog.delivery.desc",  .bag),
+            (player.questMushroom,   "questlog.mushroom.title",  "questlog.mushroom.desc",  .potion),
+            (player.questLyraShards, "questlog.shards.title",    "questlog.shards.desc",    .gem),
+            (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc", .coin),
+            (player.questBramOre,    "questlog.bramOre.title",   "questlog.bramOre.desc",   .gem),
+            (player.questSageHerb,   "questlog.sageHerb.title",  "questlog.sageHerb.desc",  .potion),
+            (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc", .magnifier),
+            (player.questMines,      "questlog.mines.title",      "questlog.mines.desc",     .skull)
         ]
         let active = all.filter { $0.0 == .active }
         let done   = all.filter { $0.0 == .complete }
         return (active + done).map {
             QuestEntry(title: String(localized: String.LocalizationValue($0.1)),
                        desc: String(localized: String.LocalizationValue($0.2)),
-                       state: $0.0)
+                       state: $0.0, icon: $0.3)
         }
     }
 

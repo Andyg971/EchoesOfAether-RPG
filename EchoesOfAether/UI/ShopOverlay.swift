@@ -4,6 +4,8 @@ struct ShopItem {
     let nameKey: LocalizedStringResource
     let descKey: LocalizedStringResource
     let price: Int
+    /// Vignette pixel art affichée à gauche de la ligne (arme, potion…).
+    var icon: PixelIcons.Kind = .bag
     let canBuy: (PlayerState) -> Bool
     let onBuy: (PlayerState) -> Void
 }
@@ -177,12 +179,22 @@ final class ShopOverlay {
         row.glowWidth = 0
         row.userData = ["index": index]
 
+        let rowW = panelWidth - 24
+        // Vignette pixel art de l'article (grisée si non achetable).
+        let icon = PixelIcons.node(item.icon, pixel: 2)
+        icon.position = CGPoint(x: -rowW / 2 + 16, y: 0)
+        if !affordable {
+            icon.forEachDescendantSprite { $0.color = SKColor(white: 0.32, alpha: 1) }
+        }
+        row.addChild(icon)
+
+        let textX = -rowW / 2 + 34
         let nameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         nameLabel.text = String(localized: item.nameKey)
         nameLabel.fontSize = 13
         nameLabel.fontColor = affordable ? .white : SKColor(white: 0.4, alpha: 1)
         nameLabel.horizontalAlignmentMode = .left
-        nameLabel.position = CGPoint(x: -(panelWidth - 24) / 2 + 10, y: 6)
+        nameLabel.position = CGPoint(x: textX, y: 6)
         row.addChild(nameLabel)
 
         let descLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -190,7 +202,7 @@ final class ShopOverlay {
         descLabel.fontSize = 10
         descLabel.fontColor = SKColor(white: 0.55, alpha: 1)
         descLabel.horizontalAlignmentMode = .left
-        descLabel.position = CGPoint(x: -(panelWidth - 24) / 2 + 10, y: -8)
+        descLabel.position = CGPoint(x: textX, y: -8)
         row.addChild(descLabel)
 
         let priceLabel = SKLabelNode(fontNamed: PixelUI.uiFont)

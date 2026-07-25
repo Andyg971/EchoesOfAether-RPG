@@ -15373,6 +15373,57 @@
           }
         }
       }
+    },
+    "shop.purchased": {
+      "comment": "Toast shown after a successful purchase.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Purchased!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Acheté !"
+          }
+        }
+      }
+    },
+    "options.haptics": {
+      "comment": "Toggle label for haptic feedback.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Haptics"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vibrations"
+          }
+        }
+      }
+    },
+    "options.credits": {
+      "comment": "Button to open the credits screen from options.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Credits"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Crédits"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

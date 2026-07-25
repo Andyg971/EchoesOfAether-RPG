@@ -101,7 +101,34 @@ final class ShopOverlay {
         player.gold -= item.price
         item.onBuy(player)
         AudioEngine.shared.playPurchase()
+        HapticsEngine.success()
         refresh()
+        showPurchaseToast()
+    }
+
+    /// Toast « Acheté ! » vert, bref, après un achat réussi.
+    private func showPurchaseToast() {
+        root.childNode(withName: "purchaseToast")?.removeFromParent()
+        let toast = SKLabelNode(fontNamed: PixelUI.uiFont)
+        toast.name = "purchaseToast"
+        toast.text = String(localized: "shop.purchased")
+        toast.fontSize = 16
+        toast.fontColor = SKColor(red: 0.55, green: 0.92, blue: 0.58, alpha: 1)
+        toast.verticalAlignmentMode = .center
+        toast.horizontalAlignmentMode = .center
+        toast.position = CGPoint(x: 0, y: panelHeight / 2 - 58)
+        toast.zPosition = 20
+        toast.setScale(0.6)
+        toast.alpha = 0
+        root.addChild(toast)
+        toast.run(.sequence([
+            .group([.fadeIn(withDuration: 0.12),
+                    .scale(to: 1.0, duration: 0.16)]),
+            .wait(forDuration: 0.7),
+            .group([.fadeOut(withDuration: 0.3),
+                    .moveBy(x: 0, y: 10, duration: 0.3)]),
+            .removeFromParent()
+        ]))
     }
 
     private func refreshSelectionHighlight() {

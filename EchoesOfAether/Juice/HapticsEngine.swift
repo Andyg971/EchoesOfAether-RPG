@@ -11,6 +11,12 @@ enum HapticsEngine {
         CHHapticEngine.capabilitiesForHardware().supportsHaptics
     }()
 
+    /// Vibrations activées (réglage Options, persistant). Défaut : activé.
+    static let enabledKey = "hapticsEnabled"
+    static var enabled: Bool {
+        UserDefaults.standard.object(forKey: enabledKey) as? Bool ?? true
+    }
+
     // MARK: - Lifecycle
 
     /// Initialise le moteur CoreHaptics. À appeler une fois depuis la scene principale.
@@ -60,6 +66,7 @@ enum HapticsEngine {
     // MARK: - Private CoreHaptics
 
     private static func play(intensity: Float, sharpness: Float) {
+        guard enabled else { return }
         guard supportsHaptics, let engine else {
             uiFallback(intensity: intensity)
             return
@@ -77,6 +84,7 @@ enum HapticsEngine {
     }
 
     private static func playPattern(_ events: [(TimeInterval, Float, Float)]) {
+        guard enabled else { return }
         guard supportsHaptics, let engine else {
             uiFallback(intensity: 0.7)
             return

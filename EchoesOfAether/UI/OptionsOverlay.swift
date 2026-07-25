@@ -43,7 +43,7 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 304, panelH: CGFloat = 624
+        let panelW: CGFloat = 304, panelH: CGFloat = 636
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
@@ -61,83 +61,91 @@ final class OptionsOverlay {
         title.position = CGPoint(x: cx, y: top - 34)
         root.addChild(title)
 
+        // Curseur vertical courant : chaque section descend `y`, plus de
+        // dizaines d'offsets en dur à recaler quand on ajoute une ligne.
+        var y = top - 70
+
         // Section Volume musique
         let musicTitle = label(String(localized: "options.music"), size: 18,
                                color: SKColor(white: 0.65, alpha: 1))
-        musicTitle.position = CGPoint(x: cx, y: top - 70)
-        root.addChild(musicTitle)
-        root.addChild(makeVolumeRow(value: musicVolume, at: CGPoint(x: cx, y: top - 98), kind: .music))
+        musicTitle.position = CGPoint(x: cx, y: y)
+        root.addChild(musicTitle); y -= 28
+        root.addChild(makeVolumeRow(value: musicVolume, at: CGPoint(x: cx, y: y), kind: .music)); y -= 36
 
         // Section Volume SFX
         let sfxTitle = label(String(localized: "options.sfx"), size: 18,
                              color: SKColor(white: 0.65, alpha: 1))
-        sfxTitle.position = CGPoint(x: cx, y: top - 134)
-        root.addChild(sfxTitle)
-        root.addChild(makeVolumeRow(value: sfxVolume, at: CGPoint(x: cx, y: top - 162), kind: .sfx))
+        sfxTitle.position = CGPoint(x: cx, y: y)
+        root.addChild(sfxTitle); y -= 28
+        root.addChild(makeVolumeRow(value: sfxVolume, at: CGPoint(x: cx, y: y), kind: .sfx)); y -= 30
 
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 192))
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 28
 
         // Accessibilité — toggles
         root.addChild(makeToggleRow(String(localized: "options.reduceMotion"),
                                     isOn: AccessibilitySettings.reduceMotion,
                                     name: "toggleReduceMotion",
-                                    at: CGPoint(x: cx, y: top - 220), width: panelW - 44))
+                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
         root.addChild(makeToggleRow(String(localized: "options.largeText"),
                                     isOn: AccessibilitySettings.largeText,
                                     name: "toggleLargeText",
-                                    at: CGPoint(x: cx, y: top - 256), width: panelW - 44))
+                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
+        root.addChild(makeToggleRow(String(localized: "options.haptics"),
+                                    isOn: HapticsEngine.enabled,
+                                    name: "toggleHaptics",
+                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 30
 
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 286))
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 24
 
         // Section Langue — sélecteur FR / EN
         let langTitle = label(String(localized: "options.language"), size: 18,
                               color: SKColor(white: 0.65, alpha: 1))
-        langTitle.position = CGPoint(x: cx, y: top - 310)
-        root.addChild(langTitle)
+        langTitle.position = CGPoint(x: cx, y: y)
+        root.addChild(langTitle); y -= 34
 
         let current = currentLanguageCode()
         let frBtn = makeLangButton("Français", code: "fr",
                                    selected: current == "fr", name: "langFR")
-        frBtn.position = CGPoint(x: cx - 64, y: top - 344)
+        frBtn.position = CGPoint(x: cx - 64, y: y)
         root.addChild(frBtn)
 
         let enBtn = makeLangButton("English", code: "en",
                                    selected: current == "en", name: "langEN")
-        enBtn.position = CGPoint(x: cx + 64, y: top - 344)
-        root.addChild(enBtn)
+        enBtn.position = CGPoint(x: cx + 64, y: y)
+        root.addChild(enBtn); y -= 26
 
         // Note redémarrage — cachée jusqu'au changement
         let restart = label(String(localized: "options.language.restart"), size: 14,
                             color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
-        restart.position = CGPoint(x: cx, y: top - 370)
+        restart.position = CGPoint(x: cx, y: y)
         restart.name = "langRestart"
         restart.isHidden = true
-        root.addChild(restart)
+        root.addChild(restart); y -= 26
 
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: top - 392))
+        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 30
 
         // Bouton Revoir le tutoriel
         let tutorialBtn = makeButton(String(localized: "options.replayTutorial"),
             fill: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
             name: "optionsTutorial")
-        tutorialBtn.position = CGPoint(x: cx, y: top - 426)
-        root.addChild(tutorialBtn)
+        tutorialBtn.position = CGPoint(x: cx, y: y)
+        root.addChild(tutorialBtn); y -= 52
 
         // Bouton Reset
         let resetBtn = makeButton(String(localized: "options.resetSave"),
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
             stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
             name: "optionsReset")
-        resetBtn.position = CGPoint(x: cx, y: top - 480)
-        root.addChild(resetBtn)
+        resetBtn.position = CGPoint(x: cx, y: y)
+        root.addChild(resetBtn); y -= 52
 
         // Bouton Fermer
         let closeBtn = makeButton(String(localized: "options.close"),
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
             name: "optionsClose")
-        closeBtn.position = CGPoint(x: cx, y: top - 534)
+        closeBtn.position = CGPoint(x: cx, y: y)
         root.addChild(closeBtn)
 
         // Animate
@@ -214,6 +222,14 @@ final class OptionsOverlay {
         if let btn = root.childNode(withName: "toggleLargeText") as? SKShapeNode, btn.contains(local) {
             toggle(key: AccessibilitySettings.largeTextKey, scene: scene)
             onLargeTextChange?()
+            return true
+        }
+        if let btn = root.childNode(withName: "toggleHaptics") as? SKShapeNode, btn.contains(local) {
+            // Défaut activé : on bascule depuis la valeur effective, pas depuis
+            // le brut UserDefaults.bool (qui vaut false tant qu'on n'a rien écrit).
+            UserDefaults.standard.set(!HapticsEngine.enabled, forKey: HapticsEngine.enabledKey)
+            HapticsEngine.light()   // buzz de confirmation si on vient d'activer
+            show(in: scene)
             return true
         }
         if let btn = root.childNode(withName: "optionsTutorial") as? SKShapeNode, btn.contains(local) {

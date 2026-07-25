@@ -268,6 +268,9 @@ final class LoreOverlay {
             }
 
             y -= rowH
+            // Ne pas dessiner hors du cadre : au-delà de la zone visible, on
+            // s'arrête (le bestiaire tenait jusqu'ici par chance sur la hauteur).
+            if y < -panelHeight/2 + 52 { break }
         }
     }
 

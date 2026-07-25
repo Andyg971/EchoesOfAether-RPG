@@ -31,17 +31,23 @@ final class MinimapOverlay {
         let ny = (kaelPosition.y / sceneSize.height) * mapH - mapH / 2
         kaelDot.position = CGPoint(x: nx, y: ny)
 
-        // Reconstruire points NPC (petits carrés pixel, pas de ronds)
-        npcDots.forEach { $0.removeFromParent() }
-        npcDots.removeAll()
-        for npc in npcs {
-            let dot = SKSpriteNode(color: npc.color, size: CGSize(width: 4, height: 4))
-            let dx = (npc.position.x / sceneSize.width) * mapW - mapW / 2
-            let dy = (npc.position.y / sceneSize.height) * mapH - mapH / 2
-            dot.position = CGPoint(x: dx, y: dy)
+        // Pool de points NPC : on ajuste juste la taille du pool et on
+        // repositionne — plus de removeFromParent/recréation à chaque frame.
+        while npcDots.count < npcs.count {
+            let dot = SKSpriteNode(color: .white, size: CGSize(width: 4, height: 4))
             dot.zPosition = 2
             root.addChild(dot)
             npcDots.append(dot)
+        }
+        while npcDots.count > npcs.count {
+            npcDots.removeLast().removeFromParent()
+        }
+        for (i, npc) in npcs.enumerated() {
+            let dot = npcDots[i]
+            dot.color = npc.color
+            let dx = (npc.position.x / sceneSize.width) * mapW - mapW / 2
+            let dy = (npc.position.y / sceneSize.height) * mapH - mapH / 2
+            dot.position = CGPoint(x: dx, y: dy)
         }
     }
 

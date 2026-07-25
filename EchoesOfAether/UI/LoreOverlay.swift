@@ -223,19 +223,12 @@ final class LoreOverlay {
                 root.addChild(thumb)
                 entryLabels.append(thumb)
             } else {
-                // Boss programmatiques : losange runique violet
-                let rune = SKShapeNode(rectOf: CGSize(width: 14, height: 14))
-                rune.fillColor = seen
-                    ? SKColor(red: 0.45, green: 0.20, blue: 0.70, alpha: 1)
-                    : SKColor(white: 0.12, alpha: 1)
-                rune.strokeColor = seen
-                    ? SKColor(red: 0.70, green: 0.45, blue: 1, alpha: 0.9)
-                    : SKColor(white: 0.25, alpha: 0.8)
-                rune.lineWidth = 1.5
-                rune.zRotation = .pi / 4
-                rune.position = CGPoint(x: -panelWidth/2 + 34, y: y - 4)
-                root.addChild(rune)
-                entryLabels.append(rune)
+                // Boss programmatiques : visage pixel (cornes + yeux ardents),
+                // silhouette noire tant qu'il n'a pas été rencontré.
+                let boss = bossEmblem(seen: seen)
+                boss.position = CGPoint(x: -panelWidth/2 + 34, y: y - 4)
+                root.addChild(boss)
+                entryLabels.append(boss)
             }
 
             if seen {
@@ -290,6 +283,30 @@ final class LoreOverlay {
         HapticsEngine.light()
         AudioEngine.shared.playSelect()
         buildContent()
+    }
+
+    /// Visage de boss générique en pixel art (cornes, yeux ardents, crocs).
+    /// `seen == false` → silhouette encrée noire, comme les vignettes d'ennemis.
+    private func bossEmblem(seen: Bool) -> SKNode {
+        let map = [
+            "H.....H",
+            "HHHHHHH",
+            "HKKKKKH",
+            "EKKKKKE",
+            "HKKKKKH",
+            "HKfKfKH",
+            ".HHHHH."
+        ]
+        let palette: [Character: SKColor] = seen
+            ? ["H": .init(red: 0.40, green: 0.18, blue: 0.52, alpha: 1),
+               "K": .init(red: 0.10, green: 0.07, blue: 0.14, alpha: 1),
+               "E": .init(red: 1.0, green: 0.42, blue: 0.30, alpha: 1),
+               "f": .init(red: 0.88, green: 0.86, blue: 0.78, alpha: 1)]
+            : ["H": .init(white: 0.14, alpha: 1),
+               "K": .init(white: 0.10, alpha: 1),
+               "E": .init(white: 0.22, alpha: 1),
+               "f": .init(white: 0.20, alpha: 1)]
+        return PixelIcons.custom(map: map, palette: palette, pixel: 2)
     }
 
     private func close() {

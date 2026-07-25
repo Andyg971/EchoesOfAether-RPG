@@ -167,7 +167,7 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 ## Roadmap — Ce qui reste
 
 - [ ] **Frames walk/attack/cast de Kael** — pack de sprites acheté à intégrer (`kael_walk_1..6`…)
-- [ ] **Accessibilité** — VoiceOver sur les overlays, option « réduire les animations »
+- [x] **Accessibilité (overlays)** — annonces VoiceOver à l'ouverture + au curseur ; reste le combat
 - [ ] **Audit EN complet** — run intégral en anglais
 - [ ] **Support iPad adaptatif** — layout non adaptatif pour l'instant
 - [ ] **App Store** — privacy manifest, screenshots 6.9", page produit FR/EN, TestFlight

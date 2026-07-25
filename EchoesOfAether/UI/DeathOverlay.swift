@@ -9,6 +9,34 @@ final class DeathOverlay {
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
+    // Curseur (contrôles classiques) : Réessayer / Revenir au cristal.
+    private var selection = 0
+    private let buttonNames = ["deathRetry", "deathCrystal"]
+
+    /// Joystick haut/bas : déplace le curseur entre les deux choix.
+    func moveSelection(_ dy: Int) {
+        guard isActive else { return }
+        selection = (selection - dy + buttonNames.count) % buttonNames.count
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        refreshHighlight()
+    }
+
+    /// Bouton A : valide le choix sélectionné.
+    func confirmSelection() {
+        guard isActive else { return }
+        selection == 0 ? onRetry?() : onReturnToCrystal?()
+    }
+
+    private func refreshHighlight() {
+        for (i, name) in buttonNames.enumerated() {
+            guard let btn = root.childNode(withName: name) as? SKShapeNode else { continue }
+            let selected = i == selection
+            btn.lineWidth = selected ? 3 : 2
+            btn.setScale(selected ? 1.06 : 1.0)
+        }
+    }
+
     func attach(to scene: SKScene) {
         root.zPosition = 2_000
         root.isHidden = true
@@ -18,6 +46,7 @@ final class DeathOverlay {
     func show(in scene: SKScene) {
         root.removeAllChildren()
         root.isHidden = false
+        selection = 0
 
         // Fond noir semi-transparent
         let scrim = SKShapeNode(rectOf: scene.size)
@@ -85,6 +114,7 @@ final class DeathOverlay {
         sub.run(.sequence([.wait(forDuration: 0.5), fadeIn]))
         retryBtn.run(.sequence([.wait(forDuration: 0.7), fadeIn]))
         crystalBtn.run(.sequence([.wait(forDuration: 0.85), fadeIn]))
+        refreshHighlight()
 
         // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
         UIScale.apply(to: root, sceneSize: scene.size)

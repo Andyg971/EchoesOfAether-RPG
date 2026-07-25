@@ -172,6 +172,21 @@ final class TutorialOverlay {
         return true   // absorbe les taps tant que le tutoriel est visible
     }
 
+    /// Bouton A : panneau suivant (ou terminer au dernier).
+    func advanceExternally() {
+        guard isActive else { return }
+        HapticsEngine.light()
+        index += 1
+        if index >= panels.count { finish() } else { build() }
+    }
+
+    /// Bouton B : passe le tutoriel.
+    func skipExternally() {
+        guard isActive else { return }
+        HapticsEngine.light()
+        finish()
+    }
+
     private func finish() {
         UserDefaults.standard.set(true, forKey: Self.seenKey)
         hide()

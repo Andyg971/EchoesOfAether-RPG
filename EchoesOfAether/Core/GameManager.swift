@@ -496,18 +496,22 @@ final class GameManager {
         // Bouton A : exploration (interagir), dialogue (avancer/valider),
         // combat (activer la sélection), boutique et pause (valider).
         // Bouton B : dialogue (passer) + overlays fermables.
+        // A visible aussi sur les modaux navigables au curseur (mort,
+        // tutoriel) pour valider le choix sélectionné au bouton.
         let showActionButton = actionButton.parent != nil
             && !worldMap.isActive
             && (state == .exploration || state == .dialogue
-                || state == .combat || state == .shop || pause.isActive)
+                || state == .combat || state == .shop || pause.isActive
+                || death.isActive || tutorial.isActive)
         if actionButton.isHidden == showActionButton {
             actionButton.isHidden = !showActionButton
         }
-        if state != .exploration, actionButton.alpha < 0.99 {
+        if state != .exploration || death.isActive || tutorial.isActive,
+           actionButton.alpha < 0.99 {
             actionButton.alpha = 1
         }
         let showBButton = bButton.parent != nil
-            && (dialogue.isActive || dismissableOverlayActive)
+            && (dialogue.isActive || dismissableOverlayActive || tutorial.isActive)
         if bButton.isHidden == showBButton {
             bButton.isHidden = !showBButton
         }
@@ -526,7 +530,9 @@ final class GameManager {
         }
 
         // Déplacement continu au joystick virtuel (exploration)
-        if state == .exploration {
+        // La mort et le tutoriel passent par-dessus l'exploration : le
+        // joystick y navigue le curseur au lieu de déplacer Kael.
+        if state == .exploration && !death.isActive && !tutorial.isActive {
             updatePadMovement(deltaTime: deltaTime)
             updateRoamers(deltaTime: deltaTime)
         } else {
@@ -626,6 +632,14 @@ final class GameManager {
     }
 
     /// Bouton B : annule / passe / ferme selon le contexte.
+    /// Petit enfoncement du bouton A (retour tactile de touche de manette).
+    private func popActionButton() {
+        actionButton.run(.sequence([
+            .scale(to: 0.90, duration: 0.06),
+            .scale(to: 1.0, duration: 0.10)
+        ]))
+    }
+
     private func handleBPress() {
         HapticsEngine.light()
         bButton.run(.sequence([
@@ -636,6 +650,7 @@ final class GameManager {
         // En combat, B annule d'abord un ciblage de soin en cours — sans
         // quoi choisir SOIN par erreur enfermerait le joueur.
         if state == .combat, combat.cancelTargeting() { return }
+        if tutorial.isActive { tutorial.skipExternally(); return }
         if paywall.isActive { paywall.dismiss(); return }
         if options.isActive { options.dismiss(); return }
         if pause.isActive { pause.dismiss(); return }
@@ -698,6 +713,7 @@ final class GameManager {
     }
 
     private func routeMenuNav(dx: Int, dy: Int) {
+        if death.isActive { death.moveSelection(dy); return }
         if paywall.isActive { paywall.moveSelection(dy); return }
         if options.isActive { return }              // sliders : tactile assumé
         if pause.isActive { pause.moveSelection(dy); return }
@@ -801,11 +817,29 @@ final class GameManager {
     func handleTap(at point: CGPoint, in scene: SKScene) {
         // Le tutoriel est modal : il bloque toute autre interaction tant
         // qu'il est visible.
-        if tutorial.handleTap(at: point, in: scene) { return }
+        // Tutoriel : A = suivant, B = passer (contrôles classiques) ; sinon
+        // il absorbe le tap direct comme avant.
+        if tutorial.isActive {
+            if !bButton.isHidden, point.distance(to: bButton.position) < 38 {
+                handleBPress(); return
+            }
+            if !actionButton.isHidden, point.distance(to: actionButton.position) < 42 {
+                popActionButton()
+                tutorial.advanceExternally(); return
+            }
+            if tutorial.handleTap(at: point, in: scene) { return }
+        }
         // Le level-up est prioritaire : il bloque toute autre interaction
         // tant qu'il est visible.
         if levelUp.handleTap(at: point, in: scene) { return }
-        if death.handleTap(at: point, in: scene) { return }
+        // Mort : A valide le choix au curseur ; sinon tap direct comme avant.
+        if death.isActive {
+            if !actionButton.isHidden, point.distance(to: actionButton.position) < 42 {
+                popActionButton()
+                death.confirmSelection(); return
+            }
+            if death.handleTap(at: point, in: scene) { return }
+        }
         if options.handleTap(at: point, in: scene) { return }
         if lore.handleTap(at: point, in: scene) { return }
         if questLog.handleTap(at: point, in: scene) { return }

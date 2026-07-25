@@ -9,6 +9,7 @@ import SpriteKit
 final class PaywallOverlay {
     private let root = SKNode()
     private let panel = SKShapeNode()
+    private let emblem = SKNode()          // portail du Seuil (pixel art)
     private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let pitchLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let priceLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -32,6 +33,9 @@ final class PaywallOverlay {
         root.isHidden = true
         scene.addChild(root)
         root.addChild(panel)
+
+        buildEmblem()
+        root.addChild(emblem)
 
         titleLabel.fontSize = 20
         titleLabel.fontColor = PixelUI.gold
@@ -67,6 +71,7 @@ final class PaywallOverlay {
                            fill: SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.97),
                            accent: SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1))
 
+        emblem.position = CGPoint(x: 0, y: panelHeight / 2 + 30)
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 26)
         pitchLabel.preferredMaxLayoutWidth = panelWidth - 32
         pitchLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 62)
@@ -147,6 +152,36 @@ final class PaywallOverlay {
     }
 
     // MARK: - Private
+
+    /// Portail du Seuil — pixel art dessiné en code : pilastres de pierre,
+    /// linteau, et cœur de Vide violet qui palpite. Coiffe le mur d'achat
+    /// pour montrer ce que débloque l'Acte II-III.
+    private func buildEmblem() {
+        emblem.removeAllChildren()
+        let map = [
+            ".sSSSSSSSs.",
+            ".sSSSSSSSs.",
+            ".ssvvvvvss.",
+            ".ssvVVVvss.",
+            ".ssvVVVvss.",
+            ".ssvVVVvss.",
+            ".ssvVVVvss.",
+            ".ss.....ss."
+        ]
+        let palette: [Character: SKColor] = [
+            "s": SKColor(red: 0.30, green: 0.28, blue: 0.36, alpha: 1),   // pierre
+            "S": SKColor(red: 0.44, green: 0.42, blue: 0.52, alpha: 1),   // pierre claire
+            "v": SKColor(red: 0.34, green: 0.18, blue: 0.55, alpha: 1),   // bord du Vide
+            "V": SKColor(red: 0.62, green: 0.36, blue: 0.96, alpha: 1)    // cœur du Vide
+        ]
+        let gate = PixelIcons.custom(map: map, palette: palette, pixel: 3)
+        emblem.addChild(gate)
+        // Palpitation lente du portail (respire, ne clignote pas).
+        emblem.run(.repeatForever(.sequence([
+            .scale(to: 1.04, duration: 1.6),
+            .scale(to: 1.0, duration: 1.6)
+        ])))
+    }
 
     private func buildButtons() {
         buttonNodes.forEach { $0.removeFromParent() }

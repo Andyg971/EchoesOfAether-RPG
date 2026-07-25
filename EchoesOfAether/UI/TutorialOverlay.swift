@@ -73,7 +73,7 @@ final class TutorialOverlay {
         scrim.position = CGPoint(x: cx, y: cy)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 320, panelH: CGFloat = 320
+        let panelW: CGFloat = 320, panelH: CGFloat = 372
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH))
         panel.position = CGPoint(x: cx, y: cy)
@@ -88,7 +88,7 @@ final class TutorialOverlay {
         stepLabel.fontColor = PixelUI.gold
         stepLabel.horizontalAlignmentMode = .center
         stepLabel.verticalAlignmentMode = .center
-        stepLabel.position = CGPoint(x: cx, y: top - 30)
+        stepLabel.position = CGPoint(x: cx, y: top - 28)
         root.addChild(stepLabel)
 
         let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -99,8 +99,14 @@ final class TutorialOverlay {
         titleLabel.verticalAlignmentMode = .center
         titleLabel.preferredMaxLayoutWidth = panelW - 36
         titleLabel.numberOfLines = 2
-        titleLabel.position = CGPoint(x: cx, y: top - 64)
+        titleLabel.position = CGPoint(x: cx, y: top - 58)
         root.addChild(titleLabel)
+
+        // Illustration pixel du panneau (joystick, dialogue, épée, cristal).
+        let illustration = makeIllustration(for: index)
+        illustration.position = CGPoint(x: cx, y: top - 108)
+        root.addChild(illustration)
+        JuiceEngine.pulse(illustration, scale: 1.06)
 
         let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         bodyLabel.text = currentPanel.body
@@ -110,7 +116,7 @@ final class TutorialOverlay {
         bodyLabel.verticalAlignmentMode = .top
         bodyLabel.preferredMaxLayoutWidth = panelW - 44
         bodyLabel.numberOfLines = 0
-        bodyLabel.position = CGPoint(x: cx, y: top - 100)
+        bodyLabel.position = CGPoint(x: cx, y: top - 148)
         root.addChild(bodyLabel)
 
         let isLast = index >= panels.count - 1
@@ -172,6 +178,38 @@ final class TutorialOverlay {
         let done = completion
         completion = nil
         done?()
+    }
+
+    // MARK: - Illustrations pixel
+
+    /// Diagramme pixel du panneau : montrer plutôt que décrire.
+    private func makeIllustration(for index: Int) -> SKNode {
+        switch index {
+        case 0:  return joystickDiagram()        // déplacement
+        case 1:  return PixelIcons.node(.chat, pixel: 5)   // parler aux PNJ
+        case 2:  return PixelIcons.node(.sword, pixel: 5)  // combat
+        default: return PixelIcons.node(.gem, pixel: 5)    // sauvegarde (cristal)
+        }
+    }
+
+    /// Manette pixel : socle circulaire (dessiné carré-par-carré) + stick
+    /// violet + croix directionnelle. Aide le joueur à identifier le joystick.
+    private func joystickDiagram() -> SKNode {
+        let map = [
+            "....t....",
+            "..RRRRR..",
+            ".R..t..R.",
+            ".RtKKKtR.",
+            ".R..t..R.",
+            "..RRRRR..",
+            "....t...."
+        ]
+        let palette: [Character: SKColor] = [
+            "R": SKColor(red: 0.30, green: 0.28, blue: 0.38, alpha: 1),   // socle
+            "K": SKColor(red: 0.62, green: 0.42, blue: 0.96, alpha: 1),   // stick
+            "t": SKColor(red: 0.85, green: 0.80, blue: 0.55, alpha: 0.9)  // ticks directionnels
+        ]
+        return PixelIcons.custom(map: map, palette: palette, pixel: 5)
     }
 
     // MARK: - Private

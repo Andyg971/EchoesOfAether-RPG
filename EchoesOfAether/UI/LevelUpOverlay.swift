@@ -105,6 +105,18 @@ final class LevelUpOverlay {
         panel.setScale(0.7)
         titleLabel.setScale(0.5)
 
+        // Gerbe d'étincelles pixel derrière le panneau (violet + doré),
+        // synchronisée avec le pop du titre.
+        let burstCenter = panel.position
+        let sparks = ParticleFactory.impactSparks(
+            at: burstCenter,
+            color: isMax ? SKColor(red: 0.95, green: 0.72, blue: 0.30, alpha: 1)
+                         : SKColor(red: 0.80, green: 0.55, blue: 1.0, alpha: 1),
+            count: 22)
+        sparks.zPosition = -1
+        root.addChild(sparks)
+        sparks.run(.sequence([.wait(forDuration: 1.4), .removeFromParent()]))
+
         root.run(.fadeIn(withDuration: 0.18))
         panel.run(.sequence([
             .scale(to: 1.05, duration: 0.22),

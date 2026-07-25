@@ -26,6 +26,13 @@ final class DeathOverlay {
         scrim.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
         root.addChild(scrim)
 
+        // Mémorial pixel : épée plantée dans un tertre, au-dessus du titre.
+        let memorial = makeFallenMemorial()
+        memorial.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.78)
+        memorial.alpha = 0
+        memorial.setScale(0.6)
+        root.addChild(memorial)
+
         // Titre — TOMBÉ —
         let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         title.text = String(localized: "death.title")
@@ -70,6 +77,10 @@ final class DeathOverlay {
 
         // Animate entrée
         let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        memorial.run(.group([
+            fadeIn,
+            .scale(to: 1.0, duration: 0.6)
+        ]))
         title.run(.sequence([.wait(forDuration: 0.2), fadeIn]))
         sub.run(.sequence([.wait(forDuration: 0.5), fadeIn]))
         retryBtn.run(.sequence([.wait(forDuration: 0.7), fadeIn]))
@@ -102,6 +113,30 @@ final class DeathOverlay {
     }
 
     // MARK: - Private
+
+    /// Épée plantée dans un tertre — mémorial pixel art dessiné en code.
+    /// Lame vers le bas (point-down), garde en croix, poignée en cuir.
+    private func makeFallenMemorial() -> SKNode {
+        let map = [
+            "....HHH....",
+            "....HHH....",
+            "..GGGGGGG..",
+            "....XeX....",
+            "....XeX....",
+            "....XeX....",
+            "..mmXeXmm..",
+            ".mmmmmmmmm.",
+            "mmmmmmmmmmm"
+        ]
+        let palette: [Character: SKColor] = [
+            "H": SKColor(red: 0.42, green: 0.30, blue: 0.20, alpha: 1),   // cuir
+            "G": SKColor(red: 0.58, green: 0.48, blue: 0.28, alpha: 1),   // garde (or terni)
+            "X": SKColor(red: 0.50, green: 0.54, blue: 0.62, alpha: 1),   // acier
+            "e": SKColor(red: 0.70, green: 0.74, blue: 0.82, alpha: 1),   // reflet de lame
+            "m": SKColor(red: 0.17, green: 0.15, blue: 0.20, alpha: 1)    // terre sombre
+        ]
+        return PixelIcons.custom(map: map, palette: palette, pixel: 4)
+    }
 
     private func makeButton(label: String, fill: SKColor,
                             stroke: SKColor, name: String) -> SKShapeNode {

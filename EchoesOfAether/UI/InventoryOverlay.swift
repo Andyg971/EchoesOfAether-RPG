@@ -58,6 +58,7 @@ final class InventoryOverlay {
         root.isHidden = false
         AudioEngine.shared.playShopOpen()
         buildContent(player: player)
+        AccessibilitySettings.announce(String(localized: "inventory.title"))
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {

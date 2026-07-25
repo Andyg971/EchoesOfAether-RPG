@@ -123,6 +123,7 @@ final class PauseOverlay {
 
         // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
         UIScale.apply(to: root, sceneSize: scene.size)
+        AccessibilitySettings.announce(String(localized: "pause.title"))
     }
 
     func hide() {
@@ -149,6 +150,14 @@ final class PauseOverlay {
         HapticsEngine.light()
         AudioEngine.shared.playStep()
         refreshSelectionHighlight()
+        announceSelection()
+    }
+
+    /// VoiceOver : annonce le bouton sous le curseur.
+    private func announceSelection() {
+        guard let btn = root.childNode(withName: buttonNames[selection]),
+              let lbl = btn.children.compactMap({ $0 as? SKLabelNode }).first else { return }
+        AccessibilitySettings.announce(lbl.text ?? "")
     }
 
     /// Bouton A : active le bouton sélectionné.

@@ -130,6 +130,8 @@ final class LevelUpOverlay {
 
         HapticsEngine.heavy()
         AudioEngine.shared.playVictory()
+        AccessibilitySettings.announce(
+            "\(titleLabel.text ?? ""). \(subtitleLabel.text ?? ""). \(statsLabel.text ?? "")")
 
         // Sécurité : auto-dismiss après 3.5s si pas tapé
         root.run(.sequence([

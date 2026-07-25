@@ -57,6 +57,7 @@ final class WorldMapOverlay {
         root.isHidden = false
         buildContent()
         AudioEngine.shared.playShopOpen()
+        AccessibilitySettings.announce(String(localized: "map.title"))
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {

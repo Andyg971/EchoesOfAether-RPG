@@ -78,6 +78,8 @@ final class ShopOverlay {
         root.isHidden = false
         AudioEngine.shared.playShopOpen()
         refresh()
+        AccessibilitySettings.announce(title)
+        announceSelection()
     }
 
     /// Joystick haut/bas : déplace le curseur sur les articles.
@@ -87,6 +89,16 @@ final class ShopOverlay {
         HapticsEngine.light()
         AudioEngine.shared.playStep()
         refreshSelectionHighlight()
+        announceSelection()
+    }
+
+    /// VoiceOver : annonce l'article sous le curseur (nom + prix).
+    private func announceSelection() {
+        guard items.indices.contains(selection) else { return }
+        let item = items[selection]
+        let name = String(localized: item.nameKey)
+        let price = String(localized: "shop.price \(item.price)")
+        AccessibilitySettings.announce("\(name). \(price)")
     }
 
     /// Bouton A : achète l'article sélectionné (si achetable).

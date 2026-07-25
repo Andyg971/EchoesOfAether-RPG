@@ -144,6 +144,7 @@ final class TutorialOverlay {
             JuiceEngine.popIn(child, delay: Double(i) * 0.04)
         }
         UIScale.apply(to: root, sceneSize: scene.size)
+        AccessibilitySettings.announce("\(currentPanel.title). \(currentPanel.body)")
     }
 
     // MARK: - Tap

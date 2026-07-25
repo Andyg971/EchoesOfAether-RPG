@@ -41,6 +41,7 @@ final class LoreOverlay {
         root.isHidden = false
         buildContent()
         AudioEngine.shared.playShopOpen()
+        AccessibilitySettings.announce(String(localized: "lore.title"))
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {

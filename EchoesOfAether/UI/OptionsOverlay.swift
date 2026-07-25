@@ -161,6 +161,7 @@ final class OptionsOverlay {
         root.setScale(s)
         root.position = CGPoint(x: w / 2 * (1 - s), y: h / 2 * (1 - s))
         scrim.setScale(1 / s)
+        AccessibilitySettings.announce(String(localized: "options.title"))
     }
 
     private func addSeparator(width: CGFloat, at pos: CGPoint) {

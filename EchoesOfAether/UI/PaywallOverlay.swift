@@ -93,6 +93,8 @@ final class PaywallOverlay {
         AudioEngine.shared.playShopOpen()
         JuiceEngine.popIn(panel)
         refreshSelectionHighlight()
+        AccessibilitySettings.announce(
+            "\(String(localized: "paywall.title")). \(String(localized: "paywall.pitch"))")
     }
 
     func hide() { root.isHidden = true }
@@ -126,6 +128,10 @@ final class PaywallOverlay {
         HapticsEngine.light()
         AudioEngine.shared.playStep()
         refreshSelectionHighlight()
+        if let btn = root.childNode(withName: buttonNames[selection]),
+           let lbl = btn.children.compactMap({ $0 as? SKLabelNode }).first {
+            AccessibilitySettings.announce(lbl.text ?? "")
+        }
     }
 
     func confirmSelection() {

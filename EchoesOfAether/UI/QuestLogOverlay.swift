@@ -40,6 +40,7 @@ final class QuestLogOverlay {
         root.isHidden = false
         buildContent(entries: entries)
         AudioEngine.shared.playShopOpen()
+        AccessibilitySettings.announce(String(localized: "questlog.title"))
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {

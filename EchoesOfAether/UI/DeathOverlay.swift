@@ -20,6 +20,10 @@ final class DeathOverlay {
         HapticsEngine.light()
         AudioEngine.shared.playStep()
         refreshHighlight()
+        if let btn = root.childNode(withName: buttonNames[selection]),
+           let lbl = btn.children.compactMap({ $0 as? SKLabelNode }).first {
+            AccessibilitySettings.announce(lbl.text ?? "")
+        }
     }
 
     /// Bouton A : valide le choix sélectionné.
@@ -118,6 +122,8 @@ final class DeathOverlay {
 
         // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
         UIScale.apply(to: root, sceneSize: scene.size)
+        AccessibilitySettings.announce(
+            "\(String(localized: "death.title")). \(String(localized: "death.subtitle"))")
     }
 
     func hide() {

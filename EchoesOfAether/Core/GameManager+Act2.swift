@@ -340,7 +340,7 @@ extension GameManager {
                 TransitionManager.showCorruptionCinematic(in: scene) { [weak self] in
                     guard let self else { return }
                     dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
-                        self?.triggerLyraDeath()
+                        self?.playCorruptionChoiceThenDeath()
                     }
                 }
             } else {
@@ -349,9 +349,22 @@ extension GameManager {
                                          color: SKColor(red: 0.7, green: 0.08, blue: 0.05, alpha: 1),
                                          duration: 0.4)
                 dialogue.start(PrototypeContent.act2DiscoveryDialogue) { [weak self] in
-                    self?.triggerLyraDeath()
+                    self?.playCorruptionChoiceThenDeath()
                 }
             }
+        }
+    }
+
+    /// La Voix offre à Kael le dernier pas. Les DEUX options tuent Lyra (la
+    /// Tempête éclate quoi qu'il arrive) — mais le choix décide s'il est
+    /// COMPLICE (index 0 → `kaelChoseCorruption = true`) ou dépassé par son
+    /// pouvoir (index 1). Le flag colore l'après (dissolveLyraAndEndAct2).
+    private func playCorruptionChoiceThenDeath() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act2CorruptionChoiceDialogue) { [weak self] in
+            guard let self else { return }
+            player.kaelChoseCorruption = (dialogue.lastChoiceIndex == 0)
+            triggerLyraDeath()
         }
     }
 
@@ -466,7 +479,12 @@ extension GameManager {
             .wait(forDuration: 1.5),
             .run { [weak self] in
                 guard let self else { return }
-                dialogue.start(PrototypeContent.act2KaelAloneDialogue) { [weak self] in
+                // L'après-mort dépend du choix : complice (« Oui ») ou dépassé
+                // et brisé (« … »). Cf. playCorruptionChoiceThenDeath.
+                let aloneDialogue = player.kaelChoseCorruption
+                    ? PrototypeContent.act2KaelAloneDialogue
+                    : PrototypeContent.act2KaelAloneResistedDialogue
+                dialogue.start(aloneDialogue) { [weak self] in
                     guard let self, let scene = self.scene else { return }
                     phase = .fallen
                     transition(to: .exploration)

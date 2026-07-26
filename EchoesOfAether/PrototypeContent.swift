@@ -831,6 +831,37 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.discovery.kael2"))
     ]
 
+    // MARK: - Acte II — Le choix : saisir le pouvoir ou le refuser
+
+    /// La Voix offre à Kael le dernier pas, juste avant que Lyra ne parte
+    /// prévenir Solis. Les DEUX options mènent à sa mort (la Tempête éclate
+    /// quoi qu'il arrive) — mais l'index 0 rend Kael COMPLICE, l'index 1 le
+    /// laisse dépassé par son propre pouvoir. Cf. playCorruptionChoiceThenDeath.
+    static let act2CorruptionChoiceDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+              text: String(localized: "dialogue.act2.corruptChoice.voice1")),
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+              text: String(localized: "dialogue.act2.corruptChoice.voice2")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.corruptChoice.kael1")),
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+              text: String(localized: "dialogue.act2.corruptChoice.voice3")),
+        .choice(
+            prompt: String(localized: "dialogue.act2.corruptChoice.prompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.corruptChoice.take"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act2.corruptChoice.takeResponse")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act2.corruptChoice.refuse"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act2.corruptChoice.refuseResponse")
+                )
+            ]
+        )
+    ]
+
     // MARK: - Acte II — Mort de Lyra
 
     static let act2LyraDeathDialogue: [DialogueStep] = [
@@ -847,6 +878,17 @@ enum PrototypeContent {
         .line(speaker: String(localized: "dialogue.shrine.voiceName"),
               text: String(localized: "dialogue.act2.fallen.voice1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.kael3"))
+    ]
+
+    /// Variante jouée quand Kael a REFUSÉ le pouvoir mais a tué Lyra malgré
+    /// lui (la Tempête l'a dépassé). Il ne consent pas — il finit brisé, sans
+    /// le « Oui » complice de la version où il a choisi.
+    static let act2KaelAloneResistedDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.resisted.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.resisted.kael2")),
+        .line(speaker: String(localized: "dialogue.shrine.voiceName"),
+              text: String(localized: "dialogue.act2.fallen.resisted.voice1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.fallen.resisted.kael3"))
     ]
 
     // MARK: - Acte II — Dorin bloque la porte nord

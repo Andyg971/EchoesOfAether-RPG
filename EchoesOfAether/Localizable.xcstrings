@@ -1,6 +1,214 @@
 {
   "sourceLanguage": "fr",
   "strings": {
+    "dialogue.act2.corruptChoice.voice1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "She'll talk. Solis will know. They'll hunt you like the beast you are."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Elle va parler. Solis saura. On te chassera comme la bête que tu es."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.voice2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Or take what you are. The Source. The Void. The Storm at your fingertips."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ou prends ce que tu es. La Source. Le Vide. La Tempête au bout de tes mains."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No. Not her. I don't want this."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non. Pas elle. Je ne veux pas de ça."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.voice3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Then decide. Quickly. She's already walking to the door."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alors décide. Vite. Elle marche déjà vers la porte."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.prompt": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "The power is waiting. Seize it?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Le pouvoir t'attend. Le saisir ?"
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.take": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seize the power. Silence her."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Saisir le pouvoir. La faire taire."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.takeResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "You won't speak, Lyra. No one will ever speak of me again."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tu ne parleras pas, Lyra. Personne ne parlera plus jamais de moi."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.refuse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refuse. Step back."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Refuser. Reculer d'un pas."
+          }
+        }
+      }
+    },
+    "dialogue.act2.corruptChoice.refuseResponse": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No. I can still hold it back. I can still—"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non. Je peux encore me retenir. Je peux encore—"
+          }
+        }
+      }
+    },
+    "dialogue.act2.fallen.resisted.kael1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I didn't want to. I swear it to nothing. I didn't want to."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je ne voulais pas. Je le jure devant rien. Je ne voulais pas."
+          }
+        }
+      }
+    },
+    "dialogue.act2.fallen.resisted.kael2": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "But my hands did it anyway."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mais mes mains l'ont fait quand même."
+          }
+        }
+      }
+    },
+    "dialogue.act2.fallen.resisted.voice1": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wanting never mattered. You are what you are. Come."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Vouloir n'a jamais compté. Tu es ce que tu es. Viens."
+          }
+        }
+      }
+    },
+    "dialogue.act2.fallen.resisted.kael3": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "..."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "..."
+          }
+        }
+      }
+    },
     "a11y.dialogue.choices %@ %@": {
       "localizations": {
         "en": {

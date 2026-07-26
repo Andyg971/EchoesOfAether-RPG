@@ -148,6 +148,7 @@ final class PlayerState {
     var act2Vision1Seen: Bool = false
     var act2EranFound: Bool = false
     var kaelCorruptionLevel: Int = 0  // 0-3, progression visuelle
+    var kaelChoseCorruption: Bool = false  // a saisi le pouvoir sciemment (vs dépassé) — mort de Lyra
     var loreDiscovered: Set<String> = []  // IDs entrées lore trouvées
     var bestiarySeen: Set<String> = []    // espèces croisées en combat (bestiaire)
     var act3EranMet: Bool = false
@@ -263,6 +264,7 @@ final class PlayerState {
             act2Vision1Seen: act2Vision1Seen,
             act2EranFound: act2EranFound,
             kaelCorruptionLevel: kaelCorruptionLevel,
+            kaelChoseCorruption: kaelChoseCorruption,
             loreDiscovered: Array(loreDiscovered),
             act3EranMet: act3EranMet,
             act3BossDefeated: act3BossDefeated,
@@ -329,6 +331,7 @@ final class PlayerState {
         act2Vision1Seen = data.act2Vision1Seen
         act2EranFound = data.act2EranFound
         kaelCorruptionLevel = data.kaelCorruptionLevel
+        kaelChoseCorruption = data.kaelChoseCorruption ?? false
         loreDiscovered = Set(data.loreDiscovered)
         act3EranMet = data.act3EranMet ?? false
         act3BossDefeated = data.act3BossDefeated ?? false
@@ -413,6 +416,8 @@ struct SaveData: Codable {
     let act2Vision1Seen: Bool
     let act2EranFound: Bool
     let kaelCorruptionLevel: Int
+    // Optionnel — rétro-compatible (le joueur a-t-il saisi le pouvoir sciemment ?)
+    let kaelChoseCorruption: Bool?
     let loreDiscovered: [String]
     // Acte III (optionnels — saves antérieurs n'ont pas ces clés)
     let act3EranMet: Bool?

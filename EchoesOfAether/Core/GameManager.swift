@@ -1985,14 +1985,18 @@ final class GameManager {
             // POI en coordonnées MONDE (trek scrollable, cf. buildForest)
             let w = scene.size.width
             let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-            let checkpoints: [(CGPoint, String)] = [
-                (CGPoint(x: w*0.30, y: h*0.31), "hint.fight"),
-                (CGPoint(x: w*0.70, y: h*0.66), "hint.fight"),
-                (CGPoint(x: w*0.20, y: h*0.585), "hint.fight"),
-                (CGPoint(x: w*0.82, y: h*0.74), "hint.fight"),
-                (CGPoint(x: w*0.88, y: h*0.30), "hint.enter"),
-                (CGPoint(x: w*0.55, y: h*0.90), "hint.enter")
+            // Combats de forêt = monstres baladeurs (contact) : plus de bulle
+            // « A · Combattre ». Elles ne déclenchaient plus rien (le combat au
+            // tap a été retiré) → le bouton A semblait « cassé ». Restent les
+            // vraies entrées.
+            var checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.88, y: h*0.30), "hint.enter")   // Mines de Cendreval
             ]
+            if player.forestProgress >= 2 {
+                // Seuil du sanctuaire : ouvert seulement une fois la forêt faite
+                // (sinon la bulle « A · Entrer » ne menait à rien).
+                checkpoints.append((CGPoint(x: w*0.55, y: h*0.90), "hint.enter"))
+            }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)

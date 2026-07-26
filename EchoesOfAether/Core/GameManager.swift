@@ -1918,10 +1918,11 @@ final class GameManager {
                 actionPoint = nearest.point
             }
         } else if inOverworld {
-            // Carte du monde : à l'approche d'un lieu, « A · Entrer … ».
+            // Carte du monde : à l'approche d'un lieu OUVERT, « A · Entrer … ».
+            // Les lieux verrouillés par l'histoire ne proposent rien (anti-saut).
             overworldTarget = nil
             var best: (dist: CGFloat, place: (id: String, pos: CGPoint, title: String))?
-            for place in world.overworldPlaces {
+            for place in world.overworldPlaces where placeDiscovered(place.id) {
                 let d = kaelPos.distance(to: place.pos)
                 if d < 130, best == nil || d < best!.dist { best = (d, place) }
             }
@@ -2732,6 +2733,25 @@ final class GameManager {
     }
 
     /// Construit l'état des lieux selon la progression de l'histoire.
+    /// Un lieu est « ouvert » (entrable sur l'overworld + voyageable en rapide)
+    /// quand l'histoire l'a atteint OU qu'on l'a déjà visité. Empêche de sauter
+    /// le scénario (ex. entrer au Sanctuaire avant d'avoir fini la forêt).
+    func placeDiscovered(_ id: String) -> Bool {
+        if discoveredPlaces.contains(id) { return true }
+        let reached = phase.rawValue
+        switch id {
+        case "village":   return true
+        case "forest":    return reached >= GamePhase.forest.rawValue
+        case "shrine":    return reached >= GamePhase.shrine.rawValue
+                                 || player.forestProgress >= 2
+        case "mines":     return reached >= GamePhase.forest.rawValue
+        case "desert":    return reached >= GamePhase.forest.rawValue
+        case "ruins":     return reached >= GamePhase.ruins.rawValue
+        case "threshold": return reached >= GamePhase.act3.rawValue
+        default:          return false
+        }
+    }
+
     private func buildMapPlaces() -> [WorldMapPlace] {
         let current = currentPlaceID
         let reached = phase.rawValue

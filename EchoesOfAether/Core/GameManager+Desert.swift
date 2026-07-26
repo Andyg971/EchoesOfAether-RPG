@@ -73,47 +73,22 @@ extension GameManager {
         }
     }
 
-    /// Retour vers la zone d'origine (la phase n'a pas changé).
+    /// Sortie du désert → CARTE DU MONDE (comme toutes les zones).
+    /// La corruption d'Acte II reste appliquée à Kael (elle persiste sur son
+    /// node à travers les changements de zone).
     func exitDesert() {
-        guard let scene else { return }
         clearRoamers()
-        transition(to: .transition)
-        TransitionManager.fade(in: scene) { [weak self] in
-            guard let self else { return }
-            inDesert = false
-            AudioEngine.shared.setMood(.forPhase(phase))
-            switch phase {
-            case .forest:
-                hud.objectiveText = String(localized: "hud.objective.forest")
-                showForest(in: scene)
-            case .act2:
-                hud.objectiveText = String(localized: "hud.objective.act2")
-                world.switchToVillage(in: scene)
-                world.repositionDorinToGate(in: scene)
-                world.applyKaelCorruption(level: player.kaelCorruptionLevel)
-            default:
-                hud.objectiveText = String(localized: "hud.objective.complete")
-                world.switchToVillage(in: scene)
-            }
-        } completion: { [weak self] in
-            guard let self, let scene = self.scene else { return }
-            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-            if phase == .forest {
-                if player.questChildToy == .active { world.addToyMarker(in: scene) }
-                if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
-                addSideQuestMarkers(in: scene)
-                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.05)
-            } else {
-                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.12)
-            }
-            transition(to: .exploration)
+        if phase == .act2 {
+            world.applyKaelCorruption(level: player.kaelCorruptionLevel)
         }
+        enterOverworld(spawnNear: "desert")
     }
 
     // MARK: - Carte du monde → entrée dans un lieu
 
     /// Ouvre la carte du monde explorable : Kael y marche entre les lieux.
-    func enterOverworld() {
+    /// `spawnNear` : dépose Kael à côté du lieu d'où il vient (ou par défaut).
+    func enterOverworld(spawnNear placeID: String? = nil) {
         guard let scene else { return }
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
@@ -123,8 +98,11 @@ extension GameManager {
             hud.objectiveText = String(localized: "map.title")
             AudioEngine.shared.setMood(.title)
             world.switchToOverworld(in: scene)
-            world.kael.position = CGPoint(x: world.worldWidth * 0.20,
-                                          y: world.worldHeight * 0.28)
+            // Kael apparaît un peu au sud du lieu quitté (ou près du village).
+            let spot = world.overworldPlaces.first { $0.id == placeID }?.pos
+                ?? world.overworldPlaces.first { $0.id == "village" }?.pos
+                ?? CGPoint(x: world.worldWidth * 0.20, y: world.worldHeight * 0.28)
+            world.kael.position = CGPoint(x: spot.x, y: max(60, spot.y - 90))
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()
@@ -138,6 +116,7 @@ extension GameManager {
     /// à portée. Chaque zone est chargée comme sa propre entrée connue.
     func enterZoneFromMap(_ id: String) {
         guard let scene else { return }
+        guard placeDiscovered(id) else { HapticsEngine.error(); return }  // verrou histoire
         inOverworld = false
         discoveredPlaces.insert(id)   // lieu visité → voyage rapide déverrouillé
         clearRoamers()

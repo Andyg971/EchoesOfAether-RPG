@@ -38,25 +38,11 @@ extension GameManager {
     }
 
     /// Remonte à la forêt, respawn devant la galerie.
+    /// Sortie des mines → CARTE DU MONDE.
     func exitMines() {
-        guard let scene else { return }
         clearRoamers()
-        transition(to: .transition)
-        TransitionManager.fade(in: scene) { [weak self] in
-            guard let self else { return }
-            inMines = false
-            hud.objectiveText = String(localized: "hud.objective.forest")
-            AudioEngine.shared.setMood(.forPhase(phase))
-            showForest(in: scene)
-        } completion: { [weak self] in
-            guard let self, let scene = self.scene else { return }
-            if player.questChildToy == .active { world.addToyMarker(in: scene) }
-            if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
-            addSideQuestMarkers(in: scene)
-            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-            world.kael.position = CGPoint(x: scene.size.width * 0.80, y: wh * 0.28)
-            transition(to: .exploration)
-        }
+        inMines = false
+        enterOverworld(spawnNear: "mines")
     }
 
     func tryMinesInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {

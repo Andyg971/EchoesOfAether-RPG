@@ -427,6 +427,9 @@ final class WorldBuilder {
         addOverworldPlace("forest",    asset: "tree_big", scale: 0.42,
                           at: CGPoint(x: w * 0.40, y: h * 0.52),
                           title: String(localized: "map.place.forest"), in: scene)
+        addOverworldPlace("shrine",    asset: "me_statue_angel", scale: 0.4,
+                          at: CGPoint(x: w * 0.52, y: h * 0.72),
+                          title: String(localized: "map.place.shrine"), in: scene)
         addOverworldPlace("ruins",     asset: "me_statue_angel", scale: 0.34,
                           at: CGPoint(x: w * 0.30, y: h * 0.82),
                           title: String(localized: "map.place.ruins"), in: scene)

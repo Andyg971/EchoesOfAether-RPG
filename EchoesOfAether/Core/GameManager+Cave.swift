@@ -36,25 +36,11 @@ extension GameManager {
     }
 
     /// Remonte vers la forêt, respawn devant l'entrée de la caverne.
+    /// Sortie de la caverne → CARTE DU MONDE.
     func exitCave() {
-        guard let scene else { return }
         clearRoamers()
-        transition(to: .transition)
-        TransitionManager.fade(in: scene) { [weak self] in
-            guard let self else { return }
-            inCave = false
-            hud.objectiveText = String(localized: "hud.objective.forest")
-            AudioEngine.shared.setMood(.forPhase(phase))
-            showForest(in: scene)
-        } completion: { [weak self] in
-            guard let self, let scene = self.scene else { return }
-            if player.questChildToy == .active { world.addToyMarker(in: scene) }
-            if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
-            addSideQuestMarkers(in: scene)
-            let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-            world.kael.position = CGPoint(x: scene.size.width * 0.22, y: wh * 0.30)
-            transition(to: .exploration)
-        }
+        inCave = false
+        enterOverworld(spawnNear: "forest")
     }
 
     func tryCaveInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {

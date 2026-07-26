@@ -264,21 +264,17 @@ extension GameManager {
         }
     }
 
-    /// Transition vers sanctuaire
+    /// Fin de la forêt : la scène du départ se joue, puis Kael SORT SUR LA
+    /// CARTE DU MONDE. Le Sanctuaire y devient un lieu qu'il rejoint à pied
+    /// (bouton A) pour l'affronter — au lieu d'y basculer directement.
     func enterShrine() {
         guard scene != nil else { return }
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.forestExitDialogue) { [weak self] in
-            guard let self, let scene = self.scene else { return }
-            transition(to: .transition)
-            TransitionManager.fade(in: scene) { [weak self] in
-                guard let self else { return }
-                phase = .shrine
-                hud.objectiveText = String(localized: "hud.objective.shrine")
-                world.switchToShrine(in: scene)
-            } completion: { [weak self] in
-                self?.transition(to: .exploration)
-            }
+            guard let self else { return }
+            phase = .shrine
+            discoveredPlaces.insert("shrine")   // le Sanctuaire s'ouvre sur la carte
+            enterOverworld(spawnNear: "forest")
         }
     }
 

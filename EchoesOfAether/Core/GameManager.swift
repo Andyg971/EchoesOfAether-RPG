@@ -806,13 +806,13 @@ final class GameManager {
             } else if !world.isBlocked(yOnly) {
                 pos = yOnly
             } else {
-                movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
+                movement.setManualWalk(world.kael, dx: padVector.dx, dy: padVector.dy, active: true)
                 return
             }
         }
         world.kael.position = pos
         world.refreshKaelDepth()
-        movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
+        movement.setManualWalk(world.kael, dx: padVector.dx, dy: padVector.dy, active: true)
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) {

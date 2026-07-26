@@ -36,9 +36,16 @@ final class MovementController {
 
     /// Marche manuelle (joystick) : démarre/arrête l'animation de pas.
     /// Idempotent — appelable chaque frame pendant le drag.
-    func setManualWalk(_ node: SKNode, dx: CGFloat, active: Bool) {
+    func setManualWalk(_ node: SKNode, dx: CGFloat, dy: CGFloat = 0, active: Bool) {
         guard active else { Self.stopWalkAnimation(on: node); return }
         node.removeAction(forKey: "move")   // le pad prime sur tap-to-move
+        // Héros top-down pixel dessiné en code : orientation 4 directions
+        // pilotée par le vecteur complet (dx, dy).
+        if node.childNode(withName: "topDownHero") != nil {
+            TopDownHero.update(node, velocity: CGVector(dx: dx, dy: dy))
+            if node.action(forKey: "walkDust") == nil { startDust(on: node) }
+            return
+        }
         // Sprite du pack : on pilote le cycle directement. `dy: 1` marque le
         // déplacement — même en montant tout droit (dx nul), Kael marche ; il
         // garde alors la dernière orientation acquise, faute de vue de dos.
@@ -61,6 +68,12 @@ final class MovementController {
     /// la faire trembler par-dessus la contredit. La poussière, elle, reste.
     private func startWalkAnimation(on node: SKNode, towards target: CGPoint) {
         let dx = target.x - node.position.x
+        let dy = target.y - node.position.y
+        if node.childNode(withName: "topDownHero") != nil {
+            TopDownHero.update(node, velocity: CGVector(dx: dx, dy: dy))
+            startDust(on: node)
+            return
+        }
         if node.childNode(withName: "body") != nil {
             BattleSprites.updateWalk(.kael, on: node,
                                      velocity: CGVector(dx: abs(dx) > 6 ? dx : 0, dy: 1))
@@ -110,6 +123,11 @@ final class MovementController {
 
     private static func stopWalkAnimation(on node: SKNode) {
         node.removeAction(forKey: "walkDust")
+        // Héros top-down : repos, l'orientation acquise est conservée.
+        if node.childNode(withName: "topDownHero") != nil {
+            TopDownHero.update(node, velocity: .zero)
+            return
+        }
         // Sprite du pack : retour à l'idle, l'orientation acquise est gardée.
         if node.childNode(withName: "body") != nil {
             BattleSprites.updateWalk(.kael, on: node, velocity: .zero)

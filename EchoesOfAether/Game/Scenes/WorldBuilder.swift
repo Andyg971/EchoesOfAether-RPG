@@ -229,11 +229,16 @@ final class WorldBuilder {
         let dx = target.x - lyra.position.x
         let dy = target.y - lyra.position.y
         let dist = (dx * dx + dy * dy).squareRoot()
-        guard dist > 54 else { return }
+        guard dist > 54 else {
+            TopDownHero.update(lyra, velocity: .zero)   // arrivée : repos
+            return
+        }
         let step = min(CGFloat(deltaTime) * 240, dist - 44)
         lyra.position.x += dx / dist * step
         lyra.position.y += dy / dist * step
         lyra.zPosition = actorLayer(for: lyra.position.y)
+        // Oriente la silhouette top-down vers sa direction de marche.
+        TopDownHero.update(lyra, velocity: CGVector(dx: dx, dy: dy))
     }
 
     /// Recalcule la profondeur de Kael (déplacement continu au pad).
@@ -1425,12 +1430,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Eran Solace, le Premier Gardien, debout au centre du Seuil. Vieil homme
     /// marqué par le Vide : sprite de sage, teinté du violet du Seuil.
     func addEran(in scene: SKScene, at pos: CGPoint) {
-        // Le sprite de son pack (fighter) — le même qu'en combat.
-        let eran = BattleSprites.worldNode(.eran, name: "eran")
-            ?? PixelArtSprites.animated(name: "npc_sage", frames: 6, scale: 0.62,
-                                        timePerFrame: 0.24,
-                                        anchor: CGPoint(x: 0.5, y: 0.0))
-        guard let eran else { return }
+        // Trio top-down cohérent : Eran partage la silhouette dessinée en code.
+        let eran = TopDownHero.node(.eran, name: "eran")
         eran.name = "eran"
         eran.position = pos
         eran.zPosition = actorLayer(for: pos.y)

@@ -13,8 +13,9 @@ enum WorldNode {
     /// coup : même visage partout, et une vraie marche. Quel pack Kael porte
     /// se décide dans `BattleSprites.Hero.pack`.
     static func kael() -> SKNode {
-        if let node = BattleSprites.worldNode(.kael, name: "kael") { return node }
-        return legacyKael()
+        // Héros top-down pixel dessiné en code (4 directions + marche) : enfin
+        // la bonne perspective, au lieu du sprite de profil de l'arène.
+        TopDownHero.node(.kael, name: "kael")
     }
 
     /// Repli si le pack manque à l'appel (asset absent) : l'ancien sprite.
@@ -66,6 +67,12 @@ enum WorldNode {
     /// Lyra dans le monde — le sprite de son pack (prêtresse), le même qu'en
     /// combat. Replis successifs : pack → sprite PNJ → silhouette.
     static func lyra() -> SKNode {
+        // Trio top-down cohérent : Lyra partage la silhouette dessinée en code.
+        TopDownHero.node(.lyra, name: "lyra")
+    }
+
+    /// Ancienne Lyra (packs/PNJ) — conservée pour référence, plus appelée.
+    private static func legacyLyra() -> SKNode {
         if let n = BattleSprites.worldNode(.lyra, name: "lyra") { return n }
         if let n = pixelNPC("npc_lyra", nodeName: "lyra") { return n }
 

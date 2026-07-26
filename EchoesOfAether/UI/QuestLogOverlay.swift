@@ -17,6 +17,8 @@ final class QuestLogOverlay {
     private var nodes: [SKNode] = []
     private var panelWidth: CGFloat = 320
     private var panelHeight: CGFloat = 460
+    private var entries: [QuestEntry] = []
+    private var page = 0        // pagination (feuilletée au joystick haut/bas)
 
     var onClose: (() -> Void)?
     var isActive: Bool { root.parent != nil && !root.isHidden }
@@ -37,10 +39,21 @@ final class QuestLogOverlay {
 
     func open(entries: [QuestEntry], completion: @escaping () -> Void) {
         onClose = completion
+        self.entries = entries
+        page = 0
         root.isHidden = false
-        buildContent(entries: entries)
+        buildContent()
         AudioEngine.shared.playShopOpen()
         AccessibilitySettings.announce(String(localized: "questlog.title"))
+    }
+
+    /// Joystick haut/bas : feuillette les pages de quêtes.
+    func scroll(_ dy: Int) {
+        guard isActive, dy != 0 else { return }
+        page = max(0, page - dy)
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        buildContent()
     }
 
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
@@ -56,7 +69,7 @@ final class QuestLogOverlay {
 
     // MARK: - Build
 
-    private func buildContent(entries: [QuestEntry]) {
+    private func buildContent() {
         nodes.forEach { $0.removeFromParent() }
         nodes.removeAll()
 
@@ -79,8 +92,15 @@ final class QuestLogOverlay {
             root.addChild(empty)
             nodes.append(empty)
         } else {
-            var y = panelHeight / 2 - 70
-            for entry in entries {
+            let top = panelHeight / 2 - 70
+            let rowH: CGFloat = 64
+            let perPage = max(1, Int((top - (-panelHeight / 2 + 68)) / rowH))
+            let pages = max(1, Int(ceil(Double(entries.count) / Double(perPage))))
+            page = min(page, pages - 1)
+            let start = page * perPage
+            let slice = Array(entries[start ..< min(entries.count, start + perPage)])
+            var y = top
+            for entry in slice {
                 let done = entry.state == .complete
                 // Vignette pixel art du type de quête (grisée une fois rendue).
                 let icon = PixelIcons.node(entry.icon, pixel: 2)
@@ -131,9 +151,9 @@ final class QuestLogOverlay {
                 root.addChild(div)
                 nodes.append(div)
 
-                y -= 64
-                if y < -panelHeight / 2 + 68 { break }
+                y -= rowH
             }
+            addPager(pages: pages)
         }
 
         let closeBtn = SKShapeNode()
@@ -162,6 +182,18 @@ final class QuestLogOverlay {
         nodes.removeAll()
         onClose?()
         onClose = nil
+    }
+
+    /// Indicateur « ▲ page X/Y ▼ » au-dessus du bouton fermer, si >1 page.
+    private func addPager(pages: Int) {
+        guard pages > 1 else { return }
+        let arrows = (page > 0 ? "▲ " : "  ")
+            + String(localized: "lore.pager \(page + 1) \(pages)")
+            + (page < pages - 1 ? " ▼" : "  ")
+        let l = label(arrows, size: 13, color: PixelUI.gold)
+        l.position = CGPoint(x: 0, y: -panelHeight / 2 + 56)
+        root.addChild(l)
+        nodes.append(l)
     }
 
     private func label(_ text: String, size: CGFloat, color: SKColor) -> SKLabelNode {

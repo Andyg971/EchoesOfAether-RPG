@@ -719,7 +719,11 @@ final class GameManager {
         if options.isActive { return }              // sliders : tactile assumé
         if pause.isActive { pause.moveSelection(dy); return }
         if shop.isActive { shop.moveSelection(dy); return }
-        if lore.isActive { if dx != 0 { lore.navigateTabs(dx) }; return }
+        if lore.isActive {
+            if dx != 0 { lore.navigateTabs(dx) } else { lore.scroll(dy) }
+            return
+        }
+        if questLog.isActive { questLog.scroll(dy); return }
         if state == .combat { combat.menuNav(dx: dx, dy: dy); return }
         if dialogue.isActive { dialogue.moveChoiceSelection(dy); return }
     }

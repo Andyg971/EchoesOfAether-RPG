@@ -12,6 +12,10 @@ final class LoreOverlay {
     private var entries: [LoreEntry] = []
     private var bestiarySeen: Set<String> = []
 
+    // Pagination (le contenu long se feuillette au joystick haut/bas).
+    private var chroniclesPage = 0
+    private var bestiaryPage = 0
+
     var onClose: (() -> Void)?
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -38,6 +42,8 @@ final class LoreOverlay {
         self.entries = entries
         self.bestiarySeen = bestiarySeen
         tab = startOnBestiary ? .bestiary : .chronicles
+        chroniclesPage = 0
+        bestiaryPage = 0
         root.isHidden = false
         buildContent()
         AudioEngine.shared.playShopOpen()
@@ -161,8 +167,15 @@ final class LoreOverlay {
             entryLabels.append(empty)
             return
         }
-        var y = panelHeight/2 - 108
-        for entry in entries {
+        let top = panelHeight/2 - 108
+        let rowH: CGFloat = 56
+        let perPage = max(1, Int((top - (-panelHeight/2 + 78)) / rowH))
+        let pages = max(1, Int(ceil(Double(entries.count) / Double(perPage))))
+        chroniclesPage = min(chroniclesPage, pages - 1)
+        let start = chroniclesPage * perPage
+        let slice = Array(entries[start ..< min(entries.count, start + perPage)])
+        var y = top
+        for entry in slice {
             // Losange pixel art (carré tourné) en guise de puce
             let icon = SKShapeNode(rectOf: CGSize(width: 9, height: 9))
             icon.fillColor = SKColor(red: 0.55, green: 0.75, blue: 1, alpha: 1)
@@ -196,18 +209,25 @@ final class LoreOverlay {
             root.addChild(div)
             entryLabels.append(div)
 
-            y -= 56
-            if y < -panelHeight/2 + 70 { break }
+            y -= rowH
         }
+        addPager(page: chroniclesPage, pages: pages)
     }
 
     // MARK: - Bestiaire
 
     private func buildBestiary() {
         let rowH: CGFloat = 38
-        var y = panelHeight/2 - 102
+        let top = panelHeight/2 - 102
+        let perPage = max(1, Int((top - (-panelHeight/2 + 60)) / rowH))
+        let all = Array(CombatSpriteKind.allCases)
+        let pages = max(1, Int(ceil(Double(all.count) / Double(perPage))))
+        bestiaryPage = min(bestiaryPage, pages - 1)
+        let start = bestiaryPage * perPage
+        let slice = Array(all[start ..< min(all.count, start + perPage)])
+        var y = top
 
-        for kind in CombatSpriteKind.allCases {
+        for kind in slice {
             let seen = bestiarySeen.contains(kind.bestiaryID)
 
             // Vignette : frame idle du sprite, silhouette noire si inconnue
@@ -269,10 +289,33 @@ final class LoreOverlay {
             }
 
             y -= rowH
-            // Ne pas dessiner hors du cadre : au-delà de la zone visible, on
-            // s'arrête (le bestiaire tenait jusqu'ici par chance sur la hauteur).
-            if y < -panelHeight/2 + 52 { break }
         }
+        addPager(page: bestiaryPage, pages: pages)
+    }
+
+    /// Indicateur de page « ◄ page X/Y ► » au bas du panneau, quand il y a
+    /// plus d'une page à feuilleter (joystick haut/bas).
+    private func addPager(page: Int, pages: Int) {
+        guard pages > 1 else { return }
+        let arrows = (page > 0 ? "▲ " : "  ")
+            + String(localized: "lore.pager \(page + 1) \(pages)")
+            + (page < pages - 1 ? " ▼" : "  ")
+        let l = makeLabel(arrows, size: 13, color: PixelUI.gold)
+        l.position = CGPoint(x: 0, y: -panelHeight/2 + 56)
+        root.addChild(l)
+        entryLabels.append(l)
+    }
+
+    /// Joystick haut/bas : feuillette la page de l'onglet courant.
+    func scroll(_ dy: Int) {
+        guard isActive, dy != 0 else { return }
+        switch tab {
+        case .chronicles: chroniclesPage = max(0, chroniclesPage - dy)
+        case .bestiary:   bestiaryPage = max(0, bestiaryPage - dy)
+        }
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        buildContent()
     }
 
     /// Bouton B : fermeture programmée (contrôles classiques).

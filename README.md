@@ -159,14 +159,14 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 | GameCenter (auth + achievements) | ✅ Câblé |
 | Localisation FR + EN | ✅ ~750 clés |
 | Trailer marketing (39 s, 1920×886) | ✅ `Marketing/` |
-| Héros overworld top-down (Kael/Lyra/Eran, 4 dir + marche) | ✅ Dessiné en code (`TopDownHero`) |
+| Sprites overworld Kael/Lyra/Eran (packs de combat) | ✅ Intégrés (`BattleSprites.worldNode`) |
 | Build App Store | 🟡 Privacy manifest + screenshots à faire |
 
 ---
 
 ## Roadmap — Ce qui reste
 
-- [x] **Héros top-down overworld** — trio Kael/Lyra/Eran dessiné en code (`TopDownHero`, 4 dir + marche)
+- [ ] **Sprites top-down dédiés** — frames overworld 4 directions pour Kael/Lyra/Eran (le combat sert de sprite en attendant)
 - [x] **Accessibilité (overlays + combat)** — annonces VoiceOver à l'ouverture, au curseur et aux tours
 - [ ] **Audit EN complet** — run intégral en anglais
 - [ ] **Support iPad adaptatif** — layout non adaptatif pour l'instant

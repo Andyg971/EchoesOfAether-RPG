@@ -475,7 +475,6 @@ final class DialogueSystem {
             bodyLabel.text = npc.text
             continueIndicator.isHidden = false
             AccessibilitySettings.announce("\(npc.speaker). \(npc.text)")
-            AudioEngine.shared.playTap()
             if let sceneRef = root.scene {
                 layout(in: sceneRef.size, safeBottom: safeBottom)
             }
@@ -484,7 +483,6 @@ final class DialogueSystem {
             return
         }
 
-        AudioEngine.shared.playTap()
         index += 1
         showCurrentStep()
         if let sceneRef = root.scene {
@@ -496,7 +494,6 @@ final class DialogueSystem {
     /// une décision du joueur) ou jusqu'à la fin de la conversation.
     func skipToEnd() {
         guard isActive, choiceNodes.isEmpty else { return }
-        AudioEngine.shared.playTap()
         // Au milieu de la résolution d'un choix (titre/réaction affichés) :
         // le choix courant est déjà répondu, on reprend après lui.
         if index == answeredChoiceIndex { index += 1 }

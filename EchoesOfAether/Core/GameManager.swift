@@ -501,8 +501,9 @@ final class GameManager {
         let showActionButton = actionButton.parent != nil
             && !worldMap.isActive
             && (state == .exploration || state == .dialogue
-                || state == .combat || state == .shop || pause.isActive
-                || death.isActive || tutorial.isActive)
+                || state == .combat || state == .shop
+                || (state == .inventory && inventory.canUsePotion)
+                || pause.isActive || death.isActive || tutorial.isActive)
         if actionButton.isHidden == showActionButton {
             actionButton.isHidden = !showActionButton
         }
@@ -881,6 +882,8 @@ final class GameManager {
                 combat.menuConfirm()
             } else if dialogue.isActive {
                 dialogue.advance()
+            } else if state == .inventory {
+                inventory.useSelectedPotion()
             } else if state == .exploration {
                 triggerNearbyAction(in: scene)
             }
@@ -2247,9 +2250,25 @@ final class GameManager {
     func openInventory() {
         guard state == .exploration else { return }
         transition(to: .inventory)
+        inventory.onUsePotion = { [weak self] in self?.useHealthPotion() ?? false }
         inventory.open(player: player) { [weak self] in
             self?.transition(to: .exploration)
         }
+    }
+
+    /// Boit une potion en exploration : soigne 40 % des PV max. Renvoie true
+    /// si une potion a effectivement été consommée (fiole dispo ET PV non
+    /// pleins) — le HUD se rafraîchit tout seul depuis `player` dans update().
+    @discardableResult
+    func useHealthPotion() -> Bool {
+        guard player.potions > 0, player.currentHP < player.currentMaxHP else {
+            return false
+        }
+        player.potions -= 1
+        let heal = Int(CGFloat(player.currentMaxHP) * 0.40)
+        player.currentHP = min(player.currentMaxHP, player.currentHP + heal)
+        AudioEngine.shared.playSelect()
+        return true
     }
 
     // MARK: - Helpers

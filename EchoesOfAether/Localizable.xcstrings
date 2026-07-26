@@ -15424,6 +15424,40 @@
           }
         }
       }
+    },
+    "inventory.potionHint": {
+      "comment": "Hint shown in inventory when a potion can be drunk.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A · Drink a potion"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A · Boire une potion"
+          }
+        }
+      }
+    },
+    "inventory.healed": {
+      "comment": "Toast shown after drinking a potion in the inventory.",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Healed!"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Soigné !"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

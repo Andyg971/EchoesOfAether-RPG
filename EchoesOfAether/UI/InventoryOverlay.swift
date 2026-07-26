@@ -11,6 +11,14 @@ final class InventoryOverlay {
     private var playerState: PlayerState?
     private var completion: (() -> Void)?
 
+    /// Renvoie true si une potion a bien été bue (fiole dispo + PV non pleins).
+    var onUsePotion: (() -> Bool)?
+    private var potionUsable = false
+    private let lineH: CGFloat = 26
+
+    /// Le bouton A n'apparaît en inventaire que s'il y a une potion à boire.
+    var canUsePotion: Bool { isActive && potionUsable }
+
     private var panelWidth: CGFloat = 320
     private var panelHeight: CGFloat = 580
 
@@ -69,6 +77,11 @@ final class InventoryOverlay {
             close()
             return true
         }
+        if let hit = root.childNode(withName: "potionUse") as? SKShapeNode,
+           hit.contains(local) {
+            useSelectedPotion()
+            return true
+        }
 
         return true // absorb taps
     }
@@ -80,7 +93,6 @@ final class InventoryOverlay {
         statLabels.removeAll()
 
         let startY = panelHeight / 2 - 60
-        let lineH: CGFloat = 26
         var y = startY
 
         // Section : Équipement
@@ -94,8 +106,12 @@ final class InventoryOverlay {
 
         // Section : Consommables
         y = addSection(String(localized: "inventory.section.items"), y: y)
+        // La ligne « Potions » est actionnable : bouton A ou toucher = en boire.
+        potionUsable = player.potions > 0 && player.currentHP < player.currentMaxHP
+        let potionRowY = y
         y = addRow(icon: .potion, label: String(localized: "inventory.potions"),
                    detail: "\(player.potions)/3", y: y, lineH: lineH)
+        addPotionAction(at: potionRowY)
         y = addRow(icon: .gem, label: String(localized: "inventory.shards"),
                    detail: "\(player.aetherShards)", y: y, lineH: lineH)
 
@@ -132,6 +148,78 @@ final class InventoryOverlay {
         for (i, label) in statLabels.enumerated() {
             JuiceEngine.popIn(label, delay: Double(i) * 0.03)
         }
+    }
+
+    /// Zone tactile sur la ligne des potions + indice « A · Boire » quand
+    /// une fiole est disponible et que les PV ne sont pas pleins.
+    private func addPotionAction(at rowY: CGFloat) {
+        // Rien de tappable si aucune fiole ou PV déjà pleins : la ligne reste
+        // une simple stat (pas de buzz d'erreur sur un tap anodin).
+        guard potionUsable else { return }
+
+        let hit = SKShapeNode(rectOf: CGSize(width: panelWidth - 40, height: lineH))
+        hit.fillColor = .clear
+        hit.strokeColor = .clear
+        hit.name = "potionUse"
+        hit.position = CGPoint(x: 0, y: rowY - 2)
+        root.addChild(hit)
+        statLabels.append(hit)
+
+        // Léger surlignage doré de la ligne buvable.
+        let glow = SKShapeNode(rectOf: CGSize(width: panelWidth - 44, height: lineH))
+        glow.fillColor = PixelUI.gold.withAlphaComponent(0.10)
+        glow.strokeColor = PixelUI.goldDim
+        glow.lineWidth = 1
+        glow.glowWidth = 0
+        glow.position = CGPoint(x: 0, y: rowY - 2)
+        glow.zPosition = -0.5
+        root.addChild(glow)
+        statLabels.append(glow)
+        JuiceEngine.pulse(glow, scale: 1.02)
+
+        let hint = SKLabelNode(fontNamed: PixelUI.uiFont)
+        hint.text = String(localized: "inventory.potionHint")
+        hint.fontSize = 13
+        hint.fontColor = PixelUI.gold
+        hint.horizontalAlignmentMode = .center
+        hint.verticalAlignmentMode = .center
+        hint.position = CGPoint(x: 0, y: -panelHeight / 2 + 62)
+        root.addChild(hint)
+        statLabels.append(hint)
+        JuiceEngine.pulse(hint, scale: 1.06)
+    }
+
+    /// Bouton A / toucher la ligne : boit une potion. Erreur haptique si
+    /// impossible (aucune fiole ou PV déjà pleins).
+    func useSelectedPotion() {
+        // A n'est visible et la ligne n'est tappable que si buvable : un échec
+        // ici (PV redevenus pleins entre-temps) reste silencieux.
+        guard potionUsable, onUsePotion?() == true else { return }
+        HapticsEngine.success()
+        showHealToast()
+        if let player = playerState { buildContent(player: player) }
+    }
+
+    private func showHealToast() {
+        root.childNode(withName: "healToast")?.removeFromParent()
+        let toast = SKLabelNode(fontNamed: PixelUI.uiFont)
+        toast.name = "healToast"
+        toast.text = String(localized: "inventory.healed")
+        toast.fontSize = 20
+        toast.fontColor = SKColor(red: 0.55, green: 0.92, blue: 0.58, alpha: 1)
+        toast.verticalAlignmentMode = .center
+        toast.horizontalAlignmentMode = .center
+        toast.position = CGPoint(x: 0, y: panelHeight / 2 - 68)
+        toast.zPosition = 30
+        toast.setScale(0.6)
+        toast.alpha = 0
+        root.addChild(toast)
+        toast.run(.sequence([
+            .group([.fadeIn(withDuration: 0.12), .scale(to: 1.0, duration: 0.16)]),
+            .wait(forDuration: 0.7),
+            .group([.fadeOut(withDuration: 0.3), .moveBy(x: 0, y: 12, duration: 0.3)]),
+            .removeFromParent()
+        ]))
     }
 
     // MARK: - Row Builders

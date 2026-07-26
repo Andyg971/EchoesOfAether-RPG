@@ -139,6 +139,7 @@ extension GameManager {
     func enterZoneFromMap(_ id: String) {
         guard let scene else { return }
         inOverworld = false
+        discoveredPlaces.insert(id)   // lieu visité → voyage rapide déverrouillé
         clearRoamers()
         transition(to: .transition)
         AudioEngine.shared.playSelect()

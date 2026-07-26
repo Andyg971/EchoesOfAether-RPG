@@ -90,6 +90,9 @@ final class GameManager {
     private var overworldTarget: String?
     /// Position de Kael sur la carte avant un combat, pour l'y remettre après.
     var overworldReturnPos: CGPoint?
+    /// Lieux déjà visités (voyage rapide déverrouillé). S'ajoute à la
+    /// découverte dérivée de la progression d'histoire.
+    var discoveredPlaces: Set<String> = []
     /// Vrai quand Kael est dans le désert d'Ossara (voyage via la carte
     /// du monde — pas une GamePhase : la save garde la phase d'origine).
     var inDesert = false
@@ -139,7 +142,8 @@ final class GameManager {
         hud.onMapTap       = { [weak self] in self?.openWorldMap() }
         hud.mapButton.isHidden = true
 
-        worldMap.onTravel = { [weak self] id in self?.travel(to: id) }
+        // Voyage rapide : saut DIRECT dans le lieu découvert choisi.
+        worldMap.onTravel = { [weak self] id in self?.enterZoneFromMap(id) }
 
         pause.onResume    = { [weak self] in self?.closePause() }
         pause.onSave      = { [weak self] in
@@ -2691,7 +2695,7 @@ final class GameManager {
     /// le village post-sanctuaire. Jamais depuis une excursion (mines) ni
     /// un intérieur — sauf pour revenir du désert.
     private var worldMapAvailable: Bool {
-        if inOverworld { return false }   // déjà sur la carte : pas de bouton
+        if inOverworld { return true }    // sur la carte : bouton = voyage rapide
         if inDesert { return true }
         guard !inMines, activeInterior == nil else { return false }
         return [.forest, .complete, .act2].contains(phase)
@@ -2714,9 +2718,17 @@ final class GameManager {
     private func openWorldMap() {
         guard state == .exploration, worldMapAvailable else { return }
         HapticsEngine.light()
-        // La carte du monde est désormais EXPLORABLE (façon FF7) : Kael y
-        // marche entre les lieux et y entre au bouton A.
-        enterOverworld()
+        if inOverworld {
+            // Déjà sur la carte explorable : le bouton ouvre le VOYAGE RAPIDE
+            // vers un lieu déjà découvert (saut direct dans la zone).
+            transition(to: .inventory)   // fige l'exploration derrière l'overlay
+            worldMap.open(places: buildMapPlaces()) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        } else {
+            // Dans une zone : on « sort sur la carte du monde » explorable.
+            enterOverworld()
+        }
     }
 
     /// Construit l'état des lieux selon la progression de l'histoire.
@@ -2730,8 +2742,10 @@ final class GameManager {
         func placeState(_ id: String, discovered: Bool,
                         travel: Bool) -> WorldMapPlace.State {
             if id == current { return .current }
-            if travel { return .available }
-            return discovered ? .locked : .hidden
+            // Voyage rapide : tout lieu DÉCOUVERT (progression d'histoire ou
+            // déjà visité) est directement voyageable. Sinon « ??? ».
+            let known = discovered || discoveredPlaces.contains(id)
+            return known ? .available : .hidden
         }
 
         return [

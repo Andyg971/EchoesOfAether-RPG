@@ -89,12 +89,13 @@ enum CombatSprites {
         case .lyra:
             return lyra()
         case .lyraEcho:
-            // L'Écho garde le sprite de Lyra, teinté cyan et translucide.
+            // L'Écho garde le sprite de Lyra, teinté cyan glacé et translucide
+            // (mêmes valeurs spectrales que dans le monde, cf. showLyraEcho).
             let node = lyra()
-            node.alpha = 0.78
+            node.alpha = 0.7
             node.forEachDescendantSprite { s in
-                s.color = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 1)
-                s.colorBlendFactor = 0.45
+                s.color = SKColor(red: 0.50, green: 0.92, blue: 0.98, alpha: 1)
+                s.colorBlendFactor = 0.6
             }
             return node
         case .eran:

@@ -582,11 +582,25 @@ final class WorldBuilder {
     /// teinté cyan spectral et translucide (le follow est réutilisé).
     func showLyraEcho(in scene: SKScene) {
         lyra.isHidden = false
-        lyra.alpha = 0.72
         lyra.position = CGPoint(x: kael.position.x - 44, y: kael.position.y)
+        // C'EST le sprite de Lyra — mais spectral : désaturé vers un cyan
+        // glacé et plus translucide qu'un vivant. Il « respire » (pulsation
+        // d'opacité) pour dire d'un coup d'œil qu'elle est morte.
         lyra.forEachDescendantSprite { s in
-            s.color = SKColor(red: 0.45, green: 0.90, blue: 0.95, alpha: 1)
-            s.colorBlendFactor = 0.45
+            s.color = SKColor(red: 0.50, green: 0.92, blue: 0.98, alpha: 1)
+            s.colorBlendFactor = 0.6
+        }
+        lyra.removeAction(forKey: "echoSpectral")
+        if AccessibilitySettings.reduceMotion {
+            lyra.alpha = 0.6
+        } else {
+            lyra.alpha = 0.55
+            let breathe = SKAction.sequence([
+                .fadeAlpha(to: 0.74, duration: 1.1),
+                .fadeAlpha(to: 0.45, duration: 1.1)
+            ])
+            breathe.timingMode = .easeInEaseOut
+            lyra.run(.repeatForever(breathe), withKey: "echoSpectral")
         }
     }
 

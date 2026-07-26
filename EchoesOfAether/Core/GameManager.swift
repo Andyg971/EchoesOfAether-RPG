@@ -307,6 +307,16 @@ final class GameManager {
             transition(to: .exploration)
             return
         }
+        if CommandLine.arguments.contains("--zone-overworld") {
+            hud.goldValue = player.gold
+            world.switchToOverworld(in: scene)
+            world.kael.position = CGPoint(x: world.worldWidth * 0.24,
+                                          y: world.worldHeight * 0.42)
+            world.kael.isHidden = false
+            world.refreshKaelDepth()
+            transition(to: .exploration)
+            return
+        }
         if CommandLine.arguments.contains("--zone-shrine") {
             hud.goldValue = player.gold
             phase = .shrine
@@ -791,11 +801,13 @@ final class GameManager {
               padVector != .zero, let scene else { return }
         let speed: CGFloat = 215
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        // Carte du monde : le déplacement s'étend aussi en X (scroll 2D).
+        let ww = world.worldWidth > 0 ? world.worldWidth : scene.size.width
         let current = world.kael.position
         var pos = current
         pos.x += padVector.dx * speed * CGFloat(deltaTime)
         pos.y += padVector.dy * speed * CGFloat(deltaTime)
-        pos.x = min(max(pos.x, 34), scene.size.width - 34)
+        pos.x = min(max(pos.x, 34), ww - 34)
         pos.y = min(max(pos.y, 86), wh - 44)
 
         // Collisions : on ne traverse ni maisons ni arbres. Glissement le

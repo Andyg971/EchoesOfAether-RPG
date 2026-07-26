@@ -65,6 +65,10 @@ final class WorldBuilder {
 
     let worldNode = SKNode()
     private(set) var worldHeight: CGFloat = 0
+    /// Largeur de la zone quand elle défile aussi horizontalement (carte du
+    /// monde façon FF7). `0` = zone d'un seul écran de large (comportement
+    /// par défaut de toutes les autres zones).
+    private(set) var worldWidth: CGFloat = 0
     /// Empreintes au sol infranchissables (maisons, arbres, props solides).
     /// En coordonnées monde ; vidées à chaque changement de zone.
     private(set) var obstacles: [CGRect] = []
@@ -311,18 +315,31 @@ final class WorldBuilder {
     func snapCamera() { snapCameraNextFrame = true }
 
     func updateCamera(in sceneSize: CGSize) {
-        guard worldHeight > sceneSize.height else { return }
-        let targetY = kael.position.y
-        let maxY = worldHeight - sceneSize.height
-        let clamped = min(max(targetY - sceneSize.height / 2, 0), maxY)
-        let goal = -clamped
+        let scrollY = worldHeight > sceneSize.height
+        let scrollX = worldWidth > sceneSize.width      // carte du monde (FF7)
+        guard scrollY || scrollX else { return }
+
+        var goalY = worldNode.position.y
+        if scrollY {
+            let clampedY = min(max(kael.position.y - sceneSize.height / 2, 0),
+                               worldHeight - sceneSize.height)
+            goalY = -clampedY
+        }
+        var goalX = worldNode.position.x
+        if scrollX {
+            let clampedX = min(max(kael.position.x - sceneSize.width / 2, 0),
+                               worldWidth - sceneSize.width)
+            goalX = -clampedX
+        }
+
         if snapCameraNextFrame {
-            worldNode.position.y = goal
+            worldNode.position = CGPoint(x: goalX, y: goalY)
             snapCameraNextFrame = false
         } else {
             // Suivi lissé : la caméra rattrape Kael en douceur (cinématique),
             // au lieu de coller image par image.
-            worldNode.position.y += (goal - worldNode.position.y) * 0.18
+            worldNode.position.x += (goalX - worldNode.position.x) * 0.18
+            worldNode.position.y += (goalY - worldNode.position.y) * 0.18
         }
     }
 
@@ -334,6 +351,131 @@ final class WorldBuilder {
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.06, blue: 0.04, alpha: 1)
         buildForest(in: scene)   // définit worldHeight (trek scrollable)
+    }
+
+    // MARK: - Carte du monde (overworld façon FF7)
+
+    /// Lieux de la carte du monde : id (pour le voyage) + position MONDE.
+    private(set) var overworldPlaces: [(id: String, pos: CGPoint, title: String)] = []
+
+    /// Le grand continent explorable : Kael marche d'un lieu à l'autre, la
+    /// caméra le suit en 2D (`worldWidth`/`worldHeight` > écran).
+    func switchToOverworld(in scene: SKScene) {
+        clearBackdrop()
+        worldNode.position = .zero
+        [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
+        scene.backgroundColor = SKColor(red: 0.07, green: 0.13, blue: 0.09, alpha: 1)
+        let w = scene.size.width * 2.7
+        let h = scene.size.height * 2.4
+        worldWidth = w
+        worldHeight = h
+        buildOverworld(in: scene, w: w, h: h)
+    }
+
+    private func buildOverworld(in scene: SKScene, w: CGFloat, h: CGFloat) {
+        overworldPlaces.removeAll()
+
+        // Sol de base : plaines herbeuses sur tout le continent.
+        overworldPatch(["me_grassvar_1", "me_grassvar_5"],
+                       rect: CGRect(x: 0, y: 0, width: w, height: h),
+                       tileScale: 2.0, z: -30, in: scene)
+        // Désert d'Ossara : sable au sud-est.
+        overworldPatch(["ds_sand"],
+                       rect: CGRect(x: w * 0.60, y: 0, width: w * 0.40, height: h * 0.46),
+                       tileScale: 2.0, z: -29, in: scene)
+        // Lac au sud-ouest.
+        overworldPatch(["ds_water_ne"],
+                       rect: CGRect(x: 0, y: 0, width: w * 0.16, height: h * 0.26),
+                       tileScale: 2.0, z: -29, in: scene)
+
+        // Forêt d'Ébène : bosquet dense d'arbres verts au centre.
+        scatterOverworld(["tree_big", "mv_forest_tree_wide"],
+                         count: 46, in: CGRect(x: w * 0.26, y: h * 0.40,
+                                               width: w * 0.30, height: h * 0.44),
+                         scale: 0.32, in: scene)
+        // Montagnes de Cendreval : rochers au nord-est.
+        scatterOverworld(["rock_1", "ds_cliff_big"],
+                         count: 22, in: CGRect(x: w * 0.60, y: h * 0.60,
+                                               width: w * 0.36, height: h * 0.36),
+                         scale: 0.3, in: scene)
+        // Cactus épars dans les dunes.
+        scatterOverworld(["ds_cactus_barrel", "ds_cactus_flower"],
+                         count: 16, in: CGRect(x: w * 0.64, y: h * 0.04,
+                                               width: w * 0.32, height: h * 0.36),
+                         scale: 0.28, in: scene)
+
+        // ── Lieux (POI d'entrée) — mini-structures sur la carte ──
+        addOverworldPlace("village",   asset: "village_house_country", scale: 0.24,
+                          at: CGPoint(x: w * 0.14, y: h * 0.34),
+                          title: String(localized: "map.place.village"), in: scene)
+        addOverworldPlace("forest",    asset: "tree_big", scale: 0.42,
+                          at: CGPoint(x: w * 0.40, y: h * 0.52),
+                          title: String(localized: "map.place.forest"), in: scene)
+        addOverworldPlace("ruins",     asset: "me_statue_angel", scale: 0.34,
+                          at: CGPoint(x: w * 0.30, y: h * 0.82),
+                          title: String(localized: "map.place.ruins"), in: scene)
+        addOverworldPlace("mines",     asset: "ds_cliff_big", scale: 0.4,
+                          at: CGPoint(x: w * 0.76, y: h * 0.80),
+                          title: String(localized: "map.place.mines"), in: scene)
+        addOverworldPlace("desert",    asset: "ds_tent_big", scale: 0.34,
+                          at: CGPoint(x: w * 0.83, y: h * 0.22),
+                          title: String(localized: "map.place.desert"), in: scene)
+        addOverworldPlace("threshold", asset: "gy_gate_big", scale: 0.4,
+                          at: CGPoint(x: w * 0.92, y: h * 0.90),
+                          title: String(localized: "map.place.threshold"), in: scene)
+    }
+
+    private func overworldPatch(_ tiles: [String], rect: CGRect,
+                                tileScale: CGFloat, z: CGFloat, in scene: SKScene) {
+        guard let node = PixelArtSprites.tiledFloor(tileNames: tiles, in: rect.size,
+                                                    tileScale: tileScale) else { return }
+        node.position = CGPoint(x: rect.minX, y: rect.minY)
+        node.zPosition = z
+        add(node, to: scene)
+    }
+
+    private func scatterOverworld(_ assets: [String], count: Int, in rect: CGRect,
+                                  scale: CGFloat, in scene: SKScene) {
+        var rng = SystemRandomNumberGenerator()
+        for _ in 0..<count {
+            let name = assets.randomElement(using: &rng) ?? assets[0]
+            guard let s = PixelArtSprites.still(name: name, scale: scale,
+                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
+            let p = CGPoint(x: .random(in: rect.minX...rect.maxX, using: &rng),
+                            y: .random(in: rect.minY...rect.maxY, using: &rng))
+            s.position = p
+            s.zPosition = actorLayer(for: p.y) - 0.2
+            add(s, to: scene)
+        }
+    }
+
+    /// Pose un lieu sur la carte : sprite + panonceau nom, et l'enregistre
+    /// comme POI d'entrée (voyage à l'approche + bouton A).
+    private func addOverworldPlace(_ id: String, asset: String, scale: CGFloat,
+                                   at p: CGPoint, title: String, in scene: SKScene) {
+        var top = p.y + 26           // repli si le sprite manque
+        if let s = PixelArtSprites.still(name: asset, scale: scale,
+                                         anchor: CGPoint(x: 0.5, y: 0.0)) {
+            s.position = p
+            s.zPosition = actorLayer(for: p.y)
+            add(s, to: scene)
+            top = p.y + s.calculateAccumulatedFrame().height
+        }
+        // Panneau nom juste au-dessus du sprite (ombre portée dure).
+        let labelY = top + 10
+        for (dx, dy, c, z) in [(1.5 as CGFloat, -1.5 as CGFloat,
+                                SKColor(white: 0, alpha: 0.85), 599 as CGFloat),
+                               (0, 0, SKColor.white, 600)] {
+            let l = SKLabelNode(fontNamed: PixelUI.uiFont)
+            l.text = title; l.fontSize = 13
+            l.fontColor = c
+            l.horizontalAlignmentMode = .center
+            l.verticalAlignmentMode = .center
+            l.position = CGPoint(x: p.x + dx, y: labelY + dy)
+            l.zPosition = z
+            add(l, to: scene)
+        }
+        overworldPlaces.append((id: id, pos: p, title: title))
     }
 
     func switchToShrine(in scene: SKScene) {
@@ -4459,6 +4601,7 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
 
     private func clearBackdrop() {
         obstacles.removeAll()
+        worldWidth = 0               // seule la carte du monde scrolle en X
         villagePlanActive = false    // chaque zone replace Kael elle-même
         snapCameraNextFrame = true   // nouvelle zone : recadrage instantané
         backdropNodes.forEach { $0.removeFromParent() }

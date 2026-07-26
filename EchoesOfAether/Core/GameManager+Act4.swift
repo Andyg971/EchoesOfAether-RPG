@@ -265,11 +265,20 @@ extension GameManager {
     }
 
     /// Fin « Détruire le Cœur » — les échos sont libérés, Lyra part en paix.
+    /// Le choix de corruption de l'Acte II y résonne : s'il avait saisi le
+    /// pouvoir, briser le Cœur est son expiation ; s'il l'avait subi, c'est
+    /// enfin un acte à lui — reprendre la main que le Vide lui avait volée.
     func showAct4DestroyEnding() {
-        dialogue.start(PrototypeContent.act4DestroyEndingDialogue) { [weak self] in
+        let reflection = player.kaelChoseCorruption
+            ? PrototypeContent.act4DestroyChoseDialogue
+            : PrototypeContent.act4DestroyResistedDialogue
+        dialogue.start(reflection) { [weak self] in
             guard let self else { return }
-            dialogue.start(PrototypeContent.act4DestroyEndScreen) { [weak self] in
-                self?.rollCreditsToMenu()
+            dialogue.start(PrototypeContent.act4DestroyEndingDialogue) { [weak self] in
+                guard let self else { return }
+                dialogue.start(PrototypeContent.act4DestroyEndScreen) { [weak self] in
+                    self?.rollCreditsToMenu()
+                }
             }
         }
     }

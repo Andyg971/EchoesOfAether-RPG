@@ -1432,6 +1432,22 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act4.avatarPost3"))
     ]
 
+    /// Réflexion avant la fin Détruire, si Kael avait SCIEMMENT saisi le
+    /// pouvoir (`kaelChoseCorruption`) : briser le Cœur est son expiation —
+    /// défaire de sa main ce qu'il avait choisi de prendre.
+    static let act4DestroyChoseDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.destroy.chose.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.destroy.chose.kael2"))
+    ]
+
+    /// Variante s'il avait REFUSÉ le pouvoir mais en fut dépassé : détruire le
+    /// Cœur est enfin un acte à lui — reprendre la main que le Vide lui avait
+    /// arrachée aux Ruines.
+    static let act4DestroyResistedDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.destroy.resisted.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.destroy.resisted.kael2"))
+    ]
+
     /// Fin « Détruire le Cœur » — les échos sont libérés (choix : 0).
     static let act4DestroyEndingDialogue: [DialogueStep] = [
         .line(speaker: "Kael",

@@ -1,6 +1,70 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "dialogue.act4.destroy.chose.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I reached for this power at the Ruins. It's mine to give back."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "J'ai tendu la main vers ce pouvoir aux Ruines. C'est à moi de le rendre."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy.chose.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Breaking the Heart undoes every hand I ever reached toward it."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Briser le Cœur, c'est défaire chaque main que j'ai tendue vers lui."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy.resisted.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I never wanted this power. At the Ruins, it took me by force."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je n'ai jamais voulu ce pouvoir. Aux Ruines, il m'a pris de force."
+          }
+        }
+      }
+    },
+    "dialogue.act4.destroy.resisted.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So I break it. May it never take anyone the way it took me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors je le brise. Que plus jamais il ne prenne personne comme il m'a pris."
+          }
+        }
+      }
+    },
     "dialogue.act4.merge.chose.kael1" : {
       "localizations" : {
         "en" : {

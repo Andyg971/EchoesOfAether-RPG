@@ -80,6 +80,8 @@ final class StoryFlowTests: XCTestCase {
             ("act3ResistEpilogueDialogue", PrototypeContent.act3ResistEpilogueDialogue),
             ("act4PrologueDialogue", PrototypeContent.act4PrologueDialogue),
             ("act4DestroyEndingDialogue", PrototypeContent.act4DestroyEndingDialogue),
+            ("act4DestroyChoseDialogue", PrototypeContent.act4DestroyChoseDialogue),
+            ("act4DestroyResistedDialogue", PrototypeContent.act4DestroyResistedDialogue),
             ("act4MergeEndingDialogue", PrototypeContent.act4MergeEndingDialogue),
             ("act4MergeChoseDialogue", PrototypeContent.act4MergeChoseDialogue),
             ("act4MergeResistedDialogue", PrototypeContent.act4MergeResistedDialogue)

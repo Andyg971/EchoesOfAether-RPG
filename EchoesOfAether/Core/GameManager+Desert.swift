@@ -88,14 +88,14 @@ extension GameManager {
 
     /// Ouvre la carte du monde explorable : Kael y marche entre les lieux.
     /// `spawnNear` : dépose Kael à côté du lieu d'où il vient (ou par défaut).
-    func enterOverworld(spawnNear placeID: String? = nil) {
+    func enterOverworld(spawnNear placeID: String? = nil, objective: String? = nil) {
         guard let scene else { return }
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self, let scene = self.scene else { return }
             inOverworld = true
             inDesert = false; inMines = false; inCave = false
-            hud.objectiveText = String(localized: "map.title")
+            hud.objectiveText = objective ?? String(localized: "map.title")
             AudioEngine.shared.setMood(.title)
             world.switchToOverworld(in: scene)
             // Kael apparaît un peu au sud du lieu quitté (ou près du village).
@@ -132,7 +132,13 @@ extension GameManager {
                 if phase == .wake { phase = .village }
                 AudioEngine.shared.setMood(.forPhase(phase))
                 world.switchToVillage(in: scene)
-                world.startVillageWander(in: scene.size)
+                if phase == .act2 {
+                    // Solis d'après-Sanctuaire : Dorin garde la porte nord,
+                    // village figé (corrompu), pas de déambulation.
+                    world.repositionDorinToGate(in: scene)
+                } else {
+                    world.startVillageWander(in: scene.size)
+                }
                 world.kael.position = CGPoint(x: midX, y: scene.size.height * 0.30)
             case "forest":
                 phase = .forest
@@ -174,7 +180,15 @@ extension GameManager {
             world.refreshKaelDepth()
             world.snapCamera()
         } completion: { [weak self] in
-            self?.transition(to: .exploration)
+            guard let self else { return }
+            // Première arrivée à Solis en Acte II (retour du Sanctuaire à pied) :
+            // les retrouvailles + la révélation du Sage se jouent ICI, à l'entrée
+            // du village, au lieu du saut direct d'autrefois.
+            if id == "village", phase == .act2, !player.act2Returned {
+                playAct2VillageReturn()
+            } else {
+                transition(to: .exploration)
+            }
         }
     }
 

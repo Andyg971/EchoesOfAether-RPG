@@ -2890,11 +2890,18 @@ final class GameManager {
             requireFullGame { [weak self] in self?.beginAct2() }
 
         case .act2:
-            hud.objectiveText = String(localized: "hud.objective.act2")
             world.switchToVillage(in: scene)
             world.repositionDorinToGate(in: scene)
             world.applyKaelCorruption(level: player.kaelCorruptionLevel)
-            transition(to: .exploration)
+            if player.act2Returned {
+                hud.objectiveText = String(localized: "hud.objective.ruins")
+                transition(to: .exploration)
+            } else {
+                // Save faite avant d'avoir regagné Solis (ex. quittée sur la
+                // carte, en route vers le village) : on rejoue l'arrivée ici
+                // plutôt que de la perdre.
+                playAct2VillageReturn()
+            }
 
         case .ruins:
             hud.objectiveText = player.ruinsProgress >= 2

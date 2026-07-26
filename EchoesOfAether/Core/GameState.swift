@@ -141,6 +141,7 @@ final class PlayerState {
     var bossDefeated: Bool = false
     var lyraDeceased: Bool = false
     var act2SageConsulted: Bool = false
+    var act2Returned: Bool = false   // Kael a regagné Solis à pied (retour Acte II via la carte)
     var ruinsProgress: Int = 0     // 0=fresh, 1=combat1 done, 2=archivist done
     var act2DorinPassed: Bool = false
     var act2NightmareSeen: Bool = false
@@ -255,6 +256,7 @@ final class PlayerState {
             forestProgress: forestProgress, bossDefeated: bossDefeated,
             lyraDeceased: lyraDeceased,
             act2SageConsulted: act2SageConsulted,
+            act2Returned: act2Returned,
             ruinsProgress: ruinsProgress,
             act2DorinPassed: act2DorinPassed,
             act2NightmareSeen: act2NightmareSeen,
@@ -317,6 +319,10 @@ final class PlayerState {
         bossDefeated = data.bossDefeated
         lyraDeceased = data.lyraDeceased
         act2SageConsulted = data.act2SageConsulted
+        // Saves antérieures au retour à pied : l'ancien beginAct2 posait
+        // act2SageConsulted dès l'entrée en Acte II → on considère Solis
+        // déjà regagné pour ne pas rejouer l'arrivée.
+        act2Returned = data.act2Returned ?? data.act2SageConsulted
         ruinsProgress = data.ruinsProgress
         act2DorinPassed = data.act2DorinPassed
         act2NightmareSeen = data.act2NightmareSeen
@@ -399,6 +405,8 @@ struct SaveData: Codable {
     let bossDefeated: Bool
     let lyraDeceased: Bool
     let act2SageConsulted: Bool
+    // Optionnel — rétro-compatible (retour Acte II à pied via la carte)
+    let act2Returned: Bool?
     let ruinsProgress: Int
     let act2DorinPassed: Bool
     let act2NightmareSeen: Bool

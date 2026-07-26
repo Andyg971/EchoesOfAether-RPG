@@ -8,27 +8,35 @@ extension GameManager {
     // MARK: - Act 2 Flow
 
     func beginAct2() {
-        guard let scene else { return }
+        guard scene != nil else { return }
         GameCenterManager.shared.report(.act2Reached)
-        transition(to: .transition)
-        TransitionManager.fade(in: scene) { [weak self] in
+        phase = .act2
+        // Kael rentre du Sanctuaire : il réapparaît sur la CARTE DU MONDE et
+        // regagne Solis À PIED (le village a changé pendant son absence). Les
+        // retrouvailles + la révélation du Sage se jouent à l'ENTRÉE du village
+        // — cf. enterZoneFromMap / playAct2VillageReturn — et non plus ici.
+        discoveredPlaces.insert("shrine")
+        discoveredPlaces.insert("village")
+        enterOverworld(spawnNear: "shrine",
+                       objective: String(localized: "hud.objective.act2"))
+        saveGame()
+    }
+
+    /// Arrivée à Solis en Acte II, jouée à l'entrée du village (retour à pied
+    /// depuis la carte) : retrouvailles puis révélation du Sage, cap sur les
+    /// Ruines. Idempotente via `player.act2Returned` — rejouée seulement tant
+    /// que Kael n'a pas encore franchi la porte de Solis.
+    func playAct2VillageReturn() {
+        transition(to: .dialogue)
+        dialogue.start(PrototypeContent.act2ReturnVillageDialogue) { [weak self] in
             guard let self else { return }
-            phase = .act2
-            hud.objectiveText = String(localized: "hud.objective.act2")
-            world.switchToVillage(in: scene)
-            world.repositionDorinToGate(in: scene)
-        } completion: { [weak self] in
-            guard let self else { return }
-            // Retour au village + révélation du Sage (auto)
-            transition(to: .dialogue)
-            dialogue.start(PrototypeContent.act2ReturnVillageDialogue) { [weak self] in
+            dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
                 guard let self else { return }
-                dialogue.start(PrototypeContent.act2SageRevelationDialogue) { [weak self] in
-                    guard let self else { return }
-                    player.act2SageConsulted = true
-                    hud.objectiveText = String(localized: "hud.objective.ruins")
-                    transition(to: .exploration)
-                }
+                player.act2Returned = true
+                player.act2SageConsulted = true
+                hud.objectiveText = String(localized: "hud.objective.ruins")
+                transition(to: .exploration)
+                saveGame()
             }
         }
     }

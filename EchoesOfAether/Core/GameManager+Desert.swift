@@ -208,8 +208,10 @@ extension GameManager {
             ("enemy_ghoul", 0.60, 0.34)
         ]
         for (asset, fx, fy) in spots {
+            // Pleine couleur (blend 0) : ces gobelins à l'épée doivent se lire
+            // comme des MONSTRES à éviter/affronter, pas des blobs gris.
             addRoamer(asset, at: CGPoint(x: w * fx, y: h * fy), wh: h,
-                      patrolRadius: 70, chaseSpeed: 66) { [weak self] in
+                      patrolRadius: 70, chaseSpeed: 66, blend: 0) { [weak self] in
                 self?.startOverworldCombat()
             }
         }

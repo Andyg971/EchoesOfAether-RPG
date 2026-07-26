@@ -1,4 +1,5 @@
 import SpriteKit
+import UIKit
 
 struct DialogueChoice {
     let title: String
@@ -262,6 +263,79 @@ final class DialogueSystem {
         return nil
     }
 
+    // MARK: - Portraits dessinés en code (habitants d'Ossara)
+
+    private static var codePortraitCache: [String: SKTexture] = [:]
+
+    /// Portrait pixel dessiné en code pour un locuteur (marchand/caravanier du
+    /// désert), sinon nil. Renvoie (id de cache, texture) pour l'anim de pop.
+    private func codePortrait(for speaker: String) -> (String, SKTexture)? {
+        let key = speaker.lowercased()
+        let deserty = ["marchand", "merchant", "caravan", "caravanier"]
+        guard deserty.contains(where: key.contains) else { return nil }
+        let id = "code:desertMerchant"
+        if let t = Self.codePortraitCache[id] { return (id, t) }
+        let t = Self.renderPortrait(Self.desertMerchantMap,
+                                    palette: Self.desertMerchantPalette)
+        Self.codePortraitCache[id] = t
+        return (id, t)
+    }
+
+    private static func renderPortrait(_ map: [String],
+                                       palette: [Character: SKColor]) -> SKTexture {
+        let rows = map.count
+        let cols = map.map(\.count).max() ?? 0
+        let format = UIGraphicsImageRendererFormat(); format.scale = 1
+        let image = UIGraphicsImageRenderer(
+            size: CGSize(width: cols, height: rows), format: format
+        ).image { ctx in
+            for (r, line) in map.enumerated() {
+                for (c, ch) in line.enumerated() {
+                    guard let color = palette[ch] else { continue }
+                    color.setFill()
+                    ctx.cgContext.fill(CGRect(x: c, y: r, width: 1, height: 1))
+                }
+            }
+        }
+        let tex = SKTexture(image: image); tex.filteringMode = .nearest
+        return tex
+    }
+
+    private static let desertMerchantPalette: [Character: SKColor] = [
+        "o": SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1),
+        "T": SKColor(red: 0.85, green: 0.78, blue: 0.60, alpha: 1),   // turban
+        "t": SKColor(red: 0.70, green: 0.62, blue: 0.45, alpha: 1),
+        "B": SKColor(red: 0.72, green: 0.36, blue: 0.26, alpha: 1),   // bandeau
+        "S": SKColor(red: 0.82, green: 0.62, blue: 0.44, alpha: 1),   // peau
+        "N": SKColor(red: 0.66, green: 0.48, blue: 0.34, alpha: 1),   // nez
+        "E": SKColor(red: 0.14, green: 0.11, blue: 0.10, alpha: 1),   // œil
+        "b": SKColor(red: 0.28, green: 0.20, blue: 0.14, alpha: 1),   // barbe
+        "R": SKColor(red: 0.55, green: 0.42, blue: 0.28, alpha: 1)    // robe
+    ]
+
+    private static let desertMerchantMap = [
+        ".....oooooo.....",
+        "...oTTTTTTTTo...",
+        "..oTTTTTTTTTTo..",
+        "..oTttttttttTo..",
+        "..oBBBBBBBBBBo..",
+        "..oTSSSSSSSSTo..",
+        "..oSSSSSSSSSSo..",
+        "..oSSEESSEESSo..",
+        "..oSSSSSSSSSSo..",
+        "..oSSSSNNSSSSo..",
+        "..oSbSSSSSSbSo..",
+        "..oSbbSSSSbbSo..",
+        "..oSbbbbbbbbSo..",
+        "..obbbbbbbbbbo..",
+        "...obbbbbbbbo...",
+        "....obbbbbbo....",
+        "..oRRRRRRRRRRo..",
+        ".oRRRRRRRRRRRRo.",
+        ".oRRRRRRRRRRRRo.",
+        ".oRRRRRRRRRRRRo."
+    ]
+
     /// Nom teinté à la couleur du locuteur + portrait pixel si disponible.
     private func applyPortrait(for speaker: String) {
         let color = portraitColor(for: speaker)
@@ -270,6 +344,23 @@ final class DialogueSystem {
         speakerLabel.fontColor = b < 0.6
             ? SKColor(hue: h, saturation: min(s, 0.6), brightness: 0.80, alpha: 1)
             : color
+
+        // Portrait dessiné en code (habitants d'Ossara) — prime sur l'asset
+        // générique portrait_villager.
+        if let (id, tex) = codePortrait(for: speaker) {
+            let changed = portraitSprite.userData?["asset"] as? String != id
+            portraitSprite.texture = tex
+            hasPortrait = true
+            if changed {
+                portraitSprite.userData = ["asset": id]
+                portraitSprite.setScale(0.82)
+                portraitSprite.run(.sequence([
+                    .scale(to: 1.06, duration: 0.10),
+                    .scale(to: 1.0, duration: 0.10)
+                ]))
+            }
+            return
+        }
 
         if let asset = portraitAsset(for: speaker), UIImage(named: asset) != nil {
             let changed = portraitSprite.userData?["asset"] as? String != asset

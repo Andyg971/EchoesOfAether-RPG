@@ -2901,6 +2901,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Anime la bannière au changement de tour.
     private func showTurnBanner(_ text: String, color: SKColor) {
         turnBannerLabel.text = text
+        AccessibilitySettings.announce(text)
         PixelUI.stylePanel(turnBanner, size: CGSize(width: 240, height: 30),
                            fill: SKColor(red: 0.05, green: 0.04, blue: 0.10, alpha: 0.92),
                            accent: color.withAlphaComponent(0.9))
@@ -3125,6 +3126,24 @@ func menuNav(dx: Int, dy: Int) {
     AudioEngine.shared.playStep()
     updateSelectionCursor()
     updateVisuals()
+    announceCombatFocus()
+}
+
+/// VoiceOver : annonce l'action ou la cible sous le curseur de combat.
+private func announceCombatFocus() {
+    if menuRow == 2 {
+        if pendingHealSpell != nil, healTargets.indices.contains(healTargetIndex) {
+            AccessibilitySettings.announce(healTargets[healTargetIndex].name)
+        } else if enemies.indices.contains(targetIndex) {
+            AccessibilitySettings.announce(enemies[targetIndex].combatant.name)
+        }
+        return
+    }
+    let row = currentMenuRowButtons
+    guard row.indices.contains(menuCol),
+          let lbl = row[menuCol].children.compactMap({ $0 as? SKLabelNode }).first
+    else { return }
+    AccessibilitySettings.announce(lbl.text ?? "")
 }
 
 /// Bouton A : active le bouton sélectionné (ou valide la cible).
@@ -3181,6 +3200,7 @@ func menuConfirm() {
         AudioEngine.shared.playSelect()
         updateSelectionCursor()
         updateVisuals()
+        announceCombatFocus()
         return
     }
     if button === blessingButton { perform(.spell(.blessing)); return }

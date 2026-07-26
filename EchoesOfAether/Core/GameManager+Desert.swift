@@ -145,6 +145,10 @@ extension GameManager {
                 hud.objectiveText = String(localized: "hud.objective.forest")
                 AudioEngine.shared.setMood(.forPhase(.forest))
                 showForest(in: scene)
+                // Marqueurs de quête du village (jouet de l'enfant, médaillon)
+                // posés jadis par le trajet direct de Dorin — conservés ici.
+                if player.questChildToy == .active { world.addToyMarker(in: scene) }
+                if player.questMedallion == .active { world.addMedallionMarker(in: scene) }
                 addSideQuestMarkers(in: scene)
                 world.kael.position = CGPoint(x: midX, y: wh() * 0.05)
             case "desert":

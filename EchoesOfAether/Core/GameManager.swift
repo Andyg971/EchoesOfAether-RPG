@@ -572,6 +572,11 @@ final class GameManager {
                 world.updateLyraFollow(deltaTime: deltaTime)
             } else if phase == .act3 || phase == .act4, player.act3EchoJoined {
                 world.updateLyraFollow(deltaTime: deltaTime)
+                // Eran ferme la marche du trio, derrière l'Écho de Lyra.
+                if player.act3EranMet {
+                    if world.eran.isHidden { world.showEranCompanion() }
+                    world.updateEranFollow(deltaTime: deltaTime)
+                }
             }
         }
 
@@ -1324,31 +1329,16 @@ final class GameManager {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.dorinDialogue) { [weak self] in
             guard let self else { return }
-            transition(to: .transition)
-            TransitionManager.fade(in: scene) { [weak self] in
-                guard let self else { return }
-                phase = .forest
-                hud.objectiveText = String(localized: "hud.objective.forest")
-                world.endLyraVigil()
-                showForest(in: scene)
-            } completion: { [weak self] in
-                guard let self else { return }
-                if player.questChildToy == .active {
-                    world.addToyMarker(in: scene)
-                }
-                if player.questMedallion == .active {
-                    world.addMedallionMarker(in: scene)
-                }
-                addSideQuestMarkers(in: scene)
-                transition(to: .exploration)
-                // Spawn à l'orée sud, puis quelques pas d'entrée sur le sentier.
-                let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
-                world.kael.position = CGPoint(x: scene.size.width * 0.5, y: wh * 0.02)
-                movement.move(world.kael, to: CGPoint(
-                    x: scene.size.width * 0.5,
-                    y: wh * 0.08
-                ), in: CGSize(width: scene.size.width, height: wh))
-            }
+            // Dorin ouvre la porte nord : au lieu de téléporter Kael droit
+            // dans la forêt, il SORT sur la carte du monde et rejoint la forêt
+            // (ou tout autre lieu ouvert) à pied — cohérent avec la sortie de
+            // forêt qui mène déjà à l'overworld (cf. enterShrine).
+            phase = .forest
+            world.endLyraVigil()
+            discoveredPlaces.insert("village")
+            discoveredPlaces.insert("forest")
+            enterOverworld(spawnNear: "village",
+                           objective: String(localized: "hud.objective.forest"))
         }
     }
 

@@ -54,6 +54,9 @@ final class WorldBuilder {
     // Personnages principaux
     let kael: SKNode
     let lyra: SKNode
+    /// Compagnon Eran (Actes III-IV) : marche en queue du trio, derrière
+    /// l'Écho de Lyra. Masqué tant qu'Eran n'a pas rejoint le groupe.
+    let eran: SKNode
     let dorin: SKNode
     // PNJ village
     let bram: SKNode
@@ -95,6 +98,7 @@ final class WorldBuilder {
     init() {
         kael    = WorldNode.kael()
         lyra    = WorldNode.lyra()
+        eran    = BattleSprites.worldNode(.eran, name: "eranCompanion") ?? SKNode()
         dorin   = WorldNode.dorin()
         bram    = WorldNode.bram()
         mara    = WorldNode.mara()
@@ -109,9 +113,10 @@ final class WorldBuilder {
         scene.addChild(worldNode)
         buildVillage(in: scene)
         villagePlanActive = true
-        for node in [kael, lyra, dorin, bram, mara, garen, sage, child, villager] {
+        for node in [kael, lyra, eran, dorin, bram, mara, garen, sage, child, villager] {
             worldNode.addChild(node)
         }
+        eran.isHidden = true   // n'apparaît qu'aux Actes III-IV (cf. showEranCompanion)
         layout(in: scene.size)
     }
 
@@ -243,6 +248,32 @@ final class WorldBuilder {
     /// Recalcule la profondeur de Kael (déplacement continu au pad).
     func refreshKaelDepth() {
         kael.zPosition = actorLayer(for: kael.position.y)
+    }
+
+    // MARK: - Eran compagnon (Seuil, Cœur du Vide — trio)
+
+    /// Fait apparaître Eran en queue du trio, derrière l'Écho de Lyra. Masque
+    /// l'Eran décor du Seuil (`addEran`) pour éviter un doublon. Idempotent.
+    func showEranCompanion() {
+        guard eran.isHidden else { return }
+        worldNode.childNode(withName: "eran")?.isHidden = true   // Eran décor
+        eran.isHidden = false
+        eran.position = CGPoint(x: lyra.position.x - 42, y: lyra.position.y - 6)
+        eran.zPosition = actorLayer(for: eran.position.y)
+    }
+
+    /// Suivi doux : Eran marche derrière l'Écho de Lyra (Kael → Écho → Eran).
+    func updateEranFollow(deltaTime: TimeInterval) {
+        guard !eran.isHidden, !lyra.isHidden, deltaTime > 0 else { return }
+        let target = CGPoint(x: lyra.position.x - 40, y: lyra.position.y - 6)
+        let dx = target.x - eran.position.x
+        let dy = target.y - eran.position.y
+        let dist = (dx * dx + dy * dy).squareRoot()
+        guard dist > 54 else { return }
+        let step = min(CGFloat(deltaTime) * 240, dist - 44)
+        eran.position.x += dx / dist * step
+        eran.position.y += dy / dist * step
+        eran.zPosition = actorLayer(for: eran.position.y)
     }
 
     // MARK: - PNJ errants (village)

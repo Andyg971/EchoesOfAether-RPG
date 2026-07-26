@@ -238,15 +238,17 @@ final class DialogueSystem {
     /// voix, cristal, plaque… le panneau retombe en mode texte seul).
     private func portraitAsset(for speaker: String) -> String? {
         let key = speaker.lowercased()
+        // Andy : les visages de Kael et d'Eran étaient inversés → on les
+        // échange. Kael parle avec « portrait_eran », Eran avec l'icône (Kael).
         let table: [(String, String)] = [
-            ("kael", "portrait_kael_icon"),
+            ("kael", "portrait_eran"),
             ("lyra", "portrait_lyra"),
             ("dorin", "portrait_dorin"),
             ("bram", "portrait_bram"),
             ("mara", "portrait_mara"),
             ("garen", "portrait_garen"),
             ("sage", "portrait_sage"),
-            ("eran", "portrait_eran"),
+            ("eran", "portrait_kael_icon"),
             ("archiv", "portrait_archivist"),
             ("gardien", "portrait_guardian"),
             ("guardian", "portrait_guardian"),

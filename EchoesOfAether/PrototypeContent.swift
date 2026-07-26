@@ -1458,6 +1458,22 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act4.destroyEnd3"))
     ]
 
+    /// Réflexion jouée AVANT la fin Fusionner quand Kael a SCIEMMENT saisi le
+    /// pouvoir à l'Acte II (`kaelChoseCorruption`) : fusionner n'est pas une
+    /// chute mais l'aboutissement d'un choix assumé. Cf. showAct4MergeEnding.
+    static let act4MergeChoseDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.merge.chose.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.merge.chose.kael2"))
+    ]
+
+    /// Variante quand Kael avait REFUSÉ le pouvoir à l'Acte II mais fut dépassé
+    /// (Lyra morte malgré lui) : accepter le Cœur devient son premier vrai
+    /// choix — une reddition lucide plutôt qu'un triomphe.
+    static let act4MergeResistedDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.merge.resisted.kael1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act4.merge.resisted.kael2"))
+    ]
+
     /// Fin « Fusionner avec le Cœur » — Kael devient le nouveau gardien (choix : 1).
     static let act4MergeEndingDialogue: [DialogueStep] = [
         .line(speaker: "Kael",

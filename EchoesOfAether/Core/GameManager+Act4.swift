@@ -275,11 +275,20 @@ extension GameManager {
     }
 
     /// Fin « Fusionner avec le Cœur » — Kael devient le nouveau gardien.
+    /// Le choix de corruption de l'Acte II y résonne : s'il a saisi le pouvoir
+    /// sciemment, fusionner est l'aboutissement d'une chute assumée ; s'il l'a
+    /// refusé, c'est une reddition lucide — sa toute première vraie décision.
     func showAct4MergeEnding() {
-        dialogue.start(PrototypeContent.act4MergeEndingDialogue) { [weak self] in
+        let reflection = player.kaelChoseCorruption
+            ? PrototypeContent.act4MergeChoseDialogue
+            : PrototypeContent.act4MergeResistedDialogue
+        dialogue.start(reflection) { [weak self] in
             guard let self else { return }
-            dialogue.start(PrototypeContent.act4MergeEndScreen) { [weak self] in
-                self?.rollCreditsToMenu()
+            dialogue.start(PrototypeContent.act4MergeEndingDialogue) { [weak self] in
+                guard let self else { return }
+                dialogue.start(PrototypeContent.act4MergeEndScreen) { [weak self] in
+                    self?.rollCreditsToMenu()
+                }
             }
         }
     }

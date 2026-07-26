@@ -83,6 +83,13 @@ final class GameManager {
     /// Vrai quand Kael est dans les mines de Cendreval (excursion depuis
     /// la forêt — pas une GamePhase : la save garde phase = .forest).
     var inMines = false
+    /// Vrai quand Kael arpente la carte du monde (overworld façon FF7) :
+    /// il marche entre les lieux, y entre au bouton A, croise des rôdeurs.
+    var inOverworld = false
+    /// Lieu de l'overworld à portée du bouton A (nil = aucun).
+    private var overworldTarget: String?
+    /// Position de Kael sur la carte avant un combat, pour l'y remettre après.
+    var overworldReturnPos: CGPoint?
     /// Vrai quand Kael est dans le désert d'Ossara (voyage via la carte
     /// du monde — pas une GamePhase : la save garde la phase d'origine).
     var inDesert = false
@@ -309,11 +316,14 @@ final class GameManager {
         }
         if CommandLine.arguments.contains("--zone-overworld") {
             hud.goldValue = player.gold
+            inOverworld = true
             world.switchToOverworld(in: scene)
-            world.kael.position = CGPoint(x: world.worldWidth * 0.24,
-                                          y: world.worldHeight * 0.42)
+            world.kael.position = CGPoint(x: world.worldWidth * 0.20,
+                                          y: world.worldHeight * 0.24)
             world.kael.isHidden = false
             world.refreshKaelDepth()
+            world.snapCamera()
+            spawnOverworldRoamers()
             transition(to: .exploration)
             return
         }
@@ -699,6 +709,11 @@ final class GameManager {
             .scale(to: 0.90, duration: 0.06),
             .scale(to: 1.0, duration: 0.10)
         ]))
+        // Carte du monde : A entre dans le lieu à portée.
+        if inOverworld, let dest = overworldTarget {
+            enterZoneFromMap(dest)
+            return
+        }
         let screenPoint = scene.convert(target, from: world.worldNode)
         handleExplorationTap(screenPoint, in: scene)
     }
@@ -1898,6 +1913,21 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
                 actionPoint = nearest.point
             }
+        } else if inOverworld {
+            // Carte du monde : à l'approche d'un lieu, « A · Entrer … ».
+            overworldTarget = nil
+            var best: (dist: CGFloat, place: (id: String, pos: CGPoint, title: String))?
+            for place in world.overworldPlaces {
+                let d = kaelPos.distance(to: place.pos)
+                if d < 130, best == nil || d < best!.dist { best = (d, place) }
+            }
+            if let hit = best {
+                hint = String(localized: "hint.enterPlace \(hit.place.title)")
+                bubbleAction = .enter
+                bubbleAnchor = CGPoint(x: hit.place.pos.x, y: hit.place.pos.y + 62)
+                actionPoint = hit.place.pos
+                overworldTarget = hit.place.id
+            }
         } else {
             switch phase {
             case .shrine:
@@ -2661,6 +2691,7 @@ final class GameManager {
     /// le village post-sanctuaire. Jamais depuis une excursion (mines) ni
     /// un intérieur — sauf pour revenir du désert.
     private var worldMapAvailable: Bool {
+        if inOverworld { return false }   // déjà sur la carte : pas de bouton
         if inDesert { return true }
         guard !inMines, activeInterior == nil else { return false }
         return [.forest, .complete, .act2].contains(phase)
@@ -2683,7 +2714,9 @@ final class GameManager {
     private func openWorldMap() {
         guard state == .exploration, worldMapAvailable else { return }
         HapticsEngine.light()
-        worldMap.open(places: buildMapPlaces()) {}
+        // La carte du monde est désormais EXPLORABLE (façon FF7) : Kael y
+        // marche entre les lieux et y entre au bouton A.
+        enterOverworld()
     }
 
     /// Construit l'état des lieux selon la progression de l'histoire.

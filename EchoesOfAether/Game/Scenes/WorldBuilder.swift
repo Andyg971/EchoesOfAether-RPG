@@ -375,34 +375,50 @@ final class WorldBuilder {
     private func buildOverworld(in scene: SKScene, w: CGFloat, h: CGFloat) {
         overworldPlaces.removeAll()
 
-        // Sol de base : plaines herbeuses sur tout le continent.
-        overworldPatch(["me_grassvar_1", "me_grassvar_5"],
+        // Sol de base : plaines herbeuses (variétés mêlées pour le grain).
+        overworldPatch(["me_grassvar_1", "me_grassvar_2", "me_grassvar_3",
+                        "me_grassvar_5"],
                        rect: CGRect(x: 0, y: 0, width: w, height: h),
                        tileScale: 2.0, z: -30, in: scene)
-        // Désert d'Ossara : sable au sud-est.
-        overworldPatch(["ds_sand"],
-                       rect: CGRect(x: w * 0.60, y: 0, width: w * 0.40, height: h * 0.46),
-                       tileScale: 2.0, z: -29, in: scene)
-        // Lac au sud-ouest.
-        overworldPatch(["ds_water_ne"],
-                       rect: CGRect(x: 0, y: 0, width: w * 0.16, height: h * 0.26),
-                       tileScale: 2.0, z: -29, in: scene)
 
-        // Forêt d'Ébène : bosquet dense d'arbres verts au centre.
+        // Désert d'Ossara : sable CONFINÉ au coin sud-est, bord irrégulier.
+        let desert = CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.40)
+        blobPatch(["ds_sand"], center: CGPoint(x: desert.midX, y: desert.midY),
+                  blobs: 7, minSize: h * 0.14, maxSize: h * 0.22,
+                  spread: min(w, h) * 0.05, tileScale: 2.0, z: -28, in: scene)
+
+        // Lac au sud-ouest : plage de sable autour de l'eau (transition douce).
+        let lake = CGPoint(x: w * 0.08, y: h * 0.10)
+        blobPatch(["ds_sand"], center: lake, blobs: 4,
+                  minSize: h * 0.13, maxSize: h * 0.18,
+                  spread: min(w, h) * 0.03, tileScale: 2.0, z: -28, in: scene)
+        blobPatch(["ds_water_ne"], center: lake, blobs: 3,
+                  minSize: h * 0.09, maxSize: h * 0.13,
+                  spread: min(w, h) * 0.02, tileScale: 2.0, z: -27, in: scene)
+
+        // Forêt d'Ébène : bosquet dense d'arbres VERTS au centre + champignons.
+        let forest = CGRect(x: w * 0.28, y: h * 0.40, width: w * 0.26, height: h * 0.42)
         scatterOverworld(["tree_big", "mv_forest_tree_wide"],
-                         count: 46, in: CGRect(x: w * 0.26, y: h * 0.40,
-                                               width: w * 0.30, height: h * 0.44),
-                         scale: 0.32, in: scene)
-        // Montagnes de Cendreval : rochers au nord-est.
-        scatterOverworld(["rock_1", "ds_cliff_big"],
-                         count: 22, in: CGRect(x: w * 0.60, y: h * 0.60,
-                                               width: w * 0.36, height: h * 0.36),
-                         scale: 0.3, in: scene)
-        // Cactus épars dans les dunes.
-        scatterOverworld(["ds_cactus_barrel", "ds_cactus_flower"],
-                         count: 16, in: CGRect(x: w * 0.64, y: h * 0.04,
-                                               width: w * 0.32, height: h * 0.36),
-                         scale: 0.28, in: scene)
+                         count: 48, in: forest, scale: 0.34, in: scene)
+        scatterOverworld(["forest_mushroom_1", "forest_mushroom_2"],
+                         count: 18, in: forest, scale: 0.4, in: scene)
+        // Montagnes de Cendreval : rochers naturels au nord-est.
+        scatterOverworld(["rock_1", "rock_3", "rock_7"],
+                         count: 26, in: CGRect(x: w * 0.62, y: h * 0.60,
+                                               width: w * 0.34, height: h * 0.36),
+                         scale: 0.34, in: scene)
+        // Cactus + rochers UNIQUEMENT dans les dunes.
+        scatterOverworld(["ds_cactus_barrel", "ds_cactus_flower", "ds_rock_pile"],
+                         count: 16, in: desert, scale: 0.3, in: scene)
+
+        // ── Décoration des plaines : petites fleurs + rochers épars, sobre ──
+        scatterOverworld(["village_flower_yellow", "village_flower_pink",
+                          "village_flower_red", "me_flower_blue"],
+                         count: 46, in: CGRect(x: 0, y: 0, width: w, height: h),
+                         scale: 0.45, in: scene)
+        scatterOverworld(["rock_5", "rock_9"],
+                         count: 20, in: CGRect(x: 0, y: 0, width: w, height: h),
+                         scale: 0.36, in: scene)
 
         // ── Lieux (POI d'entrée) — mini-structures sur la carte ──
         addOverworldPlace("village",   asset: "village_house_country", scale: 0.24,
@@ -432,6 +448,24 @@ final class WorldBuilder {
         node.position = CGPoint(x: rect.minX, y: rect.minY)
         node.zPosition = z
         add(node, to: scene)
+    }
+
+    /// Région au bord IRRÉGULIER : plusieurs plaques carrées de tailles et
+    /// positions variées qui se chevauchent autour d'un centre — l'union ne
+    /// ressemble plus à un rectangle net.
+    private func blobPatch(_ tiles: [String], center: CGPoint, blobs: Int,
+                           minSize: CGFloat, maxSize: CGFloat, spread: CGFloat,
+                           tileScale: CGFloat, z: CGFloat, in scene: SKScene) {
+        var rng = SystemRandomNumberGenerator()
+        for _ in 0..<blobs {
+            let sz = CGFloat.random(in: minSize...maxSize, using: &rng)
+            let c = CGPoint(x: center.x + .random(in: -spread...spread, using: &rng),
+                            y: center.y + .random(in: -spread...spread, using: &rng))
+            overworldPatch(tiles,
+                           rect: CGRect(x: c.x - sz / 2, y: c.y - sz / 2,
+                                        width: sz, height: sz),
+                           tileScale: tileScale, z: z, in: scene)
+        }
     }
 
     private func scatterOverworld(_ assets: [String], count: Int, in rect: CGRect,

@@ -110,6 +110,167 @@ extension GameManager {
         }
     }
 
+    // MARK: - Carte du monde → entrée dans un lieu
+
+    /// Ouvre la carte du monde explorable : Kael y marche entre les lieux.
+    func enterOverworld() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            inOverworld = true
+            inDesert = false; inMines = false; inCave = false
+            hud.objectiveText = String(localized: "map.title")
+            AudioEngine.shared.setMood(.title)
+            world.switchToOverworld(in: scene)
+            world.kael.position = CGPoint(x: world.worldWidth * 0.20,
+                                          y: world.worldHeight * 0.28)
+            world.kael.isHidden = false
+            world.refreshKaelDepth()
+            world.snapCamera()
+            spawnOverworldRoamers()
+        } completion: { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Depuis la carte du monde : le bouton A fait entrer Kael dans le lieu
+    /// à portée. Chaque zone est chargée comme sa propre entrée connue.
+    func enterZoneFromMap(_ id: String) {
+        guard let scene else { return }
+        inOverworld = false
+        clearRoamers()
+        transition(to: .transition)
+        AudioEngine.shared.playSelect()
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            let wh = { self.world.worldHeight > 0 ? self.world.worldHeight
+                                                  : scene.size.height }
+            let midX = scene.size.width * 0.5
+            switch id {
+            case "village":
+                if phase == .wake { phase = .village }
+                AudioEngine.shared.setMood(.forPhase(phase))
+                world.switchToVillage(in: scene)
+                world.startVillageWander(in: scene.size)
+                world.kael.position = CGPoint(x: midX, y: scene.size.height * 0.30)
+            case "forest":
+                phase = .forest
+                hud.objectiveText = String(localized: "hud.objective.forest")
+                AudioEngine.shared.setMood(.forPhase(.forest))
+                showForest(in: scene)
+                addSideQuestMarkers(in: scene)
+                world.kael.position = CGPoint(x: midX, y: wh() * 0.05)
+            case "desert":
+                inDesert = true
+                hud.objectiveText = String(localized: "hud.objective.desert")
+                AudioEngine.shared.setMood(.tense)
+                world.switchToDesert(in: scene, progress: player.desertProgress,
+                                     chestTaken: player.desertChestTaken)
+                world.kael.position = CGPoint(x: midX, y: wh() * 0.06)
+                spawnDesertRoamers()
+            case "mines":
+                phase = .forest; inMines = true
+                hud.objectiveText = String(localized: "hud.objective.mines")
+                AudioEngine.shared.setMood(.mines)
+                world.switchToMines(in: scene, progress: player.minesProgress,
+                                    goldTaken: player.minesGoldTaken)
+                world.kael.position = CGPoint(x: midX, y: wh() * 0.05)
+                spawnMineRoamers()
+            case "ruins":
+                phase = .ruins
+                AudioEngine.shared.setMood(.forPhase(.ruins))
+                showRuins(in: scene)          // place Kael lui-même
+            case "threshold":
+                phase = .act3
+                AudioEngine.shared.setMood(.forPhase(.act3))
+                showThreshold(in: scene)      // place Kael lui-même
+            default:                          // sanctuaire
+                phase = .shrine
+                world.switchToShrine(in: scene)
+                world.kael.position = CGPoint(x: midX, y: scene.size.height * 0.28)
+            }
+            world.kael.isHidden = false
+            world.refreshKaelDepth()
+            world.snapCamera()
+        } completion: { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
+    /// Monstres VISIBLES sur la carte : Kael peut les éviter ; les toucher
+    /// lance un combat (système RoamingMonster réutilisé).
+    func spawnOverworldRoamers() {
+        guard let scene, inOverworld else { clearRoamers(); return }
+        clearRoamers()
+        let w = world.worldWidth > 0 ? world.worldWidth : scene.size.width
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let spots: [(String, CGFloat, CGFloat)] = [
+            ("enemy_beast", 0.34, 0.26), ("enemy_shadewolf", 0.52, 0.62),
+            ("enemy_ghoul", 0.60, 0.34)
+        ]
+        for (asset, fx, fy) in spots {
+            addRoamer(asset, at: CGPoint(x: w * fx, y: h * fy), wh: h,
+                      patrolRadius: 70, chaseSpeed: 66) { [weak self] in
+                self?.startOverworldCombat()
+            }
+        }
+    }
+
+    /// Rencontre aléatoire sur la carte du monde. Après victoire, on revient
+    /// EXACTEMENT là où Kael se trouvait (pas de retour au point de départ).
+    func startOverworldCombat() {
+        guard let scene, inOverworld else { return }
+        overworldReturnPos = world.kael.position
+        lastCombatStarter = { [weak self] in self?.startOverworldCombat() }
+        transition(to: .combat)
+        hud.objectiveText = String(localized: "hud.objective.combat")
+        let levelBefore = player.level
+        let foe = String(localized: "combat.enemy.beast")
+        combat.attach(
+            to: scene,
+            enemySpecs: [
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(foe) \(1)"),
+                          hp: 200, kind: .beast, baseDamage: 32),
+                EnemySpec(name: String(localized: "combat.enemy.numbered \(foe) \(2)"),
+                          hp: 200, kind: .wolf, baseDamage: 32)
+            ],
+            goldReward: 45,
+            player: player,
+            withLyra: lyraInParty
+        ) { [weak self] resonance, gold in
+            guard let self else { return }
+            if resonance < 0 { showDeathScreen(); return }
+            grantLevelUpDisplay(from: levelBefore)
+            resonanceTotal += resonance
+            player.gold += gold
+            syncGold()
+            AudioEngine.shared.playGoldGain()
+            hud.resonanceValue = resonanceTotal
+            returnToOverworldAfterCombat()
+        }
+    }
+
+    private func returnToOverworldAfterCombat() {
+        guard let scene else { return }
+        transition(to: .transition)
+        TransitionManager.fade(in: scene) { [weak self] in
+            guard let self, let scene = self.scene else { return }
+            inOverworld = true
+            hud.objectiveText = String(localized: "map.title")
+            AudioEngine.shared.setMood(.title)
+            world.switchToOverworld(in: scene)
+            world.kael.position = overworldReturnPos
+                ?? CGPoint(x: world.worldWidth * 0.2, y: world.worldHeight * 0.3)
+            world.kael.isHidden = false
+            world.refreshKaelDepth()
+            world.snapCamera()
+            spawnOverworldRoamers()
+        } completion: { [weak self] in
+            self?.transition(to: .exploration)
+        }
+    }
+
     func tryDesertInteraction(_ point: CGPoint, in scene: SKScene) -> Bool {
         let w = scene.size.width
         // Hauteur MONDE, et repères partagés avec `WorldBuilder` : chaque

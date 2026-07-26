@@ -15475,6 +15475,23 @@
           }
         }
       }
+    },
+    "hint.enterPlace %@": {
+      "comment": "Overworld: prompt to enter a location (A button).",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A · Enter %@"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A · Entrer %@"
+          }
+        }
+      }
     }
   },
   "version": "1.1"

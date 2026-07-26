@@ -839,11 +839,17 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     let sparkColor: SKColor
     let shakeIntensity: CGFloat
 
-    // Cible : les alliés encaissent ~40 % des coups quand ils sont debout.
-    // Les attaques spéciales de boss visent toujours Kael (enjeu narratif).
-    let victim: AllyState? = (!isSpecial && !aliveAllies.isEmpty
-                              && Double.random(in: 0...1) < 0.40)
-        ? aliveAllies.randomElement() : nil
+    // Cible : l'ennemi choisit VRAIMENT sa proie parmi tout le groupe vivant
+    // (Kael + alliés), à parts égales — plus de « tout sur Kael ». Les
+    // attaques spéciales de boss visent toujours Kael (enjeu narratif).
+    let victim: AllyState?
+    if isSpecial || aliveAllies.isEmpty {
+        victim = nil
+    } else {
+        // nil = Kael dans le tirage ; chaque membre du groupe a la même chance.
+        let pool: [AllyState?] = [nil] + aliveAllies.map { Optional($0) }
+        victim = pool.randomElement() ?? nil
+    }
 
     if isSpecial, let boss = bossConfig {
         dmg = boss.specialDamage * dmgMult

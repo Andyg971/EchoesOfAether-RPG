@@ -744,6 +744,16 @@ final class WorldBuilder {
 
     /// Sème du décor dans une région. `avoiding` : zones interdites (lac,
     /// sable…) — sans quoi des fleurs poussent sur l'eau.
+    /// Échelle à appliquer pour qu'un asset occupe `height` points à l'écran,
+    /// quelle que soit la taille native de sa planche. Mélanger des packs
+    /// d'origines différentes (64 px, 96 px, 192 px) à une échelle commune
+    /// donnait des blocs deux fois plus hauts que leurs voisins.
+    private func scaleFor(_ asset: String, height: CGFloat) -> CGFloat {
+        guard let native = PixelArtSprites.pixelHeight(of: asset), native > 0
+        else { return 1 }
+        return height / native
+    }
+
     /// Une espèce de végétation : son asset et la HAUTEUR À L'ÉCRAN visée.
     /// Les planches vont de 64 à 192 px de haut ; les rendre toutes à la même
     /// échelle donnait des arbres géants à côté d'arbustes — d'où le fouillis.
@@ -2210,6 +2220,33 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
             addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
         }
 
+        // ── PAROIS ROCHEUSES : ce qui fait lire une GROTTE, pas un couloir ──
+        // La galerie n'avait que des cailloux au sol : aucun relief, aucune
+        // masse. Une frange de blocs et d'aiguilles borde maintenant les deux
+        // flancs sur toute la descente, et se resserre vers le fond où la
+        // roche n'a jamais été taillée. Hauteurs NORMALISÉES (cf. scaleFor) :
+        // les planches vont de 64 à 192 px, elles étaient posées à la même
+        // échelle et se retrouvaient hors gabarit les unes à côté des autres.
+        let caveWalls: [(String, CGFloat, CGFloat, CGFloat)] = [
+            // Flanc ouest, du haut vers le fond
+            ("ds_boulder",    0.045, 0.10, 40), ("ds_rock_spire", 0.035, 0.21, 62),
+            ("ds_rock_big",   0.055, 0.33, 46), ("ds_boulder2",   0.030, 0.45, 38),
+            ("ds_rock_spire", 0.050, 0.57, 66), ("ds_rock_big",   0.035, 0.69, 48),
+            ("ds_boulder",    0.060, 0.81, 42), ("ds_rock_spire", 0.040, 0.93, 70),
+            // Flanc est
+            ("ds_rock_spire", 0.960, 0.13, 64), ("ds_boulder2",   0.945, 0.25, 38),
+            ("ds_rock_big",   0.968, 0.37, 46), ("ds_rock_spire", 0.950, 0.49, 60),
+            ("ds_boulder",    0.972, 0.61, 42), ("ds_rock_big",   0.940, 0.73, 50),
+            ("ds_rock_spire", 0.965, 0.85, 68), ("ds_boulder2",   0.945, 0.96, 40),
+            // Le fond : la roche brute se referme sur la galerie
+            ("ds_rock_spire", 0.20, 0.965, 58), ("ds_rock_big",   0.80, 0.955, 52),
+            ("ds_boulder",    0.32, 0.985, 44), ("ds_boulder2",   0.68, 0.985, 40)
+        ]
+        for (asset, x, y, targetH) in caveWalls {
+            addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                         scale: scaleFor(asset, height: targetH))
+        }
+
         // Ossements des équipes disparues — de plus en plus denses au fond
         for p in [(0.38, 0.22), (0.62, 0.35), (0.26, 0.52), (0.82, 0.66),
                   (0.44, 0.84), (0.58, 0.92)] {
@@ -2801,6 +2838,29 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                               ("ds_rock_pile", 0.60, 0.685),
                               ("ds_bush_dead", 0.40, 0.66),
                               ("ds_cactus_med2", 0.90, 0.80)] {
+            addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
+        }
+
+        // ── Éboulis des flancs : le canyon a des PIEDS de paroi ──
+        // Les parois tombaient à pic sur le sable nu. Une frange d'aiguilles
+        // et de blocs les raccorde au sol, des deux côtés, comme le massif de
+        // Cendreval sur la carte du monde. Toujours via `addDesertProp` :
+        // même densité de pixels que le reste de la zone.
+        for (asset, x, y) in [("ds_rock_spire", 0.06, 0.58),
+                              ("ds_boulder",    0.11, 0.545),
+                              ("ds_rock_spire", 0.05, 0.70),
+                              ("ds_boulder2",   0.09, 0.755),
+                              ("ds_rock_big",   0.07, 0.86),
+                              ("ds_rock_pile",  0.13, 0.905),
+                              ("ds_rock_spire", 0.95, 0.575),
+                              ("ds_boulder2",   0.91, 0.615),
+                              ("ds_rock_big",   0.96, 0.71),
+                              ("ds_rock_spire", 0.93, 0.815),
+                              ("ds_boulder",    0.89, 0.875),
+                              ("ds_rock_pile",  0.955, 0.925),
+                              // Deux éboulis isolés au milieu du défilé.
+                              ("ds_boulder2",   0.36, 0.925),
+                              ("ds_rock_pile",  0.68, 0.905)] {
             addDesertProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y))
         }
 

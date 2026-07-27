@@ -411,6 +411,29 @@ final class WorldBuilder {
     /// Lieux de la carte du monde : id (pour le voyage) + position MONDE.
     private(set) var overworldPlaces: [(id: String, pos: CGPoint, title: String)] = []
 
+    /// DISPOSITION CANONIQUE du continent, en fractions (0…1) de la carte,
+    /// axe Y vers le haut. Source de vérité UNIQUE : le monde marchable
+    /// (`buildOverworld`) ET la carte de voyage rapide (`buildMapPlaces`)
+    /// s'en servent, donc les deux montrent la même géographie. Avant, les
+    /// Mines étaient à l'est dans le monde et à l'ouest sur la carte…
+    static let overworldLayout: [String: CGPoint] = [
+        "village":   CGPoint(x: 0.14, y: 0.34),
+        "forest":    CGPoint(x: 0.40, y: 0.52),
+        "shrine":    CGPoint(x: 0.52, y: 0.72),
+        "ruins":     CGPoint(x: 0.30, y: 0.82),
+        "mines":     CGPoint(x: 0.76, y: 0.80),
+        "desert":    CGPoint(x: 0.83, y: 0.22),
+        "threshold": CGPoint(x: 0.92, y: 0.90),
+        // Au-delà du Seuil : pas de lieu marchable, mais la carte le situe.
+        "voidheart": CGPoint(x: 0.96, y: 0.62)
+    ]
+
+    /// Position MONDE d'un lieu canonique, pour une carte `w` × `h`.
+    static func overworldPoint(_ id: String, w: CGFloat, h: CGFloat) -> CGPoint {
+        let f = overworldLayout[id] ?? CGPoint(x: 0.5, y: 0.5)
+        return CGPoint(x: w * f.x, y: h * f.y)
+    }
+
     /// Le grand continent explorable : Kael marche d'un lieu à l'autre, la
     /// caméra le suit en 2D (`worldWidth`/`worldHeight` > écran).
     func switchToOverworld(in scene: SKScene) {
@@ -438,13 +461,15 @@ final class WorldBuilder {
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
         // Positions des lieux (partagées entre chemins, décors et POI).
-        let pVillage   = CGPoint(x: w * 0.14, y: h * 0.34)
-        let pForest    = CGPoint(x: w * 0.40, y: h * 0.52)
-        let pShrine    = CGPoint(x: w * 0.52, y: h * 0.72)
-        let pRuins     = CGPoint(x: w * 0.30, y: h * 0.82)
-        let pMines     = CGPoint(x: w * 0.76, y: h * 0.80)
-        let pDesert    = CGPoint(x: w * 0.83, y: h * 0.22)
-        let pThreshold = CGPoint(x: w * 0.92, y: h * 0.90)
+        // Positions issues de la disposition canonique (cf. overworldLayout) :
+        // la carte de voyage rapide montre EXACTEMENT la même géographie.
+        let pVillage   = Self.overworldPoint("village",   w: w, h: h)
+        let pForest    = Self.overworldPoint("forest",    w: w, h: h)
+        let pShrine    = Self.overworldPoint("shrine",    w: w, h: h)
+        let pRuins     = Self.overworldPoint("ruins",     w: w, h: h)
+        let pMines     = Self.overworldPoint("mines",     w: w, h: h)
+        let pDesert    = Self.overworldPoint("desert",    w: w, h: h)
+        let pThreshold = Self.overworldPoint("threshold", w: w, h: h)
         let tile: CGFloat = 24
 
         // ── DÉSERT D'OSSARA (sud-est) : sable AUTOTILÉ, bord franc sur l'herbe.

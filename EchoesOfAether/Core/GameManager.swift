@@ -490,6 +490,7 @@ final class GameManager {
             world.layout(in: size)
         }
         hud.layout(in: size, safeTop: safeTop, safeLeft: safeLeft, safeRight: safeRight)
+        layoutActionButtons(in: size, safeBottom: safeBottom, safeRight: safeRight)
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
         inventory.layout(in: size, safeBottom: safeBottom)
@@ -633,7 +634,6 @@ final class GameManager {
         addPixelBevel(to: actionButton, size: 54,
                       light: SKColor(red: 0.62, green: 0.50, blue: 0.24, alpha: 0.9),
                       dark: SKColor(red: 0.05, green: 0.04, blue: 0.02, alpha: 0.95))
-        actionButton.position = CGPoint(x: scene.size.width - 58, y: 66)
         actionButton.zPosition = 1_950   // au-dessus des panneaux (dialogue 1000+)
         actionButton.isHidden = true
         scene.addChild(actionButton)
@@ -655,7 +655,6 @@ final class GameManager {
         addPixelBevel(to: bButton, size: 46,
                       light: SKColor(red: 0.62, green: 0.34, blue: 0.24, alpha: 0.9),
                       dark: SKColor(red: 0.06, green: 0.02, blue: 0.02, alpha: 0.95))
-        bButton.position = CGPoint(x: scene.size.width - 58, y: 128)
         bButton.zPosition = 1_950
         bButton.isHidden = true
         scene.addChild(bButton)
@@ -668,6 +667,24 @@ final class GameManager {
         bButtonLabel.position = CGPoint(x: 0, y: -1)
         bButtonLabel.zPosition = 951
         bButton.addChild(bButtonLabel)
+
+        // Position initiale sans marges : `layout()` est appelé dans la foulée
+        // par `GameScene.didMove` avec les vraies safe areas.
+        layoutActionButtons(in: scene.size, safeBottom: 0, safeRight: 0)
+    }
+
+    /// Place A et B dans le coin bas-droit, en dehors des marges système.
+    ///
+    /// Ces deux boutons étaient positionnés une seule fois, au `setup()`, en
+    /// dur (`width - 58`) : ils ignoraient l'encoche — en paysage l'encoche
+    /// passe à droite une rotation sur deux et venait mordre le bouton A — et
+    /// ne suivaient aucun redimensionnement de scène.
+    private func layoutActionButtons(in size: CGSize,
+                                     safeBottom: CGFloat,
+                                     safeRight: CGFloat) {
+        let x = size.width - safeRight - 58
+        actionButton.position = CGPoint(x: x, y: safeBottom + 66)
+        bButton.position = CGPoint(x: x, y: safeBottom + 128)
     }
 
     /// Un overlay fermable par B est-il ouvert ?
@@ -789,14 +806,30 @@ final class GameManager {
 
     // MARK: - Joystick virtuel (flottant, quart bas-gauche)
 
+    /// Quart bas-gauche où poser le pouce fait apparaître le joystick.
+    ///
+    /// Exposé (et non codé en dur dans `padTouchBegan`) pour que les tests
+    /// puissent vérifier qu'aucun bouton du HUD ne tombe dedans.
+    static func padCaptureZone(in size: CGSize) -> CGRect {
+        CGRect(x: 0, y: 0, width: size.width * 0.42, height: size.height * 0.60)
+    }
+
     /// Le joueur pose le doigt en bas à gauche : le pad apparaît là.
     /// Retourne true si le touch est capturé par le pad.
     func padTouchBegan(at point: CGPoint, in scene: SKScene) -> Bool {
         // Exploration : déplacement. Menus (combat, dialogue, boutique,
         // pause…) : le même joystick navigue le curseur de sélection.
+        //
+        // Les icônes du HUD (journal de quêtes en tête) descendent dans le
+        // quart du joystick : en exploration elles gardent la priorité, sinon
+        // poser le doigt dessus sortait le joystick au lieu d'ouvrir le
+        // panneau. Hors exploration le HUD ne répond plus aux taps (cf.
+        // `handleTap`) : la zone revient entièrement au curseur.
+        let hudPrioritaire = state == .exploration
+            && hud.containsButton(at: point, in: scene)
         guard state != .transition, !worldMap.isActive,
-              point.x < scene.size.width * 0.42,
-              point.y < scene.size.height * 0.60 else { return false }
+              Self.padCaptureZone(in: scene.size).contains(point),
+              !hudPrioritaire else { return false }
         if padBase.parent == nil {
             padBase.fillColor = SKColor(white: 0.9, alpha: 0.10)
             padBase.strokeColor = PixelUI.gold.withAlphaComponent(0.55)

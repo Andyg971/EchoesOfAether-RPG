@@ -36,8 +36,10 @@ final class GameScene: SKScene {
         // Retour menu principal (depuis pause ou mort)
         manager.onReturnToMenu = { [weak self, weak view] in
             guard let self, let view else { return }
-            let menu = MainMenuScene(size: view.bounds.size)
-            menu.scaleMode = .resizeFill
+            // Même repère virtuel que la scène de jeu : les marges de
+            // sécurité déjà converties se transmettent telles quelles.
+            let menu = MainMenuScene(size: Viewport.sceneSize(for: view.bounds.size))
+            menu.scaleMode = .aspectFill
             menu.safeAreaTop = self.safeAreaTop
             menu.safeAreaBottom = self.safeAreaBottom
             menu.safeAreaLeft = self.safeAreaLeft
@@ -55,7 +57,17 @@ final class GameScene: SKScene {
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
-        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom, safeLeft: safeAreaLeft, safeRight: safeAreaRight)
+        applySafeAreaLayout()
+    }
+
+    /// Réapplique le layout avec les marges courantes.
+    ///
+    /// Une rotation paysage gauche ↔ droite garde la même taille de scène —
+    /// `didChangeSize` ne se déclenche donc pas — alors que l'encoche passe
+    /// d'un bord à l'autre. Le contrôleur appelle cette méthode explicitement.
+    func applySafeAreaLayout() {
+        manager.layout(size: size, safeTop: safeAreaTop, safeBottom: safeAreaBottom,
+                       safeLeft: safeAreaLeft, safeRight: safeAreaRight)
     }
 
     override func update(_ currentTime: TimeInterval) {

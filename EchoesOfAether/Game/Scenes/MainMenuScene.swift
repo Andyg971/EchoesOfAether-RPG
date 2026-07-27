@@ -59,6 +59,17 @@ final class MainMenuScene: SKScene {
 
     override func didChangeSize(_ oldSize: CGSize) {
         super.didChangeSize(oldSize)
+        applySafeAreaLayout()
+    }
+
+    /// Reconstruit le menu avec les marges courantes.
+    ///
+    /// Une rotation paysage gauche ↔ droite garde la même taille de scène —
+    /// `didChangeSize` ne se déclenche donc pas — alors que l'encoche passe
+    /// d'un bord à l'autre. Le contrôleur appelle cette méthode explicitement,
+    /// et seulement quand la géométrie a réellement changé (reconstruire à
+    /// chaque passe de layout annulerait la confirmation de suppression).
+    func applySafeAreaLayout() {
         guard buttonsBuilt else { return }
         confirmDeleteSlot = nil
         removeAllChildren()
@@ -298,8 +309,8 @@ final class MainMenuScene: SKScene {
             SaveManager.delete(slot: slot)
         }
 
-        let gameScene = GameScene(size: view.bounds.size)
-        gameScene.scaleMode = .resizeFill
+        let gameScene = GameScene(size: Viewport.sceneSize(for: view.bounds.size))
+        gameScene.scaleMode = .aspectFill
         gameScene.safeAreaTop = safeAreaTop
         gameScene.safeAreaBottom = safeAreaBottom
         gameScene.safeAreaLeft = safeAreaLeft

@@ -197,6 +197,23 @@ final class HUDOverlay {
         }
     }
 
+    /// Le point tombe-t-il sur un bouton VISIBLE du HUD ?
+    ///
+    /// Le joystick flottant capture tout le quart bas-gauche de l'écran, et la
+    /// colonne de boutons du HUD descend dans ce quart (le journal de quêtes
+    /// est le plus bas) : sans ce test préalable, poser le doigt sur l'icône
+    /// faisait apparaître le joystick au lieu d'ouvrir le journal.
+    ///
+    /// L'alpha est pris en compte : en combat le HUD d'exploration est fondu à
+    /// 0, et le joystick doit alors récupérer toute la zone pour naviguer dans
+    /// les menus.
+    func containsButton(at point: CGPoint, in scene: SKScene) -> Bool {
+        guard root.alpha > 0.5 else { return false }
+        let local = root.convert(point, from: scene)
+        let buttons = [inventoryButton, pauseButton, loreButton, questLogButton, mapButton]
+        return buttons.contains { !$0.isHidden && $0.contains(local) }
+    }
+
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         let local = root.convert(point, from: scene)
         if inventoryButton.contains(local) {
@@ -223,7 +240,14 @@ final class HUDOverlay {
     }
 
     func layout(in size: CGSize, safeTop: CGFloat = 0, safeLeft: CGFloat = 0, safeRight: CGFloat = 0) {
-        let s: CGFloat = size.width > 500 ? min(size.width, size.height) / 390 : 1.0
+        // Échelle du HUD, calée sur la LARGEUR du gabarit et non sur le petit
+        // côté. L'ancienne formule `min(w, h) / 390` supposait un écran
+        // ~19,5:9 : en 4:3 (iPad) le petit côté explose et le HUD partait à
+        // 2,14× pendant que le monde restait à 1×. La scène est désormais mise
+        // à l'échelle globalement (cf. Viewport) — il ne reste ici qu'un
+        // ajustement fin, borné, pour les écrans plus étroits ou plus larges
+        // que le gabarit.
+        let s = min(max(size.width / Viewport.designWidth, 0.92), 1.15)
         let margin: CGFloat = 16 * s
         let leftEdge = safeLeft + margin
         let rightEdge = size.width - safeRight - margin

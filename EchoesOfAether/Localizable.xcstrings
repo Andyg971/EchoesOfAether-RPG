@@ -1,6 +1,86 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "combat.locks.charging %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ is charging a devastating blow — break the seals!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ prépare un grand coup — brisez les sceaux !"
+          }
+        }
+      }
+    },
+    "combat.locks.warning" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SEALS!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SCEAUX !"
+          }
+        }
+      }
+    },
+    "combat.locks.broken" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SEAL BROKEN"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SCEAU BRISÉ"
+          }
+        }
+      }
+    },
+    "combat.locks.cancelled %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The seals shatter — %@'s blow collapses!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Les sceaux cèdent : le coup de %@ avorte !"
+          }
+        }
+      }
+    },
+    "combat.locks.cancelledEffect" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "BLOW BROKEN!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "COUP BRISÉ !"
+          }
+        }
+      }
+    },
     "combat.strike.prompt" : {
       "localizations" : {
         "en" : {

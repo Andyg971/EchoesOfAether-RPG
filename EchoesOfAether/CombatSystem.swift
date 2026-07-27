@@ -413,6 +413,14 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         var sprite: SKNode?
         var homePosition: CGPoint = .zero
         let statusIcons = SKNode()   // pictos brûlure/gel/break persistants
+        /// VERROUS du grand coup : le boss annonce sa spéciale une manche à
+        /// l'avance et se couvre de sceaux élémentaires. Les briser tous
+        /// avant qu'il frappe annule le coup et l'expose (modèle Sea of Stars).
+        var specialLocks: [CombatElement] = []
+        /// Nombre de verrous posés à l'annonce (0 = aucune spéciale en charge).
+        var specialLockTotal = 0
+        /// Rangée de sceaux affichée au-dessus de l'ennemi.
+        let lockIcons = SKNode()
 
         init(spec: EnemySpec, weaknesses: Set<CombatElement>, shieldMax: Int) {
             self.combatant = Combatant(name: spec.name, maxHP: spec.hp,
@@ -766,6 +774,10 @@ private func startEnemyTurn() {
 private func runEnemyAction(at index: Int) {
     guard isActive, kael.isAlive else { return }
     guard index < enemies.count else {
+        // Fin de la phase ennemie : si le boss prépare sa spéciale pour la
+        // manche suivante, il pose ses sceaux MAINTENANT — le groupe a un
+        // tour entier pour les briser.
+        armSpecialLocksIfNeeded()
         scheduleNextPlayerTurn(after: 0.45)
         return
     }
@@ -851,6 +863,23 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     guard isActive, phase == .enemyTurn, kael.isAlive, e.combatant.isAlive else { return }
 
     let isSpecial = bossConfig.map { enemyTurnCount % $0.specialAttackInterval == 0 } ?? false
+
+    // Le groupe a-t-il brisé tous les sceaux ? Alors le grand coup avorte :
+    // le boss s'effondre, exposé, et perd son tour. C'est la récompense du
+    // travail d'équipe sur les éléments.
+    if isSpecial, e.specialLockTotal > 0 {
+        if e.specialLocks.isEmpty {
+            cancelSpecial(for: e)
+            updateVisuals()
+            proceed()
+            return
+        }
+        // Sceaux encore debout : le coup part, et les verrous se dissipent.
+        e.specialLockTotal = 0
+        e.specialLocks.removeAll()
+        e.lockIcons.removeAllChildren()
+    }
+
     let dmgMult = isEnraged ? (bossConfig?.enrageDamageMult ?? 1) : 1
     let dmg: Int
     let sparkColor: SKColor
@@ -1134,6 +1163,109 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         HapticsEngine.success()
     }
 
+    // MARK: - Verrous du grand coup (charge de boss)
+
+    /// Le boss annonce sa spéciale UNE MANCHE À L'AVANCE et se couvre de
+    /// sceaux élémentaires. Le groupe a un tour complet pour tous les briser :
+    /// s'il y parvient, le coup est annulé et le boss s'effondre, exposé.
+    /// C'est ce qui transforme un boss « sac à PV » en énigme à résoudre.
+    private func armSpecialLocksIfNeeded() {
+        guard let boss = bossConfig,
+              let foe = enemies.first, foe.combatant.isAlive,
+              foe.specialLockTotal == 0 else { return }
+        // La prochaine action ennemie sera-t-elle la spéciale ?
+        guard (enemyTurnCount + 1) % boss.specialAttackInterval == 0 else { return }
+
+        // Deux sceaux tirés parmi ce que le groupe peut réellement porter
+        // (l'attaque physique compte : aucun verrou n'est infaisable).
+        let pool: [CombatElement] = [.physical, .fire, .ice, .lightning, .aether]
+        foe.specialLocks = Array(pool.shuffled().prefix(2))
+        foe.specialLockTotal = foe.specialLocks.count
+        refreshLockIcons(for: foe)
+
+        statusLabel.text = String(localized: "combat.locks.charging \(foe.combatant.name)")
+        showEffect(String(localized: "combat.locks.warning"),
+                   color: SKColor(red: 1.00, green: 0.55, blue: 0.20, alpha: 1))
+        AudioEngine.shared.playBlackSlash()
+        HapticsEngine.heavy()
+        JuiceEngine.screenShake(root, intensity: 6, duration: 0.25)
+        foe.sprite?.run(.sequence([
+            .scale(to: 1.10, duration: 0.18),
+            .scale(to: 1.0, duration: 0.18)
+        ]))
+    }
+
+    /// Retire les sceaux touchés par les éléments d'une action.
+    private func breakSpecialLocks(on foe: EnemyState, with elements: [CombatElement]) {
+        guard foe.specialLockTotal > 0, !foe.specialLocks.isEmpty else { return }
+        let before = foe.specialLocks.count
+        for element in elements {
+            if let idx = foe.specialLocks.firstIndex(of: element) {
+                foe.specialLocks.remove(at: idx)
+            }
+        }
+        guard foe.specialLocks.count < before else { return }
+
+        refreshLockIcons(for: foe)
+        AudioEngine.shared.playQuestComplete()
+        HapticsEngine.medium()
+        root.addChild(ParticleFactory.impactSparks(
+            at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 74),
+            color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1), count: 10))
+        showFloatingText(String(localized: "combat.locks.broken"),
+                         at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 96),
+                         color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1))
+    }
+
+    /// Redessine la rangée de sceaux (un losange par verrou restant).
+    private func refreshLockIcons(for foe: EnemyState) {
+        foe.lockIcons.removeAllChildren()
+        guard !foe.specialLocks.isEmpty else { return }
+        let spacing: CGFloat = 20
+        let startX = -CGFloat(foe.specialLocks.count - 1) * spacing / 2
+        for (i, element) in foe.specialLocks.enumerated() {
+            let seal = SKSpriteNode(color: element.color,
+                                    size: CGSize(width: 11, height: 11))
+            seal.zRotation = .pi / 4          // losange, cohérent avec les faiblesses
+            seal.position = CGPoint(x: startX + CGFloat(i) * spacing, y: 0)
+            let ring = SKShapeNode(rectOf: CGSize(width: 16, height: 16))
+            ring.strokeColor = SKColor(red: 1.00, green: 0.72, blue: 0.25, alpha: 1)
+            ring.fillColor = .clear
+            ring.lineWidth = 1.5
+            ring.zRotation = .pi / 4
+            ring.position = seal.position
+            foe.lockIcons.addChild(ring)
+            foe.lockIcons.addChild(seal)
+        }
+        foe.lockIcons.run(.sequence([
+            .scale(to: 1.25, duration: 0.08),
+            .scale(to: 1.0, duration: 0.10)
+        ]))
+    }
+
+    /// Tous les sceaux ont sauté : le grand coup avorte et le boss s'expose.
+    private func cancelSpecial(for foe: EnemyState) {
+        foe.specialLockTotal = 0
+        foe.lockIcons.removeAllChildren()
+        foe.shield = 0
+        foe.brokenTurns = max(foe.brokenTurns, 2)
+        setBrokenPose(foe, broken: true)
+        statusLabel.text = String(localized: "combat.locks.cancelled \(foe.combatant.name)")
+        showEffect(String(localized: "combat.locks.cancelledEffect"),
+                   color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1))
+        AudioEngine.shared.playQuestComplete()
+        HapticsEngine.success()
+        JuiceEngine.screenShake(root, intensity: 9, duration: 0.3)
+        if let scene = parentScene {
+            JuiceEngine.flashOverlay(in: root, size: scene.size,
+                color: SKColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1),
+                duration: 0.22)
+        }
+        root.addChild(ParticleFactory.impactSparks(
+            at: foe.homePosition,
+            color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1), count: 22))
+    }
+
     /// Bouton A pendant un coup ennemi. Retourne `true` si l'appui a été
     /// consommé par la parade (le menu ne doit alors rien faire).
     ///
@@ -1410,6 +1542,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         } else {
             kael.mp = min(kael.maxMP, kael.mp + 6)
         }
+        breakSpecialLocks(on: foe, with: [.physical])
         comboCount += 1
         let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
         var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
@@ -1443,6 +1576,8 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         showComboIfNeeded()
 
     case .blackSlash:
+        // L'Entaille noire porte l'Aether : elle brise ce sceau.
+        breakSpecialLocks(on: foe, with: [.aether])
         comboCount = 0
         resonance += 1
         var finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
@@ -1566,6 +1701,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         // Tempête : elle porte glace ET foudre — une seule des deux suffit à
         // toucher la faiblesse. C'est sa raison d'être.
         let hitElements = spell.elements
+        breakSpecialLocks(on: foe, with: hitElements)
         let isWeak = hitElements.contains { foe.weaknesses.contains($0) }
         let breakElement = hitElements.first { foe.weaknesses.contains($0) } ?? element
         let broke = isWeak ? hitWeakness(on: foe, with: breakElement) : false
@@ -2693,6 +2829,12 @@ private func setupComboAndStatusUI(scene: SKScene) {
                                              y: node.position.y + 46)
             e.statusIcons.zPosition = 860
             root.addChild(e.statusIcons)
+
+            // Sceaux du grand coup, au-dessus des pictos de statut.
+            e.lockIcons.position = CGPoint(x: node.position.x,
+                                           y: node.position.y + 74)
+            e.lockIcons.zPosition = 870
+            root.addChild(e.lockIcons)
         }
     }
 

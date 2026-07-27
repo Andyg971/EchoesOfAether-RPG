@@ -90,6 +90,14 @@ final class GameManager {
     private var overworldTarget: String?
     /// Coffre de la carte à portée du bouton A (nil = aucun).
     private var overworldChestTarget: String?
+    /// Vrai pendant une prise au lac (fige le déplacement, capte le bouton A).
+    var isFishing = false
+    /// Le poisson mord : la fenêtre pour ferrer est ouverte.
+    var fishingHookable = false
+    /// La prise est jouée (évite qu'un timer en retard la rejoue).
+    var fishingResolved = false
+    /// Vrai quand Kael est au bord du lac, à portée de pêche.
+    private var fishingSpotInRange = false
     /// Position de Kael sur la carte avant un combat, pour l'y remettre après.
     var overworldReturnPos: CGPoint?
     /// Lieux déjà visités (voyage rapide déverrouillé). S'ajoute à la
@@ -565,7 +573,7 @@ final class GameManager {
         // Déplacement continu au joystick virtuel (exploration)
         // La mort et le tutoriel passent par-dessus l'exploration : le
         // joystick y navigue le curseur au lieu de déplacer Kael.
-        if state == .exploration && !death.isActive && !tutorial.isActive {
+        if state == .exploration && !death.isActive && !tutorial.isActive && !isFishing {
             updatePadMovement(deltaTime: deltaTime)
             updateRoamers(deltaTime: deltaTime)
         } else {
@@ -726,6 +734,11 @@ final class GameManager {
             .scale(to: 0.90, duration: 0.06),
             .scale(to: 1.0, duration: 0.10)
         ]))
+        // Bord du lac : A lance une prise.
+        if inOverworld, fishingSpotInRange {
+            startFishing()
+            return
+        }
         // Carte du monde : A ouvre le coffre à portée, sinon entre dans le lieu.
         if inOverworld, let chestID = overworldChestTarget {
             openOverworldChest(chestID)
@@ -928,6 +941,8 @@ final class GameManager {
             if state == .combat, combat.attemptStrike() {
                 return
             }
+            // Pêche : A ferre le poisson (prioritaire sur tout le reste).
+            if attemptHook() { return }
             if paywall.isActive {
                 paywall.confirmSelection()
             } else if pause.isActive {
@@ -1956,6 +1971,19 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: hit.place.pos.x, y: hit.place.pos.y + 62)
                 actionPoint = hit.place.pos
                 overworldTarget = hit.place.id
+            }
+            // Bord du lac : « A · Pêcher » (mini-jeu d'adresse au calme).
+            fishingSpotInRange = false
+            let shore = WorldBuilder.overworldFishingSpot(
+                w: world.worldWidth > 0 ? world.worldWidth : scene.size.width,
+                h: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
+            if kaelPos.distance(to: shore) < 96 {
+                hint = localizedHint("hint.fish")
+                bubbleAction = .examine
+                bubbleAnchor = CGPoint(x: shore.x, y: shore.y + 44)
+                actionPoint = shore
+                overworldTarget = nil
+                fishingSpotInRange = true
             }
             // Trésor à l'écart des chemins : prioritaire s'il est plus près
             // que le lieu voisin (on ne rate pas un coffre à côté d'une porte).

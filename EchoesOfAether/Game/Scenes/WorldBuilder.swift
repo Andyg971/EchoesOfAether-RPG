@@ -445,6 +445,13 @@ final class WorldBuilder {
         ("summit", CGPoint(x: 0.66, y: 0.94), 150, 2)
     ]
 
+    /// Rive est du lac de Solis : le seul endroit où l'on pêche.
+    /// Le lac est en (0.07, 0.10) de rayon (0.075, 0.075) — le spot est posé
+    /// juste au bord, du côté que Kael longe en venant du village.
+    static func overworldFishingSpot(w: CGFloat, h: CGFloat) -> CGPoint {
+        CGPoint(x: w * 0.155, y: h * 0.115)
+    }
+
     /// Position MONDE d'un coffre de la carte.
     static func overworldChestPoint(_ id: String, w: CGFloat, h: CGFloat) -> CGPoint {
         let f = overworldChests.first { $0.id == id }?.at ?? CGPoint(x: 0.5, y: 0.5)

@@ -1,6 +1,134 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "dialogue.act3.price.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eran. There's one thing no one could ever explain to me. Why I woke up with no past."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eran. Il y a une chose que personne n'a jamais pu m'expliquer. Pourquoi je me suis réveillé sans passé."
+          }
+        }
+      }
+    },
+    "dialogue.act3.price.eran1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Because you paid for it. The Source gives nothing — it trades."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Parce que tu l'as payé. La Source ne donne rien — elle échange."
+          }
+        }
+      }
+    },
+    "dialogue.act3.price.eran2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I gave my name. Twenty years and I still don't know what my mother called me. « Eran » is what the steles kept — not what I was."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Moi, j'ai donné mon nom. Vingt ans que je ne sais plus comment ma mère m'appelait. « Eran », c'est ce que les stèles ont gardé, pas ce que j'étais."
+          }
+        }
+      }
+    },
+    "dialogue.act3.price.kael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "And I gave… what? Everything?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et moi j'ai donné… quoi ? Tout ?"
+          }
+        }
+      }
+    },
+    "dialogue.act3.price.eran3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your memory, kid. The night of the pact, you knelt before the red light and asked to be strong. It took your past in exchange, then set you down at the forest's edge — empty and new."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ta mémoire, gamin. Le soir du pacte, tu t'es agenouillé devant la lumière rouge et tu as demandé à être fort. Elle a pris ton passé en échange, et t'a reposé à la lisière de la forêt, vide et neuf."
+          }
+        }
+      }
+    },
+    "dialogue.act3.price.kael3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So the man Lyra nursed back… never existed. She watched over whatever was left after the payment."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Alors l'homme que Lyra a soigné… n'a jamais existé. Elle a veillé sur ce qui restait après le paiement."
+          }
+        }
+      }
+    },
+    "lore.price.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Price"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Le Prix"
+          }
+        }
+      }
+    },
+    "lore.price.body" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Source grants no power: it trades. Every bearer leaves part of themselves on the altar, and the Void keeps it.\n\nEran Solace, first of the Watchers, gave his NAME — the steles hold its echo; he does not.\n\nKael gave his MEMORY. The night of the pact at the sanctuary, he asked for strength; the Source took his past and laid him down, blank, at the edge of the Ebony Forest. The amnesia was never a wound — it was the invoice.\n\nWhich is why he remembered neither the nights in Solis, nor the seven souls."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La Source n'accorde aucun pouvoir : elle échange. Chaque porteur laisse une part de lui-même sur l'autel, et le Vide la garde.\n\nEran Solace, premier des Veilleurs, a donné son NOM — les stèles en gardent l'écho, lui non.\n\nKael a donné sa MÉMOIRE. Le soir du pacte au sanctuaire, il a demandé la force ; la Source a pris son passé et l'a déposé, vierge, à la lisière de la Forêt d'Ébène. L'amnésie n'était pas une blessure : c'était la facture.\n\nCe qui explique pourquoi il ne se souvenait ni des nuits à Solis, ni des sept âmes."
+          }
+        }
+      }
+    },
     "chest.reward %lld" : {
       "localizations" : {
         "en" : {

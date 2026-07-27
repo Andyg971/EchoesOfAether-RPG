@@ -167,6 +167,8 @@ extension GameManager {
             dialogue.onChoiceSelected = nil
             player.act3EranMet = true
             player.loreDiscovered.insert("threshold")
+            // Eran vient de dire à Kael ce qu'il a payé : sa mémoire.
+            player.loreDiscovered.insert("price")
             hud.objectiveText = String(localized: "hud.objective.act3Boss")
             // Eran rejoint le trio pour la suite du Seuil.
             dialogue.start(PrototypeContent.act3EranJoinDialogue) { [weak self] in

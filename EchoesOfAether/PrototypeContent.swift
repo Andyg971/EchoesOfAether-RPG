@@ -1110,7 +1110,16 @@ enum PrototypeContent {
         .line(speaker: "Eran",
               text: String(localized: "dialogue.act3.eran4")),
         .line(speaker: "Kael",
-              text: String(localized: "dialogue.act3.kael4"))
+              text: String(localized: "dialogue.act3.kael4")),
+        // LE PRIX — la réponse au trou du récit : pourquoi Kael s'est-il
+        // réveillé sans passé. Eran a payé son nom ; Kael a payé sa mémoire.
+        // Dit ici par le seul personnage qui pouvait le savoir.
+        .line(speaker: "Kael",  text: String(localized: "dialogue.act3.price.kael1")),
+        .line(speaker: "Eran",  text: String(localized: "dialogue.act3.price.eran1")),
+        .line(speaker: "Eran",  text: String(localized: "dialogue.act3.price.eran2")),
+        .line(speaker: "Kael",  text: String(localized: "dialogue.act3.price.kael2")),
+        .line(speaker: "Eran",  text: String(localized: "dialogue.act3.price.eran3")),
+        .line(speaker: "Kael",  text: String(localized: "dialogue.act3.price.kael3"))
     ]
 
     /// Ecran de fin Acte III (placeholder)
@@ -1524,6 +1533,12 @@ enum PrototypeContent {
             entries.append(LoreEntry(
                 title: String(localized: "lore.eran.title"),
                 body: String(localized: "lore.eran.body")
+            ))
+        }
+        if player.loreDiscovered.contains("price") {
+            entries.append(LoreEntry(
+                title: String(localized: "lore.price.title"),
+                body: String(localized: "lore.price.body")
             ))
         }
         if player.loreDiscovered.contains("archivist") {

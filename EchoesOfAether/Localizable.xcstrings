@@ -1,6 +1,102 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "shop.acc.ember.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ember Talisman"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Talisman de Braise"
+          }
+        }
+      }
+    },
+    "shop.acc.ember.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doubles your critical hits (12% → 25%). For those who strike hard and fast."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Doublez vos coups critiques (12 % → 25 %). Pour qui frappe fort et vite."
+          }
+        }
+      }
+    },
+    "shop.acc.shade.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Shade Amulet"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Amulette d'Ombre"
+          }
+        }
+      }
+    },
+    "shop.acc.shade.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodge far more often (10% → 25%). To survive the long fights."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquivez bien plus souvent (10 % → 25 %). Pour survivre aux longs combats."
+          }
+        }
+      }
+    },
+    "shop.acc.resonance.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resonance Seal"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sceau de Résonance"
+          }
+        }
+      }
+    },
+    "shop.acc.resonance.desc" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Each physical attack restores 16 Magic instead of 6. To keep the spells coming."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chaque attaque physique rend 16 Magie au lieu de 6. Pour enchaîner les sorts."
+          }
+        }
+      }
+    },
     "dialogue.act3.price.kael1" : {
       "localizations" : {
         "en" : {

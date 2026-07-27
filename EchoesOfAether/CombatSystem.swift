@@ -921,7 +921,7 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
     let victimHome = victim?.home ?? kaelHomePosition
 
     // Esquive : 10 % de chance d'éviter un coup normal (jamais un spécial).
-    if !isSpecial, Double.random(in: 0...1) < 0.10 {
+    if !isSpecial, Double.random(in: 0...1) < (_player?.dodgeChance ?? 0.10) {
         statusLabel.text = String(localized: "combat.status.dodged")
         playEnemyAttackAnimation(e, isSpecial: false, victim: victim, dodged: true)
         playDodgeEffect(sprite: victim?.sprite ?? kaelSprite, home: victimHome)
@@ -1538,15 +1538,16 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         // L'attaque physique régénère un peu de Magie de l'acteur : incite à
         // alterner frappe physique et sorts plutôt que spammer la magie.
         if let ally = actingAlly {
-            ally.combatant.mp = min(ally.combatant.maxMP, ally.combatant.mp + 6)
+            ally.combatant.mp = min(ally.combatant.maxMP,
+                                    ally.combatant.mp + (_player?.attackMPRegen ?? 6))
         } else {
-            kael.mp = min(kael.maxMP, kael.mp + 6)
+            kael.mp = min(kael.maxMP, kael.mp + (_player?.attackMPRegen ?? 6))
         }
         breakSpecialLocks(on: foe, with: [.physical])
         comboCount += 1
         let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
         var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
-        let isCrit = Double.random(in: 0...1) < 0.12
+        let isCrit = Double.random(in: 0...1) < (_player?.critChance ?? 0.12)
         if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         // Cible déjà cassée : décharge dévastatrice (l'attaque physique ne
         // brise pas de bouclier, mais frappe fort une cible à terre).
@@ -1581,7 +1582,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         comboCount = 0
         resonance += 1
         var finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
-        let isCrit = Double.random(in: 0...1) < 0.12
+        let isCrit = Double.random(in: 0...1) < (_player?.critChance ?? 0.12)
         if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         // Était-elle déjà cassée avant ce coup ? (hitWeakness va peut-être
         // la casser maintenant ; dans les deux cas le Black Slash encaisse

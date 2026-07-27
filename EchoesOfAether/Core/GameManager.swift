@@ -1727,6 +1727,23 @@ final class GameManager {
                 onBuy: { [weak self] _ in self?.player.armorLevel = targetLevel }
             ))
         }
+        // ACCESSOIRES : un seul se porte à la fois. En acheter un remplace le
+        // précédent — c'est un ARBITRAGE (frapper fort / encaisser / soutenir),
+        // pas une accumulation. La vitrine reste lisible : on ne propose que
+        // ceux qu'on ne porte pas.
+        let accessories: [(id: String, name: LocalizedStringResource,
+                           desc: LocalizedStringResource, price: Int)] = [
+            ("ember",     "shop.acc.ember.name",     "shop.acc.ember.desc",     140),
+            ("shade",     "shop.acc.shade.name",     "shop.acc.shade.desc",     160),
+            ("resonance", "shop.acc.resonance.name", "shop.acc.resonance.desc", 180)
+        ]
+        for acc in accessories where player.equippedAccessory != acc.id {
+            items.append(ShopItem(
+                nameKey: acc.name, descKey: acc.desc, price: acc.price, icon: .gem,
+                canBuy: { [weak self] _ in self?.player.equippedAccessory != acc.id },
+                onBuy: { [weak self] _ in self?.player.equippedAccessory = acc.id }
+            ))
+        }
         return items
     }
 

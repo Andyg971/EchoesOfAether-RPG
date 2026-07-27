@@ -115,6 +115,19 @@ final class PlayerState {
     var level: Int = 1
     var xp: Int = 0               // XP cumulé dans le niveau courant
 
+    /// ACCESSOIRE ÉQUIPÉ (un seul à la fois — c'est ce qui en fait un choix
+    /// de build et non une accumulation). nil = aucun.
+    /// `ember` = critiques, `shade` = esquive, `resonance` = régénération de MP.
+    var equippedAccessory: String? = nil
+
+    /// Chance de coup critique : l'accessoire de braise la double.
+    var critChance: Double { equippedAccessory == "ember" ? 0.25 : 0.12 }
+    /// Chance d'esquiver un coup normal : l'amulette d'ombre la relève.
+    var dodgeChance: Double { equippedAccessory == "shade" ? 0.25 : 0.10 }
+    /// Magie régénérée par une attaque physique : le sceau la triple, et
+    /// permet de tenir une rotation de sorts bien plus longtemps.
+    var attackMPRegen: Int { equippedAccessory == "resonance" ? 16 : 6 }
+
     var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
     var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
     var questLyraShards: QuestState = .inactive // Lyra demande 5 Aether Shards
@@ -256,6 +269,7 @@ final class PlayerState {
             caveCleared: caveCleared,
             caveChestTaken: caveChestTaken,
             overworldChestsTaken: Array(overworldChestsTaken),
+            equippedAccessory: equippedAccessory,
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -318,6 +332,7 @@ final class PlayerState {
         caveCleared = data.caveCleared ?? false
         caveChestTaken = data.caveChestTaken ?? false
         overworldChestsTaken = Set(data.overworldChestsTaken ?? [])
+        equippedAccessory = data.equippedAccessory
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -407,6 +422,8 @@ struct SaveData: Codable {
     let caveChestTaken: Bool?
     // Optionnel — retro-compatible (coffres de la carte du monde)
     let overworldChestsTaken: [String]?
+    // Optionnel — retro-compatible (accessoire equipe)
+    let equippedAccessory: String?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

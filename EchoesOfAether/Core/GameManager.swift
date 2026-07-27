@@ -2515,6 +2515,12 @@ final class GameManager {
     /// à chaque nouvelle entrée en forêt (`showForest`).
     var forestHuntsCleared: Set<String> = []
 
+    /// Rôdeurs de la CARTE DU MONDE déjà vaincus : un monstre battu ne
+    /// réapparaît pas au retour du combat (sinon il ressuscitait pile sur
+    /// Kael et le rechargeait aussitôt — combats en boucle). Remis à zéro
+    /// à chaque arrivée fraîche sur la carte (`enterOverworld`).
+    var overworldRoamersCleared: Set<String> = []
+
     /// Affiche la forêt ET (re)peuple ses monstres baladeurs. Remplace les
     /// appels directs à `world.switchToForest` pour garantir le spawn.
     func showForest(in scene: SKScene) {
@@ -2674,6 +2680,7 @@ final class GameManager {
                            patrolRadius: CGFloat = 70, chaseSpeed: CGFloat = 104,
                            tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
                            blend: CGFloat = 0.22, alpha: CGFloat = 1,
+                           graceTime: TimeInterval = 0,
                            startCombat: @escaping () -> Void) {
         guard let node = world.makeRoamingMonster(asset: asset, tint: tint,
                                                   blend: blend, alpha: alpha) else { return }
@@ -2681,6 +2688,7 @@ final class GameManager {
         roamers.append(RoamingMonster(
             node: node, home: pos, worldHeight: wh,
             patrolRadius: patrolRadius, chaseSpeed: chaseSpeed,
+            graceTime: graceTime,
             startCombat: startCombat))
     }
 

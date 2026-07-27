@@ -106,7 +106,10 @@ extension GameManager {
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()
-            spawnOverworldRoamers()
+            // Arrivée fraîche sur la carte : les monstres ont repris leurs
+            // postes (petit sursis, Kael apparaît parfois près d'un lieu).
+            overworldRoamersCleared.removeAll()
+            spawnOverworldRoamers(grace: 1.5)
         } completion: { [weak self] in
             self?.transition(to: .exploration)
         }
@@ -198,7 +201,9 @@ extension GameManager {
 
     /// Monstres VISIBLES sur la carte : Kael peut les éviter ; les toucher
     /// lance un combat (système RoamingMonster réutilisé).
-    func spawnOverworldRoamers() {
+    /// `grace` : sursis d'aggro (secondes) accordé aux rôdeurs — non nul au
+    /// retour d'un combat, pour laisser à Kael le temps de s'éloigner.
+    func spawnOverworldRoamers(grace: TimeInterval = 0) {
         guard let scene, inOverworld else { clearRoamers(); return }
         clearRoamers()
         let w = world.worldWidth > 0 ? world.worldWidth : scene.size.width
@@ -207,22 +212,24 @@ extension GameManager {
             ("enemy_beast", 0.34, 0.26), ("enemy_shadewolf", 0.52, 0.62),
             ("enemy_ghoul", 0.60, 0.34)
         ]
-        for (asset, fx, fy) in spots {
+        // Un rôdeur vaincu reste mort tant que Kael arpente la carte.
+        for (asset, fx, fy) in spots where !overworldRoamersCleared.contains(asset) {
             // Pleine couleur (blend 0) : ces gobelins à l'épée doivent se lire
             // comme des MONSTRES à éviter/affronter, pas des blobs gris.
             addRoamer(asset, at: CGPoint(x: w * fx, y: h * fy), wh: h,
-                      patrolRadius: 70, chaseSpeed: 66, blend: 0) { [weak self] in
-                self?.startOverworldCombat()
+                      patrolRadius: 70, chaseSpeed: 66, blend: 0,
+                      graceTime: grace) { [weak self] in
+                self?.startOverworldCombat(roamerID: asset)
             }
         }
     }
 
     /// Rencontre aléatoire sur la carte du monde. Après victoire, on revient
     /// EXACTEMENT là où Kael se trouvait (pas de retour au point de départ).
-    func startOverworldCombat() {
+    func startOverworldCombat(roamerID: String? = nil) {
         guard let scene, inOverworld else { return }
         overworldReturnPos = world.kael.position
-        lastCombatStarter = { [weak self] in self?.startOverworldCombat() }
+        lastCombatStarter = { [weak self] in self?.startOverworldCombat(roamerID: roamerID) }
         transition(to: .combat)
         hud.objectiveText = String(localized: "hud.objective.combat")
         let levelBefore = player.level
@@ -247,6 +254,8 @@ extension GameManager {
             syncGold()
             AudioEngine.shared.playGoldGain()
             hud.resonanceValue = resonanceTotal
+            // Ce rôdeur est vaincu : il ne repeuplera pas la carte.
+            if let roamerID { overworldRoamersCleared.insert(roamerID) }
             returnToOverworldAfterCombat()
         }
     }
@@ -265,7 +274,9 @@ extension GameManager {
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()
-            spawnOverworldRoamers()
+            // Sursis de 2,5 s : les rôdeurs survivants ne rechargent pas Kael
+            // à l'instant où il réapparaît sur la carte.
+            spawnOverworldRoamers(grace: 2.5)
         } completion: { [weak self] in
             self?.transition(to: .exploration)
         }

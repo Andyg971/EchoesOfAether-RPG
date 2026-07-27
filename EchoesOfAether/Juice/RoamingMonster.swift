@@ -25,11 +25,17 @@ final class RoamingMonster {
     private var wanderTimer: TimeInterval = 0
     private var triggered = false
     private var alerted = false
+    /// Sursis avant que le monstre puisse repérer le héros. Évite qu'au
+    /// retour d'un combat (ou à l'arrivée dans une zone) un rôdeur posé
+    /// juste à côté de Kael le charge dans la seconde — enchaînement de
+    /// combats dont le joueur ne peut pas sortir.
+    private var graceTime: TimeInterval
 
     init(node: SKNode, home: CGPoint, worldHeight: CGFloat,
          patrolRadius: CGFloat = 70, detectRadius: CGFloat = 155,
          contactRadius: CGFloat = 44, patrolSpeed: CGFloat = 34,
-         chaseSpeed: CGFloat = 104, startCombat: @escaping () -> Void) {
+         chaseSpeed: CGFloat = 104, graceTime: TimeInterval = 0,
+         startCombat: @escaping () -> Void) {
         self.node = node
         self.home = home
         self.worldHeight = worldHeight
@@ -38,6 +44,7 @@ final class RoamingMonster {
         self.contactRadius = contactRadius
         self.patrolSpeed = patrolSpeed
         self.chaseSpeed = chaseSpeed
+        self.graceTime = graceTime
         self.startCombat = startCombat
         self.wanderTarget = home
         node.position = home
@@ -49,20 +56,21 @@ final class RoamingMonster {
         guard !triggered else { return false }
         let dist = node.position.distance(to: heroPos)
 
+        // Sursis : le monstre patrouille sans voir le héros (le joueur a le
+        // temps de s'éloigner après un combat).
+        if graceTime > 0 {
+            graceTime -= deltaTime
+            patrol(deltaTime: deltaTime)
+            return false
+        }
+
         switch mode {
         case .patrol:
             if dist < detectRadius {
                 mode = .chase
                 if !alerted { alerted = true; flashAlert() }
             } else {
-                wanderTimer -= deltaTime
-                if node.position.distance(to: wanderTarget) < 8 || wanderTimer <= 0 {
-                    wanderTarget = CGPoint(
-                        x: home.x + .random(in: -patrolRadius...patrolRadius),
-                        y: home.y + .random(in: -patrolRadius...patrolRadius))
-                    wanderTimer = .random(in: 1.5...3.5)
-                }
-                step(toward: wanderTarget, speed: patrolSpeed, dt: deltaTime)
+                patrol(deltaTime: deltaTime)
             }
 
         case .chase:
@@ -80,6 +88,18 @@ final class RoamingMonster {
             }
         }
         return false
+    }
+
+    /// Flânerie autour du point d'origine (mode patrouille et sursis).
+    private func patrol(deltaTime: TimeInterval) {
+        wanderTimer -= deltaTime
+        if node.position.distance(to: wanderTarget) < 8 || wanderTimer <= 0 {
+            wanderTarget = CGPoint(
+                x: home.x + .random(in: -patrolRadius...patrolRadius),
+                y: home.y + .random(in: -patrolRadius...patrolRadius))
+            wanderTimer = .random(in: 1.5...3.5)
+        }
+        step(toward: wanderTarget, speed: patrolSpeed, dt: deltaTime)
     }
 
     private func step(toward dest: CGPoint, speed: CGFloat, dt: TimeInterval) {

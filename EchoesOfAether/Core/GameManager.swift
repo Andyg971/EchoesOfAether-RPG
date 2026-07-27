@@ -151,6 +151,11 @@ final class GameManager {
             self.saveGame()
             JuiceEngine.flashOverlay(in: scene, size: scene.size,
                 color: SKColor(red: 0.40, green: 0.70, blue: 1.0, alpha: 1), duration: 0.2)
+            // Le flash seul était trop discret : le joueur ne savait pas si
+            // sa partie avait bien été enregistrée.
+            HapticsEngine.success()
+            AudioEngine.shared.playQuestComplete()
+            AccessibilitySettings.announce(String(localized: "dialogue.save.line1"))
         }
         pause.onOptions   = { [weak self] in self?.openOptions() }
         pause.onMainMenu  = { [weak self] in
@@ -909,6 +914,11 @@ final class GameManager {
             // c'est la seule action possible pendant le tour adverse, et
             // elle prime sur tout le reste.
             if state == .combat, combat.attemptBlock() {
+                return
+            }
+            // Frappe au timing : pendant l'élan d'une action offensive, A
+            // décuple le coup au lieu de piloter le menu.
+            if state == .combat, combat.attemptStrike() {
                 return
             }
             if paywall.isActive {

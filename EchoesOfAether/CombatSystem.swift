@@ -373,6 +373,20 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var blockBurned = false
     /// Le « ! » affiché au-dessus de l'ennemi qui s'annonce.
     private var blockPrompt: SKLabelNode?
+
+    // ── Frappe au timing (pendant du bloc, côté offensif) ──
+    /// L'action est lancée : l'élan court, A est capté par la frappe et non
+    /// par le menu. Le combat cesse d'être un menu passif : chaque coup se
+    /// mérite (modèle Sea of Stars).
+    private var strikeWindupActive = false
+    /// Fenêtre ouverte : un appui sur A décuple le coup.
+    private var strikeArmed = false
+    /// Le joueur a appuyé dans la fenêtre.
+    private var strikePressed = false
+    /// Appui trop tôt : le bonus est brûlé pour ce coup (interdit le matraquage).
+    private var strikeBurned = false
+    /// Le repère lumineux affiché au-dessus de l'acteur pendant l'élan.
+    private var strikePrompt: SKLabelNode?
     /// La Tempête est un atout unique : une fois lancée, elle est épuisée
     /// jusqu'au prochain combat.
     private var tempestUsed = false
@@ -506,6 +520,9 @@ private var goldReward = 0
         self.bossConfig = enemySpecs.count == 1 ? boss : nil
         self.isEnraged = false
         self.enemyTurnCount = 0
+        // Frappe au timing : aucun élan résiduel d'un combat précédent.
+        root.removeAction(forKey: "timedStrike")
+        closeStrikeWindow()
 
         // New Game+ : les ennemis encaissent et frappent plus fort à chaque
         // relance (+45 % PV, +30 % dégâts par palier). La progression conservée
@@ -977,6 +994,146 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         return ok
     }
 
+    // MARK: - Frappe au timing (action command offensive)
+
+    /// Délai d'élan avant l'ouverture de la fenêtre : le joueur doit ATTENDRE
+    /// le bon moment, pas appuyer d'avance.
+    static let strikeWindup: TimeInterval = 0.26
+    /// Durée de la fenêtre — même exigence que la parade.
+    static let strikeWindow: TimeInterval = 0.38
+    /// Bonus de dégâts d'une frappe réussie.
+    static let strikeBonus: CGFloat = 1.35
+
+    /// Les actions qui se méritent au timing (offensives uniquement : ni
+    /// potion, ni soin, ni bénédiction).
+    private func usesTimedStrike(_ action: CombatAction) -> Bool {
+        switch action {
+        case .attack, .blackSlash:
+            return true
+        case .potion:
+            return false
+        case .spell(let spell):
+            return spell != .mend && spell != .blessing
+        }
+    }
+
+    /// Point d'entrée UNIQUE des actions choisies par le joueur : les actions
+    /// offensives passent par la frappe au timing, les autres partent
+    /// directement. Les MP sont vérifiés avant l'élan pour ne pas faire jouer
+    /// une animation qui finirait en « Magie insuffisante ».
+    private func execute(_ action: CombatAction) {
+        guard phase == .playerTurn, !strikeWindupActive else { return }
+        let cost = mpCost(for: action)
+        let actorMP = actingAlly?.combatant.mp ?? kael.mp
+        if cost > 0, actorMP < cost {
+            showEffect(String(localized: "combat.mp.insufficient"),
+                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+            AudioEngine.shared.playTap()
+            return
+        }
+        if usesTimedStrike(action) {
+            beginTimedStrike(action)
+        } else {
+            perform(action)
+        }
+    }
+
+    /// Lance l'élan : repère au-dessus de l'acteur, fenêtre qui s'ouvre puis
+    /// se referme, et enfin l'action résolue avec (ou sans) le bonus.
+    private func beginTimedStrike(_ action: CombatAction) {
+        strikeWindupActive = true
+        strikeArmed = false
+        strikePressed = false
+        strikeBurned = false
+        showStrikePrompt()
+
+        root.run(.sequence([
+            .wait(forDuration: Self.strikeWindup),
+            .run { [weak self] in
+                guard let self, strikeWindupActive else { return }
+                strikeArmed = true
+                armStrikePrompt()
+            },
+            .wait(forDuration: Self.strikeWindow),
+            .run { [weak self] in
+                guard let self, strikeWindupActive else { return }
+                let landed = strikePressed && !strikeBurned
+                closeStrikeWindow()
+                if landed { playStrikeFlourish() }
+                perform(action, timedBonus: landed)
+            }
+        ]), withKey: "timedStrike")
+    }
+
+    private func closeStrikeWindow() {
+        strikeWindupActive = false
+        strikeArmed = false
+        strikePressed = false
+        strikeBurned = false
+        strikePrompt?.removeFromParent()
+        strikePrompt = nil
+    }
+
+    /// Bouton A pendant l'élan d'une action offensive. Retourne `true` si
+    /// l'appui a été consommé (le menu ne doit alors rien faire).
+    @discardableResult
+    func attemptStrike() -> Bool {
+        guard strikeWindupActive else { return false }
+        if !strikeArmed {
+            strikeBurned = true    // trop tôt : bonus perdu pour ce coup
+            return true
+        }
+        guard !strikePressed else { return true }
+        strikePressed = true
+        strikePrompt?.run(.sequence([
+            .scale(to: 1.6, duration: 0.06),
+            .scale(to: 1.0, duration: 0.08)
+        ]))
+        AudioEngine.shared.playSelect()
+        HapticsEngine.light()
+        return true
+    }
+
+    /// Repère discret pendant l'élan (le joueur voit que ça se prépare).
+    private func showStrikePrompt() {
+        strikePrompt?.removeFromParent()
+        let prompt = SKLabelNode(fontNamed: PixelUI.uiFont)
+        prompt.text = String(localized: "combat.strike.prompt")
+        prompt.fontSize = 15
+        prompt.fontColor = SKColor(white: 0.75, alpha: 1)
+        let anchor = actingAlly?.home ?? kaelHomePosition
+        prompt.position = CGPoint(x: anchor.x, y: anchor.y + 96)
+        prompt.zPosition = 900
+        prompt.alpha = 0.55
+        root.addChild(prompt)
+        strikePrompt = prompt
+    }
+
+    /// La fenêtre s'ouvre : le repère s'allume en or et pulse — c'est LE signal.
+    private func armStrikePrompt() {
+        guard let prompt = strikePrompt else { return }
+        prompt.fontColor = PixelUI.gold
+        prompt.alpha = 1
+        prompt.setScale(0.8)
+        prompt.run(.sequence([
+            .scale(to: 1.15, duration: 0.08),
+            .scale(to: 1.0, duration: 0.08)
+        ]))
+        AudioEngine.shared.playStep()
+    }
+
+    /// Éclat doré sur l'acteur quand la frappe est réussie.
+    private func playStrikeFlourish() {
+        let anchor = actingAlly?.home ?? kaelHomePosition
+        root.addChild(ParticleFactory.impactSparks(
+            at: CGPoint(x: anchor.x, y: anchor.y + 40),
+            color: PixelUI.gold, count: 12))
+        showFloatingText(String(localized: "combat.strike.perfect"),
+                         at: CGPoint(x: anchor.x, y: anchor.y + 70),
+                         color: PixelUI.gold)
+        HapticsEngine.success()
+    }
+
     /// Bouton A pendant un coup ennemi. Retourne `true` si l'appui a été
     /// consommé par la parade (le menu ne doit alors rien faire).
     ///
@@ -1201,7 +1358,8 @@ private func mpCost(for action: CombatAction) -> Int {
     }
 }
 
-private func perform(_ action: CombatAction) {
+/// `timedBonus` : la frappe au timing a été réussie (cf. beginTimedStrike).
+private func perform(_ action: CombatAction, timedBonus: Bool = false) {
     guard let scene = parentScene, phase == .playerTurn,
           let foe = target else { return }
 
@@ -1226,7 +1384,10 @@ private func perform(_ action: CombatAction) {
         }
     }
     let boost = queuedBoost
-    let damageMultiplier = 1.0 + CGFloat(boost) * 0.55
+    // Boost (Octopath) et frappe au timing (Sea of Stars) se cumulent :
+    // bien jouer les deux récompense vraiment.
+    let damageMultiplier = (1.0 + CGFloat(boost) * 0.55)
+        * (timedBonus ? Self.strikeBonus : 1.0)
     queuedBoost = 0
     if boost > 0 { boostedThisRound = true }
 
@@ -3095,7 +3256,9 @@ func cancelTargeting() -> Bool {
 }
 
 func menuNav(dx: Int, dy: Int) {
-    guard phase == .playerTurn else { return }
+    // Pendant l'élan d'une frappe, le menu est verrouillé : le joueur n'a
+    // qu'une chose à faire, appuyer sur A au bon moment.
+    guard phase == .playerTurn, !strikeWindupActive else { return }
     if dy != 0 {
         // En ciblage de soin, le joystick vertical ne quitte pas la rangée :
         // on choisit une cible ou on annule au bouton B, rien d'autre.
@@ -3163,7 +3326,7 @@ func menuConfirm() {
             // La cible voyage jusqu'au cas .mend de perform() : tout le
             // reste (coût MP, Boost, fin de tour) suit le chemin normal.
             chosenHealIndex = healTargetIndex
-            perform(.spell(spell))
+            execute(.spell(spell))
             return
         }
         // Cible d'attaque choisie : redescend sur les techniques
@@ -3176,14 +3339,14 @@ func menuConfirm() {
     let button = row[menuCol]
     if button === boostButton { applyBoost(); return }
     if button === potionButton {
-        if (_player?.potions ?? 0) > 0 { perform(.potion) }
+        if (_player?.potions ?? 0) > 0 { execute(.potion) }
         return
     }
-    if button === attackButton { perform(.attack); return }
-    if button === blackSlashButton { perform(.blackSlash); return }
-    if button === fireButton { perform(.spell(.ember)); return }
-    if button === iceButton { perform(.spell(.frost)); return }
-    if button === lightningButton { perform(.spell(.thunder)); return }
+    if button === attackButton { execute(.attack); return }
+    if button === blackSlashButton { execute(.blackSlash); return }
+    if button === fireButton { execute(.spell(.ember)); return }
+    if button === iceButton { execute(.spell(.frost)); return }
+    if button === lightningButton { execute(.spell(.thunder)); return }
     if button === healButton {
         // Le soin demande une cible : on passe la main au joueur.
         // Les MP sont vérifiés (et dépensés) par perform() à la validation ;
@@ -3209,9 +3372,9 @@ func menuConfirm() {
         announceCombatFocus()
         return
     }
-    if button === blessingButton { perform(.spell(.blessing)); return }
-    if button === windButton { perform(.spell(.windBlade)); return }
-    if button === emberButton { perform(.spell(.emberStrike)); return }
+    if button === blessingButton { execute(.spell(.blessing)); return }
+    if button === windButton { execute(.spell(.windBlade)); return }
+    if button === emberButton { execute(.spell(.emberStrike)); return }
     if button === tempestButton {
         guard !tempestUsed else {
             showEffect(String(localized: "combat.tempest.spent"),
@@ -3221,7 +3384,7 @@ func menuConfirm() {
             return
         }
         tempestUsed = true
-        perform(.spell(.tempest))
+        execute(.spell(.tempest))
         return
     }
 }

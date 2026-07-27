@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "combat.strike.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A  ·  STRIKE"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A  ·  FRAPPE"
+          }
+        }
+      }
+    },
+    "combat.strike.perfect" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PERFECT!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PARFAIT !"
+          }
+        }
+      }
+    },
     "dialogue.act4.destroy.chose.kael1" : {
       "localizations" : {
         "en" : {

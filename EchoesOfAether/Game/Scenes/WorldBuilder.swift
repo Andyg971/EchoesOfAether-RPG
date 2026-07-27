@@ -233,16 +233,47 @@ final class WorldBuilder {
 
     /// Suivi doux : Lyra marche derrière Kael quand il s'éloigne.
     func updateLyraFollow(deltaTime: TimeInterval) {
-        guard !lyra.isHidden, deltaTime > 0 else { return }
-        let target = CGPoint(x: kael.position.x - 40, y: kael.position.y - 6)
-        let dx = target.x - lyra.position.x
-        let dy = target.y - lyra.position.y
+        followStep(lyra, behind: kael, deltaTime: deltaTime)
+    }
+
+    /// Avance un compagnon vers celui qu'il suit, EN RESPECTANT LES OBSTACLES
+    /// (l'eau, les maisons, les rochers) : sans ça les compagnons traversaient
+    /// le lac de la carte du monde. Glisse le long des murs, et se téléporte
+    /// derrière le meneur s'il reste bloqué trop loin (usage RPG classique).
+    private func followStep(_ node: SKNode, behind leader: SKNode,
+                            deltaTime: TimeInterval) {
+        guard !node.isHidden, !leader.isHidden, deltaTime > 0 else { return }
+        let target = CGPoint(x: leader.position.x - 40, y: leader.position.y - 6)
+        let dx = target.x - node.position.x
+        let dy = target.y - node.position.y
         let dist = (dx * dx + dy * dy).squareRoot()
+
+        // Décroché (obstacle contourné par Kael, changement de zone…) :
+        // le compagnon rejoint directement, plutôt que de rester coincé.
+        guard dist < 320 else {
+            node.position = target
+            node.zPosition = actorLayer(for: node.position.y)
+            return
+        }
         guard dist > 54 else { return }
+
         let step = min(CGFloat(deltaTime) * 240, dist - 44)
-        lyra.position.x += dx / dist * step
-        lyra.position.y += dy / dist * step
-        lyra.zPosition = actorLayer(for: lyra.position.y)
+        let from = node.position
+        let straight = CGPoint(x: from.x + dx / dist * step,
+                               y: from.y + dy / dist * step)
+        if !isBlocked(straight) {
+            node.position = straight
+        } else {
+            // Glissement : tente l'axe horizontal, puis le vertical.
+            let slideX = CGPoint(x: from.x + dx / dist * step, y: from.y)
+            let slideY = CGPoint(x: from.x, y: from.y + dy / dist * step)
+            if !isBlocked(slideX) {
+                node.position = slideX
+            } else if !isBlocked(slideY) {
+                node.position = slideY
+            }
+        }
+        node.zPosition = actorLayer(for: node.position.y)
     }
 
     /// Recalcule la profondeur de Kael (déplacement continu au pad).
@@ -264,16 +295,7 @@ final class WorldBuilder {
 
     /// Suivi doux : Eran marche derrière l'Écho de Lyra (Kael → Écho → Eran).
     func updateEranFollow(deltaTime: TimeInterval) {
-        guard !eran.isHidden, !lyra.isHidden, deltaTime > 0 else { return }
-        let target = CGPoint(x: lyra.position.x - 40, y: lyra.position.y - 6)
-        let dx = target.x - eran.position.x
-        let dy = target.y - eran.position.y
-        let dist = (dx * dx + dy * dy).squareRoot()
-        guard dist > 54 else { return }
-        let step = min(CGFloat(deltaTime) * 240, dist - 44)
-        eran.position.x += dx / dist * step
-        eran.position.y += dy / dist * step
-        eran.zPosition = actorLayer(for: eran.position.y)
+        followStep(eran, behind: lyra, deltaTime: deltaTime)
     }
 
     // MARK: - PNJ errants (village)

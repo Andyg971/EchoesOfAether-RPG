@@ -512,12 +512,16 @@ final class WorldBuilder {
         // ── DÉSERT D'OSSARA (sud-est) : sable AUTOTILÉ, bord franc sur l'herbe.
         // Comme les autres zones : une grille de matière + transitions ds_edge_*
         // (plus de plaques carrées qui se chevauchent au hasard).
-        let desert = CGRect(x: w * 0.74, y: 0, width: w * 0.26, height: h * 0.30)
+        // Vaste : un désert doit se traverser, pas se contourner en trois pas.
+        let desert = CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.42)
         var sand = VillageTileMap(width: w, height: h, tile: tile)
         sand.stampEllipse(center: CGPoint(x: desert.midX, y: desert.midY),
-                          radiusX: desert.width * 0.62, radiusY: desert.height * 0.72)
-        sand.stampEllipse(center: CGPoint(x: desert.midX + w * 0.06, y: desert.midY + h * 0.07),
-                          radiusX: desert.width * 0.34, radiusY: desert.height * 0.34)
+                          radiusX: desert.width * 0.66, radiusY: desert.height * 0.74)
+        // Deux langues de sable débordantes : bord organique, jamais un ovale.
+        sand.stampEllipse(center: CGPoint(x: desert.midX + w * 0.08, y: desert.midY + h * 0.09),
+                          radiusX: desert.width * 0.38, radiusY: desert.height * 0.36)
+        sand.stampEllipse(center: CGPoint(x: desert.midX - w * 0.07, y: desert.midY - h * 0.08),
+                          radiusX: desert.width * 0.32, radiusY: desert.height * 0.30)
         renderTileMap(sand, fullTile: "ds_sand", edgePrefix: "ds_edge_",
                       in: scene, z: -29.6)
 
@@ -550,25 +554,94 @@ final class WorldBuilder {
         renderTileMap(roads, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
                       in: scene, z: -29.4)
 
-        // ── FORÊT D'ÉBÈNE (centre-ouest) : lisière dense, cœur touffu ──
-        let forest = CGRect(x: w * 0.24, y: h * 0.40, width: w * 0.26, height: h * 0.40)
-        scatterOverworld(["ext_tree_1", "ext_tree_2", "ext_tree_3",
-                          "tree_big", "mv_forest_tree_wide"],
-                         count: 64, in: forest, scale: 0.36, in: scene)
-        scatterOverworld(["forest_mushroom_1", "forest_mushroom_2", "me_big_sprout_2"],
-                         count: 20, in: forest, scale: 0.4, in: scene)
+        // ── FORÊT D'ÉBÈNE : un VRAI massif, vaste et touffu ──
+        // Sol de sous-bois assombri d'abord (le couvert se lit même entre les
+        // troncs), puis les arbres en densité dégressive.
+        let forestC = CGPoint(x: pForest.x, y: pForest.y + h * 0.02)
+        let forestRX = w * 0.20, forestRY = h * 0.24
+        var canopyFloor = VillageTileMap(width: w, height: h, tile: tile)
+        canopyFloor.stampEllipse(center: forestC,
+                                 radiusX: forestRX * 0.94, radiusY: forestRY * 0.94)
+        renderTileMap(canopyFloor, fullTile: "tile_grass_dark",
+                      edgePrefix: "me_edge_", in: scene, z: -29.3)
 
-        // ── MONTAGNES DE CENDREVAL (nord-est) : aiguilles & blocs ──
-        let mountains = CGRect(x: w * 0.62, y: h * 0.60, width: w * 0.36, height: h * 0.36)
-        scatterOverworld(["ds_rock_spire", "ds_rock_big", "ds_boulder",
-                          "rock_1", "rock_3"],
-                         count: 34, in: mountains, scale: 0.4, in: scene)
+        // Variété ASSUMÉE — c'est la Forêt d'Ébène : la canopée verte porte le
+        // massif, les conifères bruns lui donnent son grain, les arbres morts
+        // sa signature. Chaque espèce normalisée à sa hauteur d'écran.
+        let ebonyWood: [Flora] = [
+            Flora(asset: "me_tree_1", height: 54, weight: 5),
+            Flora(asset: "me_tree_2", height: 54, weight: 5),
+            Flora(asset: "me_tree_3", height: 52, weight: 4),
+            Flora(asset: "me_tree_4", height: 52, weight: 4),
+            Flora(asset: "me_tree_5", height: 64, weight: 3),
+            Flora(asset: "me_tree_6", height: 64, weight: 3),
+            Flora(asset: "ext_tree_1", height: 58, weight: 4),   // conifère brun
+            Flora(asset: "ext_tree_2", height: 58, weight: 4),
+            Flora(asset: "ext_tree_3", height: 40, weight: 2),   // jeune pousse
+            Flora(asset: "gy_tree",   height: 58, weight: 2),    // arbre mort
+            Flora(asset: "tree_big",  height: 44, weight: 2)
+        ]
+        plantMass(ebonyWood, center: forestC,
+                  radiusX: forestRX, radiusY: forestRY,
+                  step: 34, coreDensity: 0.92, edgeDensity: 0.28,
+                  avoiding: [CGRect(x: pForest.x - 56, y: pForest.y - 40,
+                                    width: 112, height: 80)],   // dégagement du POI
+                  in: scene)
+        // Sous-bois : champignons et pousses au sol, sous la canopée.
+        plantMass([Flora(asset: "forest_mushroom_1", height: 14, weight: 3),
+                   Flora(asset: "forest_mushroom_2", height: 14, weight: 3),
+                   Flora(asset: "me_big_sprout_2",   height: 18, weight: 2),
+                   Flora(asset: "me_big_sprout_5",   height: 18, weight: 2)],
+                  center: forestC, radiusX: forestRX * 0.92, radiusY: forestRY * 0.92,
+                  step: 58, coreDensity: 0.42, edgeDensity: 0.12, in: scene)
 
-        // ── Détail désert : cactus & dunes, UNIQUEMENT dans le sable ──
-        scatterOverworld(["ds_cactus_barrel", "ds_cactus_tall", "ds_cactus_flower",
-                          "ds_dune", "ds_rock_pile"],
-                         count: 15, in: desert.insetBy(dx: w * 0.03, dy: h * 0.03),
-                         scale: 0.3, in: scene)
+        // ── MONTAGNES DE CENDREVAL (nord-est) : massif rocheux ──
+        let mountC = CGPoint(x: w * 0.80, y: h * 0.78)
+        plantMass([Flora(asset: "ds_rock_spire", height: 62, weight: 4),
+                   Flora(asset: "ds_rock_big",   height: 44, weight: 3),
+                   Flora(asset: "ds_boulder",    height: 34, weight: 3),
+                   Flora(asset: "ds_boulder2",   height: 30, weight: 2),
+                   Flora(asset: "rock_1",        height: 26, weight: 2),
+                   Flora(asset: "rock_3",        height: 22, weight: 2)],
+                  center: mountC, radiusX: w * 0.17, radiusY: h * 0.17,
+                  step: 42, coreDensity: 0.80, edgeDensity: 0.20,
+                  avoiding: [CGRect(x: pMines.x - 56, y: pMines.y - 40,
+                                    width: 112, height: 80),
+                             CGRect(x: pThreshold.x - 56, y: pThreshold.y - 40,
+                                    width: 112, height: 80)],
+                  in: scene)
+
+        // ── DÉSERT D'OSSARA : un VRAI désert, pas trois cactus ──
+        // Plaques de sol craquelé d'abord (le sable respire), puis la flore
+        // sèche en densité faible : l'immensité vide FAIT le désert.
+        let desertC = CGPoint(x: desert.midX, y: desert.midY)
+        let desertRX = desert.width * 0.60, desertRY = desert.height * 0.66
+        plantMass([Flora(asset: "ds_cracked",      height: 26, weight: 3),
+                   Flora(asset: "ds_cracked2",     height: 26, weight: 3),
+                   Flora(asset: "ds_cracked3",     height: 24, weight: 2),
+                   Flora(asset: "ds_cracked_dark", height: 24, weight: 2)],
+                  center: desertC, radiusX: desertRX, radiusY: desertRY,
+                  step: 66, coreDensity: 0.30, edgeDensity: 0.10, in: scene)
+        plantMass([Flora(asset: "ds_dune",          height: 30, weight: 5),
+                   Flora(asset: "ds_dune2",         height: 30, weight: 4),
+                   Flora(asset: "ds_cactus_tall",   height: 46, weight: 3),
+                   Flora(asset: "ds_cactus_tall2",  height: 46, weight: 2),
+                   Flora(asset: "ds_cactus_med",    height: 34, weight: 3),
+                   Flora(asset: "ds_cactus_barrel", height: 24, weight: 3),
+                   Flora(asset: "ds_cactus_small",  height: 18, weight: 2),
+                   Flora(asset: "ds_cactus_flower", height: 26, weight: 2),
+                   Flora(asset: "ds_agave",         height: 24, weight: 2),
+                   Flora(asset: "ds_bush_dead",     height: 20, weight: 3),
+                   Flora(asset: "ds_bush_dead2",    height: 20, weight: 2),
+                   Flora(asset: "ds_rock_pile",     height: 22, weight: 3),
+                   Flora(asset: "ds_boulder2",      height: 28, weight: 2),
+                   Flora(asset: "ds_bones",         height: 18, weight: 2),   // ossements
+                   Flora(asset: "ds_bone",          height: 14, weight: 1)],
+                  center: desertC, radiusX: desertRX, radiusY: desertRY,
+                  step: 46, coreDensity: 0.34, edgeDensity: 0.14,
+                  avoiding: [CGRect(x: pDesert.x - 56, y: pDesert.y - 40,
+                                    width: 112, height: 80)],
+                  in: scene)
 
         // ── Détail plaines : fleurs & cailloux, sobre (jamais sur l'eau) ──
         scatterOverworld(["village_flower_yellow", "village_flower_pink",
@@ -664,6 +737,66 @@ final class WorldBuilder {
 
     /// Sème du décor dans une région. `avoiding` : zones interdites (lac,
     /// sable…) — sans quoi des fleurs poussent sur l'eau.
+    /// Une espèce de végétation : son asset et la HAUTEUR À L'ÉCRAN visée.
+    /// Les planches vont de 64 à 192 px de haut ; les rendre toutes à la même
+    /// échelle donnait des arbres géants à côté d'arbustes — d'où le fouillis.
+    /// Ici chaque espèce est normalisée, donc la forêt a une échelle crédible.
+    private struct Flora {
+        let asset: String
+        let height: CGFloat    // hauteur visée à l'écran, en points
+        let weight: Int        // fréquence relative dans le massif
+    }
+
+    /// Plante un MASSIF (forêt ou oasis d'un désert) dans une ellipse :
+    /// densité DÉGRESSIVE du cœur vers la lisière, positions sur une grille
+    /// jitterée (ni trous béants ni paquets), profondeur triée par Y.
+    /// C'est ce qui fait lire « forêt » au lieu de « arbres éparpillés ».
+    private func plantMass(_ species: [Flora], center: CGPoint,
+                           radiusX: CGFloat, radiusY: CGFloat,
+                           step: CGFloat, coreDensity: Double, edgeDensity: Double,
+                           avoiding: [CGRect] = [], in scene: SKScene) {
+        guard !species.isEmpty else { return }
+        var rng = SystemRandomNumberGenerator()
+        // Tirage pondéré : la canopée domine, les accents restent des accents.
+        var pool: [Flora] = []
+        for s in species { pool.append(contentsOf: Array(repeating: s, count: max(1, s.weight))) }
+
+        var y = center.y - radiusY
+        while y <= center.y + radiusY {
+            var x = center.x - radiusX
+            while x <= center.x + radiusX {
+                // Distance normalisée au centre de l'ellipse (0 = cœur, 1 = bord).
+                let nx = (x - center.x) / max(1, radiusX)
+                let ny = (y - center.y) / max(1, radiusY)
+                let d = (nx * nx + ny * ny).squareRoot()
+                defer { x += step }
+                guard d <= 1 else { continue }
+                // Le couvert s'éclaircit vers la lisière : bord naturel, pas net.
+                let density = coreDensity + (edgeDensity - coreDensity) * Double(d)
+                guard Double.random(in: 0...1, using: &rng) < density else { continue }
+
+                let jx = CGFloat.random(in: -step * 0.42...step * 0.42, using: &rng)
+                let jy = CGFloat.random(in: -step * 0.42...step * 0.42, using: &rng)
+                let p = CGPoint(x: x + jx, y: y + jy)
+                guard !avoiding.contains(where: { $0.contains(p) }) else { continue }
+
+                let flora = pool.randomElement(using: &rng) ?? species[0]
+                guard let texH = PixelArtSprites.pixelHeight(of: flora.asset),
+                      texH > 0 else { continue }
+                // Variation de gabarit ±12 % : aucun arbre n'est le clone du voisin.
+                let variance = CGFloat.random(in: 0.88...1.12, using: &rng)
+                let scale = flora.height * variance / texH
+                guard let node = PixelArtSprites.still(name: flora.asset, scale: scale,
+                                                       anchor: CGPoint(x: 0.5, y: 0.0))
+                else { continue }
+                node.position = p
+                node.zPosition = actorLayer(for: p.y) - 0.2
+                add(node, to: scene)
+            }
+            y += step
+        }
+    }
+
     private func scatterOverworld(_ assets: [String], count: Int, in rect: CGRect,
                                   scale: CGFloat, avoiding: [CGRect] = [],
                                   in scene: SKScene) {

@@ -158,6 +158,15 @@ enum PixelArtSprites {
         UIImage(named: name) != nil
     }
 
+    /// Hauteur NATIVE (en pixels) d'un asset, nil s'il n'existe pas.
+    /// Sert à normaliser des planches de tailles très différentes à une même
+    /// hauteur à l'écran (cf. WorldBuilder.plantMass) : sans ça, un arbre de
+    /// 192 px et un de 64 px rendus à la même échelle n'ont rien à voir.
+    static func pixelHeight(of name: String) -> CGFloat? {
+        guard let image = UIImage(named: name) else { return nil }
+        return image.size.height * image.scale
+    }
+
     /// Extrait une frame depuis un spritesheet pixel art (RPG Maker MV
     /// format : grille `cols × rows` de frames `frameSize×frameSize`).
     /// Y est indexé depuis le haut (row 0 = première ligne).

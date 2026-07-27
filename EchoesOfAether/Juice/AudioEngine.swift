@@ -107,8 +107,13 @@ final class AudioEngine {
         case voidThreshold // Acte III, le Seuil
         case mines       // galeries de Cendreval
         case inn         // intérieurs (auberge, échoppes)
-        case combat      // combat standard
-        case boss        // combat de boss
+        case combat      // combat standard — variante 1
+        case combat2     // combat standard — variante 2
+        case combat3     // combat standard — variante 3
+        case boss        // Gardien de l'Aether (Acte I)
+        case bossArchivist // l'Archiviste (Acte II)
+        case bossThreshold // le Gardien du Seuil (Acte III)
+        case bossVoid      // l'Avatar du Vide (Acte IV)
         case title       // écran-titre
         case finale      // vraie fin / crédits — aube nouvelle
 
@@ -134,9 +139,29 @@ final class AudioEngine {
             case .mines:         return "music_mines"
             case .inn:           return "music_inn"
             case .combat:        return "music_combat"
+            case .combat2:       return "music_combat2"
+            case .combat3:       return "music_combat3"
             case .boss:          return "music_boss"
+            case .bossArchivist: return "music_boss_archivist"
+            case .bossThreshold: return "music_boss_threshold"
+            case .bossVoid:      return "music_boss_void"
             case .title:         return "music_title"
             case .finale:        return "music_finale"
+            }
+        }
+
+        /// Piste de REPLI quand `fileName` n'est pas (encore) embarquée.
+        /// Permet d'ajouter `music_combat2.m4a`, `music_boss_void.m4a`… dans
+        /// Resources/Music plus tard : le code les prend automatiquement, et
+        /// en attendant chaque boss sonne déjà différemment grâce aux pistes
+        /// existantes. Aucun combat ne se retrouve muet.
+        var fallbackFileName: String? {
+            switch self {
+            case .combat2, .combat3:  return "music_combat"
+            case .bossArchivist:      return "music_mines"       // sourd, oppressant
+            case .bossThreshold:      return "music_threshold"   // son propre domaine
+            case .bossVoid:           return "music_finale"      // l'ultime affrontement
+            default:                  return nil
             }
         }
 
@@ -145,8 +170,9 @@ final class AudioEngine {
             switch self {
             case .mines: return .ruins
             case .inn: return .calm
-            case .combat: return .tense
-            case .boss: return .voidThreshold
+            case .combat, .combat2, .combat3: return .tense
+            case .boss, .bossArchivist, .bossThreshold, .bossVoid:
+                return .voidThreshold
             case .title: return .sacred
             case .finale: return .sacred
             default: return self
@@ -241,6 +267,20 @@ final class AudioEngine {
         guard mood != currentMood else { return }
         currentMood = mood
         if engine.isRunning { crossfade(to: mood) }
+    }
+
+    /// Index de la prochaine piste de combat standard.
+    private var combatRotation = 0
+
+    /// Musique d'un combat ORDINAIRE : alterne entre trois variantes pour que
+    /// les affrontements ne sonnent pas tous pareil. (Tant que
+    /// `music_combat2/3.m4a` ne sont pas livrées, les trois retombent sur
+    /// `music_combat` — cf. fallbackFileName.)
+    func setCombatMood() {
+        let pool: [MusicMood] = [.combat, .combat2, .combat3]
+        let mood = pool[combatRotation % pool.count]
+        combatRotation += 1
+        setMood(mood)
     }
 
     /// Bascule la couche foley de zone (cross-fade). Idempotent. Silencieux
@@ -419,7 +459,11 @@ final class AudioEngine {
     /// (conversion AVAudioConverter si le fichier diffère).
     private func loadMusicFile(for mood: MusicMood) -> AVAudioPCMBuffer? {
         guard let name = mood.fileName else { return nil }
-        return loadAudioBuffer(named: name, ext: "m4a")
+        if let buffer = loadAudioBuffer(named: name, ext: "m4a") { return buffer }
+        // Piste dédiée pas encore livrée : on retombe sur une piste existante
+        // plutôt que de laisser le combat silencieux.
+        guard let alt = mood.fallbackFileName else { return nil }
+        return loadAudioBuffer(named: alt, ext: "m4a")
     }
 
     /// Fichier audio du bundle → buffer PCM au format du moteur.
@@ -564,7 +608,9 @@ final class AudioEngine {
 
     private func config(for mood: MusicMood) -> MusicConfig {
         switch mood {
-        case .mines, .inn, .combat, .boss, .title, .finale:
+        case .mines, .inn, .title, .finale,
+             .combat, .combat2, .combat3,
+             .boss, .bossArchivist, .bossThreshold, .bossVoid:
             // Moods à piste CC0 : synthèse de repli si le fichier manque.
             return config(for: mood.synthFallback)
         case .calm:

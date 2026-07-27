@@ -193,6 +193,8 @@ struct BossConfig {
     var regenPercent: CGFloat = 0
     /// Texte affiché quand il se régénère (clé déjà localisée).
     var regenName: String = ""
+    /// MUSIQUE propre à ce boss : chaque affrontement majeur a son thème.
+    var music: AudioEngine.MusicMood = .boss
 }
 
 /// Spécification d'un ennemi à l'entrée en combat (API GameManager).
@@ -576,9 +578,14 @@ self.comboCount = 0
 self.phase = .intro
         self.completion = completion
         self._player = player
-        // Musique : thème de combat (ou de boss), restaurée à la fin.
+        // Musique, restaurée à la fin : chaque boss a SON thème ; les combats
+        // ordinaires alternent entre trois pistes pour ne pas lasser.
         moodBeforeCombat = AudioEngine.shared.currentMood
-        AudioEngine.shared.setMood(boss != nil ? .boss : .combat)
+        if let boss {
+            AudioEngine.shared.setMood(boss.music)
+        } else {
+            AudioEngine.shared.setCombatMood()
+        }
         // Bestiaire : toute espèce affrontée est consignée.
         player.bestiarySeen.formUnion(enemySpecs.prefix(3).map(\.kind.bestiaryID))
 

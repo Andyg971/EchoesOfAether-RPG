@@ -216,7 +216,8 @@ extension GameManager {
                 enrageDamageMult: 3,
                 specialAttackInterval: 2,
                 specialDamage: 98,
-                specialName: String(localized: "combat.voidAvatar.specialName")
+                specialName: String(localized: "combat.voidAvatar.specialName"),
+                music: .bossVoid
             )
 
             let levelBefore = player.level

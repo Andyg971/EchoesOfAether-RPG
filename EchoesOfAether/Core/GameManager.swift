@@ -1981,10 +1981,17 @@ final class GameManager {
         case .ruins:
             // Gardiens et Archiviste chargent Kael : pas de bulle « Combattre ».
             let plan = RuinsLayout(sceneSize: scene.size)
-            let checkpoints: [(CGPoint, String)] = [
-                (plan.eranInscription, "hint.examine"),
-                (plan.discoveryWall, "hint.examine")
-            ]
+            // Les bulles suivent EXACTEMENT les conditions de
+            // `tryRuinsInteraction` : sans ça « A · Examiner » s'affichait sur
+            // l'inscription d'Eran déjà lue et sur le mur de la découverte
+            // encore scellé — le bouton A ne faisait alors rien.
+            var checkpoints: [(CGPoint, String)] = []
+            if !player.act2EranFound {
+                checkpoints.append((plan.eranInscription, "hint.examine"))
+            }
+            if player.ruinsProgress >= 2 {
+                checkpoints.append((plan.discoveryWall, "hint.examine"))
+            }
             if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
                 hint = localizedHint(nearest.key)
                 bubbleAction = InteractionBubble.Action(hintKey: nearest.key)

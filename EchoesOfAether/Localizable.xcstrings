@@ -1,6 +1,22 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "combat.archivist.regen" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Archivist rereads his ledger and reassembles himself."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "L'Archiviste relit son registre et se recompose."
+          }
+        }
+      }
+    },
     "shop.acc.ember.name" : {
       "localizations" : {
         "en" : {

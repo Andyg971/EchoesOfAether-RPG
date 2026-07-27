@@ -271,13 +271,19 @@ extension GameManager {
             transition(to: .combat)
             hud.objectiveText = String(localized: "hud.objective.combat")
 
+            // L'Archiviste a catalogué chaque âme que Kael a prise : tant que
+            // son registre est intact (bouclier debout), il se RECOMPOSE à
+            // chaque tour. On ne le bat pas en frappant fort, mais en le
+            // brisant sur ses faiblesses — son combat est une énigme.
             let bossConfig = BossConfig(
                 enrageThreshold: 0.35,
                 enrageSpeedMult: 1.5,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
                 specialDamage: 62,
-                specialName: String(localized: "combat.archivist.specialName")
+                specialName: String(localized: "combat.archivist.specialName"),
+                regenPercent: 0.07,
+                regenName: String(localized: "combat.archivist.regen")
             )
 
             let levelBefore = player.level

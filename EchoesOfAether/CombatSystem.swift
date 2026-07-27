@@ -186,6 +186,13 @@ struct BossConfig {
     let specialAttackInterval: Int // every N enemy turns
     let specialDamage: Int
     let specialName: String        // localized
+    /// MÉCANIQUE PROPRE À UN BOSS : fraction des PV max régénérée à la fin de
+    /// son tour TANT QUE SON BOUCLIER TIENT (0 = pas de régénération).
+    /// L'Archiviste relit son registre et se recompose : le groupe ne gagne
+    /// qu'en le BRISANT régulièrement, pas en tapant fort au hasard.
+    var regenPercent: CGFloat = 0
+    /// Texte affiché quand il se régénère (clé déjà localisée).
+    var regenName: String = ""
 }
 
 /// Spécification d'un ennemi à l'entrée en combat (API GameManager).
@@ -774,6 +781,10 @@ private func startEnemyTurn() {
 private func runEnemyAction(at index: Int) {
     guard isActive, kael.isAlive else { return }
     guard index < enemies.count else {
+        // Mécanique propre au boss (Archiviste) : il se recompose tant qu'il
+        // n'est pas brisé. Résolu AVANT les sceaux pour que le joueur voie
+        // d'abord le soin, puis la charge.
+        applyBossRegenIfNeeded()
         // Fin de la phase ennemie : si le boss prépare sa spéciale pour la
         // manche suivante, il pose ses sceaux MAINTENANT — le groupe a un
         // tour entier pour les briser.
@@ -1164,6 +1175,32 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     // MARK: - Verrous du grand coup (charge de boss)
+
+    /// Régénération de boss conditionnée au bouclier : l'Archiviste relit son
+    /// registre et se recompose tant qu'il n'a pas été BRISÉ. Taper fort ne
+    /// suffit plus — il faut viser ses faiblesses pour l'ouvrir, sinon le
+    /// combat ne finit jamais. C'est ce qui en fait une énigme, pas un mur.
+    private func applyBossRegenIfNeeded() {
+        guard let boss = bossConfig, boss.regenPercent > 0,
+              let foe = enemies.first, foe.combatant.isAlive else { return }
+        // Brisé = incapable de se recomposer : la fenêtre du groupe.
+        guard foe.brokenTurns == 0, foe.shield > 0 else { return }
+        guard foe.combatant.hp < foe.combatant.maxHP else { return }
+
+        let heal = max(1, Int(CGFloat(foe.combatant.maxHP) * boss.regenPercent))
+        foe.combatant.hp = min(foe.combatant.maxHP, foe.combatant.hp + heal)
+        statusLabel.text = boss.regenName
+        showFloatingText("+" + String(heal), at: foe.homePosition,
+                         color: SKColor(red: 0.55, green: 0.95, blue: 0.70, alpha: 1))
+        root.addChild(ParticleFactory.impactSparks(
+            at: foe.homePosition,
+            color: SKColor(red: 0.55, green: 0.95, blue: 0.70, alpha: 1), count: 10))
+        foe.sprite?.run(.sequence([
+            .scale(to: 1.06, duration: 0.14),
+            .scale(to: 1.0, duration: 0.14)
+        ]))
+        updateVisuals()
+    }
 
     /// Le boss annonce sa spéciale UNE MANCHE À L'AVANCE et se couvre de
     /// sceaux élémentaires. Le groupe a un tour complet pour tous les briser :

@@ -2767,6 +2767,7 @@ final class GameManager {
                            tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
                            blend: CGFloat = 0.22, alpha: CGFloat = 1,
                            graceTime: TimeInterval = 0,
+                           sanctuary: CGRect? = nil,
                            startCombat: @escaping () -> Void) {
         guard let node = world.makeRoamingMonster(asset: asset, tint: tint,
                                                   blend: blend, alpha: alpha) else { return }
@@ -2774,7 +2775,7 @@ final class GameManager {
         roamers.append(RoamingMonster(
             node: node, home: pos, worldHeight: wh,
             patrolRadius: patrolRadius, chaseSpeed: chaseSpeed,
-            graceTime: graceTime,
+            graceTime: graceTime, sanctuary: sanctuary,
             startCombat: startCombat))
     }
 

@@ -30,12 +30,18 @@ final class RoamingMonster {
     /// juste à côté de Kael le charge dans la seconde — enchaînement de
     /// combats dont le joueur ne peut pas sortir.
     private var graceTime: TimeInterval
+    /// ZONE REFUGE (coordonnées monde) : le monstre n'y met jamais les pieds
+    /// et abandonne la poursuite dès que le héros s'y abrite. C'est ce qui
+    /// fait d'un village un VRAI abri et non un décor.
+    private let sanctuary: CGRect?
 
     init(node: SKNode, home: CGPoint, worldHeight: CGFloat,
          patrolRadius: CGFloat = 70, detectRadius: CGFloat = 155,
          contactRadius: CGFloat = 44, patrolSpeed: CGFloat = 34,
          chaseSpeed: CGFloat = 104, graceTime: TimeInterval = 0,
+         sanctuary: CGRect? = nil,
          startCombat: @escaping () -> Void) {
+        self.sanctuary = sanctuary
         self.node = node
         self.home = home
         self.worldHeight = worldHeight
@@ -54,6 +60,16 @@ final class RoamingMonster {
     /// héros vient de déclencher le combat (l'appelant doit alors nettoyer).
     func update(deltaTime: TimeInterval, heroPos: CGPoint) -> Bool {
         guard !triggered else { return false }
+        // Le héros s'est mis à l'abri : la meute renonce et reprend sa ronde.
+        if let sanctuary, sanctuary.contains(heroPos) {
+            if mode == .chase {
+                mode = .patrol
+                alerted = false
+                node.childNode(withName: "alert")?.removeFromParent()
+            }
+            patrol(deltaTime: deltaTime)
+            return false
+        }
         let dist = node.position.distance(to: heroPos)
 
         // Sursis : le monstre patrouille sans voir le héros (le joueur a le
@@ -107,8 +123,11 @@ final class RoamingMonster {
         let dy = dest.y - node.position.y
         let d = max(0.001, hypot(dx, dy))
         let move = min(d, speed * CGFloat(dt))
-        node.position.x += dx / d * move
-        node.position.y += dy / d * move
+        let next = CGPoint(x: node.position.x + dx / d * move,
+                           y: node.position.y + dy / d * move)
+        // Refuge : le monstre s'arrête à la lisière, il n'y entre jamais.
+        if let sanctuary, sanctuary.contains(next) { return }
+        node.position = next
         // Orientation : le sprite regarde vers son déplacement horizontal.
         if abs(dx) > 1,
            let sprite = node.children.compactMap({ $0 as? SKSpriteNode }).first {

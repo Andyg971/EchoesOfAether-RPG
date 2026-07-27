@@ -52,6 +52,12 @@ extension GameManager {
         clearRoamers()
         let w = scene.size.width
         let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        // La CITÉ DES CARAVANES est un refuge : les rôdeurs n'y entrent pas et
+        // renoncent dès que Kael s'y abrite. Ses habitants s'y terrent pour
+        // cette raison — le lieu devient un vrai répit, pas un décor.
+        let haven = CGRect(x: w * (DesertPOI.town.x - 0.24),
+                           y: h * (DesertPOI.town.y - 0.075),
+                           width: w * 0.48, height: h * 0.15)
         // Un rôdeur par tronçon : dunes du sud, abords de la cité, canyon du
         // nord. Ils se partageaient le même écran.
         switch player.desertProgress {
@@ -59,13 +65,14 @@ extension GameManager {
             // À l'est de l'allée : l'oasis (ouest) est un havre, pas un
             // terrain de chasse.
             addRoamer("enemy_ghoul", at: CGPoint(x: w * 0.62, y: h * 0.25),
-                      wh: h) { [weak self] in self?.startDesertCombat1() }
+                      wh: h, sanctuary: haven) { [weak self] in self?.startDesertCombat1() }
         case 1:
             addRoamer("enemy_bone", at: CGPoint(x: w * 0.60, y: h * 0.66),
-                      wh: h) { [weak self] in self?.startDesertCombat2() }
+                      wh: h, sanctuary: haven) { [weak self] in self?.startDesertCombat2() }
         case 2 where player.questDesert != .complete:
             addRoamer("enemy_bone", at: CGPoint(x: w * 0.40, y: h * 0.86),
-                      wh: h, patrolRadius: 44, chaseSpeed: 78) { [weak self] in
+                      wh: h, patrolRadius: 44, chaseSpeed: 78,
+                      sanctuary: haven) { [weak self] in
                 self?.startDesertBossSequence()
             }
         default:

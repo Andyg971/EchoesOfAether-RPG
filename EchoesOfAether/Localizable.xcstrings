@@ -1,6 +1,38 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "chest.reward %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chest opened: %lld gold"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coffre ouvert : %lld or"
+          }
+        }
+      }
+    },
+    "chest.rewardWithShards %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chest opened: %1$lld gold, %2$lld Aether shard(s)"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coffre ouvert : %1$lld or, %2$lld éclat(s) d'Aether"
+          }
+        }
+      }
+    },
     "combat.locks.charging %@" : {
       "localizations" : {
         "en" : {

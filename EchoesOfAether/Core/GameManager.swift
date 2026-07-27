@@ -88,6 +88,8 @@ final class GameManager {
     var inOverworld = false
     /// Lieu de l'overworld à portée du bouton A (nil = aucun).
     private var overworldTarget: String?
+    /// Coffre de la carte à portée du bouton A (nil = aucun).
+    private var overworldChestTarget: String?
     /// Position de Kael sur la carte avant un combat, pour l'y remettre après.
     var overworldReturnPos: CGPoint?
     /// Lieux déjà visités (voyage rapide déverrouillé). S'ajoute à la
@@ -333,6 +335,7 @@ final class GameManager {
             world.refreshKaelDepth()
             world.snapCamera()
             spawnOverworldRoamers()
+            world.addOverworldChests(taken: player.overworldChestsTaken, in: scene)
             transition(to: .exploration)
             return
         }
@@ -723,7 +726,11 @@ final class GameManager {
             .scale(to: 0.90, duration: 0.06),
             .scale(to: 1.0, duration: 0.10)
         ]))
-        // Carte du monde : A entre dans le lieu à portée.
+        // Carte du monde : A ouvre le coffre à portée, sinon entre dans le lieu.
+        if inOverworld, let chestID = overworldChestTarget {
+            openOverworldChest(chestID)
+            return
+        }
         if inOverworld, let dest = overworldTarget {
             enterZoneFromMap(dest)
             return
@@ -1932,6 +1939,23 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: hit.place.pos.x, y: hit.place.pos.y + 62)
                 actionPoint = hit.place.pos
                 overworldTarget = hit.place.id
+            }
+            // Trésor à l'écart des chemins : prioritaire s'il est plus près
+            // que le lieu voisin (on ne rate pas un coffre à côté d'une porte).
+            overworldChestTarget = nil
+            let w = world.worldWidth > 0 ? world.worldWidth : scene.size.width
+            let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            for chest in WorldBuilder.overworldChests
+            where !player.overworldChestsTaken.contains(chest.id) {
+                let pos = CGPoint(x: w * chest.at.x, y: h * chest.at.y)
+                let d = kaelPos.distance(to: pos)
+                guard d < 70, best == nil || d < best!.dist else { continue }
+                hint = localizedHint("hint.examine")
+                bubbleAction = .examine
+                bubbleAnchor = CGPoint(x: pos.x, y: pos.y + 46)
+                actionPoint = pos
+                overworldTarget = nil
+                overworldChestTarget = chest.id
             }
         } else {
             switch phase {

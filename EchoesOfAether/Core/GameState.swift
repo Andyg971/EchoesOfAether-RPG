@@ -133,6 +133,9 @@ final class PlayerState {
     // Caverne aux Échos (donjon optionnel, entrée dans la forêt)
     var caveCleared: Bool = false               // gardien d'ossements vaincu
     var caveChestTaken: Bool = false            // coffre de la caverne ramassé
+    /// Coffres de la CARTE DU MONDE déjà ouverts (récompense l'exploration
+    /// hors des sentiers : chaque coffre ne se ramasse qu'une fois).
+    var overworldChestsTaken: Set<String> = []
     var talkedToSage: Bool = false
     var talkedToChild: Bool = false
     var talkedToVillager: Bool = false
@@ -252,6 +255,7 @@ final class PlayerState {
             desertChestTaken: desertChestTaken,
             caveCleared: caveCleared,
             caveChestTaken: caveChestTaken,
+            overworldChestsTaken: Array(overworldChestsTaken),
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -313,6 +317,7 @@ final class PlayerState {
         desertOasisUsed = false
         caveCleared = data.caveCleared ?? false
         caveChestTaken = data.caveChestTaken ?? false
+        overworldChestsTaken = Set(data.overworldChestsTaken ?? [])
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -400,6 +405,8 @@ struct SaveData: Codable {
     // Caverne aux Échos (optionnels — rétro-compatibles)
     let caveCleared: Bool?
     let caveChestTaken: Bool?
+    // Optionnel — retro-compatible (coffres de la carte du monde)
+    let overworldChestsTaken: [String]?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

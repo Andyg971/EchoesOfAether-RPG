@@ -110,6 +110,7 @@ extension GameManager {
             // postes (petit sursis, Kael apparaît parfois près d'un lieu).
             overworldRoamersCleared.removeAll()
             spawnOverworldRoamers(grace: 1.5)
+            world.addOverworldChests(taken: player.overworldChestsTaken, in: scene)
         } completion: { [weak self] in
             self?.transition(to: .exploration)
         }
@@ -199,6 +200,34 @@ extension GameManager {
         }
     }
 
+    /// Ouvre un coffre de la carte du monde : or + éclats d'Aether, une seule
+    /// fois. C'est la récompense de qui sort des sentiers battus.
+    func openOverworldChest(_ id: String) {
+        guard let scene,
+              let chest = WorldBuilder.overworldChests.first(where: { $0.id == id }),
+              !player.overworldChestsTaken.contains(id) else { return }
+        player.overworldChestsTaken.insert(id)
+        player.gold += chest.gold
+        player.aetherShards += chest.shards
+        syncGold()
+        AudioEngine.shared.playGoldGain()
+        HapticsEngine.success()
+        world.removeOverworldChest(id)
+
+        let w = world.worldWidth > 0 ? world.worldWidth : scene.size.width
+        let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+        let pos = WorldBuilder.overworldChestPoint(id, w: w, h: h)
+        world.worldNode.addChild(ParticleFactory.impactSparks(
+            at: pos, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+            count: 16))
+        let message = chest.shards > 0
+            ? String(localized: "chest.rewardWithShards \(chest.gold) \(chest.shards)")
+            : String(localized: "chest.reward \(chest.gold)")
+        AccessibilitySettings.announce(message)
+        hud.objectiveText = message
+        saveGame()
+    }
+
     /// Monstres VISIBLES sur la carte : Kael peut les éviter ; les toucher
     /// lance un combat (système RoamingMonster réutilisé).
     /// `grace` : sursis d'aggro (secondes) accordé aux rôdeurs — non nul au
@@ -277,6 +306,7 @@ extension GameManager {
             // Sursis de 2,5 s : les rôdeurs survivants ne rechargent pas Kael
             // à l'instant où il réapparaît sur la carte.
             spawnOverworldRoamers(grace: 2.5)
+            world.addOverworldChests(taken: player.overworldChestsTaken, in: scene)
         } completion: { [weak self] in
             self?.transition(to: .exploration)
         }

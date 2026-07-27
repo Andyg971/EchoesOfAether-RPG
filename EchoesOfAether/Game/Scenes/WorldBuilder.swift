@@ -434,6 +434,43 @@ final class WorldBuilder {
         return CGPoint(x: w * f.x, y: h * f.y)
     }
 
+    /// TRÉSORS de la carte, volontairement À L'ÉCART des chemins : le joueur
+    /// qui sort des sentiers est récompensé. `gold`/`shards` par coffre.
+    static let overworldChests: [(id: String, at: CGPoint, gold: Int, shards: Int)] = [
+        // Derrière la forêt d'Ébène, au fond du bosquet.
+        ("grove",  CGPoint(x: 0.24, y: 0.63), 90,  1),
+        // Rive nord du lac, coincé entre les rochers.
+        ("shore",  CGPoint(x: 0.06, y: 0.30), 120, 0),
+        // Haut des montagnes de Cendreval, derrière les aiguilles.
+        ("summit", CGPoint(x: 0.66, y: 0.94), 150, 2)
+    ]
+
+    /// Position MONDE d'un coffre de la carte.
+    static func overworldChestPoint(_ id: String, w: CGFloat, h: CGFloat) -> CGPoint {
+        let f = overworldChests.first { $0.id == id }?.at ?? CGPoint(x: 0.5, y: 0.5)
+        return CGPoint(x: w * f.x, y: h * f.y)
+    }
+
+    /// Pose les coffres non encore ouverts sur la carte du monde.
+    func addOverworldChests(taken: Set<String>, in scene: SKScene) {
+        let w = worldWidth > 0 ? worldWidth : scene.size.width
+        let h = worldHeight > 0 ? worldHeight : scene.size.height
+        for chest in Self.overworldChests where !taken.contains(chest.id) {
+            addTreasureChest(named: "owChest_\(chest.id)",
+                             at: CGPoint(x: w * chest.at.x, y: h * chest.at.y),
+                             in: scene)
+        }
+    }
+
+    /// Retire un coffre de la carte après ramassage.
+    func removeOverworldChest(_ id: String) {
+        guard let chest = worldNode.childNode(withName: "owChest_\(id)") else { return }
+        chest.run(.sequence([
+            .group([.fadeOut(withDuration: 0.3), .scale(to: 0.1, duration: 0.3)]),
+            .removeFromParent()
+        ]))
+    }
+
     /// Le grand continent explorable : Kael marche d'un lieu à l'autre, la
     /// caméra le suit en 2D (`worldWidth`/`worldHeight` > écran).
     func switchToOverworld(in scene: SKScene) {
@@ -2403,8 +2440,15 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Coffre au trésor en pixels nets (grille dessinée, zéro coin arrondi) :
     /// caisse de bois, cerclages sombres, serrure d'or, faible lueur.
     private func addCaveChest(in scene: SKScene, at pos: CGPoint) {
+        addTreasureChest(named: "caveChest", at: pos, in: scene)
+    }
+
+    /// Coffre au trésor générique (caverne, carte du monde) : caisse de bois,
+    /// cerclages sombres, serrure d'or, faible lueur d'appel.
+    private func addTreasureChest(named name: String, at pos: CGPoint,
+                                  in scene: SKScene) {
         let chest = SKNode()
-        chest.name = "caveChest"
+        chest.name = name
         chest.zPosition = actorLayer(for: pos.y)
         let wood = SKColor(red: 0.42, green: 0.28, blue: 0.14, alpha: 1)
         let dark = SKColor(red: 0.24, green: 0.15, blue: 0.07, alpha: 1)

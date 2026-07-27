@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, 'claude/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # Garde-fou rapide (Linux, ~10 s) : les fichiers de ce dépôt sont souvent
+  # ajoutés hors Xcode, et un .swift oublié dans project.pbxproj n'est jamais
+  # compilé — un test non enregistré ne s'exécute jamais.
+  projet:
+    name: Intégrité du projet Xcode
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tous les .swift sont compilés
+        run: ./Tools_check_project_files.sh
+
+  tests:
+    name: Build & tests (${{ matrix.famille }})
+    runs-on: macos-latest
+    needs: projet
+    strategy:
+      fail-fast: false
+      matrix:
+        # Le jeu vise iPhone ET iPad (TARGETED_DEVICE_FAMILY = "1,2") :
+        # la mise à l'échelle du Viewport diffère sur les deux, on teste donc
+        # les deux.
+        famille: [iPhone, iPad]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Version de Xcode
+        run: xcodebuild -version
+
+      # Les noms de simulateurs changent à chaque Xcode : on résout un UDID
+      # disponible au lieu de coder « iPhone 17 Pro » en dur.
+      - name: Résoudre le simulateur
+        id: sim
+        run: |
+          UDID=$(./Tools_pick_simulator.py "${{ matrix.famille }}")
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Build & tests
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project EchoesOfAether.xcodeproj \
+            -scheme EchoesOfAether \
+            -destination "id=${{ steps.sim.outputs.udid }}" \
+            -resultBundlePath "TestResults-${{ matrix.famille }}.xcresult" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Rapport de test (en cas d'échec)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: xcresult-${{ matrix.famille }}
+          path: TestResults-${{ matrix.famille }}.xcresult
+          retention-days: 7

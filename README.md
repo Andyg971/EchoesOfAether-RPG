@@ -50,7 +50,9 @@ EchoesOfAether/
 ├── Core/
 │   ├── GameState.swift         — GameState/GamePhase, PlayerState, SaveData (Codable, rétro-compatible)
 │   ├── GameManager.swift       — Coordinateur central : états, boutons A/B, hints, quêtes, zones
-│   └── SaveManager.swift       — JSON sur disque + miroir iCloud KVS (résolution par horodatage)
+│   ├── SaveManager.swift       — JSON sur disque + miroir iCloud KVS (résolution par horodatage)
+│   └── Viewport.swift          — Résolution virtuelle : la scène garde le gabarit iPhone,
+│                                 SpriteKit met tout à l'échelle (iPhone ×1, iPad ×1,42–1,61)
 ├── Game/
 │   ├── Scenes/
 │   │   ├── WorldBuilder.swift       — Toutes les zones (village, forêt, sanctuaire, ruines, mines, Seuil, intérieurs)
@@ -140,6 +142,24 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 
 `--zone-village|forest|shrine|ruins|mines|threshold` · `--interior inn|armory|apothecary` · `--combat-test|multi|trio` · `--boss-test` · `--fx-demo` · `--overlay-test dialogue|bestiary|shop|…` · `--skip-dialogue` · `--cam-y <frac>`
 
+### Intégration continue
+
+`.github/workflows/ci.yml` — à chaque push sur `main` / `claude/**` et sur chaque PR :
+
+| Job | Ce qu'il garde |
+|-----|----------------|
+| **Intégrité du projet Xcode** (Linux, ~10 s) | Chaque `.swift` du disque est bien référencé ET compilé dans `project.pbxproj`. Les fichiers sont souvent ajoutés hors Xcode : un oubli ne casse rien localement mais le code n'est jamais compilé — et un test non enregistré ne s'exécute jamais. |
+| **Build & tests iPhone** (macOS) | Le gabarit de référence. |
+| **Build & tests iPad** (macOS) | La cible `TARGETED_DEVICE_FAMILY = "1,2"` est réellement jouable, pas seulement déclarée. |
+
+Le simulateur est résolu à l'exécution (`simctl list`) plutôt que nommé en dur : les noms changent à chaque version de Xcode.
+
+```bash
+./Tools_check_project_files.sh          # le garde-fou projet, en local
+xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
+  -destination 'platform=iOS Simulator,name=iPad Pro 11-inch (M4)'
+```
+
 ---
 
 ## État actuel
@@ -160,7 +180,10 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 | Localisation FR + EN | ✅ ~750 clés |
 | Trailer marketing (39 s, 1920×886) | ✅ `Marketing/` |
 | Sprites overworld Kael/Lyra/Eran (packs de combat) | ✅ Intégrés (`BattleSprites.worldNode`) |
-| Build App Store | 🟡 Privacy manifest + screenshots à faire |
+| iPad (11" / 13") — résolution virtuelle, échelle unique monde + HUD | ✅ Complet |
+| CI GitHub Actions — build + tests iPhone **et** iPad à chaque push | ✅ Complet |
+| Privacy manifest (`PrivacyInfo.xcprivacy`) | ✅ Complet |
+| Build App Store | 🟡 Screenshots 6.9" + page produit à faire |
 
 ---
 
@@ -169,8 +192,8 @@ open EchoesOfAether/EchoesOfAether.xcodeproj
 - [ ] **Sprites top-down dédiés** — frames overworld 4 directions pour Kael/Lyra/Eran (le combat sert de sprite en attendant)
 - [x] **Accessibilité (overlays + combat)** — annonces VoiceOver à l'ouverture, au curseur et aux tours
 - [ ] **Audit EN complet** — run intégral en anglais
-- [ ] **Support iPad adaptatif** — layout non adaptatif pour l'instant
-- [ ] **App Store** — privacy manifest, screenshots 6.9", page produit FR/EN, TestFlight
+- [x] **Support iPad** — résolution virtuelle (`Viewport`) : le monde ET le HUD sont mis à l'échelle ensemble
+- [ ] **App Store** — screenshots 6.9", page produit FR/EN, TestFlight
 
 ---
 

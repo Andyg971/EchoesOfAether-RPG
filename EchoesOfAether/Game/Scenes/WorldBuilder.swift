@@ -407,10 +407,13 @@ final class WorldBuilder {
         overworldPlaces.removeAll()
 
         // ── SOL : plaines herbeuses lumineuses (variétés mêlées) ──
-        overworldPatch(["me_grassvar_1", "me_grassvar_1", "me_grassvar_2",
-                        "me_grassvar_3", "me_grassvar_5"],
-                       rect: CGRect(x: 0, y: 0, width: w, height: h),
-                       tileScale: 2.0, z: -30, in: scene)
+        addTiledFloor(in: scene,
+                      tileNames: ["me_grassvar_1", "me_grassvar_1", "me_grassvar_1",
+                                  "me_grassvar_5", "me_grassvar_5",
+                                  "me_grassvar_2", "me_grassvar_3", "me_grassvar_4"],
+                      fallbackColor: SKColor(red: 0.36, green: 0.58, blue: 0.30, alpha: 1),
+                      tileScale: 0.5, z: -30,
+                      overrideSize: CGSize(width: w + 96, height: h + 96))
 
         // Positions des lieux (partagées entre chemins, décors et POI).
         let pVillage   = CGPoint(x: w * 0.14, y: h * 0.34)
@@ -420,59 +423,79 @@ final class WorldBuilder {
         let pMines     = CGPoint(x: w * 0.76, y: h * 0.80)
         let pDesert    = CGPoint(x: w * 0.83, y: h * 0.22)
         let pThreshold = CGPoint(x: w * 0.92, y: h * 0.90)
+        let tile: CGFloat = 24
 
-        // ── LAC (sud-ouest) : eau PLEINE (ds_water) cerclée d'une plage FINE ──
-        // L'ancienne carte tuilait un COIN d'eau (ds_water_ne) → grille moche.
-        let lake = CGPoint(x: w * 0.05, y: h * 0.09)
-        blobPatch(["ds_sand"], center: lake, blobs: 4,
-                  minSize: h * 0.12, maxSize: h * 0.16, spread: min(w, h) * 0.025,
-                  tileScale: 2.0, z: -28, in: scene)
-        blobPatch(["ds_water"], center: lake, blobs: 4,
-                  minSize: h * 0.10, maxSize: h * 0.14, spread: min(w, h) * 0.02,
-                  tileScale: 2.0, z: -27, in: scene)
+        // ── DÉSERT D'OSSARA (sud-est) : sable AUTOTILÉ, bord franc sur l'herbe.
+        // Comme les autres zones : une grille de matière + transitions ds_edge_*
+        // (plus de plaques carrées qui se chevauchent au hasard).
+        let desert = CGRect(x: w * 0.74, y: 0, width: w * 0.26, height: h * 0.30)
+        var sand = VillageTileMap(width: w, height: h, tile: tile)
+        sand.stampEllipse(center: CGPoint(x: desert.midX, y: desert.midY),
+                          radiusX: desert.width * 0.62, radiusY: desert.height * 0.72)
+        sand.stampEllipse(center: CGPoint(x: desert.midX + w * 0.06, y: desert.midY + h * 0.07),
+                          radiusX: desert.width * 0.34, radiusY: desert.height * 0.34)
+        renderTileMap(sand, fullTile: "ds_sand", edgePrefix: "ds_edge_",
+                      in: scene, z: -29.6)
 
-        // ── DÉSERT D'OSSARA (coin est) : sable CONFINÉ, bord irrégulier ──
-        let desert = CGRect(x: w * 0.80, y: h * 0.06, width: w * 0.20, height: h * 0.26)
-        blobPatch(["ds_sand"], center: CGPoint(x: desert.midX, y: desert.midY),
-                  blobs: 6, minSize: h * 0.12, maxSize: h * 0.17,
-                  spread: min(w, h) * 0.035, tileScale: 2.0, z: -28, in: scene)
+        // ── LAC DE SOLIS (sud-ouest) : eau + berges autotilées, comme l'étang
+        // du village. L'eau ne se marche pas (obstacle enregistré).
+        let lakeC = CGPoint(x: w * 0.07, y: h * 0.10)
+        let lakeRX = w * 0.075, lakeRY = h * 0.075
+        var lake = VillageTileMap(width: w, height: h, tile: tile)
+        lake.stampEllipse(center: lakeC, radiusX: lakeRX, radiusY: lakeRY)
+        renderTileMap(lake, fullTile: "me_water_full", edgePrefix: "me_shore_",
+                      in: scene, z: -29.5)
+        registerObstacle(CGRect(x: lakeC.x - lakeRX * 0.9, y: lakeC.y - lakeRY * 0.9,
+                                width: lakeRX * 1.8, height: lakeRY * 1.8))
+        add(LightingEngine.waterShimmer(center: lakeC, radiusX: lakeRX, radiusY: lakeRY),
+            to: scene)
 
-        // ── CHEMINS DE TERRE reliant les lieux (vraie carte du monde) ──
-        // Posés AVANT les décors/POI pour passer dessous.
+        // ── ROUTES : un seul réseau de terre battue AUTOTILÉ (transitions
+        // me_edge_* sur l'herbe) — la lecture « vraie carte du monde ».
+        var roads = VillageTileMap(width: w, height: h, tile: tile)
         for (a, b) in [(pVillage, pForest), (pForest, pShrine),
                        (pForest, pDesert), (pShrine, pRuins),
                        (pShrine, pMines), (pMines, pThreshold),
                        (pVillage, pRuins)] {
-            pavePath(from: a, to: b, in: scene)
+            stampRoad(&roads, from: a, to: b)
         }
+        // Clairière de terre sous chaque lieu : le POI est posé, pas flottant.
+        for p in [pVillage, pForest, pShrine, pRuins, pMines, pDesert, pThreshold] {
+            roads.stampEllipse(center: p, radiusX: 52, radiusY: 34)
+        }
+        renderTileMap(roads, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.4)
 
-        // ── FORÊT D'ÉBÈNE (centre-ouest) : bosquet dense ──
-        let forest = CGRect(x: w * 0.26, y: h * 0.40, width: w * 0.26, height: h * 0.42)
+        // ── FORÊT D'ÉBÈNE (centre-ouest) : lisière dense, cœur touffu ──
+        let forest = CGRect(x: w * 0.24, y: h * 0.40, width: w * 0.26, height: h * 0.40)
         scatterOverworld(["ext_tree_1", "ext_tree_2", "ext_tree_3",
                           "tree_big", "mv_forest_tree_wide"],
-                         count: 62, in: forest, scale: 0.36, in: scene)
+                         count: 64, in: forest, scale: 0.36, in: scene)
         scatterOverworld(["forest_mushroom_1", "forest_mushroom_2", "me_big_sprout_2"],
-                         count: 22, in: forest, scale: 0.4, in: scene)
+                         count: 20, in: forest, scale: 0.4, in: scene)
 
-        // ── MONTAGNES DE CENDREVAL (nord-est) : aiguilles & rochers ──
-        let mountains = CGRect(x: w * 0.60, y: h * 0.58, width: w * 0.38, height: h * 0.38)
+        // ── MONTAGNES DE CENDREVAL (nord-est) : aiguilles & blocs ──
+        let mountains = CGRect(x: w * 0.62, y: h * 0.60, width: w * 0.36, height: h * 0.36)
         scatterOverworld(["ds_rock_spire", "ds_rock_big", "ds_boulder",
                           "rock_1", "rock_3"],
-                         count: 36, in: mountains, scale: 0.4, in: scene)
+                         count: 34, in: mountains, scale: 0.4, in: scene)
 
-        // ── Détail désert : cactus, dunes & rochers, UNIQUEMENT dans le sable ──
+        // ── Détail désert : cactus & dunes, UNIQUEMENT dans le sable ──
         scatterOverworld(["ds_cactus_barrel", "ds_cactus_tall", "ds_cactus_flower",
                           "ds_dune", "ds_rock_pile"],
-                         count: 16, in: desert, scale: 0.3, in: scene)
+                         count: 15, in: desert.insetBy(dx: w * 0.03, dy: h * 0.03),
+                         scale: 0.3, in: scene)
 
-        // ── Détail plaines : fleurs & petits rochers, sobre ──
+        // ── Détail plaines : fleurs & cailloux, sobre (jamais sur l'eau) ──
         scatterOverworld(["village_flower_yellow", "village_flower_pink",
                           "village_flower_red", "me_flower_blue", "ext_flower_sun"],
-                         count: 54, in: CGRect(x: 0, y: 0, width: w, height: h),
-                         scale: 0.45, in: scene)
+                         count: 46, in: CGRect(x: 0, y: 0, width: w, height: h),
+                         scale: 0.45, avoiding: [lakeRect(lakeC, lakeRX, lakeRY), desert],
+                         in: scene)
         scatterOverworld(["rock_5", "rock_9", "ds_rock"],
-                         count: 22, in: CGRect(x: 0, y: 0, width: w, height: h),
-                         scale: 0.34, in: scene)
+                         count: 18, in: CGRect(x: 0, y: 0, width: w, height: h),
+                         scale: 0.34, avoiding: [lakeRect(lakeC, lakeRX, lakeRY)],
+                         in: scene)
 
         // ── Lieux (POI d'entrée) — sur une clairière de terre ──
         addOverworldPlace("village",   asset: "village_house_country", scale: 0.24,
@@ -498,28 +521,34 @@ final class WorldBuilder {
                           title: String(localized: "map.place.threshold"), in: scene)
     }
 
-    /// Trace un chemin de terre entre deux lieux : plaques de terre échelonnées
-    /// le long du segment, avec un léger serpentement — donne la lecture « carte
-    /// du monde » (routes reliant les lieux) au lieu d'un vide herbeux.
-    private func pavePath(from a: CGPoint, to b: CGPoint, in scene: SKScene) {
-        let dist = a.distance(to: b)
-        // Pas SERRÉ (< taille de plaque) : les plaques se chevauchent en un
-        // ruban de terre continu au lieu de carrés isolés.
-        let steps = max(3, Int(dist / 18))
-        let patch: CGFloat = 44
+    /// Marque une ROUTE entre deux lieux dans la grille d'autotiling : un ruban
+    /// de cellules de terre qui serpente doucement. Les transitions herbe/terre
+    /// sont posées ensuite par `renderTileMap` — d'où le rendu net des autres
+    /// zones, au lieu de plaques carrées superposées.
+    private func stampRoad(_ map: inout VillageTileMap, from a: CGPoint, to b: CGPoint) {
         let dx = b.x - a.x, dy = b.y - a.y
-        let plen = max(1, (dx * dx + dy * dy).squareRoot())
-        let px = -dy / plen, py = dx / plen   // perpendiculaire normalisée
+        let dist = max(1, (dx * dx + dy * dy).squareRoot())
+        let steps = max(4, Int(dist / 10))       // pas serré : ruban continu
+        let px = -dy / dist, py = dx / dist      // perpendiculaire normalisée
+        let half: CGFloat = 15                   // ~1,2 cellule de part et d'autre
         for i in 0...steps {
             let t = CGFloat(i) / CGFloat(steps)
-            let wobble = CGFloat(sin(Double(t) * .pi * 2)) * 10   // léger serpentement
-            let cx = a.x + dx * t + px * wobble
-            let cy = a.y + dy * t + py * wobble
-            overworldPatch(["me_dirt_full"],
-                           rect: CGRect(x: cx - patch / 2, y: cy - patch / 2,
-                                        width: patch, height: patch),
-                           tileScale: 1.6, z: -29, in: scene)   // sous eau/sable
+            // Serpentement qui s'annule aux extrémités : la route arrive droit
+            // sur la clairière du lieu.
+            let td = Double(t)
+            let swing: Double = sin(td * .pi * 2)
+            let taper: Double = sin(td * .pi)
+            let wobble = CGFloat(swing * taper * 18.0)
+            let cx: CGFloat = a.x + dx * t + px * wobble
+            let cy: CGFloat = a.y + dy * t + py * wobble
+            map.stamp(rect: CGRect(x: cx - half, y: cy - half,
+                                   width: half * 2, height: half * 2))
         }
+    }
+
+    /// Empreinte rectangulaire d'un lac elliptique (pour en écarter le décor).
+    private func lakeRect(_ c: CGPoint, _ rx: CGFloat, _ ry: CGFloat) -> CGRect {
+        CGRect(x: c.x - rx, y: c.y - ry, width: rx * 2, height: ry * 2)
     }
 
     private func overworldPatch(_ tiles: [String], rect: CGRect,
@@ -549,15 +578,25 @@ final class WorldBuilder {
         }
     }
 
+    /// Sème du décor dans une région. `avoiding` : zones interdites (lac,
+    /// sable…) — sans quoi des fleurs poussent sur l'eau.
     private func scatterOverworld(_ assets: [String], count: Int, in rect: CGRect,
-                                  scale: CGFloat, in scene: SKScene) {
+                                  scale: CGFloat, avoiding: [CGRect] = [],
+                                  in scene: SKScene) {
         var rng = SystemRandomNumberGenerator()
         for _ in 0..<count {
             let name = assets.randomElement(using: &rng) ?? assets[0]
             guard let s = PixelArtSprites.still(name: name, scale: scale,
                                                 anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-            let p = CGPoint(x: .random(in: rect.minX...rect.maxX, using: &rng),
+            // Quelques essais pour tomber hors des zones interdites.
+            var p = CGPoint.zero
+            var placed = false
+            for _ in 0..<6 {
+                p = CGPoint(x: .random(in: rect.minX...rect.maxX, using: &rng),
                             y: .random(in: rect.minY...rect.maxY, using: &rng))
+                if !avoiding.contains(where: { $0.contains(p) }) { placed = true; break }
+            }
+            guard placed else { continue }
             s.position = p
             s.zPosition = actorLayer(for: p.y) - 0.2
             add(s, to: scene)
@@ -568,11 +607,8 @@ final class WorldBuilder {
     /// comme POI d'entrée (voyage à l'approche + bouton A).
     private func addOverworldPlace(_ id: String, asset: String, scale: CGFloat,
                                    at p: CGPoint, title: String, in scene: SKScene) {
-        // Clairière de terre sous le lieu : ancre visuelle (le POI ne « flotte »
-        // plus sur l'herbe). Sous l'eau/le sable (z -29) pour ne pas déborder.
-        overworldPatch(["me_dirt_full"],
-                       rect: CGRect(x: p.x - 46, y: p.y - 28, width: 92, height: 58),
-                       tileScale: 1.6, z: -29, in: scene)
+        // La clairière de terre sous le lieu est tracée avec les routes
+        // (grille autotilée de `buildOverworld`) — rien à poser ici.
         var top = p.y + 26           // repli si le sprite manque
         if let s = PixelArtSprites.still(name: asset, scale: scale,
                                          anchor: CGPoint(x: 0.5, y: 0.0)) {

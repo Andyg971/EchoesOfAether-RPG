@@ -777,13 +777,17 @@ final class WorldBuilder {
         stampBlob(&mountApron, at: mountC, rx: mountRX, ry: mountRY, grow: 1.08)
         renderTileMap(mountApron, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
                       in: scene, z: -29.78)
+        // Éboulis de gravier, PAS de dalle grise : `a2_stone` est une pierre de
+        // carrière bleu-gris, et en nappe sur un massif elle donnait une plaque
+        // de bitume au milieu des prairies — les blocs orange posés dessus
+        // n'avaient plus rien à voir avec leur propre sol. `ds_gravel` sort du
+        // MÊME pack que ces blocs : la montagne et ses éboulis redeviennent la
+        // même roche.
         var mountRock = VillageTileMap(width: w, height: h, tile: tile)
         stampBlob(&mountRock, at: mountC, rx: mountRX, ry: mountRY, grow: 0.86,
                   feather: tile * 2 / mountRX)
-        renderTileMap(mountRock, fullTile: "a2_stone", edgePrefix: nil,
-                      in: scene, z: -29.76,
-                      tint: SKColor(red: 0.62, green: 0.50, blue: 0.40, alpha: 1),
-                      tintBlend: 0.42)
+        renderTileMap(mountRock, fullTile: "ds_gravel", edgePrefix: nil,
+                      in: scene, z: -29.76)
 
         // RUINES DE LA SOURCE : un parvis effondré, pas une statue sur l'herbe.
         let ruinsRX: CGFloat = 190, ruinsRY: CGFloat = 132
@@ -861,8 +865,6 @@ final class WorldBuilder {
         noGrassEdges.formUnion(mountApron)
         noGrassEdges.formUnion(ruinsApron)
         noGrassEdges.formUnion(blight)
-        var mineTrack = roads
-        mineTrack.intersect(mountApron)
         var caravanTrack = roads
         caravanTrack.intersect(arid)
         // Le sentier forestier est retracé ÉTROIT, pas découpé dans la route :
@@ -881,10 +883,12 @@ final class WorldBuilder {
         renderTileMap(woodTrail, fullTile: "me_dirt_full", edgePrefix: nil,
                       in: scene, z: -29.4,
                       tint: ebonyShade, tintBlend: 0.34)
-        // Quatrième revêtement : la route de Cendreval devient un chemin de
-        // mine, gravier tassé par les convois de minerai.
-        renderTileMap(mineTrack, fullTile: "ds_gravel", edgePrefix: nil,
-                      in: scene, z: -29.4)
+        // Cendreval ne reçoit AUCUN revêtement : la route s'arrête au pied du
+        // massif et s'y perd. Une piste pavée par-dessus l'éboulis faisait une
+        // matière de plus dans un écran qui en comptait déjà quatre — et un
+        // sol trop bavard se remarque plus que le lieu qu'il porte. Deux
+        // matières par endroit, pas davantage : le tablier qui raccorde au
+        // vert, puis la matière du lieu.
 
         // ── FORÊT D'ÉBÈNE : des PEUPLEMENTS, pas un papier peint ──
         //
@@ -2548,14 +2552,41 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// le contraste de teinte suffit à lire le chemin, et reste pixel-net.
     /// Purement visuel : ne bloque rien.
     private func addPathStrip(in scene: SKScene, rect: CGRect) {
-        guard rect.width > 1, rect.height > 1,
-              let strip = PixelArtSprites.tiledFloor(
-                tileNames: ["a2_stone"],
-                in: rect.size, tileScale: 1.0,
-                tint: SKColor(red: 0.52, green: 0.46, blue: 0.74, alpha: 1)) else { return }
-        strip.position = CGPoint(x: rect.minX, y: rect.minY)
-        strip.zPosition = -9   // au-dessus du sol (-10), sous tous les props
-        add(strip, to: scene)
+        guard rect.width > 1, rect.height > 1 else { return }
+        // Bord DÉCHIRÉ, pas au cordeau. L'allée était une plaque rectangulaire
+        // de pierre éclaircie posée sur la pierre : à l'écran, un rectangle
+        // plus clair aux quatre angles nets, et le sol des Ruines, du Seuil et
+        // du Cœur du Vide se lisait comme du ruban adhésif collé sur la roche.
+        // Ici le tracé se dessine cellule par cellule, ses rives ondulant d'un
+        // pas — une dalle descellée par les siècles, pas un marquage au sol.
+        let cell: CGFloat = 24
+        var strip = VillageTileMap(width: rect.maxX + cell * 2,
+                                   height: rect.maxY + cell * 2, tile: cell)
+        if rect.height >= rect.width {
+            var y = rect.minY
+            while y < rect.maxY {
+                let n = Self.tileHash(Int(y / cell), 7)
+                let x0 = rect.minX + CGFloat(n % 2) * cell
+                let x1 = rect.maxX - CGFloat((n >> 4) % 2) * cell
+                strip.stamp(rect: CGRect(x: x0, y: y,
+                                         width: max(cell, x1 - x0), height: cell))
+                y += cell
+            }
+        } else {
+            var x = rect.minX
+            while x < rect.maxX {
+                let n = Self.tileHash(11, Int(x / cell))
+                let y0 = rect.minY + CGFloat(n % 2) * cell
+                let y1 = rect.maxY - CGFloat((n >> 4) % 2) * cell
+                strip.stamp(rect: CGRect(x: x, y: y0,
+                                         width: cell, height: max(cell, y1 - y0)))
+                x += cell
+            }
+        }
+        renderTileMap(strip, fullTile: "a2_stone", edgePrefix: nil,
+                      in: scene, z: -9,   // au-dessus du sol (-10), sous les props
+                      tint: SKColor(red: 0.52, green: 0.46, blue: 0.74, alpha: 1),
+                      tintBlend: 0.62)
     }
 
     /// Paroi pleine : masse de roche + **une seule** empreinte de collision
@@ -2600,9 +2631,16 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         var y = rect.minY + 12
         while y < rect.maxY - 12 {
             let (asset, scale) = pieces[i % pieces.count]
-            let x = onLeftSide ? rect.maxX - 8 : rect.minX + 8
+            // Le pas était irrégulier, mais l'ABSCISSE était fixe : toutes les
+            // pièces tombaient sur une même verticale, et les trois zones du
+            // Vide alignaient leurs stèles comme un papier peint. Ce qui casse
+            // une frise, c'est la profondeur, pas l'espacement.
+            let h = Self.tileHash(i, Int(y / 29))
+            let inset = 4 + CGFloat(h % 22)
+            let x = onLeftSide ? rect.maxX - inset : rect.minX + inset
+            let jitter = 0.86 + CGFloat((h >> 5) % 30) / 100      // gabarit ±14 %
             if PixelArtSprites.exists(asset),
-               let node = PixelArtSprites.still(name: asset, scale: scale,
+               let node = PixelArtSprites.still(name: asset, scale: scale * jitter,
                                                 anchor: CGPoint(x: 0.5, y: 0.0)) {
                 node.position = CGPoint(x: x, y: y)
                 node.zPosition = propLayer(for: y, in: scene.size.height)

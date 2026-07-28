@@ -106,8 +106,8 @@ final class LoreOverlay {
 
         // Close button — carré pixel, zéro glow
         let closeBtn = SKShapeNode(rectOf: CGSize(width: 100, height: 38))
-        closeBtn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
-        closeBtn.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8)
+        closeBtn.fillColor = Palette.panelNight
+        closeBtn.strokeColor = Palette.panelBorder
         closeBtn.lineWidth = 2
         closeBtn.glowWidth = 0
         closeBtn.name = "loreClose"

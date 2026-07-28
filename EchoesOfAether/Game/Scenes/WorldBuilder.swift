@@ -1033,8 +1033,8 @@ final class WorldBuilder {
                             label: nil, at: CGPoint(x: w * 0.32, y: h * 0.075), in: scene)
         addVillageBuilding(asset: "village_house_country", scale: 0.30,
                             fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
-                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            wallColor: Palette.wood,
+                            roofColor: Palette.woodGold,
                             label: nil, at: CGPoint(x: w * 0.14, y: h * 0.16), in: scene)
         addVillageBuilding(asset: "village_house_modern", scale: 0.26,
                             fallbackW: 76, fallbackH: 58,
@@ -1050,8 +1050,8 @@ final class WorldBuilder {
                             label: nil, at: CGPoint(x: w * 0.22, y: h * 0.58), in: scene)
         addVillageBuilding(asset: "village_house_armory", scale: 0.32,
                             fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
-                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            wallColor: Palette.wood,
+                            roofColor: Palette.woodGold,
                             label: nil, at: CGPoint(x: w * 0.50, y: h * 0.63), in: scene)
         addVillageBuilding(asset: "village_house_inn", scale: 0.32,
                             fallbackW: 88, fallbackH: 62,
@@ -1067,8 +1067,8 @@ final class WorldBuilder {
                             label: nil, at: CGPoint(x: w * 0.17, y: h * 0.78), in: scene)
         addVillageBuilding(asset: "village_house_country", scale: 0.26,
                             fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.22, green: 0.18, blue: 0.14, alpha: 1),
-                            roofColor: SKColor(red: 0.40, green: 0.32, blue: 0.15, alpha: 1),
+                            wallColor: Palette.wood,
+                            roofColor: Palette.woodGold,
                             label: nil, at: CGPoint(x: w * 0.82, y: h * 0.78), in: scene)
 
         // Crystal save proche auberge (UX : safe spot évident)
@@ -1394,7 +1394,7 @@ final class WorldBuilder {
 
         // Losange pixel doré flottant au-dessus du jouet
         let sparkle = SKShapeNode(rectOf: CGSize(width: 8, height: 8))
-        sparkle.fillColor = SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1)
+        sparkle.fillColor = Palette.goldWorld
         sparkle.strokeColor = SKColor(red: 1, green: 0.95, blue: 0.6, alpha: 0.9)
         sparkle.lineWidth = 1
         sparkle.zRotation = .pi / 4
@@ -1594,7 +1594,7 @@ final class WorldBuilder {
         marker.zPosition = 60
 
         // Éclat dressé : losange d'Aether, comme les pastilles du combat.
-        let shard = SKSpriteNode(color: SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1),
+        let shard = SKSpriteNode(color: Palette.aetherDeep,
                                  size: CGSize(width: 11, height: 11))
         shard.zRotation = .pi / 4
         marker.addChild(shard)
@@ -1603,7 +1603,7 @@ final class WorldBuilder {
         core.zRotation = .pi / 4
         marker.addChild(core)
 
-        marker.addChild(pixelHalo(color: SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1),
+        marker.addChild(pixelHalo(color: Palette.aetherDeep,
                                   radius: 13))
 
         worldNode.addChild(marker)
@@ -2473,7 +2473,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         node.addChild(rock)
 
         for (dx, dy) in [(-11, 4), (-2, -5), (7, 3), (13, -2)] {
-            let fleck = SKSpriteNode(color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+            let fleck = SKSpriteNode(color: Palette.gold,
                                      size: CGSize(width: 4, height: 4))
             fleck.position = CGPoint(x: CGFloat(dx), y: CGFloat(dy))
             fleck.zRotation = .pi / 4
@@ -4228,7 +4228,7 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         bld.addChild(roof)
 
         let door = SKShapeNode(rectOf: CGSize(width: 12, height: 18), cornerRadius: 2)
-        door.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.06, alpha: 1)
+        door.fillColor = Palette.shadowWarm
         door.strokeColor = SKColor(white: 0.18, alpha: 0.5)
         door.lineWidth = 1
         door.position = CGPoint(x: 0, y: -h / 2 + 9)

@@ -57,18 +57,18 @@ final class InteractionBubble {
         bgOuter.lineWidth = 2
         root.addChild(bgOuter)
 
-        bg.fillColor = SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98)
+        bg.fillColor = Palette.parchment
         bg.strokeColor = SKColor(red: 0.10, green: 0.09, blue: 0.12, alpha: 1)
         bg.lineWidth = 2
         bg.glowWidth = 0
         root.addChild(bg)
 
         // Queue : deux marches pixel sous la bulle, pointant vers le PNJ
-        let tailBig = SKSpriteNode(color: SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98),
+        let tailBig = SKSpriteNode(color: Palette.parchment,
                                    size: CGSize(width: 10, height: 6))
         tailBig.position = CGPoint(x: -4, y: -18)
         root.addChild(tailBig)
-        let tailSmall = SKSpriteNode(color: SKColor(red: 0.96, green: 0.95, blue: 0.92, alpha: 0.98),
+        let tailSmall = SKSpriteNode(color: Palette.parchment,
                                      size: CGSize(width: 5, height: 5))
         tailSmall.position = CGPoint(x: -7, y: -23)
         root.addChild(tailSmall)

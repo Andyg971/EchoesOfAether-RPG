@@ -49,7 +49,7 @@ final class PauseOverlay {
         let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         title.text = String(localized: "pause.title")
         title.fontSize = 28
-        title.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
+        title.fontColor = Palette.aether
         title.horizontalAlignmentMode = .center
         title.verticalAlignmentMode = .center
         title.position = CGPoint(x: scene.size.width / 2,
@@ -79,7 +79,7 @@ final class PauseOverlay {
 
         let optionsBtn = makeButton(String(localized: "pause.options"),
             fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
-            stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
+            stroke: Palette.panelBorder,
             name: "pauseOptions")
         optionsBtn.position = CGPoint(x: centerX, y: centerY - 58)
         optionsBtn.alpha = 0

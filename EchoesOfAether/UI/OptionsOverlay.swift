@@ -43,7 +43,9 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW: CGFloat = 304, panelH: CGFloat = 636
+        // +36 pt depuis l'ajout de la ligne Difficulté. `fittingFactor` réduit
+        // l'ensemble en paysage iPhone, où le panneau ne tient pas en hauteur.
+        let panelW: CGFloat = 304, panelH: CGFloat = 672
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
@@ -57,7 +59,7 @@ final class OptionsOverlay {
 
         // Titre
         let title = label(String(localized: "options.title"), size: 28,
-                          color: SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1))
+                          color: Palette.aether)
         title.position = CGPoint(x: cx, y: top - 34)
         root.addChild(title)
 
@@ -80,6 +82,13 @@ final class OptionsOverlay {
         root.addChild(makeVolumeRow(value: sfxVolume, at: CGPoint(x: cx, y: y), kind: .sfx)); y -= 30
 
         addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 28
+
+        // Difficulté — se tape pour cycler Histoire → Normal → Vétéran, comme
+        // les bascules voisines. Trois valeurs ne méritent pas un sous-menu.
+        root.addChild(makeCycleRow(String(localized: "options.difficulty"),
+                                   value: Difficulty.current.localizedName,
+                                   name: "cycleDifficulty",
+                                   at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
 
         // Accessibilité — toggles
         root.addChild(makeToggleRow(String(localized: "options.reduceMotion"),
@@ -143,7 +152,7 @@ final class OptionsOverlay {
         // Bouton Fermer
         let closeBtn = makeButton(String(localized: "options.close"),
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
-            stroke: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 0.8),
+            stroke: Palette.panelBorder,
             name: "optionsClose")
         closeBtn.position = CGPoint(x: cx, y: y)
         root.addChild(closeBtn)
@@ -214,6 +223,12 @@ final class OptionsOverlay {
             refreshVolumeDisplay(.music)
             HapticsEngine.light()
             onMusicVolumeChange?(musicVolume)
+            return true
+        }
+        if let btn = root.childNode(withName: "cycleDifficulty") as? SKShapeNode, btn.contains(local) {
+            Difficulty.current = Difficulty.current.next
+            HapticsEngine.light()
+            show(in: scene)   // rebuild pour afficher le nouveau palier
             return true
         }
         if let btn = root.childNode(withName: "toggleReduceMotion") as? SKShapeNode, btn.contains(local) {
@@ -386,7 +401,7 @@ final class OptionsOverlay {
     private func makeSmallButton(_ text: String, name: String) -> SKShapeNode {
         // Carré pixel (pas de cercle : le rond casse le style rétro).
         let btn = SKShapeNode(rectOf: CGSize(width: 36, height: 36))
-        btn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1)
+        btn.fillColor = Palette.panelNight
         btn.strokeColor = SKColor(red: 0.45, green: 0.35, blue: 0.70, alpha: 0.8)
         btn.lineWidth = 2
         btn.glowWidth = 0
@@ -455,6 +470,55 @@ final class OptionsOverlay {
         pillLbl.position = pill.position
         pillLbl.isUserInteractionEnabled = false
         row.addChild(pillLbl)
+
+        return row
+    }
+
+    /// Ligne « libellé … [valeur] » tappable, qui cycle entre plusieurs états.
+    ///
+    /// Même géométrie que `makeToggleRow` — c'est le même objet pour le joueur,
+    /// avec trois positions au lieu de deux. Le badge est plus large : « Vétéran »
+    /// ne tient pas dans les 46 pt d'un ON/OFF.
+    private func makeCycleRow(_ text: String, value: String, name: String,
+                              at pos: CGPoint, width: CGFloat) -> SKShapeNode {
+        let row = SKShapeNode(rectOf: CGSize(width: width, height: 30))
+        row.fillColor = SKColor(red: 0.09, green: 0.08, blue: 0.15, alpha: 1)
+        row.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.5)
+        row.lineWidth = 1
+        row.glowWidth = 0
+        row.name = name
+        row.position = pos
+
+        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
+        lbl.text = text
+        lbl.fontSize = 15
+        lbl.fontColor = SKColor(white: 0.85, alpha: 1)
+        lbl.horizontalAlignmentMode = .left
+        lbl.verticalAlignmentMode = .center
+        lbl.position = CGPoint(x: -width / 2 + 12, y: 0)
+        lbl.isUserInteractionEnabled = false
+        row.addChild(lbl)
+
+        // Badge carré (pas de pilule arrondie en pixel art), accent violet
+        // comme le reste de l'écran d'options.
+        let badge = SKShapeNode(rectOf: CGSize(width: 88, height: 20))
+        badge.glowWidth = 0
+        badge.fillColor = SKColor(red: 0.20, green: 0.16, blue: 0.34, alpha: 1)
+        badge.strokeColor = SKColor(red: 0.62, green: 0.52, blue: 0.95, alpha: 1)
+        badge.lineWidth = 1.2
+        badge.position = CGPoint(x: width / 2 - 54, y: 0)
+        badge.isUserInteractionEnabled = false
+        row.addChild(badge)
+
+        let badgeLbl = SKLabelNode(fontNamed: PixelUI.uiFont)
+        badgeLbl.text = value
+        badgeLbl.fontSize = 13
+        badgeLbl.fontColor = .white
+        badgeLbl.verticalAlignmentMode = .center
+        badgeLbl.horizontalAlignmentMode = .center
+        badgeLbl.position = badge.position
+        badgeLbl.isUserInteractionEnabled = false
+        row.addChild(badgeLbl)
 
         return row
     }

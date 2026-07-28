@@ -100,7 +100,7 @@ final class HUDOverlay {
         root.addChild(objectiveLabel)
 
         resonanceLabel.fontSize = 12
-        resonanceLabel.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
+        resonanceLabel.fontColor = Palette.aether
         resonanceLabel.horizontalAlignmentMode = .right
         resonanceLabel.verticalAlignmentMode = .center
         root.addChild(resonanceLabel)

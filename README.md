@@ -5,7 +5,7 @@
 
 RPG iOS dark fantasy construit entièrement en **Swift 6 natif + SpriteKit** — aucun moteur externe, aucune dépendance SPM. Pixel art (sprites LimeZu Modern Exteriors + éléments dessinés en code), musiques et SFX **CC0**, zéro asset généré par IA.
 
-**Paysage uniquement · Contrôles classiques (joystick + A/B) · 3 actes jouables · Combats en trio**
+**Paysage uniquement · Contrôles classiques (joystick + A/B) · 4 actes jouables · Combats en trio**
 
 ---
 
@@ -20,7 +20,10 @@ Kael retrouve ses repères à Solis. Exploration, quêtes, combats contre des cr
 De retour en héros, Kael est hanté par des cauchemars. Les Ruines de la Source cachent un Archiviste qui a catalogué chaque âme que Kael a jamais absorbée. Une inscription de la chercheuse disparue **Eran Solace** évoque le **Seuil**. Lyra découvre la vérité. Kael la fait taire. Les **Mines de Cendreval** s'ouvrent en zone annexe (3 combats dont un golem).
 
 **Acte III — Le Seuil**
-Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho de Lyra** attend Kael à l'entrée et rejoint le groupe. **Eran**, premier des Veilleurs devenu écho lui-même, complète le **trio**. Esprits errants à apaiser, stèles qui révèlent le prix qu'Eran a payé (son *nom*), Ombres du Vide à purger — puis le Gardien du Seuil, et un choix : **franchir ou résister**. Deux fins.
+Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho de Lyra** attend Kael à l'entrée et rejoint le groupe. **Eran**, premier des Veilleurs devenu écho lui-même, complète le **trio**. Esprits errants à apaiser, stèles qui révèlent le prix qu'Eran a payé (son *nom*), Ombres du Vide à purger — puis le Gardien du Seuil, et un choix : **franchir ou résister**.
+
+**Acte IV — Le Cœur du Vide**
+Au-delà du Seuil. Trois **fragments de mémoire** rendent à Kael ce que le Vide lui avait pris, trois **reflets absorbés** demandent à être libérés, les **Dévoreurs d'échos** barrent la route. Puis la **Voix**, et le dernier choix de Kael — que l'**Avatar du Vide** vient lui faire payer. Deux fins : **détruire le Cœur** (les échos sont libérés, Lyra part en paix) ou **fusionner avec lui** (Kael devient le nouveau gardien).
 
 ---
 
@@ -38,6 +41,7 @@ Le Vide garde tout ce qu'il prend — y compris les échos des morts. **L'Écho 
 | **Boutique / Inventaire** | 3 paliers d'armes/armures (jusqu'à l'**Aetherite**), vitrine progressive (seul le palier suivant est affiché), potions, éclats. |
 | **Bestiaire** | Journal de l'Éther à onglets : Chroniques + Bestiaire (7 espèces, faiblesses/boucliers/lore, silhouettes tant que non croisées). |
 | **Sauvegarde** | 3 slots, auto-save, cristaux d'Aether, **sync iCloud** (Key-Value Store, la save la plus récente gagne). |
+| **Difficulté** | **Histoire** / **Normal** / **Vétéran**, dans les options. Relue au début de CHAQUE combat, jamais gravée dans la sauvegarde : on peut redescendre devant un boss sans recommencer sa partie. Histoire −30 % PV / −35 % dégâts ennemis, Vétéran +30 % / +25 % (les PV montent plus que les dégâts — gonfler les dégâts transforme un combat en loterie de premier tour). Se multiplie avec le palier New Game+. |
 | **New Game+** | Après une fin, relancer conserve niveau/or/équipement et durcit les combats (+45 % PV, +30 % dégâts par palier). Le slot terminé affiche « Nouvelle Partie + » ; les deux fins donnent une vraie raison de recommencer. |
 | **Audio** | 9 musiques CC0 (village, forêt, mines, auberge, combat, boss, Seuil, titre, finale) avec cross-fade par zone + 11 SFX 8-bit CC0 (Juhani Junkala) + 5 ambiances foley CC0 (couche sous la musique). Synthèse procédurale en repli. |
 
@@ -51,8 +55,10 @@ EchoesOfAether/
 │   ├── GameState.swift         — GameState/GamePhase, PlayerState, SaveData (Codable, rétro-compatible)
 │   ├── GameManager.swift       — Coordinateur central : états, boutons A/B, hints, quêtes, zones
 │   ├── SaveManager.swift       — JSON sur disque + miroir iCloud KVS (résolution par horodatage)
-│   └── Viewport.swift          — Résolution virtuelle : la scène garde le gabarit iPhone,
-│                                 SpriteKit met tout à l'échelle (iPhone ×1, iPad ×1,42–1,61)
+│   ├── Viewport.swift          — Résolution virtuelle : la scène garde le gabarit iPhone,
+│   │                             SpriteKit met tout à l'échelle (iPhone ×1, iPad ×1,42–1,61)
+│   └── Difficulty.swift        — Histoire / Normal / Vétéran — relu à chaque combat,
+│                                 se multiplie avec le palier New Game+
 ├── Game/
 │   ├── Scenes/
 │   │   ├── WorldBuilder.swift       — Toutes les zones (village, forêt, sanctuaire, ruines, mines, Seuil, intérieurs)
@@ -71,11 +77,12 @@ EchoesOfAether/
 │   └── AudioEngine.swift        — AVAudioEngine : musiques/SFX fichiers CC0 + synthèse en repli
 ├── Resources/
 │   ├── Music/ (9 × .m4a CC0)  SFX/ (11 × .wav CC0)  Ambience/ (5 × .m4a CC0)
+├── Models/Palette.swift         — Jetons de couleur (cf. PALETTE.md pour l'audit et la convergence)
 ├── CombatSystem.swift           — Moteur tour par tour : alliés génériques (AllyState), crit/esquive,
 │                                  curseur de menu, statuts, boss
 ├── PrototypeContent.swift       — Tous les dialogues (clés xcstrings FR/EN)
 ├── Marketing/                   — Trailer 39 s (gameplay réel + cartes titre pixel)
-└── Localizable.xcstrings        — ~750 clés, FR (base) + EN. Zéro string hard-codée.
+└── Localizable.xcstrings        — 1011 clés, FR (base) + EN. Zéro string hard-codée.
 ```
 
 ### Machine d'états
@@ -86,8 +93,9 @@ GameState:  exploration → dialogue → combat → shop → inventory → trans
 GamePhase:
   wake → village → forest → shrine → complete
                                          ↓
-                                       act2 → ruins → fallen → act3 (Le Seuil)
+                     act2 → ruins → fallen → act3 (Le Seuil) → act4 (Le Cœur du Vide)
                               (+ Mines de Cendreval en zone annexe)
+                              (act4 : deux fins — détruire ou fusionner)
 ```
 
 ### Patterns clés
@@ -119,7 +127,7 @@ GamePhase:
 
 ## Localisation
 
-**100 % localisé** — FR (base) + EN, ~750 clés. Zéro string hard-codée.
+**100 % localisé** — FR (base) + EN, 1011 clés, 0 sans traduction. Zéro string hard-codée.
 Dialogues, HUD, combat, boutique, quêtes, bestiaire, tutoriel, hints boutons (« A · Parler »).
 
 Pour tester en anglais : `Scheme → Edit Scheme → Run → Options → App Language → English`
@@ -168,7 +176,8 @@ xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
 |----------------|--------|
 | Acte I — L'Éveil (duo Kael + Lyra) | ✅ Complet |
 | Acte II — La Chute (ruines, Archiviste, mines de Cendreval) | ✅ Complet |
-| Acte III — Le Seuil (trio, quêtes annexes, 2 fins) | ✅ Complet |
+| Acte III — Le Seuil (trio, quêtes annexes) | ✅ Complet |
+| Acte IV — Le Cœur du Vide (mémoires, reflets, Avatar du Vide, 2 fins) | ✅ Complet |
 | Contrôles classiques (joystick + A/B, curseur, zéro tactile) | ✅ Complet |
 | Combat (duo/trio, crit, esquive, statuts, break, boss) | ✅ Complet |
 | Musiques + SFX réels (CC0) | ✅ Complet |
@@ -177,11 +186,13 @@ xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
 | Menu principal (art de l'icône) / Pause / Options / Mort | ✅ Complet |
 | HUD safe-areas Dynamic Island, sans plaques | ✅ Complet |
 | GameCenter (auth + achievements) | ✅ Câblé |
-| Localisation FR + EN | ✅ ~750 clés |
+| Localisation FR + EN | ✅ 1011 clés, 0 manquante |
 | Trailer marketing (39 s, 1920×886) | ✅ `Marketing/` |
 | Sprites overworld Kael/Lyra/Eran (packs de combat) | ✅ Intégrés (`BattleSprites.worldNode`) |
 | iPad (11" / 13") — résolution virtuelle, échelle unique monde + HUD | ✅ Complet |
 | CI GitHub Actions — build + tests iPhone **et** iPad à chaque push | ✅ Complet |
+| Difficulté (Histoire / Normal / Vétéran) | ✅ Complet |
+| Palette — jetons nommés + audit de convergence (`PALETTE.md`) | 🟡 15 jetons posés, 636 valeurs à converger |
 | Privacy manifest (`PrivacyInfo.xcprivacy`) | ✅ Complet |
 | Build App Store | 🟡 Screenshots 6.9" + page produit à faire |
 

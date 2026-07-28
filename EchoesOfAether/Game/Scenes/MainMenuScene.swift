@@ -207,7 +207,7 @@ final class MainMenuScene: SKScene {
 
         let frame = SKShapeNode()
         PixelUI.stylePanel(frame, size: CGSize(width: width + 10, height: height + 10),
-                           fill: SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1),
+                           fill: Palette.panelNight,
                            accent: PixelUI.gold)
         frame.position = CGPoint(x: centerX, y: centerY)
         frame.zPosition = 14

@@ -45,7 +45,7 @@ enum CombatElement: Hashable {
         case .fire: return SKColor(red: 1.00, green: 0.36, blue: 0.16, alpha: 1)
         case .ice: return SKColor(red: 0.45, green: 0.85, blue: 1.00, alpha: 1)
         case .lightning: return SKColor(red: 1.00, green: 0.82, blue: 0.22, alpha: 1)
-        case .aether: return SKColor(red: 0.68, green: 0.36, blue: 1.00, alpha: 1)
+        case .aether: return Palette.aetherDeep
         }
     }
 }
@@ -545,9 +545,14 @@ private var goldReward = 0
         // relance (+45 % PV, +30 % dégâts par palier). La progression conservée
         // du joueur compense ; la difficulté reste devant lui.
         let ngp = max(0, player.newGamePlus)
-        // Robustesse de base (tous combats) × bonus New Game+.
-        let hpMult = Double(Self.enemyHPScale) * (1.0 + 0.45 * Double(ngp))
-        let dmgMult = 1.0 + 0.30 * Double(ngp)
+        // Difficulté choisie par le joueur, relue à CHAQUE combat : on peut
+        // redescendre devant un boss sans recommencer la partie.
+        let difficulty = Difficulty.current
+        // Robustesse de base (tous combats) × réglage joueur × bonus New Game+.
+        let hpMult = Double(Self.enemyHPScale)
+            * difficulty.enemyHPMultiplier
+            * (1.0 + 0.45 * Double(ngp))
+        let dmgMult = difficulty.enemyDamageMultiplier * (1.0 + 0.30 * Double(ngp))
         self.enemies = enemySpecs.prefix(3).map { spec in
             let scaled = EnemySpec(
                 name: spec.name,
@@ -1074,7 +1079,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         let actorMP = actingAlly?.combatant.mp ?? kael.mp
         if cost > 0, actorMP < cost {
             showEffect(String(localized: "combat.mp.insufficient"),
-                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+                       color: Palette.frost)
             AudioEngine.shared.playTap()
             return
         }
@@ -1255,10 +1260,10 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         HapticsEngine.medium()
         root.addChild(ParticleFactory.impactSparks(
             at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 74),
-            color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1), count: 10))
+            color: Palette.goldCombat, count: 10))
         showFloatingText(String(localized: "combat.locks.broken"),
                          at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 96),
-                         color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1))
+                         color: Palette.goldCombat)
     }
 
     /// Redessine la rangée de sceaux (un losange par verrou restant).
@@ -1296,7 +1301,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         setBrokenPose(foe, broken: true)
         statusLabel.text = String(localized: "combat.locks.cancelled \(foe.combatant.name)")
         showEffect(String(localized: "combat.locks.cancelledEffect"),
-                   color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1))
+                   color: Palette.goldCombat)
         AudioEngine.shared.playQuestComplete()
         HapticsEngine.success()
         JuiceEngine.screenShake(root, intensity: 9, duration: 0.3)
@@ -1307,7 +1312,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         }
         root.addChild(ParticleFactory.impactSparks(
             at: foe.homePosition,
-            color: SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1), count: 22))
+            color: Palette.goldCombat, count: 22))
     }
 
     /// Bouton A pendant un coup ennemi. Retourne `true` si l'appui a été
@@ -1546,7 +1551,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
     let actorMP = actingAlly?.combatant.mp ?? kael.mp
     if cost > 0, actorMP < cost {
         showEffect(String(localized: "combat.mp.insufficient"),
-                   color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+                   color: Palette.frost)
         AudioEngine.shared.playTap()
         return   // reste en .playerTurn
     }
@@ -1688,7 +1693,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
             HapticsEngine.success()
             playMendEffect(boosted: false)
             showFloatingText("+" + String(heal), at: actorHomePosition,
-                             color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+                             color: Palette.vitality)
         }
         endPlayerAction()
         return
@@ -1710,10 +1715,10 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
             playSpellAnimation(spell, on: foe, boosted: boost > 0)
             // Un chiffre par soigné : on voit le groupe entier remonter.
             showFloatingText("+" + String(heal), at: kaelHomePosition,
-                             color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+                             color: Palette.vitality)
             for ally in aliveAllies {
                 showFloatingText("+" + String(heal), at: ally.home,
-                                 color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+                                 color: Palette.vitality)
             }
             endPlayerAction()
             return
@@ -1737,7 +1742,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
             AudioEngine.shared.playHit()
             HapticsEngine.success()
             playSpellAnimation(spell, on: foe, boosted: boost > 0)
-            showFloatingText("+" + String(heal), at: healPos, color: SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1))
+            showFloatingText("+" + String(heal), at: healPos, color: Palette.vitality)
             endPlayerAction()
             return
         }
@@ -1922,7 +1927,7 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
     let hasPack = actorSprite?.childNode(withName: "body") != nil
     if !hasPack {
         let castColor = spell.element?.color
-            ?? SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
+            ?? Palette.vitalityDim
         actorSprite?.forEachDescendantSprite { sprite in
             let prevColor = sprite.color
             let prevFactor = sprite.colorBlendFactor
@@ -2046,7 +2051,7 @@ private static let boltPalette: [SKColor] = [
 ]
 private static let healPalette: [SKColor] = [
     SKColor(red: 0.75, green: 1.00, blue: 0.78, alpha: 1),
-    SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1),
+    Palette.vitalityDim,
     SKColor(red: 0.18, green: 0.70, blue: 0.42, alpha: 1)
 ]
 
@@ -2528,7 +2533,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     root.addChild(boostLabel)
 
     breakLabel.fontSize = 34
-    breakLabel.fontColor = SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
+    breakLabel.fontColor = Palette.goldCombatBright
     breakLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.56)
     breakLabel.zPosition = 950
     breakLabel.alpha = 0
@@ -3340,7 +3345,7 @@ private func setupButtons(scene: SKScene) {
               chip: CombatElement.lightning.color)
     addButton(healButton, title: String(localized: "combat.button.heal"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.03, green: 0.20, blue: 0.09, alpha: 1), stroke: SKColor(red: 0.38, green: 0.80, blue: 0.48, alpha: 1), fontSize: 12,
-              chip: SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1))
+              chip: Palette.vitalityDim)
     // Bénédiction : or et vert sacré, les couleurs de ses propres FX.
     addButton(blessingButton, title: String(localized: "combat.button.blessing"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.16, green: 0.16, blue: 0.05, alpha: 1), stroke: SKColor(red: 0.85, green: 0.78, blue: 0.35, alpha: 1), fontSize: 12,
@@ -3541,7 +3546,7 @@ func menuConfirm() {
         let mp = actingAlly?.combatant.mp ?? kael.mp
         guard mp >= CombatSpell.mend.mpCost else {
             showEffect(String(localized: "combat.mp.insufficient"),
-                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+                       color: Palette.frost)
             AudioEngine.shared.playTap()
             return
         }
@@ -3565,7 +3570,7 @@ func menuConfirm() {
     if button === tempestButton {
         guard !tempestUsed else {
             showEffect(String(localized: "combat.tempest.spent"),
-                       color: SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1))
+                       color: Palette.frost)
             AudioEngine.shared.playTap()
             HapticsEngine.error()
             return
@@ -3733,7 +3738,7 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
         let mp = actingAlly?.combatant.mp ?? kael.mp
         mpLabel?.text = String(cost)
         mpLabel?.fontColor = mp >= cost
-            ? SKColor(red: 0.55, green: 0.70, blue: 1.0, alpha: 1)
+            ? Palette.frost
             : SKColor(red: 0.55, green: 0.30, blue: 0.30, alpha: 1)
         mpLabel?.position = CGPoint(x: width / 2 - 8, y: 0)
         label.fontColor = (mp >= cost && !spent) ? .white : SKColor(white: 0.45, alpha: 1)
@@ -3907,7 +3912,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     /// Bouclier fêlé doré : garde brisée (BREAK).
     private static func makeBrokenShieldIcon() -> SKNode {
         let icon = SKNode()
-        let gold = SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
+        let gold = Palette.goldCombatBright
         let dark = SKColor(red: 0.35, green: 0.25, blue: 0.05, alpha: 1)
         let body = SKSpriteNode(color: gold, size: CGSize(width: 10, height: 10))
         icon.addChild(body)
@@ -4080,7 +4085,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             refreshTargetInfoRow(for: foe)
             targetInfoRow.isHidden = false
             enemyHPBack.strokeColor = foe.brokenTurns > 0
-                ? SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
+                ? Palette.goldCombatBright
                 : SKColor(white: 0.3, alpha: 1)
             // Marqueur de cible au-dessus du sprite visé.
             // En ciblage de soin il désigne un ALLIÉ : il devient vert et se
@@ -4089,7 +4094,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             if let healIdx = pendingHealSpell != nil ? healTargetIndex : nil,
                healTargets.indices.contains(healIdx) {
                 targetMarker.isHidden = false
-                targetMarker.strokeColor = SKColor(red: 0.45, green: 1.00, blue: 0.62, alpha: 1)
+                targetMarker.strokeColor = Palette.vitality
                 let t = healTargets[healIdx]
                 targetMarker.position = CGPoint(x: t.home.x, y: t.home.y + 64)
             } else {

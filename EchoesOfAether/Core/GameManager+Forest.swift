@@ -179,7 +179,7 @@ extension GameManager {
         // Sparkle pickup effect (coordonnées monde — la forêt scrolle)
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let toySpot = CGPoint(x: scene.size.width * 0.80, y: wh * 0.45)
-        world.worldNode.addChild(ParticleFactory.impactSparks(at: toySpot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
+        world.worldNode.addChild(ParticleFactory.impactSparks(at: toySpot, color: Palette.goldWorld, count: 12))
 
         transition(to: .dialogue)
         hud.questText = ""

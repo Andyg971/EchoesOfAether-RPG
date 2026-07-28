@@ -55,7 +55,7 @@ enum TransitionManager {
         let title = SKLabelNode(fontNamed: PixelUI.uiFont)
         title.text = String(localized: "endscreen.title")
         title.fontSize = 35
-        title.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
+        title.fontColor = Palette.aether
         title.position = CGPoint(x: 0, y: 80)
         overlay.addChild(title)
 
@@ -209,7 +209,7 @@ enum TransitionManager {
         // Bouton fermer
         let closeBtn = SKShapeNode()
         PixelUI.stylePanel(closeBtn, size: CGSize(width: 140, height: 40),
-                           fill: SKColor(red: 0.10, green: 0.08, blue: 0.18, alpha: 1),
+                           fill: Palette.panelNight,
                            accent: SKColor(red: 0.40, green: 0.35, blue: 0.65, alpha: 1))
         closeBtn.name = "creditsClose"
         closeBtn.position = CGPoint(x: 0, y: -CGFloat(credits.count) * 26 - 65)

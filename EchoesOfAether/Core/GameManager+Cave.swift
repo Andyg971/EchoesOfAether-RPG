@@ -113,7 +113,7 @@ extension GameManager {
         world.removeCaveChest()
         let spot = CGPoint(x: scene.size.width * 0.50, y: scene.size.height * 0.68)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+            at: spot, color: Palette.gold,
             count: 16))
         hud.objectiveText = String(localized: "hud.objective.cave.done")
         saveGame()
@@ -186,7 +186,7 @@ extension GameManager {
         world.removeGoldVein()
         let spot = MinesPOI.goldVein.scaled(w: scene.size.width, h: world.worldHeight)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
+            at: spot, color: Palette.gold, count: 14))
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.minesGoldDialogue) { [weak self] in
             self?.transition(to: .exploration)

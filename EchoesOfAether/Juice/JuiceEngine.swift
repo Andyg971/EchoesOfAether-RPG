@@ -37,9 +37,19 @@ enum AccessibilitySettings {
 /// que les panneaux ne soient ni minuscules ni coupés.
 @MainActor
 enum UIScale {
+    /// Échelle des overlays (options, inventaire, journal, boutique…).
+    ///
+    /// Calée sur la LARGEUR du gabarit, comme le HUD. L'ancienne formule
+    /// `min(w, h) / 390` supposait un écran ~19,5:9 : en 4:3 le petit côté
+    /// explose et les onze overlays partaient à 1,5× alors que le monde et le
+    /// HUD sont désormais mis à l'échelle globalement par `Viewport`. Trois
+    /// échelles dans la même image au lieu d'une.
+    ///
+    /// Bornée : sur un écran plus étroit que le gabarit on ne rétrécit pas les
+    /// panneaux ici — c'est le rôle de `fittingFactor`, qui sait, lui,
+    /// descendre sous 1 pour faire tenir un panneau trop haut.
     static func factor(for size: CGSize) -> CGFloat {
-        let minDim = min(size.width, size.height)
-        return max(1.0, min(minDim / 390.0, 1.7))
+        min(max(size.width / Viewport.designWidth, 0.92), 1.15)
     }
 
     /// Applique le facteur à `root` en gardant le centre de l'écran fixe.

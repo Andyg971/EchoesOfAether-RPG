@@ -158,7 +158,7 @@ final class QuestLogOverlay {
 
         let closeBtn = SKShapeNode()
         PixelUI.stylePanel(closeBtn, size: CGSize(width: 120, height: 36),
-                           fill: SKColor(red: 0.10, green: 0.08, blue: 0.06, alpha: 1),
+                           fill: Palette.shadowWarm,
                            accent: PixelUI.gold)
         closeBtn.name = "questClose"
         closeBtn.position = CGPoint(x: 0, y: -panelHeight / 2 + 26)

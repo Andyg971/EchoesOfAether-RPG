@@ -15,6 +15,8 @@
 		6D7E100BB8A741B0A0000001 /* PrototypeContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */; };
 		6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2001B8A741B0A0000001 /* GameState.swift */; };
 		6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF0001B8A741B0A0000001 /* Viewport.swift */; };
+		6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFE0001B8A741B0A0000001 /* Difficulty.swift */; };
+		6DFD0002B8A741B0A0000001 /* Palette.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFD0001B8A741B0A0000001 /* Palette.swift */; };
 		6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2003B8A741B0A0000001 /* WorldNode.swift */; };
 		6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */; };
 		6DAAFD02B8A741B0A0000001 /* StoreManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAAFD01B8A741B0A0000001 /* StoreManager.swift */; };
@@ -96,6 +98,7 @@
 		AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10SPRT000000000000TEST /* BattleSpritesTests.swift */; };
 		AA20VPRT000000000000TEST /* ViewportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10VPRT000000000000TEST /* ViewportTests.swift */; };
 		AA20HUDL000000000000TEST /* HUDLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10HUDL000000000000TEST /* HUDLayoutTests.swift */; };
+		AA20DIFF000000000000TEST /* DifficultyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10DIFF000000000000TEST /* DifficultyTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		AA20WRLD000000000000TEST /* WorldLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10WRLD000000000000TEST /* WorldLayoutTests.swift */; };
 		9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9946241C401B2A418D271A /* Foundation.framework */; };
@@ -118,6 +121,7 @@
 		AA10SPRT000000000000TEST /* BattleSpritesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BattleSpritesTests.swift; sourceTree = "<group>"; };
 		AA10VPRT000000000000TEST /* ViewportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ViewportTests.swift; sourceTree = "<group>"; };
 		AA10HUDL000000000000TEST /* HUDLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HUDLayoutTests.swift; sourceTree = "<group>"; };
+		AA10DIFF000000000000TEST /* DifficultyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DifficultyTests.swift; sourceTree = "<group>"; };
 		6D7E1000B8A741B0A0000001 /* EchoesOfAetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoesOfAetherApp.swift; sourceTree = "<group>"; };
 		6D7E1002B8A741B0A0000001 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		6D7E1004B8A741B0A0000001 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -127,6 +131,8 @@
 		6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EchoesOfAether.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D7E2001B8A741B0A0000001 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		6DFF0001B8A741B0A0000001 /* Viewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Viewport.swift; sourceTree = "<group>"; };
+		6DFE0001B8A741B0A0000001 /* Difficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difficulty.swift; sourceTree = "<group>"; };
+		6DFD0001B8A741B0A0000001 /* Palette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Palette.swift; sourceTree = "<group>"; };
 		6D7E2003B8A741B0A0000001 /* WorldNode.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldNode.swift; sourceTree = "<group>"; };
 		6D7E2005B8A741B0A0000001 /* JuiceEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JuiceEngine.swift; sourceTree = "<group>"; };
 		6DAAFD01B8A741B0A0000001 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
@@ -286,6 +292,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6D7E2001B8A741B0A0000001 /* GameState.swift */,
 				6DFF0001B8A741B0A0000001 /* Viewport.swift */,
+				6DFE0001B8A741B0A0000001 /* Difficulty.swift */,
 				6D7E2013B8A741B0A0000001 /* GameManager.swift */,
 				6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */,
 				6DFA0001B8A741B0A0000001 /* GameManager+Fishing.swift */,
@@ -305,6 +312,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7E200AB8A741B0A0000001 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				6DFD0001B8A741B0A0000001 /* Palette.swift */,
 				6D7E2003B8A741B0A0000001 /* WorldNode.swift */,
 				6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */,
 			);
@@ -399,6 +407,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AA10SPRT000000000000TEST /* BattleSpritesTests.swift */,
 				AA10VPRT000000000000TEST /* ViewportTests.swift */,
 				AA10HUDL000000000000TEST /* HUDLayoutTests.swift */,
+				AA10DIFF000000000000TEST /* DifficultyTests.swift */,
 			);
 			path = EchoesOfAetherTests;
 			sourceTree = SOURCE_ROOT;
@@ -596,6 +605,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */,
 				AA20VPRT000000000000TEST /* ViewportTests.swift in Sources */,
 				AA20HUDL000000000000TEST /* HUDLayoutTests.swift in Sources */,
+				AA20DIFF000000000000TEST /* DifficultyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -611,6 +621,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E100BB8A741B0A0000001 /* PrototypeContent.swift in Sources */,
 				6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */,
 				6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */,
+				6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */,
+				6DFD0002B8A741B0A0000001 /* Palette.swift in Sources */,
 				6D7E2004B8A741B0A0000001 /* WorldNode.swift in Sources */,
 				6D7E2006B8A741B0A0000001 /* JuiceEngine.swift in Sources */,
 				6DAAFD02B8A741B0A0000001 /* StoreManager.swift in Sources */,

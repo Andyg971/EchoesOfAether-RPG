@@ -1654,7 +1654,7 @@ final class GameManager {
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let spot = CGPoint(x: scene.size.width * 0.28, y: wh * 0.72)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1), count: 12))
+            at: spot, color: Palette.goldWorld, count: 12))
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.medallionFoundDialogue) { [weak self] in
             self?.transition(to: .exploration)

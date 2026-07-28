@@ -32,7 +32,7 @@ final class InventoryOverlay {
         root.addChild(panel)
 
         titleLabel.fontSize = 26
-        titleLabel.fontColor = SKColor(red: 0.78, green: 0.68, blue: 1, alpha: 1)
+        titleLabel.fontColor = Palette.aether
         titleLabel.horizontalAlignmentMode = .center
         root.addChild(titleLabel)
 

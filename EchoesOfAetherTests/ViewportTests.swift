@@ -109,6 +109,34 @@ final class ViewportTests: XCTestCase {
         XCTAssertEqual(Viewport.sceneInset(24, for: iPadM4_11), 24 / k, accuracy: 0.0001)
     }
 
+    // MARK: - Une seule échelle dans l'image
+
+    /// Les onze overlays (options, inventaire, journal, boutique…) passent par
+    /// `UIScale.factor`. Il portait la même formule périmée que le HUD —
+    /// `min(w, h) / 390`, plafonnée à 1,7 — et envoyait donc les panneaux à
+    /// 1,5× sur iPad pendant que le monde suivait `Viewport`. Trois échelles
+    /// au lieu d'une. Ce test verrouille l'unification.
+    func test_echelleDesOverlays_identiqueIPhoneEtIPad() {
+        let surIPhone = UIScale.factor(for: Viewport.sceneSize(for: iPhone15Pro))
+        let surIPad = UIScale.factor(for: Viewport.sceneSize(for: iPadM4_11))
+
+        XCTAssertEqual(surIPad, surIPhone, accuracy: 0.01,
+                       "les overlays dérivent de l'échelle du monde")
+        XCTAssertEqual(surIPhone, 1, accuracy: 0.01)
+    }
+
+    /// `fittingFactor` doit GARDER le droit de descendre sous 1 : en paysage
+    /// iPhone, le panneau d'options (652 pt) ne tient pas dans 393 pt de haut
+    /// sans être réduit. C'est la seule mise à l'échelle qui rétrécit, et elle
+    /// doit survivre à l'unification ci-dessus.
+    func test_fittingFactor_reduitEncoreLesGrandsPanneaux() {
+        let scene = Viewport.sceneSize(for: iPhone15Pro)
+        let f = UIScale.fittingFactor(for: scene, contentHeight: 652)
+
+        XCTAssertLessThan(f, 1, "le panneau d'options déborderait en paysage")
+        XCTAssertGreaterThanOrEqual(f, 0.5)
+    }
+
     // MARK: - Robustesse
 
     /// `viewDidLayoutSubviews` peut passer une taille nulle avant la première

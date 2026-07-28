@@ -225,7 +225,7 @@ extension GameManager {
         let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let pos = WorldBuilder.overworldChestPoint(id, w: w, h: h)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: pos, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1),
+            at: pos, color: Palette.gold,
             count: 16))
         let message = chest.shards > 0
             ? String(localized: "chest.rewardWithShards \(chest.gold) \(chest.shards)")
@@ -541,7 +541,7 @@ extension GameManager {
         let spot = CGPoint(x: scene.size.width * 0.10,
                            y: world.worldHeight * DesertPOI.chestY)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1), count: 14))
+            at: spot, color: Palette.gold, count: 14))
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.desertChestDialogue) { [weak self] in
             self?.transition(to: .exploration)

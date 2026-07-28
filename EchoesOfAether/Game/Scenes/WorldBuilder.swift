@@ -464,7 +464,12 @@ final class WorldBuilder {
     static let overworldLayout: [String: CGPoint] = [
         "village":   CGPoint(x: 0.14, y: 0.34),
         "forest":    CGPoint(x: 0.40, y: 0.52),
-        "shrine":    CGPoint(x: 0.52, y: 0.72),
+        // Le Sanctuaire tombait DANS l'ellipse de la Forêt d'Ébène : son
+        // parvis poussait sous la canopée, et le sous-bois venait lécher les
+        // dalles. Un lieu consacré se gagne — il est remonté au nord du
+        // massif, dans le couloir entre les Ruines et les Montagnes, à
+        // découvert. La carte de voyage suit la même disposition.
+        "shrine":    CGPoint(x: 0.54, y: 0.87),
         "ruins":     CGPoint(x: 0.30, y: 0.82),
         "mines":     CGPoint(x: 0.76, y: 0.80),
         "desert":    CGPoint(x: 0.83, y: 0.22),
@@ -657,6 +662,94 @@ final class WorldBuilder {
         add(LightingEngine.waterShimmer(center: lakeC, radiusX: lakeRX, radiusY: lakeRY),
             to: scene)
 
+        // ── SANCTUAIRE : une clairière consacrée, pas une statue sur l'herbe.
+        //
+        // Le lieu n'avait AUCUN sol propre : l'ange était posé sur la même
+        // prairie que le reste du continent, et les trois routes qui y
+        // convergent s'y étalaient en une flaque de terre informe. Même
+        // méthode que le désert — des strates concentriques, de la prairie
+        // sauvage vers le cœur pavé.
+        let shrineRX: CGFloat = 150, shrineRY: CGFloat = 98
+        /// La pierre du sanctuaire : celle de l'ange, beige tiède. Le pavage
+        /// et les bornes sont ramenés dessus — `a2_stone` et les colonnes sont
+        /// d'un gris bleu froid qui jurait avec la statue qu'ils encadrent.
+        let shrineStone = SKColor(red: 0.88, green: 0.84, blue: 0.76, alpha: 1)
+        var shrineGround = VillageTileMap(width: w, height: h, tile: tile)
+        shrineGround.stampEllipse(center: pShrine, radiusX: shrineRX, radiusY: shrineRY)
+        // Deux lobes : le pourtour entretenu suit le terrain, pas un compas.
+        shrineGround.stampEllipse(center: CGPoint(x: pShrine.x - 68, y: pShrine.y + 44),
+                                  radiusX: shrineRX * 0.46, radiusY: shrineRY * 0.46)
+        shrineGround.stampEllipse(center: CGPoint(x: pShrine.x + 64, y: pShrine.y - 38),
+                                  radiusX: shrineRX * 0.42, radiusY: shrineRY * 0.42)
+        // Terre BALAYÉE, éclaircie : sans ça le pourtour consacré se confondait
+        // avec les trois routes qui y aboutissent — même tuile, même ton.
+        renderTileMap(shrineGround, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.48,
+                      tint: SKColor(white: 1, alpha: 1), tintBlend: 0.22)
+        // Le parvis dallé, franc sur la terre battue : c'est une dalle posée
+        // par des mains, elle a le droit d'avoir un bord net. `ds_rock` est un
+        // vrai pavage beige, de la couleur de l'ange — `a2_stone` était un gris
+        // bleu de carrière qui refroidissait tout le lieu.
+        var shrinePlaza = VillageTileMap(width: w, height: h, tile: tile)
+        shrinePlaza.stampEllipse(center: pShrine,
+                                 radiusX: shrineRX * 0.62, radiusY: shrineRY * 0.62)
+        renderTileMap(shrinePlaza, fullTile: "ds_rock", edgePrefix: nil,
+                      in: scene, z: -29.46)
+
+        // ── FORÊT D'ÉBÈNE : le SOL du massif, en strates d'ombre ──
+        //
+        // Le sous-bois était tuilé en `tile_grass_dark`, une planche de 16 px
+        // là où la grille d'autotiling compte 24 pt : chaque tuile ne couvrait
+        // qu'un neuvième de sa cellule. Le « couvert sombre » était donc un
+        // semis de confettis invisibles, et la forêt poussait sur la prairie
+        // vive — d'où l'impression de papier peint d'arbres.
+        //
+        // Ici l'ombre est TEINTE sur la vraie tuile d'herbe (48 px, à
+        // l'échelle) et se referme en trois paliers : lisière, sous-bois,
+        // cœur d'ébène. C'est le dégradé qui donne sa profondeur au massif.
+        // Massif resserré (0,20 → 0,17 de large, 0,24 → 0,185 de haut) : il
+        // mordait sur le Sanctuaire au nord et sur la route du désert à l'est.
+        // Il reste le plus grand ensemble de la carte, mais il laisse
+        // respirer ses voisins.
+        let forestC = CGPoint(x: pForest.x, y: pForest.y + h * 0.02)
+        let forestRX = w * 0.17, forestRY = h * 0.185
+        let ebonyShade = SKColor(red: 0.16, green: 0.30, blue: 0.20, alpha: 1)
+        /// Silhouette du massif à l'échelle `grow` — deux lobes, jamais un ovale.
+        /// `feather` dilue le bord : sans lui, trois teintes empilées donnent
+        /// trois terrasses en escalier au lieu d'une ombre qui se referme.
+        func stampForest(_ map: inout VillageTileMap, grow: CGFloat,
+                         feather: CGFloat = 0) {
+            map.stampEllipse(center: forestC,
+                             radiusX: forestRX * grow, radiusY: forestRY * grow,
+                             feather: feather)
+            map.stampEllipse(center: CGPoint(x: forestC.x - forestRX * 0.42,
+                                             y: forestC.y - forestRY * 0.34),
+                             radiusX: forestRX * 0.52 * grow,
+                             radiusY: forestRY * 0.50 * grow, feather: feather)
+            map.stampEllipse(center: CGPoint(x: forestC.x + forestRX * 0.38,
+                                             y: forestC.y + forestRY * 0.30),
+                             radiusX: forestRX * 0.48 * grow,
+                             radiusY: forestRY * 0.46 * grow, feather: feather)
+        }
+        // UNE seule teinte, pas trois paliers : empiler des tuiles identiques
+        // à des mélanges différents dessinait des terrasses de rizière, et les
+        // diluer cellule par cellule remplaçait les terrasses par une mosaïque
+        // de carrés clairs — dans les deux cas la grille se voyait. La
+        // profondeur vient des arbres, le sol se contente d'être une ombre.
+        var forestFloor = VillageTileMap(width: w, height: h, tile: tile)
+        stampForest(&forestFloor, grow: 1.0)
+        // La frange se compte en CELLULES, pas en pourcentage : `feather` est
+        // une fraction du rayon, et le massif fait ~450 pt de demi-largeur —
+        // 0,26 diluait cinq cellules de large, soit un damier de gros carrés
+        // clairs en pleine forêt. Deux cellules suffisent à casser l'ovale.
+        var understory = VillageTileMap(width: w, height: h, tile: tile)
+        stampForest(&understory, grow: 1.0, feather: tile * 2 / forestRX)
+        // Teinte PLATE, sans variantes ni jitter : le sous-bois est une ombre,
+        // pas une matière. Toute variation de tuile à tuile se lit en damier
+        // à cette échelle de caméra — le relief, ce sont les arbres.
+        renderTileMap(understory, fullTile: "me_grassvar_1", edgePrefix: nil,
+                      in: scene, z: -29.44, tint: ebonyShade, tintBlend: 0.38)
+
         // ── ROUTES : un seul réseau de terre battue AUTOTILÉ (transitions
         // me_edge_* sur l'herbe) — la lecture « vraie carte du monde ».
         var roads = VillageTileMap(width: w, height: h, tile: tile)
@@ -670,62 +763,207 @@ final class WorldBuilder {
         for p in [pVillage, pForest, pShrine, pRuins, pMines, pDesert, pThreshold] {
             roads.stampEllipse(center: p, radiusX: 52, radiusY: 34)
         }
-        // La route change de matière en entrant dans le désert. Ses bords
-        // `me_edge_*` portent de l'HERBE : jusqu'ici la piste de Forêt →
-        // Ossara traversait donc le sable bordée de vert vif, et la clairière
-        // de la tente était cernée d'un anneau de gazon en plein désert.
-        // Dedans, c'est une piste caravanière de gravier tassé, sans bord.
+        // La route CHANGE DE MATIÈRE selon la zone qu'elle traverse. Ses bords
+        // `me_edge_*` portent de l'HERBE : la piste d'Ossara traversait le
+        // sable bordée de vert vif, la tente était cernée de gazon en plein
+        // désert, et sous les arbres le même liseré vif annulait l'ombre du
+        // couvert. Trois revêtements, donc :
+        //   désert     → piste caravanière de gravier tassé
+        //   forêt      → sentier de terre foulée, teinté comme le sous-bois
+        //   ailleurs   → terre battue autotilée sur l'herbe
         //
-        // La topologie de `roads` reste INTACTE des deux côtés : on masque au
-        // rendu au lieu de découper la grille, sinon la route se refermerait
-        // sur la lisière avec un liseré d'herbe tout neuf.
+        // La topologie de `roads` reste INTACTE : on masque au rendu au lieu
+        // de découper la grille, sinon la route se refermerait sur chaque
+        // lisière avec un liseré d'herbe tout neuf.
+        var noGrassEdges = arid
+        noGrassEdges.formUnion(forestFloor)
+        noGrassEdges.formUnion(shrineGround)
         var caravanTrack = roads
         caravanTrack.intersect(arid)
+        // Le sentier forestier est retracé ÉTROIT, pas découpé dans la route :
+        // au gabarit de plaine il ouvrait sous les arbres une saignée de terre
+        // nue plus large que la clairière du lieu, et le couvert n'existait plus.
+        var woodTrail = VillageTileMap(width: w, height: h, tile: tile)
+        for (a, b) in [(pVillage, pForest), (pForest, pShrine), (pForest, pDesert)] {
+            stampRoad(&woodTrail, from: a, to: b, half: 8)
+        }
+        woodTrail.stampEllipse(center: pForest, radiusX: 40, radiusY: 26)
+        woodTrail.intersect(forestFloor)
         renderTileMap(roads, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
-                      in: scene, z: -29.4, skipping: arid)
+                      in: scene, z: -29.4, skipping: noGrassEdges)
         renderTileMap(caravanTrack, fullTile: "ds_gravel", edgePrefix: nil,
                       in: scene, z: -29.4)
+        renderTileMap(woodTrail, fullTile: "me_dirt_full", edgePrefix: nil,
+                      in: scene, z: -29.4,
+                      tint: ebonyShade, tintBlend: 0.34)
 
-        // ── FORÊT D'ÉBÈNE : un VRAI massif, vaste et touffu ──
-        // Sol de sous-bois assombri d'abord (le couvert se lit même entre les
-        // troncs), puis les arbres en densité dégressive.
-        let forestC = CGPoint(x: pForest.x, y: pForest.y + h * 0.02)
-        let forestRX = w * 0.20, forestRY = h * 0.24
-        var canopyFloor = VillageTileMap(width: w, height: h, tile: tile)
-        canopyFloor.stampEllipse(center: forestC,
-                                 radiusX: forestRX * 0.94, radiusY: forestRY * 0.94)
-        renderTileMap(canopyFloor, fullTile: "tile_grass_dark",
-                      edgePrefix: "me_edge_", in: scene, z: -29.3)
+        // ── FORÊT D'ÉBÈNE : des PEUPLEMENTS, pas un papier peint ──
+        //
+        // Toutes les espèces étaient tirées d'un seul sac pondéré sur tout le
+        // massif : chaque mètre carré avait la même composition que le voisin,
+        // donc aucune lecture d'ensemble — du bruit vert d'un bout à l'autre.
+        // Une vraie forêt pousse par peuplements, et respire par clairières.
+        let forestPOIClearing = CGRect(x: pForest.x - 56, y: pForest.y - 40,
+                                       width: 112, height: 80)
 
-        // Variété ASSUMÉE — c'est la Forêt d'Ébène : la canopée verte porte le
-        // massif, les conifères bruns lui donnent son grain, les arbres morts
-        // sa signature. Chaque espèce normalisée à sa hauteur d'écran.
-        let ebonyWood: [Flora] = [
-            Flora(asset: "me_tree_1", height: 54, weight: 5),
-            Flora(asset: "me_tree_2", height: 54, weight: 5),
-            Flora(asset: "me_tree_3", height: 52, weight: 4),
-            Flora(asset: "me_tree_4", height: 52, weight: 4),
-            Flora(asset: "me_tree_5", height: 64, weight: 3),
-            Flora(asset: "me_tree_6", height: 64, weight: 3),
-            Flora(asset: "ext_tree_1", height: 58, weight: 4),   // conifère brun
-            Flora(asset: "ext_tree_2", height: 58, weight: 4),
-            Flora(asset: "ext_tree_3", height: 40, weight: 2),   // jeune pousse
-            Flora(asset: "gy_tree",   height: 58, weight: 2),    // arbre mort
-            Flora(asset: "tree_big",  height: 44, weight: 2)
-        ]
-        plantMass(ebonyWood, center: forestC,
-                  radiusX: forestRX, radiusY: forestRY,
-                  step: 34, coreDensity: 0.92, edgeDensity: 0.28,
-                  avoiding: [CGRect(x: pForest.x - 56, y: pForest.y - 40,
-                                    width: 112, height: 80)],   // dégagement du POI
-                  in: scene)
-        // Sous-bois : champignons et pousses au sol, sous la canopée.
+        /// Point du massif en coordonnées relatives à son centre.
+        func inForest(_ fx: CGFloat, _ fy: CGFloat) -> CGPoint {
+            CGPoint(x: forestC.x + forestRX * fx, y: forestC.y + forestRY * fy)
+        }
+
+        // Les clairières : deux trouées de lumière où rien de haut ne pousse.
+        // Ce sont elles qui donnent une échelle au massif — sans respiration,
+        // un mur d'arbres n'a ni profondeur ni parcours.
+        let glades = [CGRect(x: inForest(-0.30, 0.44).x - 62,
+                             y: inForest(-0.30, 0.44).y - 44, width: 124, height: 88),
+                      CGRect(x: inForest(0.44, -0.36).x - 54,
+                             y: inForest(0.44, -0.36).y - 38, width: 108, height: 76)]
+        let noTrees = glades + [forestPOIClearing]
+
+        // Trame de fond : jeunes pousses partout, assez claires pour ne jamais
+        // laisser de calvitie entre deux peuplements.
+        plantMass([Flora(asset: "ext_tree_3", height: 38, weight: 4),
+                   Flora(asset: "tree_medium_1", height: 42, weight: 3),
+                   Flora(asset: "tree_medium_2", height: 42, weight: 3),
+                   Flora(asset: "tree_medium_3", height: 40, weight: 2)],
+                  center: forestC, radiusX: forestRX, radiusY: forestRY,
+                  step: 46, coreDensity: 0.44, edgeDensity: 0.14,
+                  avoiding: noTrees, in: scene)
+
+        // Futaie de conifères : le grain brun de la Forêt d'Ébène, en trois
+        // stations serrées — c'est elle qu'on traverse en venant du village.
+        for (fx, fy, r) in [(-0.44, -0.10, 0.42), (0.26, 0.40, 0.38),
+                            (0.52, -0.06, 0.30)] {
+            plantMass([Flora(asset: "ext_tree_1", height: 60, weight: 5),
+                       Flora(asset: "ext_tree_2", height: 58, weight: 5),
+                       Flora(asset: "ext_tree_3", height: 40, weight: 2)],
+                      center: inForest(fx, fy),
+                      radiusX: forestRX * r, radiusY: forestRY * r,
+                      step: 32, coreDensity: 0.88, edgeDensity: 0.22,
+                      avoiding: noTrees, in: scene)
+        }
+
+        // Canopée feuillue : les grands verts, plus hauts, qui ferment le ciel
+        // au cœur du massif.
+        for (fx, fy, r) in [(-0.02, -0.02, 0.46), (-0.40, 0.34, 0.30),
+                            (0.30, -0.42, 0.28)] {
+            plantMass([Flora(asset: "me_tree_1", height: 56, weight: 4),
+                       Flora(asset: "me_tree_2", height: 56, weight: 4),
+                       Flora(asset: "me_tree_3", height: 54, weight: 3),
+                       Flora(asset: "me_tree_4", height: 54, weight: 3),
+                       Flora(asset: "me_tree_5", height: 68, weight: 3),
+                       Flora(asset: "me_tree_6", height: 68, weight: 3),
+                       Flora(asset: "tree_big",  height: 46, weight: 2)],
+                      center: inForest(fx, fy),
+                      radiusX: forestRX * r, radiusY: forestRY * r,
+                      step: 34, coreDensity: 0.86, edgeDensity: 0.20,
+                      avoiding: noTrees, in: scene)
+        }
+
+        // Le bois mort : la signature d'Ébène. Groupé, il raconte une forêt
+        // qui meurt par endroits ; éparpillé, ce n'était qu'un arbre sec de
+        // plus dans le bruit.
+        for (fx, fy, r) in [(0.06, 0.50, 0.24), (-0.56, 0.16, 0.20)] {
+            plantMass([Flora(asset: "gy_tree",        height: 60, weight: 4),
+                       Flora(asset: "forest_stump_1", height: 18, weight: 3),
+                       Flora(asset: "forest_stump_2", height: 18, weight: 3),
+                       Flora(asset: "stump_1",        height: 16, weight: 2),
+                       Flora(asset: "stump_2",        height: 16, weight: 2),
+                       Flora(asset: "ext_cut_wood",   height: 16, weight: 2)],
+                      center: inForest(fx, fy),
+                      radiusX: forestRX * r, radiusY: forestRY * r,
+                      step: 38, coreDensity: 0.64, edgeDensity: 0.14,
+                      avoiding: noTrees, in: scene)
+        }
+
+        // Sous-bois : champignons et fougères sous la canopée — l'humidité de
+        // l'ombre. Ils ont le droit d'entrer dans les clairières, eux.
         plantMass([Flora(asset: "forest_mushroom_1", height: 14, weight: 3),
                    Flora(asset: "forest_mushroom_2", height: 14, weight: 3),
-                   Flora(asset: "me_big_sprout_2",   height: 18, weight: 2),
-                   Flora(asset: "me_big_sprout_5",   height: 18, weight: 2)],
-                  center: forestC, radiusX: forestRX * 0.92, radiusY: forestRY * 0.92,
-                  step: 58, coreDensity: 0.42, edgeDensity: 0.12, in: scene)
+                   Flora(asset: "me_mushrooms_1",    height: 12, weight: 2),
+                   Flora(asset: "me_mushrooms_2",    height: 12, weight: 2),
+                   Flora(asset: "me_big_sprout_2",   height: 18, weight: 3),
+                   Flora(asset: "me_big_sprout_5",   height: 18, weight: 3),
+                   Flora(asset: "me_big_sprout_1",   height: 16, weight: 2),
+                   Flora(asset: "me_big_sprout_7",   height: 16, weight: 2)],
+                  center: forestC, radiusX: forestRX * 0.94, radiusY: forestRY * 0.94,
+                  step: 46, coreDensity: 0.46, edgeDensity: 0.14, in: scene)
+
+        // Les clairières fleurissent : c'est là que la lumière passe.
+        for glade in glades {
+            plantMass([Flora(asset: "me_flower_white",  height: 12, weight: 3),
+                       Flora(asset: "me_flower_yellow", height: 12, weight: 3),
+                       Flora(asset: "me_flower_blue",   height: 12, weight: 2),
+                       Flora(asset: "me_grass_1",       height: 12, weight: 3),
+                       Flora(asset: "me_grass_3",       height: 12, weight: 3),
+                       Flora(asset: "ext_grass_2",      height: 12, weight: 2)],
+                      center: CGPoint(x: glade.midX, y: glade.midY),
+                      radiusX: glade.width * 0.46, radiusY: glade.height * 0.46,
+                      step: 26, coreDensity: 0.52, edgeDensity: 0.18, in: scene)
+        }
+
+        // ── SANCTUAIRE : ce qui fait un lieu consacré ──
+        // Un cercle de bornes de pierre autour du parvis, posé à l'ANGLE —
+        // sept pierres régulières, parce qu'une main les a dressées. Un semis
+        // aléatoire aurait dit « cailloux », pas « sanctuaire ».
+        /// Pose une pièce de mobilier sacré à sa hauteur d'écran, ramenée à la
+        /// pierre de l'ange. Sans la teinte, chaque borne gardait le gris bleu
+        /// de son pack d'origine : sept objets dépareillés autour d'une statue.
+        func placeShrinePiece(_ asset: String, at p: CGPoint, height: CGFloat,
+                              tinted: Bool = true) {
+            guard let texH = PixelArtSprites.pixelHeight(of: asset), texH > 0,
+                  let node = PixelArtSprites.still(name: asset, scale: height / texH,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0))
+            else { return }
+            if tinted {
+                node.forEachDescendantSprite { sprite in
+                    sprite.color = shrineStone
+                    sprite.colorBlendFactor = 0.55
+                }
+            }
+            node.position = p
+            node.zPosition = actorLayer(for: p.y) - 0.2
+            add(node, to: scene)
+        }
+
+        // Six petites statues d'orants, alternées, dans la même pierre pâle que
+        // l'ange. Le premier essai dressait des `gy_stone_*` et des
+        // `pillar_grey_*` : ce sont des PIERRES TOMBALES, elles transformaient
+        // le sanctuaire en cimetière — un contresens à trois zones du Seuil.
+        let shrineStones = ["me_statue_putto", "angel_statue_2", "me_statue_putto",
+                            "angel_statue_2", "me_statue_putto", "angel_statue_2"]
+        for (i, asset) in shrineStones.enumerated() {
+            let a = CGFloat(i) / CGFloat(shrineStones.count) * .pi * 2 - .pi / 2
+            placeShrinePiece(asset,
+                             at: CGPoint(x: pShrine.x + cos(a) * shrineRX * 0.76,
+                                         y: pShrine.y + sin(a) * shrineRY * 0.78),
+                             height: 40, tinted: false)
+        }
+        // Cierges au pied du parvis, bancs de pèlerins face à l'ange, vasques
+        // en fond : ce sont les traces d'un lieu FRÉQUENTÉ, pas un monument.
+        placeShrinePiece("gy_candle", at: CGPoint(x: pShrine.x - 66, y: pShrine.y + 2),
+                         height: 38)
+        placeShrinePiece("gy_candle", at: CGPoint(x: pShrine.x + 66, y: pShrine.y + 2),
+                         height: 38)
+        placeShrinePiece("me_bench_1", at: CGPoint(x: pShrine.x - 52, y: pShrine.y - 60),
+                         height: 22, tinted: false)
+        placeShrinePiece("me_bench_1", at: CGPoint(x: pShrine.x + 52, y: pShrine.y - 60),
+                         height: 22, tinted: false)
+        placeShrinePiece("me_statue_grey",
+                         at: CGPoint(x: pShrine.x - 122, y: pShrine.y - 46), height: 54)
+        placeShrinePiece("me_fountain",
+                         at: CGPoint(x: pShrine.x + 122, y: pShrine.y - 46), height: 50)
+        // Fleurs blanches sur le pourtour entretenu : l'anneau d'offrandes qui
+        // sépare le parvis de la prairie sauvage.
+        plantMass([Flora(asset: "me_flower_white", height: 13, weight: 4),
+                   Flora(asset: "me_flower_blue",  height: 13, weight: 3),
+                   Flora(asset: "me_flower_pink",  height: 12, weight: 2),
+                   Flora(asset: "me_grass_clean_2", height: 11, weight: 2)],
+                  center: pShrine, radiusX: shrineRX * 0.94, radiusY: shrineRY * 0.94,
+                  step: 30, coreDensity: 0.06, edgeDensity: 0.46,
+                  avoiding: [CGRect(x: pShrine.x - 62, y: pShrine.y - 46,
+                                    width: 124, height: 92)],
+                  in: scene)
 
         // ── MONTAGNES DE CENDREVAL (nord-est) : massif rocheux ──
         let mountC = CGPoint(x: w * 0.80, y: h * 0.78)
@@ -771,8 +1009,8 @@ final class WorldBuilder {
                    Flora(asset: "ds_bush_dead2",  height: 18, weight: 3),
                    Flora(asset: "ds_bush_dead3",  height: 16, weight: 3),
                    Flora(asset: "ds_grass_dry",   height: 14, weight: 4),
-                   Flora(asset: "ds_rock",        height: 12, weight: 3),
-                   Flora(asset: "ds_rock2",       height: 12, weight: 3),
+                   Flora(asset: "rock_1",         height: 12, weight: 3),
+                   Flora(asset: "rock_3",         height: 12, weight: 3),
                    Flora(asset: "ds_rock_pile",   height: 18, weight: 2),
                    Flora(asset: "ds_tumbleweed",  height: 16, weight: 2),
                    Flora(asset: "ds_tumbleweed2", height: 16, weight: 1)],
@@ -843,15 +1081,27 @@ final class WorldBuilder {
         // La zone interdite couvre la LISIÈRE ARIDE, pas seulement le sable :
         // des fleurs vives sur la terre desséchée annulaient tout le dégradé
         // prairie → steppe → désert construit plus haut.
+        // Idem sous le couvert et sur le parvis : ces deux lieux ont leur
+        // propre flore (fougères d'ombre, offrandes blanches). Les fleurs de
+        // prairie qui s'y invitaient brouillaient les deux ambiances.
         let desertKeepOut = desert.insetBy(dx: -desert.width * 0.10,
                                            dy: -desert.height * 0.10)
+        let forestKeepOut = CGRect(x: forestC.x - forestRX, y: forestC.y - forestRY,
+                                   width: forestRX * 2, height: forestRY * 2)
+        let shrineKeepOut = CGRect(x: pShrine.x - shrineRX, y: pShrine.y - shrineRY,
+                                   width: shrineRX * 2, height: shrineRY * 2)
         scatterOverworld(["village_flower_yellow", "village_flower_pink",
                           "village_flower_red", "me_flower_blue", "ext_flower_sun"],
                          count: 46, in: CGRect(x: 0, y: 0, width: w, height: h),
                          scale: 0.45,
-                         avoiding: [lakeRect(lakeC, lakeRX, lakeRY), desertKeepOut],
+                         avoiding: [lakeRect(lakeC, lakeRX, lakeRY), desertKeepOut,
+                                    forestKeepOut, shrineKeepOut],
                          in: scene)
-        scatterOverworld(["rock_5", "rock_9", "ds_rock"],
+        // `ds_rock` a quitté cette liste : c'est un PAVAGE de 96×96 tileable,
+        // pas un caillou. Semé en sprite, il posait dix-huit dalles beiges au
+        // hasard sur la carte — en pleine prairie, sur les routes, dans les
+        // bois. Il sert maintenant à ce pour quoi il est dessiné : le parvis.
+        scatterOverworld(["rock_5", "rock_9", "rock_1", "rock_3"],
                          count: 18, in: CGRect(x: 0, y: 0, width: w, height: h),
                          scale: 0.34, avoiding: [lakeRect(lakeC, lakeRX, lakeRY)],
                          in: scene)
@@ -884,12 +1134,15 @@ final class WorldBuilder {
     /// de cellules de terre qui serpente doucement. Les transitions herbe/terre
     /// sont posées ensuite par `renderTileMap` — d'où le rendu net des autres
     /// zones, au lieu de plaques carrées superposées.
-    private func stampRoad(_ map: inout VillageTileMap, from a: CGPoint, to b: CGPoint) {
+    /// `half` : demi-largeur du ruban. Une route de plaine s'assume large ;
+    /// sous les arbres, le même gabarit ouvrait une saignée de terre nue qui
+    /// annulait le couvert — le sentier forestier passe donc en étroit.
+    private func stampRoad(_ map: inout VillageTileMap, from a: CGPoint, to b: CGPoint,
+                           half: CGFloat = 15) {
         let dx = b.x - a.x, dy = b.y - a.y
         let dist = max(1, (dx * dx + dy * dy).squareRoot())
         let steps = max(4, Int(dist / 10))       // pas serré : ruban continu
         let px = -dy / dist, py = dx / dist      // perpendiculaire normalisée
-        let half: CGFloat = 15                   // ~1,2 cellule de part et d'autre
         for i in 0...steps {
             let t = CGFloat(i) / CGFloat(steps)
             // Serpentement qui s'annule aux extrémités : la route arrive droit
@@ -5423,7 +5676,8 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     /// l'herbe — en pleine dune. On masque au rendu, la topologie survit.
     private func renderTileMap(_ map: VillageTileMap, fullTile: String,
                                edgePrefix: String?, in scene: SKScene, z: CGFloat,
-                               tint: SKColor? = nil, variants: [String] = [],
+                               tint: SKColor? = nil, tintBlend: CGFloat = 0.45,
+                               tintJitter: CGFloat = 0, variants: [String] = [],
                                skipping: VillageTileMap? = nil) {
         for piece in map.pieces() {
             if piece.suffix != nil, edgePrefix == nil { continue }
@@ -5438,9 +5692,18 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
                                   y: CGFloat(piece.row) * map.tile)
             t.zPosition = piece.suffix == nil ? z : z + 0.05
             if let tint {
+                // Jitter par cellule : une teinte STRICTEMENT uniforme sur des
+                // centaines de tuiles fait une nappe plate et morte. Quelques
+                // pour cent de variation, et le sol prend le grain de la
+                // lumière filtrée. Haché sur la cellule, donc stable.
+                let jitter = tintJitter <= 0 ? 0 : {
+                    let unit = CGFloat(Self.tileHash(piece.col + 7, piece.row + 13) % 1000)
+                    return (unit / 1000 - 0.5) * 2 * tintJitter
+                }()
+                let blend = max(0, min(1, tintBlend + jitter))
                 t.forEachDescendantSprite { sprite in
                     sprite.color = tint
-                    sprite.colorBlendFactor = 0.45
+                    sprite.colorBlendFactor = blend
                 }
             }
             add(t, to: scene)
@@ -5450,10 +5713,15 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     /// Hachage stable d'une cellule → choix de variante de tuile. Un simple
     /// `randomElement` redessinerait le sol différemment à chaque entrée dans
     /// la zone ; ici deux visites donnent exactement le même désert.
+    /// Mélange complet (façon splitmix) : un simple `h * K` laisse ses bits de
+    /// poids faible corrélés aux coordonnées, et `% n` derrière en fait un
+    /// motif régulier — l'ombre du sous-bois se voyait en damier propre.
     private static func tileHash(_ col: Int, _ row: Int) -> Int {
-        var h = col &* 73_856_093 ^ row &* 19_349_663
-        h ^= h >> 13
-        return abs(h &* 1_274_126_177)
+        var h = UInt64(bitPattern: Int64(col &* 73_856_093 ^ row &* 19_349_663))
+        h ^= h >> 30; h = h &* 0xBF58_476D_1CE4_E5B9
+        h ^= h >> 27; h = h &* 0x94D0_49BB_1331_11EB
+        h ^= h >> 31
+        return Int(h % UInt64(Int.max))
     }
 }
 
@@ -5508,6 +5776,13 @@ struct VillageTileMap {
         }
     }
 
+    /// Ajoute les cellules matière de `other`.
+    mutating func formUnion(_ other: VillageTileMap) {
+        for i in cells.indices where !cells[i] {
+            if other.cells.indices.contains(i), other.cells[i] { cells[i] = true }
+        }
+    }
+
     /// Marque les cellules dont le centre est dans l'ellipse.
     mutating func stampEllipse(center: CGPoint, radiusX: CGFloat, radiusY: CGFloat) {
         guard radiusX > 0, radiusY > 0 else { return }
@@ -5520,6 +5795,45 @@ struct VillageTileMap {
                 if dx * dx + dy * dy <= 1 { cells[r * cols + c] = true }
             }
         }
+    }
+
+    /// Ellipse à bord DIFFUS. `feather` (fraction du rayon) délimite la frange
+    /// où les cellules sont prises de plus en plus rarement vers l'extérieur.
+    ///
+    /// Deux teintes de sous-bois séparées par un bord net dessinent des
+    /// TERRASSES en escalier — le massif ressemblait à une rizière. Diluée,
+    /// l'ombre se lit comme la lumière qui perce un couvert. Le tirage est
+    /// haché sur la cellule, donc stable d'une visite à l'autre.
+    mutating func stampEllipse(center: CGPoint, radiusX: CGFloat, radiusY: CGFloat,
+                               feather: CGFloat) {
+        guard radiusX > 0, radiusY > 0, feather > 0 else {
+            stampEllipse(center: center, radiusX: radiusX, radiusY: radiusY)
+            return
+        }
+        for r in 0..<rows {
+            for c in 0..<cols {
+                let x = (CGFloat(c) + 0.5) * tile
+                let y = (CGFloat(r) + 0.5) * tile
+                let dx = (x - center.x) / radiusX
+                let dy = (y - center.y) / radiusY
+                let d = (dx * dx + dy * dy).squareRoot()
+                guard d <= 1 else { continue }
+                if d <= 1 - feather {
+                    cells[r * cols + c] = true
+                } else {
+                    let odds = (1 - d) / feather          // 1 au cœur, 0 au bord
+                    let draw = CGFloat(Self.noise(c, r) % 1000) / 1000
+                    if draw < odds { cells[r * cols + c] = true }
+                }
+            }
+        }
+    }
+
+    /// Bruit déterministe par cellule (frange des ellipses diffuses).
+    private static func noise(_ c: Int, _ r: Int) -> Int {
+        var h = c &* 374_761_393 &+ r &* 668_265_263
+        h = (h ^ (h >> 13)) &* 1_274_126_177
+        return abs(h ^ (h >> 16))
     }
 
     /// Tuiles à poser : `suffix == nil` → tuile pleine, sinon suffixe de

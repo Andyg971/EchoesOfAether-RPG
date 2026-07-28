@@ -750,6 +750,86 @@ final class WorldBuilder {
         renderTileMap(understory, fullTile: "me_grassvar_1", edgePrefix: nil,
                       in: scene, z: -29.44, tint: ebonyShade, tintBlend: 0.38)
 
+        // ── L'EST DU CONTINENT : trois sols, trois natures ──
+        //
+        // Cendreval, les Ruines et le Seuil étaient posés À MÊME LA PRAIRIE :
+        // des blocs orange sur une pelouse, une statue sur du gazon, un portail
+        // du Vide sur de l'herbe vive. Chacun reçoit ses strates, même recette
+        // que le désert — un tablier de terre qui raccorde au vert, puis la
+        // matière propre au lieu.
+        /// Silhouette à trois lobes autour d'un centre — jamais un ovale nu.
+        func stampBlob(_ map: inout VillageTileMap, at c: CGPoint,
+                       rx: CGFloat, ry: CGFloat, grow: CGFloat, feather: CGFloat = 0) {
+            map.stampEllipse(center: c, radiusX: rx * grow, radiusY: ry * grow,
+                             feather: feather)
+            map.stampEllipse(center: CGPoint(x: c.x - rx * 0.44, y: c.y - ry * 0.30),
+                             radiusX: rx * 0.50 * grow, radiusY: ry * 0.48 * grow,
+                             feather: feather)
+            map.stampEllipse(center: CGPoint(x: c.x + rx * 0.40, y: c.y + ry * 0.34),
+                             radiusX: rx * 0.46 * grow, radiusY: ry * 0.44 * grow,
+                             feather: feather)
+        }
+
+        // MASSIF DE CENDREVAL : dalle rocheuse sous les blocs.
+        let mountC = CGPoint(x: w * 0.80, y: h * 0.78)
+        let mountRX = w * 0.17, mountRY = h * 0.17
+        var mountApron = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&mountApron, at: mountC, rx: mountRX, ry: mountRY, grow: 1.08)
+        renderTileMap(mountApron, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.78)
+        var mountRock = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&mountRock, at: mountC, rx: mountRX, ry: mountRY, grow: 0.86,
+                  feather: tile * 2 / mountRX)
+        renderTileMap(mountRock, fullTile: "a2_stone", edgePrefix: nil,
+                      in: scene, z: -29.76,
+                      tint: SKColor(red: 0.62, green: 0.50, blue: 0.40, alpha: 1),
+                      tintBlend: 0.42)
+
+        // RUINES DE LA SOURCE : un parvis effondré, pas une statue sur l'herbe.
+        let ruinsRX: CGFloat = 190, ruinsRY: CGFloat = 132
+        var ruinsApron = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&ruinsApron, at: pRuins, rx: ruinsRX, ry: ruinsRY, grow: 1.0)
+        renderTileMap(ruinsApron, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.74)
+        var ruinsFloor = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&ruinsFloor, at: pRuins, rx: ruinsRX, ry: ruinsRY, grow: 0.74,
+                  feather: tile * 2 / ruinsRX)
+        renderTileMap(ruinsFloor, fullTile: "a2_stone", edgePrefix: nil,
+                      in: scene, z: -29.72,
+                      tint: SKColor(red: 0.78, green: 0.76, blue: 0.74, alpha: 1),
+                      tintBlend: 0.40)
+
+        // LE SEUIL : la corruption ronge le sol avant le portail. Le violet du
+        // Vide n'attend pas qu'on franchisse la porte — c'est ce qui manquait
+        // le plus, l'approche disait « prairie » jusqu'au dernier pas.
+        let voidShade = SKColor(red: 0.30, green: 0.20, blue: 0.42, alpha: 1)
+        let thrRX: CGFloat = 210, thrRY: CGFloat = 140
+        var blight = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&blight, at: pThreshold, rx: thrRX, ry: thrRY, grow: 1.06)
+        renderTileMap(blight, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.70, tint: voidShade, tintBlend: 0.52)
+        var voidFloor = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&voidFloor, at: pThreshold, rx: thrRX, ry: thrRY, grow: 0.72,
+                  feather: tile * 2 / thrRX)
+        renderTileMap(voidFloor, fullTile: "a2_stone", edgePrefix: nil,
+                      in: scene, z: -29.68, tint: voidShade, tintBlend: 0.70)
+
+        // LE CŒUR DU VIDE : au-delà du Seuil, hors d'atteinte. Il n'a pas de
+        // lieu marchable — mais la faille se VOIT depuis le portail, et c'est
+        // ce qui donne au Seuil quelque chose à garder.
+        let pVoid = Self.overworldPoint("voidheart", w: w, h: h)
+        var rift = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&rift, at: pVoid, rx: 168, ry: 118, grow: 1.0)
+        renderTileMap(rift, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.66, tint: voidShade, tintBlend: 0.62)
+        var riftCore = VillageTileMap(width: w, height: h, tile: tile)
+        stampBlob(&riftCore, at: pVoid, rx: 168, ry: 118, grow: 0.60,
+                  feather: tile * 2 / 168)
+        renderTileMap(riftCore, fullTile: "a2_stone", edgePrefix: nil,
+                      in: scene, z: -29.64,
+                      tint: SKColor(red: 0.36, green: 0.16, blue: 0.50, alpha: 1),
+                      tintBlend: 0.82)
+
         // ── ROUTES : un seul réseau de terre battue AUTOTILÉ (transitions
         // me_edge_* sur l'herbe) — la lecture « vraie carte du monde ».
         var roads = VillageTileMap(width: w, height: h, tile: tile)
@@ -778,6 +858,11 @@ final class WorldBuilder {
         var noGrassEdges = arid
         noGrassEdges.formUnion(forestFloor)
         noGrassEdges.formUnion(shrineGround)
+        noGrassEdges.formUnion(mountApron)
+        noGrassEdges.formUnion(ruinsApron)
+        noGrassEdges.formUnion(blight)
+        var mineTrack = roads
+        mineTrack.intersect(mountApron)
         var caravanTrack = roads
         caravanTrack.intersect(arid)
         // Le sentier forestier est retracé ÉTROIT, pas découpé dans la route :
@@ -796,6 +881,10 @@ final class WorldBuilder {
         renderTileMap(woodTrail, fullTile: "me_dirt_full", edgePrefix: nil,
                       in: scene, z: -29.4,
                       tint: ebonyShade, tintBlend: 0.34)
+        // Quatrième revêtement : la route de Cendreval devient un chemin de
+        // mine, gravier tassé par les convois de minerai.
+        renderTileMap(mineTrack, fullTile: "ds_gravel", edgePrefix: nil,
+                      in: scene, z: -29.4)
 
         // ── FORÊT D'ÉBÈNE : des PEUPLEMENTS, pas un papier peint ──
         //
@@ -965,21 +1054,132 @@ final class WorldBuilder {
                                     width: 124, height: 92)],
                   in: scene)
 
-        // ── MONTAGNES DE CENDREVAL (nord-est) : massif rocheux ──
-        let mountC = CGPoint(x: w * 0.80, y: h * 0.78)
+        // ── MONTAGNES DE CENDREVAL : les blocs, sur leur dalle ──
+        let minesClearing = CGRect(x: pMines.x - 78, y: pMines.y - 52,
+                                   width: 156, height: 104)
+        let thresholdClearing = CGRect(x: pThreshold.x - thrRX * 0.80,
+                                       y: pThreshold.y - thrRY * 0.80,
+                                       width: thrRX * 1.60, height: thrRY * 1.60)
         plantMass([Flora(asset: "ds_rock_spire", height: 62, weight: 4),
                    Flora(asset: "ds_rock_big",   height: 44, weight: 3),
                    Flora(asset: "ds_boulder",    height: 34, weight: 3),
                    Flora(asset: "ds_boulder2",   height: 30, weight: 2),
                    Flora(asset: "rock_1",        height: 26, weight: 2),
                    Flora(asset: "rock_3",        height: 22, weight: 2)],
-                  center: mountC, radiusX: w * 0.17, radiusY: h * 0.17,
+                  center: mountC, radiusX: mountRX, radiusY: mountRY,
                   step: 42, coreDensity: 0.80, edgeDensity: 0.20,
-                  avoiding: [CGRect(x: pMines.x - 56, y: pMines.y - 40,
-                                    width: 112, height: 80),
-                             CGRect(x: pThreshold.x - 56, y: pThreshold.y - 40,
-                                    width: 112, height: 80)],
+                  avoiding: [minesClearing, thresholdClearing],
                   in: scene)
+
+        // ── LE CARREAU DE LA MINE : une entrée de mine, c'est un CHANTIER.
+        // Le POI n'était qu'une falaise couchée sur la terre battue — rien ne
+        // disait qu'on y descendait chercher du minerai.
+        for (asset, dx, dy, hgt) in [("me_wood_cart", -86.0, -30.0, 30.0),
+                                     ("me_cart_empty", 84.0, -34.0, 28.0),
+                                     ("ext_cut_wood", -52.0, -50.0, 14.0),
+                                     ("me_cut_wood", 56.0, -54.0, 16.0),
+                                     ("village_lantern_1", -70.0, 20.0, 34.0),
+                                     ("village_lantern_1", 70.0, 20.0, 34.0),
+                                     ("ds_ladder", 104.0, 6.0, 26.0),
+                                     ("me_barrel_1", -104.0, 4.0, 20.0),
+                                     ("me_barrel_2", -92.0, -8.0, 20.0),
+                                     ("ds_rock_pile", 40.0, -68.0, 20.0),
+                                     ("ds_rock_pile", -34.0, -72.0, 18.0)] {
+            guard let texH = PixelArtSprites.pixelHeight(of: asset), texH > 0,
+                  let node = PixelArtSprites.still(name: asset,
+                                                   scale: CGFloat(hgt) / texH,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0))
+            else { continue }
+            // Passés au brun de suie : sortis du pack village, la charrette
+            // rouge vif et les tonneaux bleus donnaient au carreau de mine un
+            // air de kermesse. Le charbon salit tout ce qu'on descend dedans.
+            node.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.34, green: 0.26, blue: 0.20, alpha: 1)
+                sprite.colorBlendFactor = 0.55
+            }
+            node.position = CGPoint(x: pMines.x + CGFloat(dx), y: pMines.y + CGFloat(dy))
+            node.zPosition = actorLayer(for: node.position.y) - 0.2
+            add(node, to: scene)
+        }
+
+        // ── RUINES DE LA SOURCE : ce qui reste d'un sanctuaire plus vieux que
+        // le Sanctuaire. Colonnes couchées, fûts brisés, dalles descellées —
+        // et pas une fleur : la Source est tarie.
+        var ruinSeed: UInt64 = 0x5057_3E11
+        func ruinNext() -> CGFloat {
+            ruinSeed = ruinSeed &* 6364136223846793005 &+ 1442695040888963407
+            return CGFloat(ruinSeed >> 40) / CGFloat(1 << 24)
+        }
+        for i in 0..<14 {
+            let a = CGFloat(i) / 14 * .pi * 2 + 0.35
+            let ray = 0.62 + ruinNext() * 0.34
+            // Uniquement des fûts et des blocs : `pillar_grey_*` sont des
+            // stèles funéraires, elles peuplaient les ruines de tombes.
+            let assets = ["ds_ruin_column", "column_broken_1", "ds_ruin_stone",
+                          "ds_ruin_column", "column_broken_1", "ds_ruin_stone"]
+            let asset = assets[i % assets.count]
+            guard let texH = PixelArtSprites.pixelHeight(of: asset), texH > 0,
+                  let node = PixelArtSprites.still(name: asset,
+                                                   scale: (32 + ruinNext() * 22) / texH,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0))
+            else { continue }
+            node.position = CGPoint(x: pRuins.x + cos(a) * ruinsRX * ray,
+                                    y: pRuins.y + sin(a) * ruinsRY * ray)
+            node.zPosition = actorLayer(for: node.position.y) - 0.2
+            add(node, to: scene)
+        }
+        plantMass([Flora(asset: "ds_grass_dry", height: 12, weight: 4),
+                   Flora(asset: "rock_5", height: 10, weight: 3),
+                   Flora(asset: "rock_9", height: 10, weight: 3),
+                   Flora(asset: "gy_tree", height: 46, weight: 1)],
+                  center: pRuins, radiusX: ruinsRX, radiusY: ruinsRY,
+                  step: 44, coreDensity: 0.18, edgeDensity: 0.34,
+                  avoiding: [CGRect(x: pRuins.x - 60, y: pRuins.y - 42,
+                                    width: 120, height: 84)],
+                  in: scene)
+
+        // ── LE SEUIL : la garde du portail. Arbres morts en cercle, stèles et
+        // cierges éteints — la frontière est TENUE, elle n'est pas qu'un décor.
+        for i in 0..<10 {
+            let a = CGFloat(i) / 10 * .pi * 2 + 0.25
+            if abs(sin(a)) > 0.86 { continue }        // on laisse passer au sud
+            let assets = ["gy_tree", "gy_tomb_grey_1", "gy_tree",
+                          "gy_cross_grey", "gy_tomb_black", "gy_candle_off"]
+            let asset = assets[i % assets.count]
+            let hgt: CGFloat = asset == "gy_tree" ? 52 : 30
+            guard let texH = PixelArtSprites.pixelHeight(of: asset), texH > 0,
+                  let node = PixelArtSprites.still(name: asset, scale: hgt / texH,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0))
+            else { continue }
+            // Teintés du violet du Vide : sortis de leur pack, ils gardaient le
+            // gris d'un cimetière ordinaire au milieu d'un sol corrompu.
+            node.forEachDescendantSprite { sprite in
+                sprite.color = voidShade
+                sprite.colorBlendFactor = 0.45
+            }
+            node.position = CGPoint(x: pThreshold.x + cos(a) * thrRX * 0.74,
+                                    y: pThreshold.y + sin(a) * thrRY * 0.76)
+            node.zPosition = actorLayer(for: node.position.y) - 0.2
+            add(node, to: scene)
+        }
+        // ── LA FAILLE DU CŒUR DU VIDE : hors d'atteinte, mais visible depuis
+        // le Seuil. Des troncs morts et rien d'autre — c'est le bout du monde.
+        for i in 0..<8 {
+            let a = CGFloat(i) / 8 * .pi * 2 + 0.5
+            // À 0,5 d'échelle ces troncs faisaient deux fois la hauteur du
+            // portail et volaient la vedette au Seuil. Ils sont le FOND.
+            guard let texH = PixelArtSprites.pixelHeight(of: "gy_tree"), texH > 0,
+                  let node = PixelArtSprites.still(name: "gy_tree", scale: 44 / texH,
+                                                   anchor: CGPoint(x: 0.5, y: 0.0))
+            else { continue }
+            node.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.30, green: 0.12, blue: 0.46, alpha: 1)
+                sprite.colorBlendFactor = 0.80
+            }
+            node.position = CGPoint(x: pVoid.x + cos(a) * 150, y: pVoid.y + sin(a) * 104)
+            node.zPosition = actorLayer(for: node.position.y) - 0.2
+            add(node, to: scene)
+        }
 
         // ── DÉSERT D'OSSARA : la flore, en BOSQUETS ──
         //

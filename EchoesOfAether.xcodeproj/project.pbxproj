@@ -99,6 +99,7 @@
 		AA20VPRT000000000000TEST /* ViewportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10VPRT000000000000TEST /* ViewportTests.swift */; };
 		AA20HUDL000000000000TEST /* HUDLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10HUDL000000000000TEST /* HUDLayoutTests.swift */; };
 		AA20DIFF000000000000TEST /* DifficultyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10DIFF000000000000TEST /* DifficultyTests.swift */; };
+		AA20LEGI000000000000TEST /* OverlayLegibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		AA20WRLD000000000000TEST /* WorldLayoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10WRLD000000000000TEST /* WorldLayoutTests.swift */; };
 		9EC8130929AB0F3F6C2E0098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9946241C401B2A418D271A /* Foundation.framework */; };
@@ -122,6 +123,7 @@
 		AA10VPRT000000000000TEST /* ViewportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ViewportTests.swift; sourceTree = "<group>"; };
 		AA10HUDL000000000000TEST /* HUDLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HUDLayoutTests.swift; sourceTree = "<group>"; };
 		AA10DIFF000000000000TEST /* DifficultyTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DifficultyTests.swift; sourceTree = "<group>"; };
+		AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverlayLegibilityTests.swift; sourceTree = "<group>"; };
 		6D7E1000B8A741B0A0000001 /* EchoesOfAetherApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EchoesOfAetherApp.swift; sourceTree = "<group>"; };
 		6D7E1002B8A741B0A0000001 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		6D7E1004B8A741B0A0000001 /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -408,6 +410,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AA10VPRT000000000000TEST /* ViewportTests.swift */,
 				AA10HUDL000000000000TEST /* HUDLayoutTests.swift */,
 				AA10DIFF000000000000TEST /* DifficultyTests.swift */,
+				AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */,
 			);
 			path = EchoesOfAetherTests;
 			sourceTree = SOURCE_ROOT;
@@ -606,6 +609,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AA20VPRT000000000000TEST /* ViewportTests.swift in Sources */,
 				AA20HUDL000000000000TEST /* HUDLayoutTests.swift in Sources */,
 				AA20DIFF000000000000TEST /* DifficultyTests.swift in Sources */,
+				AA20LEGI000000000000TEST /* OverlayLegibilityTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -2,6 +2,26 @@ import SpriteKit
 
 @MainActor
 final class OptionsOverlay {
+
+    /// Taille du panneau, en points de scène.
+    ///
+    /// Panneau PAYSAGE, en deux colonnes. Il empilait auparavant ses quatorze
+    /// sections dans une bande de 304 × 672 : 20 % de la largeur, 95 % de la
+    /// hauteur — un panneau portrait dans un jeu qui ne se joue qu'en paysage.
+    /// `fittingFactor` le faisait tenir en le réduisant à ×0,55, ce qui marche
+    /// géométriquement mais pas typographiquement : les libellés tombaient à
+    /// 8,5 pt à l'écran, là où Apple recommande 11 pt au minimum.
+    ///
+    /// Deux colonnes ramènent la hauteur de 672 à 356 pt : le panneau tient
+    /// désormais SANS AUCUNE réduction, et les libellés retrouvent leurs 15 pt
+    /// pleins. Rien n'a été retiré, ni défilement ni pagination ajoutés — la
+    /// place était sur le côté, pas en bas.
+    ///
+    /// Exposé pour que `OverlayLegibilityTests` garde l'invariant : ajouter
+    /// une ligne sans revoir la mise en page fera échouer le test au lieu de
+    /// rogner le texte en silence.
+    static let panelSize = CGSize(width: 640, height: 356)
+
     private let root = SKNode()
     private var sfxLabel: SKLabelNode?
     private var musicLabel: SKLabelNode?
@@ -43,9 +63,7 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        // +36 pt depuis l'ajout de la ligne Difficulté. `fittingFactor` réduit
-        // l'ensemble en paysage iPhone, où le panneau ne tient pas en hauteur.
-        let panelW: CGFloat = 304, panelH: CGFloat = 672
+        let panelW = Self.panelSize.width, panelH = Self.panelSize.height
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
@@ -63,98 +81,111 @@ final class OptionsOverlay {
         title.position = CGPoint(x: cx, y: top - 34)
         root.addChild(title)
 
-        // Curseur vertical courant : chaque section descend `y`, plus de
-        // dizaines d'offsets en dur à recaler quand on ajoute une ligne.
-        var y = top - 70
+        // Deux colonnes, chacune avec son propre curseur vertical.
+        // Gauche : ce qu'on règle en jouant (son, difficulté).
+        // Droite : ce qu'on règle une fois (accessibilité, langue).
+        let colonneGauche = cx - panelW / 4
+        let colonneDroite = cx + panelW / 4
+        let largeurLigne = panelW / 2 - 40
+        let hautColonnes = top - 76
 
-        // Section Volume musique
+        // ── Colonne gauche ───────────────────────────────────────────────
+        var yG = hautColonnes
+
         let musicTitle = label(String(localized: "options.music"), size: 18,
                                color: SKColor(white: 0.65, alpha: 1))
-        musicTitle.position = CGPoint(x: cx, y: y)
-        root.addChild(musicTitle); y -= 28
-        root.addChild(makeVolumeRow(value: musicVolume, at: CGPoint(x: cx, y: y), kind: .music)); y -= 36
+        musicTitle.position = CGPoint(x: colonneGauche, y: yG)
+        root.addChild(musicTitle); yG -= 26
+        root.addChild(makeVolumeRow(value: musicVolume,
+                                    at: CGPoint(x: colonneGauche, y: yG),
+                                    kind: .music)); yG -= 38
 
-        // Section Volume SFX
         let sfxTitle = label(String(localized: "options.sfx"), size: 18,
                              color: SKColor(white: 0.65, alpha: 1))
-        sfxTitle.position = CGPoint(x: cx, y: y)
-        root.addChild(sfxTitle); y -= 28
-        root.addChild(makeVolumeRow(value: sfxVolume, at: CGPoint(x: cx, y: y), kind: .sfx)); y -= 30
-
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 28
+        sfxTitle.position = CGPoint(x: colonneGauche, y: yG)
+        root.addChild(sfxTitle); yG -= 26
+        root.addChild(makeVolumeRow(value: sfxVolume,
+                                    at: CGPoint(x: colonneGauche, y: yG),
+                                    kind: .sfx)); yG -= 42
 
         // Difficulté — se tape pour cycler Histoire → Normal → Vétéran, comme
         // les bascules voisines. Trois valeurs ne méritent pas un sous-menu.
         root.addChild(makeCycleRow(String(localized: "options.difficulty"),
                                    value: Difficulty.current.localizedName,
                                    name: "cycleDifficulty",
-                                   at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
+                                   at: CGPoint(x: colonneGauche, y: yG),
+                                   width: largeurLigne)); yG -= 36
 
-        // Accessibilité — toggles
+        // ── Colonne droite ───────────────────────────────────────────────
+        var yD = hautColonnes
+
         root.addChild(makeToggleRow(String(localized: "options.reduceMotion"),
                                     isOn: AccessibilitySettings.reduceMotion,
                                     name: "toggleReduceMotion",
-                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
+                                    at: CGPoint(x: colonneDroite, y: yD),
+                                    width: largeurLigne)); yD -= 34
         root.addChild(makeToggleRow(String(localized: "options.largeText"),
                                     isOn: AccessibilitySettings.largeText,
                                     name: "toggleLargeText",
-                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 36
+                                    at: CGPoint(x: colonneDroite, y: yD),
+                                    width: largeurLigne)); yD -= 34
         root.addChild(makeToggleRow(String(localized: "options.haptics"),
                                     isOn: HapticsEngine.enabled,
                                     name: "toggleHaptics",
-                                    at: CGPoint(x: cx, y: y), width: panelW - 44)); y -= 30
+                                    at: CGPoint(x: colonneDroite, y: yD),
+                                    width: largeurLigne)); yD -= 38
 
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 24
-
-        // Section Langue — sélecteur FR / EN
         let langTitle = label(String(localized: "options.language"), size: 18,
                               color: SKColor(white: 0.65, alpha: 1))
-        langTitle.position = CGPoint(x: cx, y: y)
-        root.addChild(langTitle); y -= 34
+        langTitle.position = CGPoint(x: colonneDroite, y: yD)
+        root.addChild(langTitle); yD -= 32
 
         let current = currentLanguageCode()
         let frBtn = makeLangButton("Français", code: "fr",
                                    selected: current == "fr", name: "langFR")
-        frBtn.position = CGPoint(x: cx - 64, y: y)
+        frBtn.position = CGPoint(x: colonneDroite - 60, y: yD)
         root.addChild(frBtn)
 
         let enBtn = makeLangButton("English", code: "en",
                                    selected: current == "en", name: "langEN")
-        enBtn.position = CGPoint(x: cx + 64, y: y)
-        root.addChild(enBtn); y -= 26
+        enBtn.position = CGPoint(x: colonneDroite + 60, y: yD)
+        root.addChild(enBtn); yD -= 26
 
         // Note redémarrage — cachée jusqu'au changement
         let restart = label(String(localized: "options.language.restart"), size: 14,
                             color: SKColor(red: 0.95, green: 0.75, blue: 0.35, alpha: 1))
-        restart.position = CGPoint(x: cx, y: y)
+        restart.position = CGPoint(x: colonneDroite, y: yD)
         restart.name = "langRestart"
         restart.isHidden = true
-        root.addChild(restart); y -= 26
+        root.addChild(restart); yD -= 22
 
-        addSeparator(width: panelW - 40, at: CGPoint(x: cx, y: y)); y -= 30
+        // ── Pied de panneau, sur toute la largeur ────────────────────────
+        // Aligné sous la plus basse des deux colonnes.
+        var y = min(yG, yD) - 8
+        addSeparator(width: panelW - 48, at: CGPoint(x: cx, y: y)); y -= 34
 
-        // Bouton Revoir le tutoriel
+        let largeurBouton: CGFloat = 196
+        let pas = largeurBouton + 12
+
         let tutorialBtn = makeButton(String(localized: "options.replayTutorial"),
             fill: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1),
             stroke: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
-            name: "optionsTutorial")
-        tutorialBtn.position = CGPoint(x: cx, y: y)
-        root.addChild(tutorialBtn); y -= 52
+            name: "optionsTutorial", width: largeurBouton)
+        tutorialBtn.position = CGPoint(x: cx - pas, y: y)
+        root.addChild(tutorialBtn)
 
-        // Bouton Reset
         let resetBtn = makeButton(String(localized: "options.resetSave"),
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
             stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
-            name: "optionsReset")
+            name: "optionsReset", width: largeurBouton)
         resetBtn.position = CGPoint(x: cx, y: y)
-        root.addChild(resetBtn); y -= 52
+        root.addChild(resetBtn)
 
-        // Bouton Fermer
         let closeBtn = makeButton(String(localized: "options.close"),
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
             stroke: Palette.panelBorder,
-            name: "optionsClose")
-        closeBtn.position = CGPoint(x: cx, y: y)
+            name: "optionsClose", width: largeurBouton)
+        closeBtn.position = CGPoint(x: cx + pas, y: y)
         root.addChild(closeBtn)
 
         // Animate
@@ -163,9 +194,11 @@ final class OptionsOverlay {
             JuiceEngine.popIn(child, delay: Double(i) * 0.03)
         }
 
-        // iPad : agrandit l'overlay. iPhone paysage : RÉDUIT pour que le
-        // panneau (624 pt) tienne en hauteur — sinon titre et bouton Fermer
-        // sortent de l'écran. Le scrim est contre-scalé pour couvrir tout.
+        // Filet de sécurité : `fittingFactor` réduirait le panneau s'il ne
+        // tenait pas en hauteur. Depuis le passage en deux colonnes (356 pt),
+        // il tient sur tous les écrans visés et ce facteur vaut 1 — on le
+        // garde pour les écrans plus courts que le gabarit. Le scrim est
+        // contre-scalé pour couvrir tout l'écran quoi qu'il arrive.
         let s = UIScale.fittingFactor(for: scene.size, contentHeight: panelH + 16)
         root.setScale(s)
         root.position = CGPoint(x: w / 2 * (1 - s), y: h / 2 * (1 - s))
@@ -523,9 +556,12 @@ final class OptionsOverlay {
         return row
     }
 
-    private func makeButton(_ text: String, fill: SKColor, stroke: SKColor, name: String) -> SKShapeNode {
+    /// `width` : 220 par défaut (pile de boutons), 196 pour les trois boutons
+    /// alignés en pied de panneau paysage.
+    private func makeButton(_ text: String, fill: SKColor, stroke: SKColor,
+                            name: String, width: CGFloat = 220) -> SKShapeNode {
         // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
-        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 46))
+        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 46))
         btn.fillColor = fill
         btn.strokeColor = stroke
         btn.lineWidth = 2

@@ -2,6 +2,18 @@ import SpriteKit
 
 @MainActor
 final class InventoryOverlay {
+
+    /// Taille du panneau, en points de scène (la largeur est un plafond :
+    /// elle se réduit sur un écran plus étroit).
+    ///
+    /// Panneau PAYSAGE, en deux colonnes — même correction que l'écran
+    /// d'options. En une colonne, les 4 sections et 11 lignes empilées
+    /// donnaient 340 × 520 sur un écran de 852 × 393 : `fittingFactor`
+    /// réduisait le tout à ×0,72 et les libellés tombaient à 10,7 pt, sous
+    /// les 11 pt minimum recommandés. En deux colonnes la hauteur passe à
+    /// 340 pt et le panneau tient sans aucune réduction.
+    static let panelSize = CGSize(width: 660, height: 340)
+
     private let root = SKNode()
     private let panel = SKShapeNode()
     private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
@@ -15,6 +27,13 @@ final class InventoryOverlay {
     var onUsePotion: (() -> Bool)?
     private var potionUsable = false
     private let lineH: CGFloat = 26
+    /// Colonne courante pendant `buildContent` : centre et largeur.
+    /// Les constructeurs de lignes s'y calent au lieu du panneau entier,
+    /// ce qui rend la mise en deux colonnes transparente pour eux.
+    private var centreColonne: CGFloat = 0
+    private var largeurColonne: CGFloat = 0
+    /// Bord gauche de la colonne courante.
+    private var bordGauche: CGFloat { centreColonne - largeurColonne / 2 }
 
     /// Le bouton A n'apparaît en inventaire que s'il y a une potion à boire.
     var canUsePotion: Bool { isActive && potionUsable }
@@ -40,10 +59,8 @@ final class InventoryOverlay {
     }
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        panelWidth = min(340, max(280, size.width - 32))
-        // Hauteur FIXE calée sur le contenu (4 sections + 11 lignes) ;
-        // le fittingFactor réduit ensuite le tout pour tenir à l'écran.
-        panelHeight = 520
+        panelWidth = min(Self.panelSize.width, max(300, size.width - 48))
+        panelHeight = Self.panelSize.height
         root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
@@ -54,8 +71,9 @@ final class InventoryOverlay {
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 36)
         closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 34)
 
-        // iPad : agrandit. iPhone paysage : réduit pour que le panneau
-        // (440 pt min) tienne en hauteur (root déjà centré → simple échelle).
+        // Filet de sécurité : réduirait le panneau s'il ne tenait pas en
+        // hauteur. Depuis le passage en deux colonnes, il tient partout et ce
+        // facteur vaut 1 (root déjà centré → simple échelle).
         root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
     }
 
@@ -93,9 +111,12 @@ final class InventoryOverlay {
         statLabels.removeAll()
 
         let startY = panelHeight / 2 - 60
+        largeurColonne = panelWidth / 2 - 20
+
+        // ── Colonne gauche : ce qu'on porte et ce qu'on consomme ─────────
+        centreColonne = -panelWidth / 4
         var y = startY
 
-        // Section : Équipement
         y = addSection(String(localized: "inventory.section.equipment"), y: y)
         y = addRow(icon: .sword, label: weaponName(player.weaponLevel),
                    detail: String(localized: "inventory.attack \(player.attackDamage)"), y: y, lineH: lineH)
@@ -104,7 +125,6 @@ final class InventoryOverlay {
 
         y -= 6 // spacer
 
-        // Section : Consommables
         y = addSection(String(localized: "inventory.section.items"), y: y)
         // La ligne « Potions » est actionnable : bouton A ou toucher = en boire.
         potionUsable = player.potions > 0 && player.currentHP < player.currentMaxHP
@@ -117,7 +137,14 @@ final class InventoryOverlay {
 
         y -= 6
 
-        // Section : Stats
+        y = addRow(icon: .coin, label: String(localized: "inventory.gold"),
+                   detail: "\(player.gold)", y: y, lineH: lineH,
+                   color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
+
+        // ── Colonne droite : ce qu'on vaut et ce qu'on doit ──────────────
+        centreColonne = panelWidth / 4
+        y = startY
+
         y = addSection(String(localized: "inventory.section.stats"), y: y)
         y = addRow(icon: .heart, label: String(localized: "inventory.maxHP"),
                    detail: "\(player.currentMaxHP)", y: y, lineH: lineH)
@@ -128,14 +155,6 @@ final class InventoryOverlay {
 
         y -= 6
 
-        // Gold
-        y = addRow(icon: .coin, label: String(localized: "inventory.gold"),
-                   detail: "\(player.gold)", y: y, lineH: lineH,
-                   color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
-
-        y -= 6
-
-        // Section : Quêtes
         y = addSection(String(localized: "inventory.section.quests"), y: y)
         y = addQuestRow(label: String(localized: "quest.delivery.name"),
                         state: player.questDelivery, y: y, lineH: lineH)
@@ -157,16 +176,16 @@ final class InventoryOverlay {
         // une simple stat (pas de buzz d'erreur sur un tap anodin).
         guard potionUsable else { return }
 
-        let hit = SKShapeNode(rectOf: CGSize(width: panelWidth - 40, height: lineH))
+        let hit = SKShapeNode(rectOf: CGSize(width: largeurColonne - 32, height: lineH))
         hit.fillColor = .clear
         hit.strokeColor = .clear
         hit.name = "potionUse"
-        hit.position = CGPoint(x: 0, y: rowY - 2)
+        hit.position = CGPoint(x: centreColonne, y: rowY - 2)
         root.addChild(hit)
         statLabels.append(hit)
 
         // Léger surlignage doré de la ligne buvable.
-        let glow = SKShapeNode(rectOf: CGSize(width: panelWidth - 44, height: lineH))
+        let glow = SKShapeNode(rectOf: CGSize(width: largeurColonne - 36, height: lineH))
         glow.fillColor = PixelUI.gold.withAlphaComponent(0.10)
         glow.strokeColor = PixelUI.goldDim
         glow.lineWidth = 1
@@ -230,14 +249,19 @@ final class InventoryOverlay {
         sectionLabel.fontSize = 17
         sectionLabel.fontColor = SKColor(red: 0.60, green: 0.50, blue: 0.85, alpha: 0.8)
         sectionLabel.horizontalAlignmentMode = .left
-        sectionLabel.position = CGPoint(x: -panelWidth / 2 + 24, y: y - 6)
+        sectionLabel.position = CGPoint(x: bordGauche + 24, y: y - 6)
         root.addChild(sectionLabel)
         statLabels.append(sectionLabel)
 
-        let div = SKShapeNode(rectOf: CGSize(width: panelWidth - 48, height: 1))
+        // Filet sous le titre de section. Il est enfant du label, donc en
+        // coordonnées LOCALES : l'ancien `y - 18` y réinjectait une valeur du
+        // repère du panneau, ce qui envoyait le filet à `2y - 24` — hors du
+        // panneau pour toute section un peu haute, donc invisible. Le décalage
+        // voulu était simplement 18 pt sous la ligne de base.
+        let div = SKShapeNode(rectOf: CGSize(width: largeurColonne - 40, height: 1))
         div.fillColor = SKColor(white: 0.18, alpha: 0.5)
         div.strokeColor = .clear
-        div.position = CGPoint(x: 0, y: y - 18)
+        div.position = CGPoint(x: largeurColonne / 2 - 24, y: -12)
         sectionLabel.addChild(div)
 
         return y - 28
@@ -247,7 +271,7 @@ final class InventoryOverlay {
                         y: CGFloat, lineH: CGFloat,
                         color: SKColor = .white) -> CGFloat {
         let iconNode = PixelIcons.node(icon, pixel: 2)
-        iconNode.position = CGPoint(x: -panelWidth / 2 + 32, y: y + 2)
+        iconNode.position = CGPoint(x: bordGauche + 32, y: y + 2)
         root.addChild(iconNode)
         statLabels.append(iconNode)
         return addLabels(label: label, detail: detail, y: y, lineH: lineH, color: color)
@@ -263,7 +287,7 @@ final class InventoryOverlay {
         nameLabel.fontSize = 18
         nameLabel.fontColor = SKColor(white: 0.85, alpha: 1)
         nameLabel.horizontalAlignmentMode = .left
-        nameLabel.position = CGPoint(x: -panelWidth / 2 + 52, y: y - 4)
+        nameLabel.position = CGPoint(x: bordGauche + 52, y: y - 4)
         root.addChild(nameLabel)
         statLabels.append(nameLabel)
 
@@ -272,7 +296,7 @@ final class InventoryOverlay {
         detailLabel.fontSize = 18
         detailLabel.fontColor = color
         detailLabel.horizontalAlignmentMode = .right
-        detailLabel.position = CGPoint(x: panelWidth / 2 - 24, y: y - 4)
+        detailLabel.position = CGPoint(x: bordGauche + largeurColonne - 24, y: y - 4)
         root.addChild(detailLabel)
         statLabels.append(detailLabel)
 
@@ -300,7 +324,7 @@ final class InventoryOverlay {
         // Puce d'état pixel : carré plein coloré selon l'état (cohérent
         // avec le journal de quêtes).
         let chip = SKSpriteNode(color: color, size: CGSize(width: 8, height: 8))
-        chip.position = CGPoint(x: -panelWidth / 2 + 32, y: y + 2)
+        chip.position = CGPoint(x: bordGauche + 32, y: y + 2)
         root.addChild(chip)
         statLabels.append(chip)
         return addLabels(label: label, detail: stateLabel,

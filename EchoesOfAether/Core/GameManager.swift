@@ -337,8 +337,19 @@ final class GameManager {
             hud.goldValue = player.gold
             inOverworld = true
             world.switchToOverworld(in: scene)
-            world.kael.position = CGPoint(x: world.worldWidth * 0.20,
-                                          y: world.worldHeight * 0.24)
+            // `--overworld-at <lieu>` : apparaître sur un lieu canonique
+            // (desert, mines, ruins…) au lieu de la plaine de départ. La carte
+            // fait 2,7 écrans de large — sans ça, auditer le désert demandait
+            // de traverser le continent au joystick.
+            var spawn = CGPoint(x: world.worldWidth * 0.20,
+                                y: world.worldHeight * 0.24)
+            if let idx = CommandLine.arguments.firstIndex(of: "--overworld-at"),
+               CommandLine.arguments.indices.contains(idx + 1) {
+                spawn = WorldBuilder.overworldPoint(CommandLine.arguments[idx + 1],
+                                                    w: world.worldWidth,
+                                                    h: world.worldHeight)
+            }
+            world.kael.position = spawn
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()

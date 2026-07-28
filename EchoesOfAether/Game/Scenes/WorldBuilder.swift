@@ -233,15 +233,19 @@ final class WorldBuilder {
 
     /// Suivi doux : Lyra marche derrière Kael quand il s'éloigne.
     func updateLyraFollow(deltaTime: TimeInterval) {
-        followStep(lyra, behind: kael, deltaTime: deltaTime)
+        followStep(lyra, behind: kael, hero: .lyra, deltaTime: deltaTime)
     }
 
     /// Avance un compagnon vers celui qu'il suit, EN RESPECTANT LES OBSTACLES
     /// (l'eau, les maisons, les rochers) : sans ça les compagnons traversaient
     /// le lac de la carte du monde. Glisse le long des murs, et se téléporte
     /// derrière le meneur s'il reste bloqué trop loin (usage RPG classique).
+    ///
+    /// `hero` : le pack du compagnon, pour jouer son CYCLE DE MARCHE. Seul
+    /// Kael y avait droit (`MovementController`) ; les compagnons glissaient
+    /// sur le sol, jambes figées sur la frame d'idle.
     private func followStep(_ node: SKNode, behind leader: SKNode,
-                            deltaTime: TimeInterval) {
+                            hero: BattleSprites.Hero, deltaTime: TimeInterval) {
         guard !node.isHidden, !leader.isHidden, deltaTime > 0 else { return }
         let target = CGPoint(x: leader.position.x - 40, y: leader.position.y - 6)
         let dx = target.x - node.position.x
@@ -255,7 +259,11 @@ final class WorldBuilder {
             node.zPosition = actorLayer(for: node.position.y)
             return
         }
-        guard dist > 54 else { return }
+        guard dist > 54 else {
+            // À sa place derrière le meneur : il se repose.
+            BattleSprites.updateWalk(hero, on: node, velocity: .zero)
+            return
+        }
 
         let step = min(CGFloat(deltaTime) * 240, dist - 44)
         let from = node.position
@@ -273,6 +281,11 @@ final class WorldBuilder {
                 node.position = slideY
             }
         }
+        // Vitesse RÉELLEMENT parcourue : bloqué contre un mur, le compagnon
+        // s'arrête au lieu de pédaler sur place.
+        let moved = CGVector(dx: node.position.x - from.x,
+                             dy: node.position.y - from.y)
+        BattleSprites.updateWalk(hero, on: node, velocity: moved)
         node.zPosition = actorLayer(for: node.position.y)
     }
 
@@ -295,7 +308,7 @@ final class WorldBuilder {
 
     /// Suivi doux : Eran marche derrière l'Écho de Lyra (Kael → Écho → Eran).
     func updateEranFollow(deltaTime: TimeInterval) {
-        followStep(eran, behind: lyra, deltaTime: deltaTime)
+        followStep(eran, behind: lyra, hero: .eran, deltaTime: deltaTime)
     }
 
     // MARK: - PNJ errants (village)
@@ -336,11 +349,25 @@ final class WorldBuilder {
         let dest = clampDestination(from: npc.position, to: target)
         let dist = npc.position.distance(to: dest)
 
+        // Les PNJ chibi (`npc_*`) n'ont qu'une boucle d'idle : les retourner
+        // suffit. Les héros portent un pack avec un vrai cycle de marche —
+        // il faut le LANCER, sinon ils flânent jambes figées, et le miroir
+        // passe par `updateWalk` (qui compense le décalage du corps dans son
+        // canevas). Retourner leurs sprites à la main les faisait sauter de côté.
+        let pack = Self.packHero(for: npc)
+
         var steps: [SKAction] = [.wait(forDuration: .random(in: 0.8...3.6))]
         if dist > 14, !isBlocked(dest) {
-            let facing: CGFloat = dest.x < npc.position.x ? -1 : 1
+            let dx: CGFloat = dest.x - npc.position.x
+            let facing: CGFloat = dx < 0 ? -1 : 1
             steps.append(.run { [weak npc] in
-                npc?.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+                guard let npc else { return }
+                if let pack {
+                    BattleSprites.updateWalk(pack, on: npc,
+                                             velocity: CGVector(dx: dx, dy: 1))
+                } else {
+                    npc.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+                }
             })
             let duration = TimeInterval(dist / 46)   // flânerie lente
             steps.append(.group([
@@ -350,12 +377,30 @@ final class WorldBuilder {
                     node.zPosition = self.actorLayer(for: node.position.y)
                 }
             ]))
+            if let pack {
+                steps.append(.run { [weak npc] in
+                    guard let npc else { return }
+                    BattleSprites.updateWalk(pack, on: npc, velocity: .zero)
+                })
+            }
         }
         steps.append(.run { [weak self, weak npc] in
             guard let self, let npc, !npc.isHidden else { return }
             self.scheduleWander(npc, home: home, radius: radius, sceneWidth: sceneWidth)
         })
         npc.run(.sequence(steps), withKey: "wander")
+    }
+
+    /// Le héros dont ce node porte le pack de sprites, s'il en porte un.
+    /// `nil` = PNJ chibi ou silhouette de secours (pas de cycle de marche).
+    private static func packHero(for node: SKNode) -> BattleSprites.Hero? {
+        guard node.childNode(withName: "body") != nil else { return nil }
+        switch node.name {
+        case "kael": return .kael
+        case "lyra": return .lyra
+        case "eran": return .eran
+        default:     return nil
+        }
     }
 
     // MARK: - Camera
@@ -516,21 +561,88 @@ final class WorldBuilder {
         let pThreshold = Self.overworldPoint("threshold", w: w, h: h)
         let tile: CGFloat = 24
 
-        // ── DÉSERT D'OSSARA (sud-est) : sable AUTOTILÉ, bord franc sur l'herbe.
-        // Comme les autres zones : une grille de matière + transitions ds_edge_*
-        // (plus de plaques carrées qui se chevauchent au hasard).
-        // Vaste : un désert doit se traverser, pas se contourner en trois pas.
+        // ── DÉSERT D'OSSARA (sud-est) : TROIS STRATES, comme un vrai désert.
+        //
+        // Un désert ne commence pas sur un trait : la prairie s'assèche en
+        // steppe, la steppe durcit en croûte craquelée, et le sable prend le
+        // dessus au centre. Le tileset porte exactement cette lecture — les
+        // `ds_edge_*` sont des transitions SABLE↔CROÛTE, pas sable↔herbe.
+        // Posées sur l'herbe (l'ancien code), elles dessinaient un anneau de
+        // boue en escalier qui tranchait sur le vert : d'où le rendu sale.
+        //
+        // Les trois strates partagent la MÊME silhouette à des échelles
+        // décroissantes : c'est ce qui les fait lire comme un dégradé
+        // concentrique et non comme trois taches empilées.
         let desert = CGRect(x: w * 0.66, y: 0, width: w * 0.34, height: h * 0.42)
+        let desertC = CGPoint(x: desert.midX, y: desert.midY)
+        /// Silhouette du désert : le grand ovale + deux langues débordantes
+        /// (bord organique, jamais un ovale nu), à l'échelle `grow`.
+        func stampDesert(_ map: inout VillageTileMap, grow: CGFloat) {
+            map.stampEllipse(center: desertC,
+                             radiusX: desert.width * 0.66 * grow,
+                             radiusY: desert.height * 0.74 * grow)
+            map.stampEllipse(center: CGPoint(x: desertC.x + w * 0.08,
+                                             y: desertC.y + h * 0.09),
+                             radiusX: desert.width * 0.38 * grow,
+                             radiusY: desert.height * 0.36 * grow)
+            map.stampEllipse(center: CGPoint(x: desertC.x - w * 0.07,
+                                             y: desertC.y - h * 0.08),
+                             radiusX: desert.width * 0.32 * grow,
+                             radiusY: desert.height * 0.30 * grow)
+        }
+
+        // Strate 1 — LISIÈRE ARIDE : terre battue autotilée sur l'herbe. Ce
+        // sont les transitions des routes, déjà justes sur le vert.
+        var arid = VillageTileMap(width: w, height: h, tile: tile)
+        stampDesert(&arid, grow: 1.12)
+        renderTileMap(arid, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.8)
+
+        // Strate 2 — CROÛTE CRAQUELÉE : le hardpan. Quatre variantes mêlées,
+        // bord franc sur la terre battue — deux bruns voisins, la coupure ne
+        // se voit pas, alors qu'elle hurlait contre l'herbe.
+        var hardpan = VillageTileMap(width: w, height: h, tile: tile)
+        stampDesert(&hardpan, grow: 1.0)
+        renderTileMap(hardpan, fullTile: "ds_cracked", edgePrefix: nil,
+                      in: scene, z: -29.7,
+                      variants: ["ds_cracked", "ds_cracked2",
+                                 "ds_cracked3", "ds_cracked_dark"])
+
+        // Strate 3 — LE SABLE : autotilé sur la croûte avec ses VRAIES
+        // transitions. Trois variantes pour casser la trame diagonale de
+        // `ds_sand`, qui se lisait en damier sur toute la largeur du désert.
         var sand = VillageTileMap(width: w, height: h, tile: tile)
-        sand.stampEllipse(center: CGPoint(x: desert.midX, y: desert.midY),
-                          radiusX: desert.width * 0.66, radiusY: desert.height * 0.74)
-        // Deux langues de sable débordantes : bord organique, jamais un ovale.
-        sand.stampEllipse(center: CGPoint(x: desert.midX + w * 0.08, y: desert.midY + h * 0.09),
-                          radiusX: desert.width * 0.38, radiusY: desert.height * 0.36)
-        sand.stampEllipse(center: CGPoint(x: desert.midX - w * 0.07, y: desert.midY - h * 0.08),
-                          radiusX: desert.width * 0.32, radiusY: desert.height * 0.30)
+        stampDesert(&sand, grow: 0.84)
         renderTileMap(sand, fullTile: "ds_sand", edgePrefix: "ds_edge_",
-                      in: scene, z: -29.6)
+                      in: scene, z: -29.6,
+                      variants: ["ds_sand", "ds_sand2", "ds_sand3"])
+
+        // Strate 4 — CHAMPS DE DUNES : nappes de sable ondulé là où le vent
+        // travaille, au cœur. `ds_dune` est une TUILE, pas un objet : semée
+        // en sprites elle posait des carrés de vagues sur le sable — c'était
+        // l'artefact le plus voyant de la carte.
+        var dunes = VillageTileMap(width: w, height: h, tile: tile)
+        for (fx, fy, fr) in [(0.38, 0.60, 0.30), (0.66, 0.34, 0.26),
+                             (0.22, 0.26, 0.22), (0.80, 0.68, 0.20)] {
+            dunes.stampEllipse(center: CGPoint(x: desert.minX + desert.width * fx,
+                                               y: desert.minY + desert.height * fy),
+                               radiusX: desert.width * fr,
+                               radiusY: desert.height * fr * 0.9)
+        }
+        renderTileMap(dunes, fullTile: "ds_dune", edgePrefix: nil,
+                      in: scene, z: -29.55, variants: ["ds_dune", "ds_dune2"])
+
+        // Strate 5 — GRAVIER : deux reg pierreux, le contrepoint minéral du
+        // sable. Ils accueillent les blocs rocheux plus bas.
+        var reg = VillageTileMap(width: w, height: h, tile: tile)
+        for (fx, fy, fr) in [(0.14, 0.72, 0.15), (0.72, 0.14, 0.13)] {
+            reg.stampEllipse(center: CGPoint(x: desert.minX + desert.width * fx,
+                                             y: desert.minY + desert.height * fy),
+                             radiusX: desert.width * fr,
+                             radiusY: desert.height * fr * 0.9)
+        }
+        renderTileMap(reg, fullTile: "ds_gravel", edgePrefix: nil,
+                      in: scene, z: -29.54)
 
         // ── LAC DE SOLIS (sud-ouest) : eau + berges autotilées, comme l'étang
         // du village. L'eau ne se marche pas (obstacle enregistré).
@@ -558,7 +670,20 @@ final class WorldBuilder {
         for p in [pVillage, pForest, pShrine, pRuins, pMines, pDesert, pThreshold] {
             roads.stampEllipse(center: p, radiusX: 52, radiusY: 34)
         }
+        // La route change de matière en entrant dans le désert. Ses bords
+        // `me_edge_*` portent de l'HERBE : jusqu'ici la piste de Forêt →
+        // Ossara traversait donc le sable bordée de vert vif, et la clairière
+        // de la tente était cernée d'un anneau de gazon en plein désert.
+        // Dedans, c'est une piste caravanière de gravier tassé, sans bord.
+        //
+        // La topologie de `roads` reste INTACTE des deux côtés : on masque au
+        // rendu au lieu de découper la grille, sinon la route se refermerait
+        // sur la lisière avec un liseré d'herbe tout neuf.
+        var caravanTrack = roads
+        caravanTrack.intersect(arid)
         renderTileMap(roads, fullTile: "me_dirt_full", edgePrefix: "me_edge_",
+                      in: scene, z: -29.4, skipping: arid)
+        renderTileMap(caravanTrack, fullTile: "ds_gravel", edgePrefix: nil,
                       in: scene, z: -29.4)
 
         // ── FORÊT D'ÉBÈNE : un VRAI massif, vaste et touffu ──
@@ -618,43 +743,113 @@ final class WorldBuilder {
                                     width: 112, height: 80)],
                   in: scene)
 
-        // ── DÉSERT D'OSSARA : un VRAI désert, pas trois cactus ──
-        // Plaques de sol craquelé d'abord (le sable respire), puis la flore
-        // sèche en densité faible : l'immensité vide FAIT le désert.
-        let desertC = CGPoint(x: desert.midX, y: desert.midY)
+        // ── DÉSERT D'OSSARA : la flore, en BOSQUETS ──
+        //
+        // Le relief (croûte, dunes, gravier) est posé plus haut, en tuiles.
+        // Ne restent ici que de vrais objets : ni `ds_cracked*` ni `ds_dune*`,
+        // qui sont des tuiles de sol de 96×96 — semées en sprites, elles
+        // parsemaient le sable de carrés de terre craquelée aux bords nets.
+        //
+        // Un désert ne sème pas sa flore uniformément : le vide domine, et la
+        // vie se groupe là où il reste de l'eau. D'où une trame de fond très
+        // clairsemée, puis des BOSQUETS denses posés à la main.
         let desertRX = desert.width * 0.60, desertRY = desert.height * 0.66
-        plantMass([Flora(asset: "ds_cracked",      height: 26, weight: 3),
-                   Flora(asset: "ds_cracked2",     height: 26, weight: 3),
-                   Flora(asset: "ds_cracked3",     height: 24, weight: 2),
-                   Flora(asset: "ds_cracked_dark", height: 24, weight: 2)],
+        let desertPOIClearing = CGRect(x: pDesert.x - 56, y: pDesert.y - 40,
+                                       width: 112, height: 80)
+
+        /// Point du désert en fractions de son rectangle — les bosquets se
+        /// lisent alors sur le plan, pas en coordonnées absolues.
+        func inDesert(_ fx: CGFloat, _ fy: CGFloat) -> CGPoint {
+            CGPoint(x: desert.minX + desert.width * fx,
+                    y: desert.minY + desert.height * fy)
+        }
+
+        // Trame de fond : le désert nu. Cailloux, broussailles mortes,
+        // touffes sèches — assez pour que le sol vive, jamais assez pour
+        // remplir. C'est l'immensité vide qui FAIT le désert.
+        plantMass([Flora(asset: "ds_bush_dead",   height: 18, weight: 4),
+                   Flora(asset: "ds_bush_dead2",  height: 18, weight: 3),
+                   Flora(asset: "ds_bush_dead3",  height: 16, weight: 3),
+                   Flora(asset: "ds_grass_dry",   height: 14, weight: 4),
+                   Flora(asset: "ds_rock",        height: 12, weight: 3),
+                   Flora(asset: "ds_rock2",       height: 12, weight: 3),
+                   Flora(asset: "ds_rock_pile",   height: 18, weight: 2),
+                   Flora(asset: "ds_tumbleweed",  height: 16, weight: 2),
+                   Flora(asset: "ds_tumbleweed2", height: 16, weight: 1)],
                   center: desertC, radiusX: desertRX, radiusY: desertRY,
-                  step: 66, coreDensity: 0.30, edgeDensity: 0.10, in: scene)
-        plantMass([Flora(asset: "ds_dune",          height: 30, weight: 5),
-                   Flora(asset: "ds_dune2",         height: 30, weight: 4),
-                   Flora(asset: "ds_cactus_tall",   height: 46, weight: 3),
-                   Flora(asset: "ds_cactus_tall2",  height: 46, weight: 2),
-                   Flora(asset: "ds_cactus_med",    height: 34, weight: 3),
-                   Flora(asset: "ds_cactus_barrel", height: 24, weight: 3),
-                   Flora(asset: "ds_cactus_small",  height: 18, weight: 2),
-                   Flora(asset: "ds_cactus_flower", height: 26, weight: 2),
-                   Flora(asset: "ds_agave",         height: 24, weight: 2),
-                   Flora(asset: "ds_bush_dead",     height: 20, weight: 3),
-                   Flora(asset: "ds_bush_dead2",    height: 20, weight: 2),
-                   Flora(asset: "ds_rock_pile",     height: 22, weight: 3),
-                   Flora(asset: "ds_boulder2",      height: 28, weight: 2),
-                   Flora(asset: "ds_bones",         height: 18, weight: 2),   // ossements
-                   Flora(asset: "ds_bone",          height: 14, weight: 1)],
-                  center: desertC, radiusX: desertRX, radiusY: desertRY,
-                  step: 46, coreDensity: 0.34, edgeDensity: 0.14,
-                  avoiding: [CGRect(x: pDesert.x - 56, y: pDesert.y - 40,
-                                    width: 112, height: 80)],
-                  in: scene)
+                  step: 62, coreDensity: 0.30, edgeDensity: 0.16,
+                  avoiding: [desertPOIClearing], in: scene)
+
+        // Bosquets de cactus : les saguaros poussent en peuplements, jamais
+        // isolés. Quatre stations, chacune serrée sur son point d'eau.
+        for (fx, fy, r) in [(0.30, 0.66, 0.16), (0.58, 0.30, 0.14),
+                            (0.80, 0.56, 0.12), (0.16, 0.34, 0.11)] {
+            plantMass([Flora(asset: "ds_cactus_tall",    height: 48, weight: 3),
+                       Flora(asset: "ds_cactus_tall2",   height: 46, weight: 2),
+                       Flora(asset: "ds_cactus_tall3",   height: 44, weight: 2),
+                       Flora(asset: "ds_cactus_med",     height: 32, weight: 3),
+                       Flora(asset: "ds_cactus_med2",    height: 30, weight: 3),
+                       Flora(asset: "ds_cactus_barrel",  height: 22, weight: 3),
+                       Flora(asset: "ds_cactus_barrel2", height: 20, weight: 2),
+                       Flora(asset: "ds_cactus_small",   height: 16, weight: 3),
+                       Flora(asset: "ds_cactus_flower",  height: 24, weight: 2),
+                       Flora(asset: "ds_agave",          height: 22, weight: 3)],
+                      center: inDesert(fx, fy),
+                      radiusX: desert.width * r, radiusY: desert.height * r * 1.1,
+                      step: 34, coreDensity: 0.62, edgeDensity: 0.10,
+                      avoiding: [desertPOIClearing], in: scene)
+        }
+
+        // Chaos rocheux : les deux reg de gravier portent leurs blocs, avec
+        // une aiguille qui casse la ligne d'horizon.
+        for (fx, fy, r) in [(0.14, 0.72, 0.15), (0.72, 0.14, 0.13)] {
+            plantMass([Flora(asset: "ds_boulder",    height: 30, weight: 3),
+                       Flora(asset: "ds_boulder2",   height: 26, weight: 3),
+                       Flora(asset: "ds_rock_big",   height: 34, weight: 2),
+                       Flora(asset: "ds_rock_pile",  height: 20, weight: 3),
+                       Flora(asset: "ds_rock_spire", height: 52, weight: 1)],
+                      center: inDesert(fx, fy),
+                      radiusX: desert.width * r, radiusY: desert.height * r * 0.9,
+                      step: 40, coreDensity: 0.56, edgeDensity: 0.12,
+                      avoiding: [desertPOIClearing], in: scene)
+        }
+
+        // Charnier de caravane : les ossements se groupent là où la soif a
+        // eu raison d'un convoi. Éparpillés partout, ils perdaient tout sens.
+        plantMass([Flora(asset: "ds_skull_cow",  height: 18, weight: 3),
+                   Flora(asset: "ds_skull_cow2", height: 18, weight: 2),
+                   Flora(asset: "ds_skull",      height: 14, weight: 2),
+                   Flora(asset: "ds_bones",      height: 14, weight: 3),
+                   Flora(asset: "ds_bone",       height: 10, weight: 3)],
+                  center: inDesert(0.46, 0.16),
+                  radiusX: desert.width * 0.10, radiusY: desert.height * 0.10,
+                  step: 34, coreDensity: 0.44, edgeDensity: 0.08,
+                  avoiding: [desertPOIClearing], in: scene)
+
+        // Palmeraie du campement : le POI est une tente de caravane, elle
+        // s'installe à l'ombre. C'est aussi le repère visuel qui dit « on
+        // entre ici » avant même de lire le panneau.
+        plantMass([Flora(asset: "ds_palm_tall1", height: 58, weight: 3),
+                   Flora(asset: "ds_palm_tall2", height: 54, weight: 3),
+                   Flora(asset: "ds_palm_small", height: 32, weight: 2),
+                   Flora(asset: "ds_oasis_flower", height: 14, weight: 2),
+                   Flora(asset: "ds_flower_orange", height: 12, weight: 1)],
+                  center: pDesert,
+                  radiusX: 132, radiusY: 96,
+                  step: 40, coreDensity: 0.34, edgeDensity: 0.42,
+                  avoiding: [desertPOIClearing], in: scene)
 
         // ── Détail plaines : fleurs & cailloux, sobre (jamais sur l'eau) ──
+        // La zone interdite couvre la LISIÈRE ARIDE, pas seulement le sable :
+        // des fleurs vives sur la terre desséchée annulaient tout le dégradé
+        // prairie → steppe → désert construit plus haut.
+        let desertKeepOut = desert.insetBy(dx: -desert.width * 0.10,
+                                           dy: -desert.height * 0.10)
         scatterOverworld(["village_flower_yellow", "village_flower_pink",
                           "village_flower_red", "me_flower_blue", "ext_flower_sun"],
                          count: 46, in: CGRect(x: 0, y: 0, width: w, height: h),
-                         scale: 0.45, avoiding: [lakeRect(lakeC, lakeRX, lakeRY), desert],
+                         scale: 0.45,
+                         avoiding: [lakeRect(lakeC, lakeRX, lakeRY), desertKeepOut],
                          in: scene)
         scatterOverworld(["rock_5", "rock_9", "ds_rock"],
                          count: 18, in: CGRect(x: 0, y: 0, width: w, height: h),
@@ -5217,12 +5412,26 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
     /// `edgePrefix` nil = pas de tuiles de transition (les mines : la terre
     /// d'excavation s'arrête net sur la pierre, et les bords `me_edge_*`
     /// portent de l'herbe qui n'a rien à faire sous terre).
+    /// `variants` : tuiles pleines interchangeables, tirées cellule par
+    /// cellule. Une seule texture répétée sur une grande surface (le sable du
+    /// désert) affiche sa trame en damier — le motif diagonal de `ds_sand`
+    /// se lisait d'un bout à l'autre de la carte. Le tirage est DÉTERMINISTE
+    /// (haché sur col/row) : le sol reste identique d'une entrée à l'autre.
+    /// `skipping` : cellules à ne PAS peindre, sans toucher à la grille. Une
+    /// route qui entre dans le désert y est rendue autrement (piste de
+    /// gravier) ; la découper de `map` lui referait un bord — donc de
+    /// l'herbe — en pleine dune. On masque au rendu, la topologie survit.
     private func renderTileMap(_ map: VillageTileMap, fullTile: String,
                                edgePrefix: String?, in scene: SKScene, z: CGFloat,
-                               tint: SKColor? = nil) {
+                               tint: SKColor? = nil, variants: [String] = [],
+                               skipping: VillageTileMap? = nil) {
         for piece in map.pieces() {
             if piece.suffix != nil, edgePrefix == nil { continue }
-            let name = piece.suffix.map { (edgePrefix ?? "") + $0 } ?? fullTile
+            if skipping?.matter(piece.col, piece.row) == true { continue }
+            let full = variants.isEmpty
+                ? fullTile
+                : variants[Self.tileHash(piece.col, piece.row) % variants.count]
+            let name = piece.suffix.map { (edgePrefix ?? "") + $0 } ?? full
             guard let t = PixelArtSprites.still(name: name, scale: 0.5,
                                                  anchor: .zero) else { continue }
             t.position = CGPoint(x: CGFloat(piece.col) * map.tile,
@@ -5236,6 +5445,15 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
             }
             add(t, to: scene)
         }
+    }
+
+    /// Hachage stable d'une cellule → choix de variante de tuile. Un simple
+    /// `randomElement` redessinerait le sol différemment à chaque entrée dans
+    /// la zone ; ici deux visites donnent exactement le même désert.
+    private static func tileHash(_ col: Int, _ row: Int) -> Int {
+        var h = col &* 73_856_093 ^ row &* 19_349_663
+        h ^= h >> 13
+        return abs(h &* 1_274_126_177)
     }
 }
 
@@ -5277,6 +5495,16 @@ struct VillageTileMap {
         guard c0 <= c1, r0 <= r1 else { return }
         for r in r0...r1 {
             for c in c0...c1 { cells[r * cols + c] = true }
+        }
+    }
+
+    /// Ne garde que les cellules qui sont AUSSI matière dans `other`.
+    /// Sert à découper une piste selon la zone qu'elle traverse : une route
+    /// de terre battue porte des bords `me_edge_*` qui contiennent de
+    /// l'herbe — traversant le désert, elle y semait un liseré vert.
+    mutating func intersect(_ other: VillageTileMap) {
+        for i in cells.indices where cells[i] {
+            cells[i] = other.cells.indices.contains(i) && other.cells[i]
         }
     }
 

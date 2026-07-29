@@ -5319,7 +5319,10 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.035, green: 0.027, blue: 0.025, alpha: 1)
         buildInterior(kind, in: scene)
-        setZoneVignette(in: scene, alpha: 0.38)   // pièce éclairée au feu
+        // Vignette allégée : à 0,38 elle mangeait les murs et les angles de la
+        // pièce, là où sont justement rangés l'établi, les fûts et le lit. Une
+        // salle éclairée au feu est chaude et contrastée, pas aveugle.
+        setZoneVignette(in: scene, alpha: 0.26)
         LightingEngine.applyGrade(.interior, in: scene)
         debugDrawObstacles(in: scene)   // --show-obstacles : audit (interior)
         AudioEngine.shared.setAmbience(.interior)
@@ -5402,17 +5405,20 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func interiorPlankPalette(for kind: HouseInteriorKind) -> [UIColor] {
         switch kind {
         case .armory:
-            // Noyer sombre de forge
-            return [UIColor(red: 0.34, green: 0.24, blue: 0.16, alpha: 1),
-                    UIColor(red: 0.30, green: 0.21, blue: 0.14, alpha: 1),
-                    UIColor(red: 0.26, green: 0.18, blue: 0.12, alpha: 1),
-                    UIColor(red: 0.12, green: 0.08, blue: 0.05, alpha: 1)]
+            // Noyer de forge. Il descendait à 0,26 sur le ton le plus sombre,
+            // et sous la vignette d'intérieur la pièce virait au noir : on ne
+            // distinguait plus l'établi du plancher. Relevé d'un cran — c'est
+            // une forge, il y fait chaud, pas nuit noire.
+            return [UIColor(red: 0.44, green: 0.32, blue: 0.21, alpha: 1),
+                    UIColor(red: 0.39, green: 0.28, blue: 0.18, alpha: 1),
+                    UIColor(red: 0.34, green: 0.24, blue: 0.16, alpha: 1),
+                    UIColor(red: 0.17, green: 0.11, blue: 0.07, alpha: 1)]
         case .apothecary:
             // Bois patiné aux reflets verdis (herboristerie)
-            return [UIColor(red: 0.30, green: 0.26, blue: 0.16, alpha: 1),
-                    UIColor(red: 0.26, green: 0.23, blue: 0.14, alpha: 1),
-                    UIColor(red: 0.22, green: 0.20, blue: 0.12, alpha: 1),
-                    UIColor(red: 0.10, green: 0.09, blue: 0.05, alpha: 1)]
+            return [UIColor(red: 0.38, green: 0.33, blue: 0.21, alpha: 1),
+                    UIColor(red: 0.33, green: 0.29, blue: 0.18, alpha: 1),
+                    UIColor(red: 0.28, green: 0.25, blue: 0.15, alpha: 1),
+                    UIColor(red: 0.13, green: 0.12, blue: 0.07, alpha: 1)]
         case .inn:
             // Chêne chaleureux d'auberge
             return [UIColor(red: 0.42, green: 0.29, blue: 0.17, alpha: 1),
@@ -5502,7 +5508,10 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         title.fontSize = 15
         title.fontColor = SKColor(red: 0.88, green: 0.78, blue: 0.58, alpha: 0.95)
         title.horizontalAlignmentMode = .center
-        title.position = CGPoint(x: room.midX, y: room.maxY - 36)
+        // Au-DESSUS de la pièce : posée à l'intérieur, l'enseigne tombait
+        // derrière le comptoir du fond et derrière le marchand — on lisait
+        // « Ar…rerie de …am ».
+        title.position = CGPoint(x: room.midX, y: room.maxY + 12)
         title.zPosition = 4
         add(title, to: scene)
     }
@@ -5510,6 +5519,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
 
     private func addInteriorSprite(_ name: String, in scene: SKScene, at position: CGPoint,
                                    scale: CGFloat, flipped: Bool = false) {
+        // Les intérieurs passent par ici et NON par `addPixelProp` : ils
+        // échappaient donc à la table de substitution, et l'auberge alignait
+        // ses jerricans de plastique bleus pendant que le village dehors avait
+        // ses fûts. Un seul filtre, deux portes d'entrée.
+        guard let name = Self.substituted(name) else { return }
         guard let node = PixelArtSprites.still(name: name, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         node.position = position

@@ -1677,47 +1677,75 @@ final class WorldBuilder {
         // ═══════════ MAISONS (échelle perso : porte ≈ taille de Kael) ═══════════
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.96), width: 90, in: scene)
 
+        // ── LE BÂTI ──────────────────────────────────────────────────────
+        //
+        // Les huit maisons sortaient du pack contemporain, et leurs NOMS
+        // mentaient : `village_house_armory` est un pavillon de banlieue avec
+        // porte de garage, `village_house_inn` une maison à terrasse bois et
+        // climatiseur, `village_house_country` un chalet alpin à fenêtres PVC.
+        // Le village de départ d'un RPG médiéval comptait donc un garage, une
+        // villa de verre, une maison japonaise et un immeuble haussmannien.
+        //
+        // `mv_chalet` est le seul vrai corps de ferme en bois du catalogue :
+        // il porte le village entier, décliné en TEINTES — un hameau se
+        // distingue par ses bois et ses enduits, pas par huit architectures.
+        // Deux exceptions qui font les repères : le manoir gothique du chef et
+        // la chapelle.
+        //
+        // Les positions ne bougent PAS : `houseDoorPosition` cale les entrées
+        // d'intérieur dessus.
+        let plaster = SKColor(red: 0.92, green: 0.86, blue: 0.72, alpha: 1)
+        let oldWood = SKColor(red: 0.56, green: 0.38, blue: 0.24, alpha: 1)
+        let mossRoof = SKColor(red: 0.52, green: 0.58, blue: 0.44, alpha: 1)
+        let ochre = SKColor(red: 0.84, green: 0.64, blue: 0.38, alpha: 1)
+
         // Résidentiel sud — la maison de Kael en premier plan
-        addVillageBuilding(asset: "village_house_onestory", scale: 0.28,
+        addVillageBuilding(asset: "mv_chalet", scale: 0.44,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.18, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.32, y: h * 0.075), in: scene)
-        addVillageBuilding(asset: "village_house_country", scale: 0.30,
+                            label: nil, at: CGPoint(x: w * 0.32, y: h * 0.075), in: scene,
+                            tint: oldWood)
+        addVillageBuilding(asset: "mv_chalet", scale: 0.40,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: Palette.wood,
                             roofColor: Palette.woodGold,
-                            label: nil, at: CGPoint(x: w * 0.14, y: h * 0.16), in: scene)
-        addVillageBuilding(asset: "village_house_modern", scale: 0.26,
+                            label: nil, at: CGPoint(x: w * 0.14, y: h * 0.16), in: scene,
+                            tint: plaster, flipped: true)
+        addVillageBuilding(asset: "mv_chalet", scale: 0.42,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.16), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.16), in: scene,
+                            tint: ochre)
 
         // Commerces — portes alignées sur houseDoorPosition (NE PAS déplacer)
-        addVillageBuilding(asset: "village_house_japanese", scale: 0.30,
+        addVillageBuilding(asset: "mv_chalet", scale: 0.42,
                             fallbackW: 62, fallbackH: 50,
                             wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
                             roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.58), in: scene)
-        addVillageBuilding(asset: "village_house_armory", scale: 0.32,
+                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.58), in: scene,
+                            tint: mossRoof)          // l'herboriste, sous la mousse
+        addVillageBuilding(asset: "mv_chalet", scale: 0.50,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: Palette.wood,
                             roofColor: Palette.woodGold,
-                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.63), in: scene)
-        addVillageBuilding(asset: "village_house_inn", scale: 0.32,
+                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.63), in: scene,
+                            tint: SKColor(red: 0.50, green: 0.44, blue: 0.42, alpha: 1))
+        addVillageBuilding(asset: "mv_chalet", scale: 0.52,
                             fallbackW: 88, fallbackH: 62,
                             wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.58), in: scene)
+                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.58), in: scene,
+                            tint: ochre, flipped: true)   // l'auberge, la plus grande
 
-        // Quartier haut — villas autour d'un parc civique
-        addVillageBuilding(asset: "village_house_victorian", scale: 0.24,
+        // Quartier haut — le manoir du chef et la chapelle ferment le village
+        addVillageBuilding(asset: "village_house_haunted", scale: 0.19,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.17, y: h * 0.78), in: scene)
-        addVillageBuilding(asset: "village_house_country", scale: 0.26,
+        addVillageBuilding(asset: "gy_chapel", scale: 0.44,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: Palette.wood,
                             roofColor: Palette.woodGold,
@@ -5798,8 +5826,64 @@ private static let walkablePropPrefixes = [
     "me_big_sprout", "forest_mushroom", "mushroom"
 ]
 
+/// SUBSTITUTIONS D'UNIVERS — le décor sortait en grande partie du pack
+/// « Modern Exteriors » (préfixe `me_`) : le village de départ d'un RPG
+/// médiéval-fantasy alignait réverbères, bancs publics, boîtes aux lettres,
+/// barrières de chantier et stand de limonade.
+///
+/// Les noms d'assets mentent en prime, et le code les croyait sur parole :
+/// `me_sign_1` est une barrière de travaux rouge et blanche, pas un panneau ;
+/// `village_lantern_1` est une borne à incendie, pas une lanterne.
+///
+/// La substitution se fait ICI, au seul point où un décor est posé, plutôt
+/// qu'aux quarante points d'appel : un asset banni devient son équivalent
+/// médiéval, ou disparaît quand il n'en a pas. Ajouter une entrée suffit à
+/// purger toutes les zones d'un coup.
+///
+/// `nil` = l'objet n'a pas d'équivalent, on ne le pose pas.
+private static let modernSubstitutions: [String: String?] = [
+    // Éclairage public : un village médiéval n'en a pas. Les lanternes
+    // portées restent (`village_lantern_2` est une vraie lanterne rouge).
+    "me_lamp_1": nil, "me_lamp_2": nil, "me_lamp_3": nil,
+    "village_lantern_1": "village_lantern_2",       // borne incendie → lanterne
+    // Mobilier urbain.
+    "me_bench_1": "village_bench", "me_bench_2": "village_bench",
+    "me_bench_3": "village_bench", "me_garden_bench": "village_bench",
+    "me_mailbox_1": nil, "me_mailbox_2": nil,
+    "me_birdhouse_big": nil, "me_birdhouse_blue": nil, "me_birdhouse_brown": nil,
+    // « Panneaux » qui sont des barrières de chantier.
+    "me_sign_1": nil, "me_sign_2": nil, "me_sign_3": nil,
+    // Jardinières et suspensions de balcon → paniers et cageots.
+    "me_vase_red": "me_basket", "me_vase_yellow": "me_basket",
+    "me_vase_pink": "me_basket_2", "me_vase_sunflower": "village_crate_1",
+    "me_hanging_flowers": nil, "me_hanging_pot": nil,
+    // Commerce contemporain : `me_lemonade_stand` est un stand de limonade,
+    // `interior_market` une devanture de supérette avec « MARKET » écrit
+    // dessus — du texte anglais cuit dans une image, dans un jeu localisé.
+    "me_lemonade_stand": "village_crate_2",
+    "interior_market": "me_wood_storage",           // grenier à grain en bois
+    // Bidons de plastique bleus et verts empilés le long des façades : ce
+    // sont des jerricans. Un village stocke son eau et sa bière en fûts.
+    "me_barrel_1": "village_barrel_1", "me_barrel_2": "village_barrel_2",
+    "me_barrel_3": "village_barrel_1", "me_barrel_4": "village_barrel_2",
+    // Bacs à fleurs de balcon → planches de potager.
+    "me_flower_bush_1": "mv_garden_bed", "me_flower_bush_2": "mv_garden_bed",
+    "me_flower_bush_3": "mv_garden_bed", "me_flower_bush_4": "mv_garden_bed",
+    "me_flower_bush_5": "mv_garden_bed",
+    // Carrés de pelouse cerclés d'aluminium : du mobilier de parc urbain.
+    "me_landscape_grass": nil, "me_landscape_stone": nil,
+    "me_landscape_water": nil
+]
+
+/// Nom réellement posé pour un asset demandé — `nil` si l'univers le refuse.
+static func substituted(_ name: String) -> String? {
+    guard let mapped = modernSubstitutions[name] else { return name }
+    return mapped
+}
+
 private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoint,
                           scale: CGFloat, flipped: Bool = false) {
+    guard let name = Self.substituted(name) else { return }
     guard let node = PixelArtSprites.still(name: name, scale: scale,
                                            anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
     node.position = position
@@ -5875,15 +5959,27 @@ private func addDirtPath(in scene: SKScene, from a: CGPoint, to b: CGPoint,
     /// Pose un bâtiment de village : sprite pixel art si l'asset existe,
     /// sinon fallback sur le rectangle programmatique d'origine.
     /// Anchor (0.5, 0) → la position passée est le pied de la maison.
+    /// `tint` : le village entier est bâti sur un seul corps de ferme
+    /// (`mv_chalet`). Ce qui distingue deux maisons d'un hameau, ce sont ses
+    /// bois et ses enduits, pas huit architectures différentes — la teinte
+    /// fait ce travail, le miroir achève de casser la répétition.
     private func addVillageBuilding(asset: String, scale: CGFloat,
                                      fallbackW: CGFloat, fallbackH: CGFloat,
                                      wallColor: SKColor, roofColor: SKColor,
                                      label: String?,
-                                     at position: CGPoint, in scene: SKScene) {
+                                     at position: CGPoint, in scene: SKScene,
+                                     tint: SKColor? = nil, flipped: Bool = false) {
         let node: SKNode
         if let sprite = PixelArtSprites.still(name: asset, scale: scale,
                                                anchor: CGPoint(x: 0.5, y: 0.0)) {
             node = sprite
+            if let tint {
+                sprite.forEachDescendantSprite { s in
+                    s.color = tint
+                    s.colorBlendFactor = 0.30
+                }
+            }
+            if flipped { sprite.xScale = -abs(sprite.xScale == 0 ? 1 : sprite.xScale) }
             addGroundShadow(to: node, width: 160 * scale, height: 20 * scale, y: 4 * scale)
             // Enseigne au-dessus du sprite (offset adapté au scale)
             if let label {

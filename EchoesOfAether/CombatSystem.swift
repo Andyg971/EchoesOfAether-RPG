@@ -1382,6 +1382,16 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
     /// Éclat bleu net à la parade : pixel art, aucun flou.
     private func playBlockEffect(at pos: CGPoint) {
+        // Le pareur lève vraiment son bouclier quand son pack en dessine un
+        // (le wizard d'Eran a un jeu complet bouclier au bras), et la rune
+        // de garde du pack s'allume sur lui.
+        if let k = actorSprite ?? kaelSprite {
+            CombatSprites.playGuard(on: k)
+            if let hero = CombatSprites.heroOf(k) {
+                BattleSprites.playEffect(hero.wardEffect, from: pos, to: pos,
+                                         in: root, scale: 1.9)
+            }
+        }
         let ring = SKShapeNode(rectOf: CGSize(width: 52, height: 52))
         ring.strokeColor = SKColor(red: 0.60, green: 0.88, blue: 1.00, alpha: 1)
         ring.fillColor = .clear
@@ -2941,13 +2951,18 @@ private func setupComboAndStatusUI(scene: SKScene) {
         // Vraie animation du pack. Sans pack (ennemi contrôlé, node sans
         // corps), rien ne se passe et seule la ruée subsiste — le combat
         // n'est jamais bloqué.
+        let clip: BattleSprites.Clip
         if signature {
             CombatSprites.playHeroSkill(on: k, index: 1)   // skill2
+            clip = .skill2
         } else if strong {
             CombatSprites.playHeroSkill(on: k, index: 0)   // skill1
+            clip = .skill1
         } else {
             CombatSprites.playHeroAttack(on: k)
+            clip = .attack
         }
+        playActorSpellFX(clip, on: foe)
         // Le tilt d'origine tordait le sprite pour simuler un coup ; les packs
         // portent leur propre gestuelle, on ne la contrarie plus.
         k.run(.sequence([lungeIn, lungeOut]))
@@ -2968,6 +2983,45 @@ private func setupComboAndStatusUI(scene: SKScene) {
             }
         }
         playEnemyHitReact(foe, strong: strong)
+    }
+
+    /// Compteur d'attaques par lanceur : sert à faire tourner les éléments
+    /// d'une attaque simple (glace, puis foudre, puis glace…).
+    private var spellCycle: [ObjectIdentifier: Int] = [:]
+
+    /// Lance les FX du sort correspondant à l'action de l'acteur courant.
+    ///
+    /// Les planches d'effets (feu, glace, foudre, tonnerre, blizzard, garde)
+    /// dormaient dans le catalogue : `BattleSprites.playEffect` n'avait aucun
+    /// appelant. C'est ici qu'elles entrent en scène, chacune chez le
+    /// personnage dont elle vient du pack (cf. `Hero.spells(for:)`).
+    private func playActorSpellFX(_ clip: BattleSprites.Clip, on foe: EnemyState) {
+        guard let k = actorSprite, let hero = CombatSprites.heroOf(k) else { return }
+        let spells = hero.spells(for: clip)
+        guard !spells.isEmpty else { return }
+        let from = actorHomePosition
+        let to = foe.homePosition
+
+        if clip == .attack {
+            // Cycle : un lanceur qui ouvre toujours sur le même élément
+            // n'a pas l'air d'en maîtriser cinq.
+            let key = ObjectIdentifier(k)
+            let step = (spellCycle[key] ?? 0) % spells.count
+            spellCycle[key] = step + 1
+            BattleSprites.playEffect(spells[step], from: from, to: to, in: root)
+            return
+        }
+        // Sort : la liste est un ENCHAÎNEMENT (le tonnerre tombe, le
+        // blizzard suit), décalé pour qu'on lise deux temps.
+        for (i, fx) in spells.enumerated() {
+            root.run(.sequence([
+                .wait(forDuration: 0.18 * Double(i)),
+                .run { [weak self] in
+                    guard let self else { return }
+                    BattleSprites.playEffect(fx, from: from, to: to, in: self.root)
+                }
+            ]))
+        }
     }
 
     private func playEnemyHitReact(_ foe: EnemyState, strong: Bool) {

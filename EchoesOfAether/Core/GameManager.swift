@@ -2745,10 +2745,11 @@ final class GameManager {
             }
         } else if player.ruinsProgress == 1 {
             // L'Archiviste est un mini-boss : patrouille serrée, charge lente.
-            addRoamer("enemy_archivist", at: plan.archivistAmbush,
-                      wh: plan.height, patrolRadius: 52, chaseSpeed: 78,
-                      tint: SKColor(red: 0.55, green: 0.20, blue: 0.45, alpha: 1),
-                      blend: 0.40) { [weak self] in
+            // Sa planche est déjà bleue — aucune teinte par-dessus, sinon on
+            // perd la couleur qui EST son état (cf. CombatSprites).
+            addRoamer("enemy_archivist_blue", at: plan.archivistAmbush,
+                      wh: plan.height, frames: 8, height: 72,
+                      patrolRadius: 52, chaseSpeed: 78, blend: 0) { [weak self] in
                 self?.startRuinsCombat2()
             }
         }
@@ -2807,13 +2808,15 @@ final class GameManager {
 
     /// Crée un monstre baladeur (sprite animé) et l'enregistre.
     func addRoamer(_ asset: String, at pos: CGPoint, wh: CGFloat,
+                           frames: Int = 6, height: CGFloat? = nil,
                            patrolRadius: CGFloat = 70, chaseSpeed: CGFloat = 104,
                            tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
                            blend: CGFloat = 0.22, alpha: CGFloat = 1,
                            graceTime: TimeInterval = 0,
                            sanctuary: CGRect? = nil,
                            startCombat: @escaping () -> Void) {
-        guard let node = world.makeRoamingMonster(asset: asset, tint: tint,
+        guard let node = world.makeRoamingMonster(asset: asset, frames: frames,
+                                                  height: height, tint: tint,
                                                   blend: blend, alpha: alpha) else { return }
         world.worldNode.addChild(node)
         roamers.append(RoamingMonster(

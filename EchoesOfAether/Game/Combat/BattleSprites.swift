@@ -155,6 +155,48 @@ enum BattleSprites {
 
         var prefix: String { pack.prefix }
 
+        /// Planche « bouclier au bras » du même personnage, s'il en a une.
+        /// Seul le wizard en fournit une — donc seul Eran se met en garde
+        /// pour de vrai au lieu d'encaisser en position de repos.
+        var wardPrefix: String? {
+            pack == .wizard ? "battle_kaelward" : nil
+        }
+
+        /// Les effets que ce personnage projette pour une action donnée.
+        ///
+        /// Ils suivent le PACK, pas le nom : chacun jette les éléments
+        /// dessinés dans son propre lot d'assets. Eran porte le wizard, il
+        /// commande donc la glace, la foudre, le feu, le tonnerre et le
+        /// blizzard ; Kael porte le fighter et garde bourrasque et braise ;
+        /// Lyra son sacré. Ces planches existaient TOUTES dans le catalogue
+        /// sans qu'aucune ne soit jamais jouée — `playEffect` n'avait aucun
+        /// appelant.
+        ///
+        /// Plusieurs effets pour une action = enchaînement (le tonnerre tombe,
+        /// le blizzard suit). Pour l'attaque simple, la liste est un CYCLE :
+        /// un lanceur qui ouvre toujours sur le même élément n'a pas l'air
+        /// d'en maîtriser cinq.
+        func spells(for clip: Clip) -> [Effect] {
+            switch (pack, clip) {
+            case (.wizard, .attack):  return [.ice, .lightning]
+            case (.wizard, .skill1):  return [.fire]
+            case (.wizard, .skill2):  return [.thunder, .blizzard]
+
+            case (.fighter, .attack): return [.eranWind]
+            case (.fighter, .skill1): return [.eranWind]
+            case (.fighter, .skill2): return [.eranEmber]
+
+            case (.priest, .attack):  return [.lyraBolt]
+            case (.priest, .skill1):  return [.lyraHeal]
+            case (.priest, .skill2):  return [.lyraBlessing]
+
+            default: return []
+            }
+        }
+
+        /// L'effet de garde, joué quand le personnage pare un coup.
+        var wardEffect: Effect { .ward }
+
         /// Échelle en combat — dérivée de la hauteur du corps, pas du canevas.
         var scale: CGFloat { combatBodyHeight / pack.bodyHeight }
 
@@ -210,12 +252,16 @@ enum BattleSprites {
 
     /// Textures d'un clip, en `.nearest` (charte pixel : jamais de lissage).
     /// Vide si le pack ne fournit pas ce clip — l'appelant retombe sur l'idle.
-    static func textures(_ hero: Hero, _ clip: Clip) -> [SKTexture] {
+    /// - Parameter prefix: variante de planche à charger à la place de celle
+    ///   du pack (le wizard fournit un jeu complet BOUCLIER AU BRAS, cf.
+    ///   `Hero.wardPrefix`). Même canevas, mêmes clips : rien d'autre à recaler.
+    static func textures(_ hero: Hero, _ clip: Clip,
+                         prefix: String? = nil) -> [SKTexture] {
         let count = clip.frames(for: hero)
         guard count > 0 else { return [] }
         let group = clip.assetGroup(for: hero)
         return (1...count).compactMap { i in
-            let name = "\(hero.prefix)_\(group)_\(i)"
+            let name = "\(prefix ?? hero.prefix)_\(group)_\(i)"
             guard UIImage(named: name) != nil else { return nil }
             let t = SKTexture(imageNamed: name)
             t.filteringMode = .nearest
@@ -261,6 +307,38 @@ enum BattleSprites {
         body.run(.repeatForever(.animate(with: frames, timePerFrame: clip.timePerFrame,
                                          resize: false, restore: true)),
                  withKey: "clip")
+    }
+
+    /// Passe le personnage EN GARDE le temps d'encaisser : il lève son
+    /// bouclier (planche `wardPrefix`), puis revient au repos.
+    ///
+    /// Sans planche bouclier — Kael, Lyra — la fonction ne fait rien et
+    /// l'appelant garde son éclat de parade : personne ne mime une garde
+    /// avec des mains vides.
+    @discardableResult
+    static func playWard(hero: Hero, on root: SKNode,
+                         duration: TimeInterval = 0.7) -> Bool {
+        guard let wardPrefix = hero.wardPrefix,
+              let body = root.childNode(withName: "body") as? SKSpriteNode
+        else { return false }
+        let ward = textures(hero, .idle, prefix: wardPrefix)
+        guard !ward.isEmpty else { return false }
+
+        body.removeAction(forKey: "clip")
+        // On efface le clip mémorisé, sinon `loop(.idle)` se croit déjà en
+        // idle au retour et laisse le bouclier levé pour le reste du combat.
+        body.userData?["clip"] = "ward"
+        body.run(.sequence([
+            .repeat(.animate(with: ward, timePerFrame: 0.12,
+                             resize: false, restore: true),
+                    count: max(1, Int(duration / (0.12 * Double(ward.count))))),
+            .run { [weak root] in
+                guard let root else { return }
+                body.userData?["clip"] = nil
+                loop(.idle, hero: hero, on: root)
+            }
+        ]), withKey: "clip")
+        return true
     }
 
     // MARK: - FX de sort (assets overlay)

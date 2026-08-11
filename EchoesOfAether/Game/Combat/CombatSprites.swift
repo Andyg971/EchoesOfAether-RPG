@@ -58,7 +58,9 @@ enum CombatSpriteKind: CaseIterable {
         case .boneWalker: return "enemy_bone_idle_1"
         case .guardian: return nil
         case .ruinsGuardian: return nil
-        case .archivist: return "enemy_archivist_idle_1"
+        // Vignette du bestiaire : l'Archiviste dans son premier état, le
+        // bleu. C'est celui sous lequel le joueur l'aborde.
+        case .archivist: return "enemy_archivist_blue_idle_1"
         }
     }
 }
@@ -115,6 +117,17 @@ enum CombatSprites {
 
     // MARK: - Animations d'action (héros et alliés)
 
+    /// Le héros porté par ce node de combat, s'il en porte un.
+    static func heroOf(_ node: SKNode) -> BattleSprites.Hero? { hero(of: node) }
+
+    /// Met le combattant en garde (planche bouclier). `false` si son pack
+    /// n'en fournit pas — l'appelant garde alors son propre effet de parade.
+    @discardableResult
+    static func playGuard(on node: SKNode) -> Bool {
+        guard let h = hero(of: node) else { return false }
+        return BattleSprites.playWard(hero: h, on: node)
+    }
+
     /// Traduit un node de combat en héros de `BattleSprites` d'après son nom.
     private static func hero(of node: SKNode) -> BattleSprites.Hero? {
         switch node.name {
@@ -154,8 +167,13 @@ enum CombatSprites {
                            completion: completion)
     }
 
-    /// Nettoie les compteurs d'enchaînement (fin de combat).
-    static func resetChains() { chainStep.removeAll() }
+    /// Nettoie les compteurs d'enchaînement (fin de combat) — et remet
+    /// l'Archiviste au bleu, sinon il rouvrirait le combat suivant dans la
+    /// teinte où le précédent s'est arrêté.
+    static func resetChains() {
+        chainStep.removeAll()
+        resetArchivist()
+    }
 
     // MARK: - Enemy factory
 
@@ -169,10 +187,15 @@ enum CombatSprites {
         // silhouettes programmatiques uniques. Fallback shape si asset
         // manquant.
         if let config = pixelSprite(for: kind),
-           let sprite = PixelArtSprites.animated(name: config.name, frames: 6,
-                                                 scale: 1.7,
-                                                 timePerFrame: 0.16,
-                                                 anchor: CGPoint(x: 0.5, y: 0.0)) {
+           let sprite = PixelArtSprites.animated(
+               name: config.name,
+               frames: frameCount(kind, attack: false),
+               scale: targetHeight(kind).map {
+                   PixelArtSprites.scale(name: "\(config.name)_idle_1", height: $0)
+               } ?? 1.7,
+               timePerFrame: 0.16,
+               anchor: CGPoint(x: 0.5, y: 0.0)) {
+            sprite.name = "enemyBody"
             sprite.position = CGPoint(x: 0, y: -34)
             if let tint = config.tint {
                 sprite.forEachDescendantSprite { s in
@@ -197,20 +220,28 @@ enum CombatSprites {
     /// Joue les frames d'attaque (row "marche/agression" des sheets ME)
     /// une fois, puis reprend la boucle idle. Silencieux si pas d'assets.
     static func playAttackFrames(on node: SKNode, kind: CombatSpriteKind) {
+        // L'Archiviste vire à l'état suivant AVANT de frapper : le coup part
+        // déjà dans la nouvelle couleur, et il la garde ensuite au repos.
+        // Virer après l'attaque aurait donné un changement qui arrive « une
+        // fois de trop », sans lien lisible avec le coup qu'on vient de voir.
+        if kind == .archivist { advanceArchivist() }
         guard let config = pixelSprite(for: kind) else { return }
-        let attack = (1...6).compactMap { i -> SKTexture? in
-            let n = "\(config.name)_attack_\(i)"
-            guard UIImage(named: n) != nil else { return nil }
-            let t = SKTexture(imageNamed: n)
-            t.filteringMode = .nearest
-            return t
+
+        func textures(_ clip: String, _ count: Int) -> [SKTexture] {
+            (1...count).compactMap { i -> SKTexture? in
+                let n = "\(config.name)_\(clip)_\(i)"
+                guard UIImage(named: n) != nil else { return nil }
+                let t = SKTexture(imageNamed: n)
+                t.filteringMode = .nearest
+                return t
+            }
         }
-        guard attack.count == 6 else { return }
-        let idle = (1...6).map { i -> SKTexture in
-            let t = SKTexture(imageNamed: "\(config.name)_idle_\(i)")
-            t.filteringMode = .nearest
-            return t
-        }
+        let attackCount = frameCount(kind, attack: true)
+        let idleCount = frameCount(kind, attack: false)
+        let attack = textures("attack", attackCount)
+        let idle = textures("idle", idleCount)
+        guard attack.count == attackCount, idle.count == idleCount else { return }
+
         node.forEachDescendantSprite { sprite in
             sprite.removeAllActions()
             sprite.run(.sequence([
@@ -244,12 +275,52 @@ enum CombatSprites {
             return ("enemy_bone",
                     SKColor(red: 0.35, green: 0.42, blue: 0.58, alpha: 1))
         case .archivist:
-            // Squelette érudit noyé d'Aether violet
-            return ("enemy_archivist",
-                    SKColor(red: 0.30, green: 0.14, blue: 0.48, alpha: 1))
+            // L'Archiviste est une créature d'Aether liquide : il n'a pas de
+            // teinte appliquée, il EST de sa couleur, et il en change à
+            // chaque assaut (cf. `archivistTint`). Ses planches sont déjà
+            // colorées — teinter par-dessus effacerait justement le cycle.
+            return (archivistPrefix, nil)
         case .guardian:
             return nil   // boss Acte I → statue d'ange animée (cas dédié)
         }
+    }
+
+    // MARK: - Archiviste : le boss qui change d'état
+
+    /// Les trois états de l'Archiviste, dans l'ordre où il les traverse.
+    /// Bleu au repos, vert quand il s'échauffe, violet quand il déchaîne
+    /// l'Aether — le joueur lit sa montée en puissance à la couleur, sans
+    /// une ligne de texte.
+    private static let archivistTints = ["enemy_archivist_blue",
+                                         "enemy_archivist_green",
+                                         "enemy_archivist_violet"]
+    private static var archivistTint = 0
+    private static var archivistPrefix: String {
+        archivistTints[archivistTint % archivistTints.count]
+    }
+
+    /// Fait virer l'Archiviste à l'état suivant. Appelé à chaque attaque.
+    private static func advanceArchivist() { archivistTint += 1 }
+
+    /// Remet le boss au bleu (nouveau combat).
+    static func resetArchivist() { archivistTint = 0 }
+
+    /// Nombre de frames par clip. Les ennemis ME en ont six ; l'Archiviste
+    /// vient d'un autre pack et en a huit au repos, neuf à l'attaque.
+    private static func frameCount(_ kind: CombatSpriteKind,
+                                   attack: Bool) -> Int {
+        switch kind {
+        case .archivist: return attack ? 9 : 8
+        default:         return 6
+        }
+    }
+
+    /// Hauteur visée à l'écran, en points. `nil` = échelle historique 1.7
+    /// appliquée au canevas 48×96 des planches ME.
+    private static func targetHeight(_ kind: CombatSpriteKind) -> CGFloat? {
+        // Canevas 74×80 contre 48×96 pour les autres : à échelle commune
+        // l'Archiviste arrivait à mi-hauteur d'une goule. C'est un boss.
+        kind == .archivist ? 210 : nil
     }
 
     // MARK: - Shadow / ground anchor

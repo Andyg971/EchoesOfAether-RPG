@@ -103,12 +103,17 @@ extension SKNode {
 enum PixelArtSprites {
 
     /// Charge un sprite animé en boucle depuis `Assets.xcassets`.
+    /// - Parameter startFrame: décalage de phase dans la boucle. Indispensable
+    ///   pour les massifs (canopée, foule) : sans lui, cent arbres jouent la
+    ///   même frame au même instant et la forêt entière ondule d'un bloc —
+    ///   l'œil lit une boucle, pas du vent.
     /// - Returns: `nil` si une frame manque (le caller fait son fallback).
     static func animated(name: String,
                          frames: Int,
                          scale: CGFloat = 1.0,
                          timePerFrame: TimeInterval = 0.12,
-                         anchor: CGPoint = CGPoint(x: 0.5, y: 0.0)) -> SKNode? {
+                         anchor: CGPoint = CGPoint(x: 0.5, y: 0.0),
+                         startFrame: Int = 0) -> SKNode? {
         var textures: [SKTexture] = []
         for i in 1...frames {
             let imageName = "\(name)_idle_\(i)"
@@ -118,19 +123,63 @@ enum PixelArtSprites {
             textures.append(t)
         }
         guard !textures.isEmpty else { return nil }
+        if startFrame > 0 {
+            let offset = startFrame % textures.count
+            textures = Array(textures[offset...] + textures[..<offset])
+        }
 
         let root = SKNode()
         root.name = name
+        // L'asset survit au renommage du node (`node.name = "mara"`) : c'est
+        // lui qui permet de retrouver `{asset}_walk_*` au moment de mettre
+        // le personnage en marche.
+        root.userData = ["pixelAsset": name]
         let sprite = SKSpriteNode(texture: textures[0])
         sprite.anchorPoint = anchor
         sprite.setScale(scale)
         if textures.count > 1 {
             sprite.run(.repeatForever(.animate(with: textures,
                                                 timePerFrame: timePerFrame,
-                                                resize: false, restore: true)))
+                                                resize: false, restore: true)),
+                       withKey: cycleKey)
         }
         root.addChild(sprite)
         return root
+    }
+
+    /// Clé de l'action de boucle portée par le sprite d'un node `animated`.
+    private static let cycleKey = "cycle"
+
+    /// Bascule un node créé par `animated` sur une autre boucle du même
+    /// personnage — typiquement `walk` quand il se met en route, `idle`
+    /// quand il s'arrête.
+    ///
+    /// Sans ça, un PNJ qui flâne glisse jambes figées : c'est le détail qui
+    /// trahit le plus une foule « animée ».
+    ///
+    /// - Returns: `false` si la planche demandée n'existe pas — l'appelant
+    ///   laisse alors tourner la boucle en cours (cas des sprites qui n'ont
+    ///   qu'un idle, comme le chevalier de Dorin).
+    @discardableResult
+    static func playCycle(_ node: SKNode, suffix: String, frames: Int,
+                          timePerFrame: TimeInterval = 0.12) -> Bool {
+        guard let asset = node.userData?["pixelAsset"] as? String,
+              let sprite = node.children.first as? SKSpriteNode else { return false }
+        var textures: [SKTexture] = []
+        for i in 1...frames {
+            let imageName = "\(asset)_\(suffix)_\(i)"
+            guard UIImage(named: imageName) != nil else { return false }
+            let t = SKTexture(imageNamed: imageName)
+            t.filteringMode = .nearest
+            textures.append(t)
+        }
+        sprite.removeAction(forKey: cycleKey)
+        sprite.texture = textures[0]
+        sprite.run(.repeatForever(.animate(with: textures,
+                                            timePerFrame: timePerFrame,
+                                            resize: false, restore: true)),
+                   withKey: cycleKey)
+        return true
     }
 
     /// Charge un sprite statique unique (utilisé pour décor : arbres,
@@ -166,6 +215,21 @@ enum PixelArtSprites {
         guard let image = UIImage(named: name) else { return nil }
         return image.size.height * image.scale
     }
+
+    /// Échelle pour qu'un sprite occupe `height` POINTS à l'écran, quelle
+    /// que soit la hauteur native de sa planche.
+    ///
+    /// Les PNJ refaits au paperdoll font ~46 px de haut là où les anciennes
+    /// planches en occupaient 96 : le `scale: 0.5` en dur des appelants les
+    /// rendait deux fois trop petits. On vise désormais une taille à
+    /// l'écran, pas un facteur.
+    static func scale(name: String, height: CGFloat) -> CGFloat {
+        guard let native = pixelHeight(of: name), native > 0 else { return 1 }
+        return height / native
+    }
+
+    /// Hauteur à l'écran d'un PNJ du monde, en points (Kael fait ~50).
+    static let npcHeight: CGFloat = 48
 
     /// Extrait une frame depuis un spritesheet pixel art (RPG Maker MV
     /// format : grille `cols × rows` de frames `frameSize×frameSize`).

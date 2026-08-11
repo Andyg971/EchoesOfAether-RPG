@@ -41,13 +41,18 @@ enum WorldNode {
     // MARK: - Lyra (alliée, nature, bâton)
 
 
-    /// PNJ pixel art (sprites ME 48×96, 6 frames idle) à l'échelle de
-    /// Kael. Fallback : la silhouette programmatique historique.
-    private static func pixelNPC(_ asset: String, nodeName: String) -> SKNode? {
-        guard let node = PixelArtSprites.animated(name: asset, frames: 6,
-                                                  scale: 0.5,
-                                                  timePerFrame: 0.16,
-                                                  anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
+    /// PNJ pixel art (6 frames idle) à l'échelle de Kael. `height` fixe la
+    /// taille À L'ÉCRAN : les planches n'ont plus toutes la même hauteur
+    /// native depuis que les PNJ sont composés au paperdoll, et l'enfant
+    /// doit rester une tête sous les adultes.
+    /// Fallback : la silhouette programmatique historique.
+    private static func pixelNPC(_ asset: String, nodeName: String,
+                                 height: CGFloat = PixelArtSprites.npcHeight) -> SKNode? {
+        guard let node = PixelArtSprites.animated(
+            name: asset, frames: 6,
+            scale: PixelArtSprites.scale(name: "\(asset)_idle_1", height: height),
+            timePerFrame: 0.16,
+            anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         node.name = nodeName
         // Même convention que Kael : sprite ancré aux pieds, décalé pour
         // que la position du node reste le centre du personnage.
@@ -356,7 +361,9 @@ enum WorldNode {
     // MARK: - Enfant (PNJ enfant, petit, curieux)
 
     static func child() -> SKNode {
-        if let n = pixelNPC("npc_child", nodeName: "child") { return n }
+        // Une tête de moins que les adultes : c'est ce qui le fait lire
+        // comme un enfant, le paperdoll n'ayant pas de morphologie enfant.
+        if let n = pixelNPC("npc_child", nodeName: "child", height: 34) { return n }
         let root = SKNode()
         root.name = "child"
 

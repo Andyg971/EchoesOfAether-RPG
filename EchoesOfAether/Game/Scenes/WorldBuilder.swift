@@ -75,6 +75,10 @@ final class WorldBuilder {
     /// Empreintes au sol infranchissables (maisons, arbres, props solides).
     /// En coordonnées monde ; vidées à chaque changement de zone.
     private(set) var obstacles: [CGRect] = []
+
+    /// Rectangles occupés VISUELLEMENT par le décor (tout le sprite, pas
+    /// seulement son pied). Cf. `registerFootprint` et `isCluttered`.
+    private var propRects: [CGRect] = []
     private var backdropNodes: [SKNode] = []
     private var atmosphereNode: SKNode?
     private var toyMarker: SKNode?
@@ -175,6 +179,23 @@ final class WorldBuilder {
         registerObstacle(CGRect(x: node.position.x - w / 2,
                                 y: node.position.y - 4,
                                 width: w, height: max(10, d)))
+        // ENCOMBREMENT VISUEL, distinct de l'empreinte solide ci-dessus.
+        //
+        // L'empreinte est volontairement une mince bande au pied du décor :
+        // c'est ce qui laisse Kael passer DERRIÈRE un arbre ou un banc. Mais
+        // « derrière », pour un PNJ lâché en promenade au hasard, c'est aussi
+        // « pile au milieu du feuillage » ou « debout sur l'assise » — d'où
+        // des villageois plantés sur les bancs. Les promeneurs visent donc
+        // hors de ce rectangle-là, qui couvre tout le sprite.
+        propRects.append(CGRect(x: node.position.x - f.width / 2,
+                                y: node.position.y - 6,
+                                width: f.width, height: f.height + 6))
+    }
+
+    /// Le décor occupe-t-il ce point à l'écran ? Sert au choix des
+    /// destinations de promenade, pas aux collisions de Kael.
+    func isCluttered(_ p: CGPoint) -> Bool {
+        propRects.contains { $0.contains(p) }
     }
 
     func layout(in size: CGSize) {
@@ -316,16 +337,26 @@ final class WorldBuilder {
     /// Vrai si on est à l'intérieur d'une maison.
     var isInsideInterior: Bool { activeInterior != nil }
 
+    /// Figurants du village (`gv_*`, cf. `populateVillage`) — reconstruits à
+    /// chaque entrée dans le village, et promenés comme les PNJ de quête.
+    private(set) var villageFolk: [SKNode] = []
+
     /// Lance la promenade libre des PNJ du village : chacun flâne autour
-    /// de son poste (large rayon), en évitant maisons et obstacles.
+    /// de son poste, en évitant maisons et obstacles.
     /// Garen (sentinelle) fait les cent pas près de la porte nord.
     /// Idempotent : ne relance pas un PNJ déjà en promenade.
     func startVillageWander(in size: CGSize) {
+        // Rayons resserrés : à 200-240 pt les PNJ traversaient un tiers du
+        // village et finissaient dans le marché ou sous les arbres. Un
+        // villageois flâne devant chez lui, il ne fait pas le tour du bourg.
         var walkers: [(SKNode, CGFloat)] = [
-            (dorin, 220), (bram, 200), (mara, 200), (sage, 200),
-            (child, 240), (villager, 240), (garen, 46)
+            (dorin, 130), (bram, 120), (mara, 120), (sage, 120),
+            (child, 160), (villager, 140), (garen, 46)
         ]
-        if !lyraKeepsVigil { walkers.append((lyra, 220)) }
+        if !lyraKeepsVigil { walkers.append((lyra, 140)) }
+        // Les figurants gardent leur porte : rayon plus court encore, sinon
+        // huit villageois convergent vers la place et les maisons se vident.
+        walkers += villageFolk.filter { $0.parent != nil }.map { ($0, 90) }
         for (npc, radius) in walkers where npc.action(forKey: "wander") == nil {
             scheduleWander(npc, home: npc.position, radius: radius, sceneWidth: size.width)
         }
@@ -333,7 +364,7 @@ final class WorldBuilder {
 
     /// Stoppe toute promenade (dialogue, combat, intérieur, cinématique).
     func stopVillageWander() {
-        for npc in [lyra, dorin, bram, mara, sage, garen, child, villager] {
+        for npc in [lyra, dorin, bram, mara, sage, garen, child, villager] + villageFolk {
             npc.removeAction(forKey: "wander")
         }
     }
@@ -343,17 +374,31 @@ final class WorldBuilder {
     private func scheduleWander(_ npc: SKNode, home: CGPoint,
                                 radius: CGFloat, sceneWidth: CGFloat) {
         let wh = worldHeight > 0 ? worldHeight : 402
-        let target = CGPoint(
-            x: min(max(home.x + .random(in: -radius...radius), 40), sceneWidth - 40),
-            y: min(max(home.y + .random(in: -radius...radius), 72), wh - 52))
-        let dest = clampDestination(from: npc.position, to: target)
+        // On TIRE plusieurs destinations et on garde la première qui ne
+        // tombe pas dans du décor. Le tirage unique d'avant plantait
+        // régulièrement un villageois sur un banc ou dans un arbre : la
+        // collision autorise le « derrière », l'œil y lit « dessus ».
+        var dest = npc.position
+        for _ in 0..<10 {
+            let target = CGPoint(
+                x: min(max(home.x + .random(in: -radius...radius), 40), sceneWidth - 40),
+                y: min(max(home.y + .random(in: -radius...radius), 72), wh - 52))
+            guard !isCluttered(target) else { continue }
+            let candidate = clampDestination(from: npc.position, to: target)
+            guard !isCluttered(candidate) else { continue }
+            dest = candidate
+            break
+        }
         let dist = npc.position.distance(to: dest)
 
-        // Les PNJ chibi (`npc_*`) n'ont qu'une boucle d'idle : les retourner
-        // suffit. Les héros portent un pack avec un vrai cycle de marche —
-        // il faut le LANCER, sinon ils flânent jambes figées, et le miroir
-        // passe par `updateWalk` (qui compense le décalage du corps dans son
-        // canevas). Retourner leurs sprites à la main les faisait sauter de côté.
+        // Trois familles de sprites, trois façons de marcher :
+        // — les héros portent un pack avec cycle de marche, piloté par
+        //   `updateWalk` (qui compense aussi le décalage du corps dans son
+        //   canevas ; retourner leurs sprites à la main les faisait sauter) ;
+        // — les personnages paperdoll ont une planche `{asset}_walk_*` :
+        //   on bascule dessus le temps du trajet, sinon ils GLISSENT ;
+        // — les sprites qui n'ont qu'un idle (le chevalier de Dorin) se
+        //   contentent du miroir, `playCycle` renvoyant false sans rien casser.
         let pack = Self.packHero(for: npc)
 
         var steps: [SKAction] = [.wait(forDuration: .random(in: 0.8...3.6))]
@@ -366,6 +411,8 @@ final class WorldBuilder {
                     BattleSprites.updateWalk(pack, on: npc,
                                              velocity: CGVector(dx: dx, dy: 1))
                 } else {
+                    PixelArtSprites.playCycle(npc, suffix: "walk", frames: 8,
+                                              timePerFrame: 0.11)
                     npc.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
                 }
             })
@@ -377,12 +424,18 @@ final class WorldBuilder {
                     node.zPosition = self.actorLayer(for: node.position.y)
                 }
             ]))
-            if let pack {
-                steps.append(.run { [weak npc] in
-                    guard let npc else { return }
+            steps.append(.run { [weak npc] in
+                guard let npc else { return }
+                if let pack {
                     BattleSprites.updateWalk(pack, on: npc, velocity: .zero)
-                })
-            }
+                } else {
+                    // Retour au repos : sans ça le villageois arrivé à
+                    // destination continue de pédaler sur place.
+                    PixelArtSprites.playCycle(npc, suffix: "idle", frames: 6,
+                                              timePerFrame: 0.16)
+                    npc.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+                }
+            })
         }
         steps.append(.run { [weak self, weak npc] in
             guard let self, let npc, !npc.isHidden else { return }
@@ -1866,19 +1919,43 @@ final class WorldBuilder {
                       in: scene, z: -9.6,
                       tint: SKColor(red: 0.16, green: 0.10, blue: 0.07, alpha: 1))
 
-        // ── CANOPÉE : double mur d'arbres ouest/est + lisières sud/nord ──
-        // me_tree_1..6 UNIQUEMENT : arbres ME naturels complets.
-        // (me_tree_7..10 = arbres en jardinière urbaine — réservés au
-        // village ; mv_forest_* = tuiles de canopée non homogènes.)
+        // ── CANOPÉE ANIMÉE : double mur d'arbres ouest/est + lisières ──
+        // Le feuillage RESPIRE : `atree_*` sont des cycles de 16 frames et
+        // `apine_cool` de 8. Chaque arbre démarre sur une frame différente et
+        // avec une cadence légèrement décalée — synchronisés, cent arbres
+        // ondulent d'un seul bloc et l'œil lit la boucle au lieu du vent.
+        // Repli `me_tree_1..6` (arbres ME naturels complets) si les planches
+        // animées manquent. me_tree_7..10 = arbres en jardinière urbaine,
+        // réservés au village ; mv_forest_* = canopée non homogène.
         let treeScale = max(0.45, min(0.68, w / 760))
+        let canopyHeight = 144 * treeScale     // gabarit historique des me_tree_*
+        // Vert froid et vert profond en alternance, un pin tous les cinq
+        // arbres : une essence unique donnerait un mur de photocopies.
+        let canopy: [(name: String, frames: Int, height: CGFloat)] = [
+            ("atree_cool", 16, canopyHeight),
+            ("atree_dark", 16, canopyHeight * 0.94),
+            ("atree_cool", 16, canopyHeight * 1.06),
+            ("atree_dark", 16, canopyHeight),
+            ("apine_cool", 8, canopyHeight * 1.22)
+        ]
         let borderTrees = ["me_tree_1", "me_tree_5", "me_tree_2",
                            "me_tree_3", "me_tree_6", "me_tree_4"]
         var treeIdx = 0
         func plantTree(_ x: CGFloat, _ y: CGFloat, scaleMult: CGFloat = 1.0, dim: CGFloat = 1.0) {
-            let name = borderTrees[treeIdx % borderTrees.count]
+            let species = canopy[treeIdx % canopy.count]
+            let idx = treeIdx
             treeIdx += 1
-            let tree = PixelArtSprites.still(name: name, scale: treeScale * scaleMult,
-                                              anchor: CGPoint(x: 0.5, y: 0.0))
+            let animated = PixelArtSprites.animated(
+                name: species.name, frames: species.frames,
+                scale: scaleFor("\(species.name)_idle_1",
+                                height: species.height * scaleMult),
+                timePerFrame: 0.14 + Double(idx % 4) * 0.018,
+                anchor: CGPoint(x: 0.5, y: 0.0),
+                startFrame: (idx * 5) % species.frames)
+            let tree = animated
+                ?? PixelArtSprites.still(name: borderTrees[idx % borderTrees.count],
+                                         scale: treeScale * scaleMult,
+                                         anchor: CGPoint(x: 0.5, y: 0.0))
                 ?? makeTree(height: 60)
             tree.position = CGPoint(x: x, y: y)
             tree.zPosition = propLayer(for: y, in: h)
@@ -1907,18 +1984,53 @@ final class WorldBuilder {
         for x in [0.24, 0.38, 0.70, 0.82] {
             plantTree(w * CGFloat(x), h * 0.965, scaleMult: 0.9)
         }
-        // Arbres intérieurs épars (hors sentier)
+        // Arbres intérieurs (hors sentier et hors clairières) : entre les deux
+        // murs de bordure, la forêt était une pelouse vide traversée d'un
+        // chemin. Ce semis referme le couvert sans boucher le passage.
         let innerTrees: [(CGFloat, CGFloat)] = [
             (0.62, 0.10), (0.78, 0.18), (0.22, 0.22), (0.58, 0.26),
             (0.80, 0.33), (0.24, 0.46), (0.70, 0.46), (0.30, 0.58),
             (0.78, 0.56), (0.24, 0.68), (0.40, 0.72), (0.80, 0.78),
-            (0.30, 0.84), (0.74, 0.92)
+            (0.30, 0.84), (0.74, 0.92),
+            (0.44, 0.155), (0.66, 0.22), (0.18, 0.375), (0.80, 0.40),
+            (0.36, 0.50), (0.66, 0.52), (0.20, 0.55), (0.36, 0.78),
+            (0.62, 0.84), (0.44, 0.90), (0.78, 0.88), (0.20, 0.94)
         ]
         for (x, y) in innerTrees {
             plantTree(w * x, h * y, scaleMult: 0.82)
         }
 
-        // ── ARBRES MORTS CORROMPUS près des zones de danger (teinte Aether) ──
+        // ── ARBRES MOURANTS : la corruption gagne par le feuillage avant de
+        // tuer le tronc. Autour des zones de danger, la canopée passe au roux
+        // (`atree_autumn`) — le joueur voit la contamination AVANT le combat.
+        // Positions choisies HORS sentier et hors clairières : un arbre planté
+        // dans une clairière de combat en bloque l'accès (il pose une
+        // empreinte solide) et masque le monstre qui y patrouille.
+        let dying: [(CGFloat, CGFloat, CGFloat)] = [
+            (0.19, 0.230, 0.96), (0.44, 0.290, 0.88),
+            (0.62, 0.470, 0.92), (0.84, 0.610, 0.86),
+            (0.60, 0.720, 0.92), (0.36, 0.660, 0.86)
+        ]
+        for (x, y, s) in dying {
+            guard let tree = PixelArtSprites.animated(
+                name: "atree_autumn", frames: 16,
+                scale: scaleFor("atree_autumn_idle_1", height: canopyHeight * s),
+                timePerFrame: 0.16,
+                anchor: CGPoint(x: 0.5, y: 0.0),
+                startFrame: Int(x * 37) % 16) else { continue }
+            tree.position = CGPoint(x: w * x, y: h * y)
+            tree.zPosition = propLayer(for: tree.position.y, in: h)
+            tree.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.32, green: 0.14, blue: 0.44, alpha: 1)
+                sprite.colorBlendFactor = 0.28
+            }
+            addGroundShadow(under: tree, width: canopyHeight * 0.30 * s,
+                            height: canopyHeight * 0.08 * s)
+            add(tree, to: scene)
+            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
+        }
+
+        // ── ARBRES MORTS près des zones de danger (teinte Aether) ──
         let corrupted: [(CGFloat, CGFloat, CGFloat)] = [
             (0.20, 0.295, 0.80), (0.40, 0.33, 0.74),
             (0.61, 0.645, 0.80), (0.79, 0.695, 0.74)
@@ -2492,8 +2604,19 @@ private func decorateVillage(in scene: SKScene) {
         ("me_tree_6", 0.960, 0.64, 0.62), ("me_tree_2", 0.970, 0.72, 0.60),
         ("me_tree_4", 0.965, 0.82, 0.58), ("me_tree_5", 0.960, 0.92, 0.62)
     ]
-    for (asset, x, y, s) in borderTrees {
-        addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: s)
+    // Un arbre sur deux RESPIRE : `atree_leaf` est un chêne d'été de
+    // 22 frames qui laisse tomber ses feuilles. Alterné avec les arbres ME
+    // fixes, il anime toute la lisière sans la peupler de clones — et il
+    // reste vert vif, là où la forêt reçoit les variantes froides.
+    for (i, (asset, x, y, s)) in borderTrees.enumerated() {
+        let p = CGPoint(x: w * x, y: h * y)
+        if i.isMultiple(of: 2) {
+            addPixelProp(asset, in: scene, at: p, scale: s)
+        } else {
+            addAnimatedProp("atree_leaf", frames: 22, in: scene, at: p,
+                            height: 144 * s, phase: (i * 7) % 22,
+                            timePerFrame: 0.12 + Double(i % 3) * 0.02)
+        }
     }
     // Quelques arbres à l'intérieur du village (respiration entre zones)
     let innerTrees: [(String, CGFloat, CGFloat)] = [
@@ -2507,23 +2630,144 @@ private func decorateVillage(in scene: SKScene) {
         addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y), scale: 0.58)
     }
 
-    // ═══ FIGURANTS — villageois qui peuplent les rues ═══
-    let extras: [(String, CGFloat, CGFloat)] = [
-        ("npc_extra", 0.60, 0.305),     // badaud près du verger
-        ("npc_garen", 0.385, 0.505),    // promeneur vers la place
-        ("npc_sage",  0.57, 0.115)      // paysanne près de la ferme
-    ]
-    for (asset, x, y) in extras {
-        guard let figurant = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.5,
-            timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { continue }
-        figurant.position = CGPoint(x: w * x, y: h * y)
-        figurant.zPosition = propLayer(for: figurant.position.y, in: scene.size.height)
-        add(figurant, to: scene)
-    }
+    plantVillageForest(in: scene, w: w, h: h)
+    decorateVillageGardens(in: scene, w: w, h: h)
+    populateVillage(in: scene, w: w, h: h)
+
+    // Les trois figurants d'ambiance qui plantaient ici un clone de Garen,
+    // de Sage et d'un badaud sont remplacés par les villageois `gv_*` de
+    // `populateVillage` : de vrais habitants, un par porte, et qui marchent.
 
     // ═══ FLEURS ÉPARSES (positions seedées, hors chemins/maisons) ═══
     scatterVillageFlowers(in: scene, w: w, h: h)
+}
+
+/// La FORÊT ENTRE DANS LE VILLAGE : bosquets d'arbres animés posés aux
+/// endroits où le regard s'arrête, pas semés au hasard.
+///
+/// Trois intentions, une par essence :
+/// - `apine_cool` (pins de la Forêt d'Ébène) au NORD : la forêt commence
+///   avant la porte. En sortant, Kael y entre déjà ;
+/// - `atree_cool` / `atree_dark` en bosquets adossés aux lisières et à
+///   l'étang, pour épaissir les bords sans fermer les cours ;
+/// - `atree_autumn` en accents isolés — un roux au milieu des verts
+///   accroche l'œil, une allée entière de roux ferait décor d'automne.
+///
+/// Ils bougent tous (16 frames pour les feuillus, 8 pour les pins), avec
+/// une frame de départ et une cadence propres : synchronisés, ils
+/// ondulent d'un bloc et l'illusion de vent tombe.
+private func plantVillageForest(in scene: SKScene, w: CGFloat, h: CGFloat) {
+    // (asset, frames, x, y, hauteur à l'écran)
+    let grove: [(String, Int, CGFloat, CGFloat, CGFloat)] = [
+        // ── Bosquet de l'étang (ouest, y ≈ 0.46) : la berge sous les arbres
+        ("atree_cool", 16, 0.045, 0.505, 96),
+        ("atree_dark", 16, 0.145, 0.487, 86),
+        ("atree_autumn", 16, 0.038, 0.425, 78),
+        // ── Verger derrière la maison de Kael (sud-ouest)
+        ("atree_dark", 16, 0.222, 0.118, 88),
+        ("atree_cool", 16, 0.288, 0.140, 80),
+        // ── Rideau de la ferme est : coupe-vent au-dessus du potager
+        ("atree_cool", 16, 0.700, 0.128, 92),
+        ("atree_dark", 16, 0.775, 0.108, 84),
+        ("atree_autumn", 16, 0.845, 0.128, 76),
+        // ── Ombrage de la place (nord-est et nord-ouest de la fontaine)
+        ("atree_cool", 16, 0.352, 0.455, 92),
+        ("atree_dark", 16, 0.648, 0.455, 88),
+        // ── Creux entre l'herboriste et l'armurerie : respiration verte
+        ("atree_dark", 16, 0.335, 0.560, 84),
+        ("atree_cool", 16, 0.655, 0.680, 88),
+        // ── APPROCHE DE LA FORÊT (nord) : les pins descendent sur le village
+        ("apine_cool", 8, 0.115, 0.868, 128),
+        ("apine_cool", 8, 0.255, 0.900, 116),
+        ("apine_cool", 8, 0.330, 0.955, 132),
+        ("apine_cool", 8, 0.680, 0.955, 132),
+        ("apine_cool", 8, 0.760, 0.900, 116),
+        ("apine_cool", 8, 0.890, 0.868, 128),
+        ("atree_cool", 16, 0.415, 0.880, 92),
+        ("atree_dark", 16, 0.590, 0.880, 92)
+    ]
+    for (i, (asset, frames, x, y, height)) in grove.enumerated() {
+        addAnimatedProp(asset, frames: frames, in: scene,
+                        at: CGPoint(x: w * x, y: h * y), height: height,
+                        phase: (i * 5) % frames,
+                        timePerFrame: 0.14 + Double(i % 4) * 0.018)
+    }
+}
+
+/// Jardins devant les portes : potées, urnes, statues et conifères
+/// (planche « Garden Decorations »). Le village n'avait que des fleurs
+/// posées à même l'herbe — rien qui dise qu'on ENTRETIENT ces cours.
+/// Les hauteurs sont visées à l'écran : les planches vont de 13 à 102 px,
+/// une échelle commune ferait des potées de la taille d'un cyprès.
+private func decorateVillageGardens(in scene: SKScene, w: CGFloat, h: CGFloat) {
+    // (asset, x, y, hauteur à l'écran en points)
+    let gardens: [(String, CGFloat, CGFloat, CGFloat)] = [
+        // Maison de Kael — deux potées de part et d'autre du seuil
+        ("gh_pot_lilac", 0.283, 0.070, 26), ("gh_pot_fern", 0.357, 0.070, 30),
+        // Cour country sud
+        ("gh_urn_roses", 0.185, 0.152, 40), ("gh_pot_bush", 0.098, 0.152, 26),
+        // Cour moderne est
+        ("gh_urn_spiky", 0.845, 0.152, 42), ("gh_pot_olive", 0.757, 0.152, 28),
+        // Herboriste — l'atelier de Mara déborde de pots
+        ("gh_urn_roses", 0.267, 0.572, 40), ("gh_pot_fern", 0.176, 0.572, 30),
+        ("gh_pot_olive", 0.196, 0.556, 28),
+        // Armurerie — urnes de trempe près de la forge
+        ("gh_urn_small", 0.446, 0.618, 18), ("gh_urn_large", 0.556, 0.618, 22),
+        // Auberge
+        ("gh_pot_lilac", 0.735, 0.570, 26), ("gh_pot_bush", 0.828, 0.570, 26),
+        // Manoir du chef — allée de cyprès et bustes sur socle
+        ("gh_cypress", 0.118, 0.760, 96), ("gh_cypress", 0.222, 0.760, 96),
+        ("gh_statue_bust", 0.140, 0.742, 42), ("gh_pedestal", 0.200, 0.742, 38),
+        // Chapelle — cyprès de cimetière, conifère en fond
+        ("gh_cypress", 0.772, 0.762, 96), ("gh_conifer", 0.872, 0.772, 98),
+        ("gh_statue_bust", 0.820, 0.744, 42),
+        // Porte nord — deux conifères encadrent la sortie, écartés des
+        // statues d'angle (0.43 / 0.57) qui tiennent déjà le passage
+        ("gh_conifer", 0.345, 0.938, 100), ("gh_conifer", 0.655, 0.938, 100),
+        // Pas de vasque sur la place : la fontaine, quatre bancs, l'étal et
+        // les paniers l'occupent déjà. Les deux que j'y avais posées
+        // atterrissaient PILE sur les bancs.
+    ]
+    for (asset, x, y, height) in gardens {
+        addPixelProp(asset, in: scene, at: CGPoint(x: w * x, y: h * y),
+                     scale: scaleFor(asset, height: height))
+    }
+}
+
+/// Peuple le village de FIGURANTS animés : villageois `gv_*` composés
+/// couche par couche (peau, vêtements, cheveux, arme), un par porte. Chaque
+/// maison a enfin un habitant devant chez elle.
+///
+/// Aucun n'est interactif : les PNJ de quête (`dorin`, `mara`, `sage`…)
+/// restent les seuls à répondre au tap. Les figurants ne posent donc PAS
+/// d'empreinte — ils flânent, et un promeneur solide finirait par coincer
+/// Kael contre un mur.
+///
+/// Ils sont conservés dans `villageFolk` pour que `startVillageWander` les
+/// mette en marche avec les PNJ de quête : un village où seuls la moitié
+/// des habitants bougent a l'air à moitié en pause.
+private func populateVillage(in scene: SKScene, w: CGFloat, h: CGFloat) {
+    villageFolk.removeAll()
+    // (asset, x, y, hauteur écran, miroir)
+    let folk: [(String, CGFloat, CGFloat, CGFloat, Bool)] = [
+        ("gv_farmer", 0.690, 0.074, 46, true),      // potager est
+        ("gv_smith", 0.585, 0.628, 46, true),       // devant l'armurerie
+        ("gv_maid", 0.866, 0.566, 45, true),        // seuil de l'auberge
+        ("gv_herbalist", 0.132, 0.578, 45, false),  // jardin de l'herboriste
+        ("gv_weaver", 0.243, 0.155, 45, false),     // cour country sud
+        ("gv_elder", 0.888, 0.760, 46, true),       // parvis de la chapelle
+        ("gv_guard", 0.440, 0.930, 46, false),      // faction, porte nord
+        ("gv_scout", 0.560, 0.030, 45, true)        // arrivée, portail sud
+    ]
+    for (i, (asset, x, y, height, flipped)) in folk.enumerated() {
+        guard let node = addAnimatedProp(
+            asset, frames: 6, in: scene,
+            at: CGPoint(x: w * x, y: h * y), height: height,
+            phase: (i * 3) % 6,
+            timePerFrame: 0.15 + Double(i % 4) * 0.02,
+            flipped: flipped, blocking: false) else { continue }
+        villageFolk.append(node)
+    }
 }
 
 /// Fleurs et buissons dispersés de façon déterministe (LCG seedé) sur
@@ -2687,9 +2931,11 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     func addEran(in scene: SKScene, at pos: CGPoint) {
         // Le sprite de son pack (fighter) — le même qu'en combat.
         let eran = BattleSprites.worldNode(.eran, name: "eran")
-            ?? PixelArtSprites.animated(name: "npc_sage", frames: 6, scale: 0.62,
-                                        timePerFrame: 0.24,
-                                        anchor: CGPoint(x: 0.5, y: 0.0))
+            ?? PixelArtSprites.animated(
+                name: "npc_sage", frames: 6,
+                scale: PixelArtSprites.scale(name: "npc_sage_idle_1", height: 58),
+                timePerFrame: 0.24,
+                anchor: CGPoint(x: 0.5, y: 0.0))
         guard let eran else { return }
         eran.name = "eran"
         eran.position = pos
@@ -3121,12 +3367,19 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// `RoamingMonster`. Renvoie nil si l'asset manque.
     /// `tint`/`blend` : teinte du sprite. Défaut = cendre (mines, forêt) ; les
     /// zones du Vide passent leur propre teinte (violet, magenta).
+    /// `frames`/`height` : tous les rôdeurs ne sortent pas des planches ME
+    /// 48×96 à six frames. L'Archiviste vient d'un pack à huit frames sur un
+    /// canevas 74×80 — à échelle commune il arrivait à mi-mollet d'un
+    /// squelette. On vise donc une hauteur à l'écran.
     func makeRoamingMonster(asset: String,
+                            frames: Int = 6,
+                            height: CGFloat? = nil,
                             tint: SKColor = SKColor(red: 0.48, green: 0.44, blue: 0.42, alpha: 1),
                             blend: CGFloat = 0.22,
                             alpha: CGFloat = 1) -> SKNode? {
         guard let monster = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.55,
+            name: asset, frames: frames,
+            scale: height.map { scaleFor("\(asset)_idle_1", height: $0) } ?? 0.55,
             timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return nil }
         monster.forEachDescendantSprite { s in
             s.color = tint
@@ -3144,32 +3397,36 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         node.position = pos
         node.zPosition = depthLayer(for: pos.y)
 
-        let board = SKShapeNode(rectOf: CGSize(width: 64, height: 42), cornerRadius: 4)
-        board.fillColor = SKColor(red: 0.24, green: 0.17, blue: 0.09, alpha: 1)
-        board.strokeColor = SKColor(red: 0.45, green: 0.33, blue: 0.18, alpha: 0.9)
-        board.lineWidth = 2
-        node.addChild(board)
-
-        for (y, width) in [(10, 40), (0, 46), (-10, 34)] {
-            let line = SKShapeNode(rectOf: CGSize(width: CGFloat(width), height: 2), cornerRadius: 1)
-            line.fillColor = SKColor(red: 0.60, green: 0.48, blue: 0.28, alpha: 0.7)
-            line.strokeColor = .clear
-            line.position = CGPoint(x: 0, y: CGFloat(y))
-            node.addChild(line)
+        // Un VRAI panneau de bois planté dans la galerie. La plaque d'avant
+        // était dessinée à la main — rectangle arrondi, trois traits pour
+        // faire « gravure », halo doré qui pulse — et ça se voyait : c'était
+        // le seul objet des mines à ne pas être du pixel art.
+        let signHeight: CGFloat = 96
+        if let sign = PixelArtSprites.still(name: "ext_sign",
+                                            scale: scaleFor("ext_sign", height: signHeight),
+                                            anchor: CGPoint(x: 0.5, y: 0.0)) {
+            sign.position = CGPoint(x: 0, y: -signHeight * 0.5)
+            // Teinte cendre : le bois du panneau prend la lumière des mines,
+            // sinon il arrive en plein soleil dans une galerie noire.
+            sign.forEachDescendantSprite { sprite in
+                sprite.color = SKColor(red: 0.42, green: 0.36, blue: 0.30, alpha: 1)
+                sprite.colorBlendFactor = 0.35
+            }
+            node.addChild(sign)
         }
 
-        let glow = SKShapeNode(rectOf: CGSize(width: 72, height: 50), cornerRadius: 6)
-        glow.fillColor = .clear
-        glow.strokeColor = SKColor(red: 0.85, green: 0.65, blue: 0.30, alpha: 0.15)
-        glow.lineWidth = 4
-        node.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.08)
+        // Lueur chaude posée derrière : elle dit « il y a quelque chose à
+        // lire ici » sans dessiner de cadre par-dessus le panneau.
+        let halo = pixelHalo(color: SKColor(red: 0.85, green: 0.65, blue: 0.30, alpha: 1),
+                             radius: 26)
+        halo.zPosition = -0.5
+        node.addChild(halo)
 
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "world.mines.inscription")
         label.fontSize = 12
         label.fontColor = SKColor(white: 0.65, alpha: 0.8)
-        label.position = CGPoint(x: 0, y: -36)
+        label.position = CGPoint(x: 0, y: -signHeight * 0.5 - 16)
         node.addChild(label)
         return node
     }
@@ -3920,7 +4177,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// Figurant de la cité : animation d'idle, pas d'errance (ils ont peur).
     private func addDesertVillager(_ asset: String, in scene: SKScene, at pos: CGPoint) {
         guard let npc = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.5,
+            name: asset, frames: 6,
+            scale: PixelArtSprites.scale(name: "\(asset)_idle_1",
+                                         height: PixelArtSprites.npcHeight),
             timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         npc.position = pos
         npc.zPosition = depthLayer(for: pos.y, sceneHeight: scene.size.height)
@@ -4796,7 +5055,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     /// L'Écho de Lyra, immobile et scintillant, attend Kael à l'entrée.
     private func addThresholdEcho(in scene: SKScene, at pos: CGPoint) {
         guard let echo = PixelArtSprites.animated(
-            name: "npc_lyra", frames: 6, scale: 0.5,
+            name: "npc_lyra", frames: 6,
+            scale: PixelArtSprites.scale(name: "npc_lyra_idle_1",
+                                         height: PixelArtSprites.npcHeight),
             timePerFrame: 0.16, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         echo.name = "thresholdEcho"
         echo.position = pos
@@ -4816,7 +5077,9 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func addWanderingSpirit(id: String, asset: String,
                                     in scene: SKScene, at anchor: CGPoint) {
         guard let spirit = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.5,
+            name: asset, frames: 6,
+            scale: PixelArtSprites.scale(name: "\(asset)_idle_1",
+                                         height: PixelArtSprites.npcHeight),
             timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         spirit.name = "spirit_" + id
         spirit.position = anchor
@@ -5533,10 +5796,24 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         add(node, to: scene)
     }
 
+    /// Meuble « cozy » (planche 16 px) posé à une HAUTEUR visée à l'écran.
+    ///
+    /// Les meubles font 16 à 48 px de haut sur leur planche là où le décor ME
+    /// des intérieurs en fait plusieurs centaines : passer par `scale:` comme
+    /// les autres donnerait un âtre de la taille d'un tabouret. On vise donc
+    /// des points, et l'échelle se déduit.
+    private func addCozyPiece(_ name: String, in scene: SKScene, at position: CGPoint,
+                              height: CGFloat, flipped: Bool = false) {
+        addInteriorSprite(name, in: scene, at: position,
+                          scale: scaleFor(name, height: height), flipped: flipped)
+    }
+
     /// Le marchand se tient derrière son comptoir (sprite animé).
     private func addShopkeeper(_ asset: String, in scene: SKScene, at position: CGPoint) {
         guard let keeper = PixelArtSprites.animated(
-            name: asset, frames: 6, scale: 0.5,
+            name: asset, frames: 6,
+            scale: PixelArtSprites.scale(name: "\(asset)_idle_1",
+                                         height: PixelArtSprites.npcHeight),
             timePerFrame: 0.18, anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
         keeper.position = position
         keeper.zPosition = propLayer(for: position.y, in: scene.size.height) + 0.5
@@ -5549,10 +5826,13 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addInteriorSprite("interior_counter", in: scene, at: CGPoint(x: room.midX + 44, y: room.maxY - 66), scale: 0.30)
         addShopkeeper("npc_bram", in: scene, at: CGPoint(x: room.midX, y: room.maxY - 52))
 
-        // ── FORGE (droite) : feu vivant + marmite + soufflet de bois ──
-        addInteriorSprite("me_campfire", in: scene, at: CGPoint(x: room.maxX - 52, y: room.maxY - 78), scale: 0.42)
-        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.maxX - 84, y: room.maxY - 70), scale: 0.40)
-        addInteriorSprite("me_cut_wood_bench", in: scene, at: CGPoint(x: room.maxX - 56, y: room.maxY - 116), scale: 0.42)
+        // ── FORGE (droite) : un vrai âtre de brique adossé au mur, pas un
+        // feu de camp posé sur le plancher d'une maison. Marmite et billot
+        // restent, ils font le poste de travail.
+        addCozyPiece("cz_hearth_brick_lit", in: scene,
+                     at: CGPoint(x: room.maxX - 56, y: room.maxY - 96), height: 58)
+        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.maxX - 96, y: room.maxY - 70), scale: 0.40)
+        addInteriorSprite("me_cut_wood_bench", in: scene, at: CGPoint(x: room.maxX - 56, y: room.maxY - 128), scale: 0.42)
 
         // ── RÂTELIER À BOIS (gauche) : réserve de la forge ──
         addInteriorSprite("me_cut_wood", in: scene, at: CGPoint(x: room.minX + 46, y: room.maxY - 72), scale: 0.44)
@@ -5567,9 +5847,14 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addInteriorSprite("me_barrel_4", in: scene, at: CGPoint(x: room.maxX - 40, y: room.midY - 38), scale: 0.42)
         addInteriorSprite("village_crate_2", in: scene, at: CGPoint(x: room.maxX - 42, y: room.midY - 70), scale: 0.40)
 
-        // ── ÉTABLI sur le tapis central ──
+        // ── ÉTABLI sur le tapis central, avec de quoi s'asseoir pour ferrer ──
         addInteriorSprite("interior_bench_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 34), scale: 0.60)
         addInteriorSprite("me_basket_2", in: scene, at: CGPoint(x: room.midX + 52, y: room.midY - 40), scale: 0.38)
+        addCozyPiece("cz_stool", in: scene,
+                     at: CGPoint(x: room.midX - 46, y: room.midY - 44), height: 16)
+        // Armoire à outils contre le mur du fond, entre le râtelier et le comptoir
+        addCozyPiece("cz_cupboard", in: scene,
+                     at: CGPoint(x: room.minX + 116, y: room.maxY - 96), height: 48)
 
         addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 96), text: String(localized: "interior.armory.forge"))
     }
@@ -5600,6 +5885,21 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addInteriorSprite("interior_potion_table", in: scene, at: CGPoint(x: room.midX, y: room.midY - 30), scale: 0.48)
         addInteriorSprite("interior_plant", in: scene, at: CGPoint(x: room.midX - 58, y: room.midY - 40), scale: 0.40, flipped: true)
 
+        // ── COIN DE CONSULTATION : on vient chez Mara pour être soigné, il
+        // faut donc un endroit où s'asseoir. Âtre éteint : elle fait sécher
+        // ses simples au-dessus, pas de flambée en plein cabinet d'herbes.
+        addCozyPiece("cz_hearth_stone", in: scene,
+                     at: CGPoint(x: room.minX + 118, y: room.maxY - 96), height: 54)
+        addCozyPiece("cz_settle_blanket", in: scene,
+                     at: CGPoint(x: room.midX + 74, y: room.midY - 44), height: 32)
+        addCozyPiece("cz_table_round", in: scene,
+                     at: CGPoint(x: room.midX + 118, y: room.midY - 40), height: 28)
+        addCozyPiece("cz_chair_3", in: scene,
+                     at: CGPoint(x: room.midX + 150, y: room.midY - 46), height: 30, flipped: true)
+        // Armoire à simples, alignée sur la serre
+        addCozyPiece("cz_dresser", in: scene,
+                     at: CGPoint(x: room.minX + 42, y: room.midY - 72), height: 46)
+
         addServiceMarker(in: scene, at: CGPoint(x: room.midX, y: room.maxY - 96), text: String(localized: "interior.apothecary.potions"))
     }
 
@@ -5612,24 +5912,52 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
         addInteriorSprite("me_barrel_2", in: scene, at: CGPoint(x: room.maxX - 44, y: room.maxY - 126), scale: 0.40)
         addInteriorSprite("me_barrel_3", in: scene, at: CGPoint(x: room.maxX - 76, y: room.maxY - 100), scale: 0.38)
 
-        // ── CHEMINÉE (fond gauche) : feu + réserve de bois + marmite ──
-        addInteriorSprite("me_campfire", in: scene, at: CGPoint(x: room.minX + 48, y: room.maxY - 76), scale: 0.42)
-        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.minX + 80, y: room.maxY - 70), scale: 0.42)
-        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 46, y: room.maxY - 112), scale: 0.38)
+        // ── ÂTRE (fond gauche) : la grande cheminée de la salle commune,
+        // et devant elle deux fauteuils autour d'une table basse. C'est ce
+        // coin-là qui fait une auberge plutôt qu'une salle à manger — un feu
+        // de camp posé sur un plancher n'y suffisait pas.
+        addCozyPiece("cz_hearth_stone_lit", in: scene,
+                     at: CGPoint(x: room.minX + 54, y: room.maxY - 96), height: 60)
+        addInteriorSprite("me_hanging_pot", in: scene, at: CGPoint(x: room.minX + 92, y: room.maxY - 72), scale: 0.42)
+        addCozyPiece("cz_armchair_linen", in: scene,
+                     at: CGPoint(x: room.minX + 32, y: room.maxY - 150), height: 40)
+        addCozyPiece("cz_armchair_ash", in: scene,
+                     at: CGPoint(x: room.minX + 104, y: room.maxY - 150), height: 40, flipped: true)
+        addCozyPiece("cz_table_low", in: scene,
+                     at: CGPoint(x: room.minX + 68, y: room.maxY - 156), height: 16)
+        addInteriorSprite("me_cut_wood_2", in: scene, at: CGPoint(x: room.minX + 128, y: room.maxY - 104), scale: 0.38)
 
-        // ── SALLE : deux tables dressées avec chaises ──
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX - 36, y: room.midY - 20), scale: 0.62)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 66, y: room.midY - 26), scale: 0.44)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX - 6, y: room.midY - 26), scale: 0.44, flipped: true)
-        addInteriorSprite("interior_table", in: scene, at: CGPoint(x: room.midX + 74, y: room.midY + 10), scale: 0.62)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 44, y: room.midY + 4), scale: 0.44)
-        addInteriorSprite("interior_chair", in: scene, at: CGPoint(x: room.midX + 104, y: room.midY + 4), scale: 0.44, flipped: true)
-        addInteriorSprite("me_basket", in: scene, at: CGPoint(x: room.midX - 36, y: room.midY + 16), scale: 0.36)
+        // ── SALLE : deux tablées dressées, chaises dépareillées (une auberge
+        // n'achète pas son mobilier en série) ──
+        addCozyPiece("cz_table_long", in: scene,
+                     at: CGPoint(x: room.midX - 30, y: room.midY - 20), height: 32)
+        addCozyPiece("cz_chair_1", in: scene,
+                     at: CGPoint(x: room.midX - 74, y: room.midY - 26), height: 30)
+        addCozyPiece("cz_chair_2", in: scene,
+                     at: CGPoint(x: room.midX + 14, y: room.midY - 26), height: 30, flipped: true)
+        addCozyPiece("cz_table_long", in: scene,
+                     at: CGPoint(x: room.midX + 84, y: room.midY + 10), height: 32)
+        addCozyPiece("cz_chair_4", in: scene,
+                     at: CGPoint(x: room.midX + 40, y: room.midY + 4), height: 30)
+        addCozyPiece("cz_chair_6", in: scene,
+                     at: CGPoint(x: room.midX + 128, y: room.midY + 4), height: 30, flipped: true)
+        addInteriorSprite("me_basket", in: scene, at: CGPoint(x: room.midX - 30, y: room.midY + 16), scale: 0.36)
 
-        // ── COIN NUIT (gauche) : deux lits et banc de voyageur ──
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.midY - 4), scale: 0.32)
-        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.midY - 44), scale: 0.32)
-        addInteriorSprite("interior_wood_bench", in: scene, at: CGPoint(x: room.minX + 50, y: room.midY - 80), scale: 0.44)
+        // ── COIN NUIT (bas gauche) : les lits DESCENDENT sous le coin du feu.
+        // Ils partageaient sa hauteur et les fauteuils leur poussaient dessus.
+        // Le banc de voyageur disparaît : les fauteuils le remplacent.
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.minY + 96), scale: 0.32)
+        addInteriorSprite("interior_bed", in: scene, at: CGPoint(x: room.minX + 46, y: room.minY + 52), scale: 0.32)
+
+        // ── BUFFET derrière le bar : vaisselle et réserve du jour ──
+        addCozyPiece("cz_sideboard", in: scene,
+                     at: CGPoint(x: room.maxX - 172, y: room.maxY - 100), height: 32)
+
+        // ── CUVE DE BAIN, au coin nuit : on se lave avant de dormir. Seul
+        // morceau retenu du lot salle de bain, et repeint en bois — la
+        // baignoire acrylique à mitigeur chromé n'avait rien à faire ici.
+        addCozyPiece("cz_bathtub_wood", in: scene,
+                     at: CGPoint(x: room.minX + 132, y: room.minY + 60), height: 30)
 
         addServiceMarker(in: scene, at: CGPoint(x: room.maxX - 110, y: room.maxY - 96), text: String(localized: "interior.inn.rest"))
     }
@@ -5898,6 +6226,11 @@ static func substituted(_ name: String) -> String? {
 private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoint,
                           scale: CGFloat, flipped: Bool = false) {
     guard let name = Self.substituted(name) else { return }
+    // Anti-empilement : un décor dont le PIED tombe dans un décor déjà
+    // posé n'est pas placé. C'est ce qui mettait des vasques debout sur les
+    // bancs de la place — deux groupes réglés séparément, chacun correct de
+    // son côté, superposés à l'arrivée.
+    guard !isCluttered(position) else { return }
     guard let node = PixelArtSprites.still(name: name, scale: scale,
                                            anchor: CGPoint(x: 0.5, y: 0.0)) else { return }
     node.position = position
@@ -5909,6 +6242,45 @@ private func addPixelProp(_ name: String, in scene: SKScene, at position: CGPoin
         registerFootprint(of: node)
     }
     attachPropLight(for: name, on: node, in: scene)
+}
+
+/// Pose un décor ANIMÉ ancré aux pieds : canopée qui respire, villageois
+/// qui piétinent, aventuriers en faction. Deux réglages font tout :
+/// - `height` : hauteur visée À L'ÉCRAN, en points. Les planches importées
+///   vont de 45 px (villageois) à 120 px (pin) ; à échelle commune, un
+///   villageois dépasserait le toit de sa maison.
+/// - `phase` : frame de départ. Deux voisins qui démarrent sur la même
+///   frame respirent à l'unisson — l'œil lit la boucle, pas la vie.
+@discardableResult
+private func addAnimatedProp(_ name: String, frames: Int, in scene: SKScene,
+                             at position: CGPoint, height: CGFloat,
+                             phase: Int = 0,
+                             timePerFrame: TimeInterval = 0.16,
+                             flipped: Bool = false,
+                             blocking: Bool = true) -> SKNode? {
+    // Même règle anti-empilement que `addPixelProp` — mais seulement pour
+    // le décor : un figurant (`blocking: false`) a le droit de se tenir
+    // devant un banc ou sous un arbre, c'est même ce qu'on veut.
+    guard !blocking || !isCluttered(position) else { return nil }
+    guard let node = PixelArtSprites.animated(
+        name: name, frames: frames,
+        scale: scaleFor("\(name)_idle_1", height: height),
+        timePerFrame: timePerFrame,
+        anchor: CGPoint(x: 0.5, y: 0.0),
+        startFrame: phase) else { return nil }
+    node.position = position
+    // Miroir sur les SPRITES, pas sur le node racine : la promenade
+    // (`scheduleWander`) oriente les figurants en écrivant `xScale` sur ces
+    // mêmes sprites. Un flip posé sur la racine se serait combiné au sien,
+    // et le villageois aurait marché à reculons une fois sur deux.
+    if flipped { node.forEachDescendantSprite { $0.xScale = -abs($0.xScale) } }
+    node.zPosition = propLayer(for: position.y, in: scene.size.height)
+    addGroundShadow(under: node, width: height * 0.40, height: height * 0.11)
+    add(node, to: scene)
+    if blocking {
+        registerFootprint(of: node, widthRatio: 0.58, depthRatio: 0.4, maxDepth: 22)
+    }
+    return node
 }
 
 /// Les sources lumineuses naturelles s'éclairent toutes seules :
@@ -6045,6 +6417,7 @@ private func addDirtPatch(at center: CGPoint, size: CGSize, in scene: SKScene) {
 
     private func clearBackdrop() {
         obstacles.removeAll()
+        propRects.removeAll()
         worldWidth = 0               // seule la carte du monde scrolle en X
         villagePlanActive = false    // chaque zone replace Kael elle-même
         snapCameraNextFrame = true   // nouvelle zone : recadrage instantané

@@ -34,7 +34,11 @@ final class MainMenuScene: SKScene {
 
         // Audit visuel : les args --combat/--boss/--zone-* sautent le menu
         // sur le slot 2 (scratch) sans toucher aux sauvegardes joueur.
+        // ⚠️ Tout drapeau d'audit ajouté dans `GameManager.setup` doit AUSSI
+        // figurer ici, sinon il ne se déclenche jamais : le jeu reste sur le
+        // menu de sélection de sauvegarde et le drapeau n'est jamais lu.
         let debugZoneArgs = ["--combat-test", "--combat-multi", "--boss-test",
+                             "--archivist-test",
                              "--zone-forest", "--zone-shrine", "--zone-ruins",
                              "--zone-village", "--zone-threshold", "--zone-voidheart",
                              "--zone-mines", "--zone-desert", "--zone-cave",

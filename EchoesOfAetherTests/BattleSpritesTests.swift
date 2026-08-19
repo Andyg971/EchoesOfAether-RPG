@@ -129,4 +129,54 @@ final class BattleSpritesTests: XCTestCase {
             }
         }
     }
+
+    // MARK: - Archiviste : le cycle de teintes
+
+    /// Le boss doit virer à chaque assaut, dans l'ordre bleu → vert → violet,
+    /// et reboucler. C'est le seul indicateur de sa montée en puissance : s'il
+    /// reste bleu, le joueur ne lit plus rien.
+    func test_archiviste_changeDeTeinteAChaqueAttaque() {
+        CombatSprites.resetArchivist()
+        let boss = CombatSprites.enemy(kind: .archivist)
+
+        XCTAssertEqual(CombatSprites.archivistPrefix, "enemy_archivist_blue",
+                       "l'Archiviste doit ouvrir le combat en bleu")
+
+        var vus: [String] = []
+        for _ in 0..<4 {
+            CombatSprites.playAttackFrames(on: boss, kind: .archivist)
+            vus.append(CombatSprites.archivistPrefix)
+        }
+        XCTAssertEqual(vus, ["enemy_archivist_green",
+                             "enemy_archivist_violet",
+                             "enemy_archivist_blue",
+                             "enemy_archivist_green"],
+                       "le cycle de teintes de l'Archiviste ne tourne pas")
+    }
+
+    /// Fin de combat : le boss doit repartir au bleu. Sans remise à zéro, le
+    /// combat suivant s'ouvrirait dans la teinte où le précédent s'est arrêté.
+    func test_archiviste_revientAuBleuEntreDeuxCombats() {
+        CombatSprites.resetArchivist()
+        let boss = CombatSprites.enemy(kind: .archivist)
+        CombatSprites.playAttackFrames(on: boss, kind: .archivist)
+        XCTAssertNotEqual(CombatSprites.archivistPrefix, "enemy_archivist_blue")
+
+        CombatSprites.resetChains()   // appelé à la fin de chaque combat
+        XCTAssertEqual(CombatSprites.archivistPrefix, "enemy_archivist_blue")
+    }
+
+    /// Les trois teintes doivent avoir TOUTES leurs planches. Une teinte
+    /// incomplète ne casse pas le build : `playAttackFrames` renonce en
+    /// silence et le boss se fige sur sa frame courante.
+    func test_archiviste_lesTroisTeintesOntLeursPlanches() {
+        for prefix in CombatSprites.archivistTints {
+            for (clip, count) in [("idle", 8), ("attack", 9)] {
+                for i in 1...count {
+                    let name = "\(prefix)_\(clip)_\(i)"
+                    XCTAssertNotNil(UIImage(named: name), "planche manquante : \(name)")
+                }
+            }
+        }
+    }
 }

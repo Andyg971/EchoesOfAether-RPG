@@ -212,8 +212,9 @@ final class GameManager {
             }
         }
 
-        // Debug : --combat-test / --boss-test démarre directement un combat
-        // pour capturer le rendu de l'arène (skip wake/save).
+        // Debug : --combat-test / --combat-multi / --archivist-test /
+        // --boss-test démarrent directement un combat pour capturer le rendu
+        // de l'arène (skip wake/save).
         if CommandLine.arguments.contains("--combat-test") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
@@ -231,6 +232,20 @@ final class GameManager {
                 self.phase = .forest
                 self.showForest(in: scene)
                 self.startClearingCombat()
+            }
+            return
+        }
+        // `--archivist-test` : le mini-boss de l'Acte II, qui change de teinte
+        // à chaque assaut. Sans ce raccourci il fallait finir l'Acte I puis
+        // traverser les Ruines pour voir une seule de ses trois couleurs.
+        if CommandLine.arguments.contains("--archivist-test") {
+            hud.goldValue = player.gold
+            player.ruinsProgress = 1
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                guard let self, let scene = self.scene else { return }
+                self.phase = .ruins
+                self.showRuins(in: scene)
+                self.startRuinsCombat2()
             }
             return
         }

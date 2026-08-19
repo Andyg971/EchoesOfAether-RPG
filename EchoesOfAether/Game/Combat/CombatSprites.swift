@@ -291,11 +291,14 @@ enum CombatSprites {
     /// Bleu au repos, vert quand il s'échauffe, violet quand il déchaîne
     /// l'Aether — le joueur lit sa montée en puissance à la couleur, sans
     /// une ligne de texte.
-    private static let archivistTints = ["enemy_archivist_blue",
-                                         "enemy_archivist_green",
-                                         "enemy_archivist_violet"]
+    static let archivistTints = ["enemy_archivist_blue",
+                                 "enemy_archivist_green",
+                                 "enemy_archivist_violet"]
     private static var archivistTint = 0
-    private static var archivistPrefix: String {
+
+    /// Préfixe de planches de l'état courant. Interne (et non privé) pour que
+    /// les tests puissent constater le cycle sans lire des textures.
+    static var archivistPrefix: String {
         archivistTints[archivistTint % archivistTints.count]
     }
 

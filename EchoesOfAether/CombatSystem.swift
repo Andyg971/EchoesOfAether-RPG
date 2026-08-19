@@ -565,6 +565,11 @@ private var goldReward = 0
         }
         self.targetIndex = 0
         self.tempestUsed = false
+        // Compteurs de sprites remis à zéro : l'enchaînement d'attaques des
+        // packs, et surtout la teinte de l'Archiviste. Sans ça il rouvrait le
+        // combat dans la couleur où le précédent s'était arrêté — on tombait
+        // sur un boss violet d'entrée, sa montée en puissance déjà jouée.
+        CombatSprites.resetChains()
 
 let startHP = min(player.currentHP, player.currentMaxHP)
         self.kael = Combatant(name: "Kael", maxHP: player.currentMaxHP, hp: startHP,

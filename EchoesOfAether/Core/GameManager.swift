@@ -203,7 +203,7 @@ final class GameManager {
         // Debug : --overlay-test <nom> ouvre l'overlay demandé après le
         // chargement (à combiner avec --zone-*) pour audit visuel de l'UI.
         // Noms : pause, options, inventory, questlog, lore, tutorial,
-        // levelup, death, shop.
+        // levelup, death, shop, credits, act2end, bestiary, paywall.
         if let idx = CommandLine.arguments.firstIndex(of: "--overlay-test"),
            CommandLine.arguments.indices.contains(idx + 1) {
             let name = CommandLine.arguments[idx + 1]
@@ -2468,6 +2468,13 @@ final class GameManager {
             transition(to: .shop)
             shop.open(title: String(localized: "shop.bram.title"),
                       items: bramItems(), player: player) { [weak self] in
+                self?.transition(to: .exploration)
+            }
+        case "credits":
+            // Audit : les crédits seuls. Ils n'étaient atteignables qu'en
+            // finissant un acte, donc jamais relus — c'est comme ça que leur
+            // bouton « Fermer » a pu passer hors écran sans qu'on le voie.
+            TransitionManager.showCredits(in: scene) { [weak self] in
                 self?.transition(to: .exploration)
             }
         case "act2end":

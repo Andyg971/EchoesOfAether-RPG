@@ -98,4 +98,50 @@ final class OverlayLegibilityTests: XCTestCase {
         XCTAssertLessThan(f, 1.0)
         XCTAssertGreaterThanOrEqual(f, 0.5)
     }
+
+    // MARK: - Crédits : tout doit tenir DANS l'écran
+
+    /// Les crédits n'ont pas de `fittingFactor` : ils posent leurs libellés à
+    /// des positions calculées. Deux formules cohabitaient — 52 pt par entrée
+    /// pour la colonne, 26 pt par entrée pour la citation et le bouton — et le
+    /// bouton « Fermer » se retrouvait à −221 sur un écran dont le bas est à
+    /// −201. Hors champ : l'écran de crédits ne se fermait plus.
+    ///
+    /// Ce test parcourt les vrais nodes posés par `showCredits`. Ajouter une
+    /// ligne aux crédits sans revoir la mise en page le fera échouer.
+    func test_credits_tousLesElementsSontDansLEcran() {
+        for size in [scenePhone, sceneIPad] {
+            let scene = SKScene(size: size)
+            TransitionManager.showCredits(in: scene) { }
+            defer { _ = TransitionManager.handleCreditsTap(at: .zero, in: scene) }
+
+            guard let overlay = scene.childNode(withName: "creditsOverlay") else {
+                return XCTFail("overlay de crédits absent")
+            }
+            let limite = size.height / 2
+            for child in overlay.children {
+                let frame = child.calculateAccumulatedFrame()
+                XCTAssertLessThanOrEqual(frame.maxY, limite,
+                                         "un élément des crédits déborde en haut sur \(size)")
+                XCTAssertGreaterThanOrEqual(frame.minY, -limite,
+                                            "un élément des crédits déborde en bas sur \(size)")
+            }
+        }
+    }
+
+    /// Le bouton de fermeture est le seul moyen de sortir des crédits : il
+    /// doit être posé, nommé, et intégralement visible.
+    func test_credits_leBoutonFermerEstAtteignable() {
+        let scene = SKScene(size: scenePhone)
+        TransitionManager.showCredits(in: scene) { }
+        defer { _ = TransitionManager.handleCreditsTap(at: .zero, in: scene) }
+
+        guard let overlay = scene.childNode(withName: "creditsOverlay"),
+              let bouton = overlay.childNode(withName: "creditsClose") else {
+            return XCTFail("bouton de fermeture des crédits absent")
+        }
+        let frame = bouton.calculateAccumulatedFrame()
+        XCTAssertGreaterThanOrEqual(frame.minY, -scenePhone.height / 2,
+                                    "le bouton « Fermer » sort par le bas — crédits impossibles à quitter")
+    }
 }

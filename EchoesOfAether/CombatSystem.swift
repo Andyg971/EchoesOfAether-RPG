@@ -2565,12 +2565,20 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let palette = arenaPalette(for: enemyKind, isBoss: isBoss)
         let floorY = size.height * 0.40
 
-        // Ciel/voûte : bande pleine en haut, teinte de zone
+        // Ciel/voûte : bande pleine en haut, teinte de zone. Elle reste
+        // SOUS le décor en couches et lui sert de fond — sans elle, un trou
+        // noir apparaîtrait au-dessus des montagnes sur les écrans hauts.
         let sky = SKShapeNode(rectOf: CGSize(width: size.width, height: size.height * 0.55))
         sky.fillColor = palette.skyColor
         sky.strokeColor = .clear
         sky.position = CGPoint(x: size.width / 2, y: size.height * 0.72)
+        // Derrière TOUT le reste : sans zPosition explicite elle vaut 0 et
+        // recouvrait les couches de décor, qui sont en négatif.
+        sky.zPosition = -20
         floor.addChild(sky)
+
+        addArenaBackdrop(to: floor, size: size, kind: enemyKind,
+                         palette: palette, floorY: floorY)
 
         // Halo central — concentre le regard sur les combattants
         let halo = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.4, height: 360))
@@ -2652,27 +2660,111 @@ private func setupComboAndStatusUI(scene: SKScene) {
         let decorColor: SKColor
     }
 
-    private func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
+    /// DÉCOR D'ARÈNE EN COUCHES — ciel, montagnes, deux lignes d'arbres,
+    /// pinède au premier plan (planches `arena_<saison>_1..5`, 1024×346).
+    ///
+    /// L'arène n'avait qu'un aplat de couleur en guise de fond, et cet aplat
+    /// était si sombre (ciel à 0,08/0,04/0,05) que tous les combats se
+    /// ressemblaient : du noir. Cinq plans à des profondeurs différentes
+    /// donnent un horizon, et la saison change avec la zone — la forêt en
+    /// vert, les Ruines en automne, le Sanctuaire en hiver violacé.
+    ///
+    /// Les couches DÉRIVENT à des vitesses croissantes vers l'avant : c'est
+    /// ce décalage, et non le dessin, qui fait lire la profondeur.
+    private func addArenaBackdrop(to parent: SKNode, size: CGSize,
+                                  kind: CombatSpriteKind,
+                                  palette: ArenaPalette, floorY: CGFloat) {
+        let season: String
+        let tint: SKColor?
         switch kind {
         case .beast, .wolf, .ghoul, .boneWalker:
-            // Forêt d'Ébène : verts très sombres
+            season = "normal"; tint = nil
+        case .ruinsGuardian, .archivist:
+            season = "autumn"; tint = nil
+        case .guardian:
+            // Hiver teinté violet : le Sanctuaire n'est pas un lieu du monde.
+            season = "winter"; tint = SKColor(red: 0.45, green: 0.20, blue: 0.75, alpha: 1)
+        }
+
+        // 5 = le plus lointain. On les pose du fond vers l'avant, la
+        // luminosité montant avec la distance pour creuser l'image.
+        for depth in stride(from: 5, through: 1, by: -1) {
+            let name = "arena_\(season)_\(depth)"
+            guard UIImage(named: name) != nil else { continue }
+            let texture = SKTexture(imageNamed: name)
+            texture.filteringMode = .nearest
+            let layer = SKSpriteNode(texture: texture)
+            let scale = size.width / texture.size().width
+            layer.setScale(scale)
+            layer.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+            layer.position = CGPoint(x: size.width / 2, y: floorY - 12)
+            // Entre le ciel (−20) et le halo/estrade (≥ 0).
+            layer.zPosition = -10 - CGFloat(depth)
+            // Les plans lointains s'effacent : c'est la perspective aérienne,
+            // et ça garde les combattants lisibles au premier plan.
+            layer.alpha = 0.55 + 0.10 * CGFloat(5 - depth)
+            if let tint {
+                layer.color = tint
+                layer.colorBlendFactor = 0.55
+            }
+            parent.addChild(layer)
+
+            // Dérive : imperceptible au fond, nette devant.
+            let amplitude = 2.0 + Double(5 - depth) * 3.0
+            let period = 11.0 - Double(5 - depth) * 1.2
+            let drift = SKAction.sequence([
+                .moveBy(x: amplitude, y: 0, duration: period),
+                .moveBy(x: -amplitude, y: 0, duration: period)
+            ])
+            drift.timingMode = .easeInEaseOut
+            layer.run(.repeatForever(drift))
+        }
+
+        // Le château, entre le ciel et les arbres : il donne une échelle au
+        // lointain et dit qu'il y a un monde derrière le combat.
+        let castleName = "arena_\(season)_castle"
+        if UIImage(named: castleName) != nil {
+            let texture = SKTexture(imageNamed: castleName)
+            texture.filteringMode = .nearest
+            let castle = SKSpriteNode(texture: texture)
+            castle.setScale(size.width / texture.size().width)
+            castle.anchorPoint = CGPoint(x: 0.5, y: 0.0)
+            castle.position = CGPoint(x: size.width * 0.5, y: floorY - 12)
+            castle.zPosition = -14.5   // entre les montagnes (−14) et les arbres (−13)
+            castle.alpha = 0.6
+            if let tint {
+                castle.color = tint
+                castle.colorBlendFactor = 0.55
+            }
+            parent.addChild(castle)
+        }
+    }
+
+    private func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
+        switch kind {
+        // ⚠️ Ces teintes servent de FOND aux couches de décor
+        // (`addArenaBackdrop`). Descendues trop bas, le décor ne se détache
+        // plus et l'arène redevient le trou noir qu'elle était : le ciel
+        // était à 0,05/0,09/0,07, soit du noir à 7 %.
+        case .beast, .wolf, .ghoul, .boneWalker:
+            // Forêt d'Ébène : verts profonds, mais un ciel qui existe
             return ArenaPalette(
-                skyColor: SKColor(red: 0.05, green: 0.09, blue: 0.07, alpha: 1),
+                skyColor: SKColor(red: 0.11, green: 0.20, blue: 0.16, alpha: 1),
                 haloColor: SKColor(red: 0.18, green: 0.30, blue: 0.22, alpha: 0.35),
                 horizonColor: SKColor(red: 0.30, green: 0.55, blue: 0.38, alpha: 0.4),
-                stageColor: SKColor(red: 0.07, green: 0.10, blue: 0.08, alpha: 1),
-                stageEdgeColor: SKColor(red: 0.03, green: 0.05, blue: 0.04, alpha: 1),
+                stageColor: SKColor(red: 0.13, green: 0.19, blue: 0.15, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.06, green: 0.10, blue: 0.08, alpha: 1),
                 stageStrokeColor: SKColor(red: 0.25, green: 0.45, blue: 0.30, alpha: 0.5),
                 decorColor: SKColor(red: 0.04, green: 0.08, blue: 0.05, alpha: 1)
             )
         case .guardian:
             // Sanctuaire de l'Aether : violets profonds
             return ArenaPalette(
-                skyColor: SKColor(red: 0.06, green: 0.04, blue: 0.12, alpha: 1),
+                skyColor: SKColor(red: 0.14, green: 0.09, blue: 0.26, alpha: 1),
                 haloColor: SKColor(red: 0.40, green: 0.18, blue: 0.65, alpha: 0.45),
                 horizonColor: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.55),
-                stageColor: SKColor(red: 0.10, green: 0.06, blue: 0.16, alpha: 1),
-                stageEdgeColor: SKColor(red: 0.04, green: 0.02, blue: 0.07, alpha: 1),
+                stageColor: SKColor(red: 0.18, green: 0.12, blue: 0.28, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.08, green: 0.05, blue: 0.13, alpha: 1),
                 stageStrokeColor: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.6),
                 decorColor: SKColor(red: 0.08, green: 0.05, blue: 0.14, alpha: 1)
             )
@@ -2680,11 +2772,11 @@ private func setupComboAndStatusUI(scene: SKScene) {
             // Ruines de la Source : marron-rouge délavé
             let bossBoost: CGFloat = isBoss ? 1.2 : 1.0
             return ArenaPalette(
-                skyColor: SKColor(red: 0.08 * bossBoost, green: 0.04, blue: 0.05, alpha: 1),
+                skyColor: SKColor(red: 0.20 * bossBoost, green: 0.11, blue: 0.12, alpha: 1),
                 haloColor: SKColor(red: 0.45, green: 0.18, blue: 0.15, alpha: 0.4),
                 horizonColor: SKColor(red: 0.80, green: 0.35, blue: 0.20, alpha: 0.45),
-                stageColor: SKColor(red: 0.10, green: 0.06, blue: 0.05, alpha: 1),
-                stageEdgeColor: SKColor(red: 0.04, green: 0.02, blue: 0.02, alpha: 1),
+                stageColor: SKColor(red: 0.20, green: 0.13, blue: 0.11, alpha: 1),
+                stageEdgeColor: SKColor(red: 0.09, green: 0.05, blue: 0.05, alpha: 1),
                 stageStrokeColor: SKColor(red: 0.60, green: 0.28, blue: 0.18, alpha: 0.55),
                 decorColor: SKColor(red: 0.10, green: 0.06, blue: 0.05, alpha: 1)
             )

@@ -110,10 +110,13 @@ final class AudioEngine {
         case combat      // combat standard — variante 1
         case combat2     // combat standard — variante 2
         case combat3     // combat standard — variante 3
-        case boss        // Gardien de l'Aether (Acte I)
-        case bossArchivist // l'Archiviste (Acte II)
-        case bossThreshold // le Gardien du Seuil (Acte III)
-        case bossVoid      // l'Avatar du Vide (Acte IV)
+        // Un seul thème pour tous les boss (Gardien, Archiviste, Seuil,
+        // Avatar du Vide) : chacun avait son propre cas, mais trois d'entre
+        // eux retombaient sur la piste de repli d'un AUTRE combat faute de
+        // fichier dédié — la Menace de l'Archiviste sonnait comme les mines,
+        // pas comme elle-même. Une seule piste, assumée, vaut mieux que
+        // quatre promesses tenues à un quart.
+        case boss
         case title       // écran-titre
         case finale      // vraie fin / crédits — aube nouvelle
 
@@ -142,9 +145,6 @@ final class AudioEngine {
             case .combat2:       return "music_combat2"
             case .combat3:       return "music_combat3"
             case .boss:          return "music_boss"
-            case .bossArchivist: return "music_boss_archivist"
-            case .bossThreshold: return "music_boss_threshold"
-            case .bossVoid:      return "music_boss_void"
             case .title:         return "music_title"
             case .finale:        return "music_finale"
             }
@@ -158,9 +158,6 @@ final class AudioEngine {
         var fallbackFileName: String? {
             switch self {
             case .combat2, .combat3:  return "music_combat"
-            case .bossArchivist:      return "music_mines"       // sourd, oppressant
-            case .bossThreshold:      return "music_threshold"   // son propre domaine
-            case .bossVoid:           return "music_finale"      // l'ultime affrontement
             default:                  return nil
             }
         }
@@ -171,8 +168,7 @@ final class AudioEngine {
             case .mines: return .ruins
             case .inn: return .calm
             case .combat, .combat2, .combat3: return .tense
-            case .boss, .bossArchivist, .bossThreshold, .bossVoid:
-                return .voidThreshold
+            case .boss: return .voidThreshold
             case .title: return .sacred
             case .finale: return .sacred
             default: return self
@@ -609,8 +605,7 @@ final class AudioEngine {
     private func config(for mood: MusicMood) -> MusicConfig {
         switch mood {
         case .mines, .inn, .title, .finale,
-             .combat, .combat2, .combat3,
-             .boss, .bossArchivist, .bossThreshold, .bossVoid:
+             .combat, .combat2, .combat3, .boss:
             // Moods à piste CC0 : synthèse de repli si le fichier manque.
             return config(for: mood.synthFallback)
         case .calm:

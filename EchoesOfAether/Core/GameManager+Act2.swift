@@ -284,7 +284,7 @@ extension GameManager {
                 specialName: String(localized: "combat.archivist.specialName"),
                 regenPercent: 0.07,
                 regenName: String(localized: "combat.archivist.regen"),
-                music: .bossArchivist
+                music: .boss
             )
 
             let levelBefore = player.level

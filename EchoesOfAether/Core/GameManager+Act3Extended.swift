@@ -199,7 +199,7 @@ extension GameManager {
                 specialAttackInterval: 2,
                 specialDamage: 92,
                 specialName: String(localized: "combat.thresholdGuardian.specialName"),
-                music: .bossThreshold
+                music: .boss
             )
 
             let levelBefore = player.level

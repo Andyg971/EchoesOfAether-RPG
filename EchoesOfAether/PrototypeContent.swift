@@ -401,6 +401,14 @@ enum PrototypeContent {
               text: String(localized: "dialogue.desert.npc.caravanier2"))
     ]
 
+    /// Même caravanier, une fois le colosse abattu : la route est libre.
+    static let desertCaravanierResolvedDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.caravanier.name"),
+              text: String(localized: "dialogue.desert.npc.caravanierPost1")),
+        .line(speaker: String(localized: "npc.desert.caravanier.name"),
+              text: String(localized: "dialogue.desert.npc.caravanierPost2"))
+    ]
+
     /// La marchande, au souk : plus rien à vendre, plus personne à qui.
     static let desertMerchantDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "npc.desert.merchant.name"),
@@ -409,12 +417,28 @@ enum PrototypeContent {
               text: String(localized: "dialogue.desert.npc.merchant2"))
     ]
 
+    /// Même marchande, après le colosse : elle rouvre l'étal.
+    static let desertMerchantResolvedDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.merchant.name"),
+              text: String(localized: "dialogue.desert.npc.merchantPost1")),
+        .line(speaker: String(localized: "npc.desert.merchant.name"),
+              text: String(localized: "dialogue.desert.npc.merchantPost2"))
+    ]
+
     /// L'enfant, près du puits : il répète ce que les grands murmurent.
     static let desertChildDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "npc.desert.child.name"),
               text: String(localized: "dialogue.desert.npc.child1")),
         .line(speaker: "Kael",
               text: String(localized: "dialogue.desert.npc.child.kael1"))
+    ]
+
+    /// Même enfant, après le colosse : la promesse de Kael tenue.
+    static let desertChildResolvedDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "npc.desert.child.name"),
+              text: String(localized: "dialogue.desert.npc.childPost1")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.desert.npc.childKaelPost1"))
     ]
 
     // MARK: - Forêt — jouet trouvé
@@ -1575,6 +1599,18 @@ enum PrototypeContent {
             entries.append(LoreEntry(
                 title: String(localized: "lore.kaelMemories.title"),
                 body: String(localized: "lore.kaelMemories.body")
+            ))
+        }
+        if player.loreDiscovered.contains("lostEchoes") {
+            entries.append(LoreEntry(
+                title: String(localized: "lore.lostEchoes.title"),
+                body: String(localized: "lore.lostEchoes.body")
+            ))
+        }
+        if player.loreDiscovered.contains("eranPast") {
+            entries.append(LoreEntry(
+                title: String(localized: "lore.eranPast.title"),
+                body: String(localized: "lore.eranPast.body")
             ))
         }
         return entries

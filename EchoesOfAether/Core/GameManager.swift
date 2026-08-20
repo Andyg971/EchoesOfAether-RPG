@@ -1902,13 +1902,13 @@ final class GameManager {
         let all: [(QuestState, String, String, PixelIcons.Kind)] = [
             (player.questChildToy,   "questlog.toy.title",       "questlog.toy.desc",       .bag),
             (player.questDelivery,   "questlog.delivery.title",  "questlog.delivery.desc",  .bag),
-            (player.questMushroom,   "questlog.mushroom.title",  "questlog.mushroom.desc",  .potion),
             (player.questLyraShards, "questlog.shards.title",    "questlog.shards.desc",    .gem),
             (player.questMedallion,  "questlog.medallion.title", "questlog.medallion.desc", .coin),
             (player.questBramOre,    "questlog.bramOre.title",   "questlog.bramOre.desc",   .gem),
             (player.questSageHerb,   "questlog.sageHerb.title",  "questlog.sageHerb.desc",  .potion),
             (player.questGarenScout, "questlog.garenScout.title", "questlog.garenScout.desc", .magnifier),
-            (player.questMines,      "questlog.mines.title",      "questlog.mines.desc",     .skull)
+            (player.questMines,      "questlog.mines.title",      "questlog.mines.desc",     .skull),
+            (player.questDesert,     "questlog.desert.title",     "questlog.desert.desc",    .skull)
         ]
         let active = all.filter { $0.0 == .active }
         let done   = all.filter { $0.0 == .complete }
@@ -2982,19 +2982,6 @@ final class GameManager {
                                             travel: false),
                           accent: SKColor(red: 0.18, green: 0.12, blue: 0.28, alpha: 1))
         ]
-    }
-
-    /// Voyage depuis la carte : seul le désert (aller) et la zone
-    /// d'origine (retour) sont voyageables pour l'instant.
-    private func travel(to id: String) {
-        switch id {
-        case "desert" where !inDesert:
-            enterDesert()
-        case "forest", "village":
-            if inDesert { exitDesert() }
-        default:
-            break
-        }
     }
 
     // MARK: - Save / Load

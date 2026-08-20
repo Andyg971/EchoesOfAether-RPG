@@ -7,45 +7,6 @@ extension GameManager {
 
     // MARK: - Désert d'Ossara
 
-    /// Voyage vers les dunes : Kael quitte sa zone, le désert se charge.
-    func enterDesert() {
-        guard let scene else { return }
-        transition(to: .transition)
-        TransitionManager.fade(in: scene) { [weak self] in
-            guard let self else { return }
-            inDesert = true
-            hud.objectiveText = String(localized: "hud.objective.desert")
-            AudioEngine.shared.setMood(.tense)
-            world.switchToDesert(in: scene, progress: player.desertProgress,
-                                 chestTaken: player.desertChestTaken)
-            // Coordonnées MONDE : Ossara scrolle sur trois écrans depuis
-            // qu'elle a une cité. `scene.size.height` posait Kael au tiers de
-            // la traversée, loin du sable d'entrée.
-            world.kael.position = CGPoint(x: scene.size.width * 0.50,
-                                          y: world.worldHeight * 0.09)
-        } completion: { [weak self] in
-            guard let self else { return }
-            spawnDesertRoamers()
-            if player.questDesert == .inactive {
-                player.questDesert = .active
-                hud.questText = String(localized: "quest.desert.hud")
-                transition(to: .dialogue)
-                dialogue.start(PrototypeContent.desertEnterDialogue) { [weak self] in
-                    self?.transition(to: .exploration)
-                }
-            } else if player.desertProgress >= 1, player.questDesert == .active,
-                      Int.random(in: 0..<100) < 30 {
-                // Rencontre aléatoire en chemin : les dunes ne pardonnent pas.
-                transition(to: .dialogue)
-                dialogue.start(PrototypeContent.desertAmbushDialogue) { [weak self] in
-                    self?.startDesertAmbush()
-                }
-            } else {
-                transition(to: .exploration)
-            }
-        }
-    }
-
     /// Peuple le désert de monstres baladeurs selon la progression.
     func spawnDesertRoamers() {
         guard let scene, inDesert else { clearRoamers(); return }
@@ -201,6 +162,24 @@ extension GameManager {
             // du village, au lieu du saut direct d'autrefois.
             if id == "village", phase == .act2, !player.act2Returned {
                 playAct2VillageReturn()
+            } else if id == "desert", player.questDesert == .inactive {
+                // Première arrivée aux dunes : active la quête et joue son
+                // dialogue d'ouverture — c'était posé dans `enterDesert()`,
+                // une fonction jamais appelée par le vrai chemin d'entrée
+                // (carte du monde → ici). La quête ne s'activait donc jamais.
+                player.questDesert = .active
+                hud.questText = String(localized: "quest.desert.hud")
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.desertEnterDialogue) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            } else if id == "desert", player.desertProgress >= 1,
+                      player.questDesert == .active, Int.random(in: 0..<100) < 30 {
+                // Rencontre aléatoire en chemin : les dunes ne pardonnent pas.
+                transition(to: .dialogue)
+                dialogue.start(PrototypeContent.desertAmbushDialogue) { [weak self] in
+                    self?.startDesertAmbush()
+                }
             } else {
                 transition(to: .exploration)
             }
@@ -336,10 +315,21 @@ extension GameManager {
 
         // Habitants de la cité : trois voix terrées derrière les remparts,
         // qui racontent la même peur — les monstres ont coupé la route.
+        // Une fois le colosse abattu (desertProgress 3 / questDesert
+        // .complete), ils passent à leur réplique « résolue » : sinon ils
+        // répétaient leur plainte alors que Kael venait justement d'y
+        // répondre.
+        let resolved = player.desertProgress >= 3
         let npcs: [(CGPoint, [DialogueStep])] = [
-            (DesertPOI.npcCaravanier, PrototypeContent.desertCaravanierDialogue),
-            (DesertPOI.npcMerchant, PrototypeContent.desertMerchantDialogue),
-            (DesertPOI.npcChild, PrototypeContent.desertChildDialogue)
+            (DesertPOI.npcCaravanier, resolved
+                ? PrototypeContent.desertCaravanierResolvedDialogue
+                : PrototypeContent.desertCaravanierDialogue),
+            (DesertPOI.npcMerchant, resolved
+                ? PrototypeContent.desertMerchantResolvedDialogue
+                : PrototypeContent.desertMerchantDialogue),
+            (DesertPOI.npcChild, resolved
+                ? PrototypeContent.desertChildResolvedDialogue
+                : PrototypeContent.desertChildDialogue)
         ]
         for (poi, steps) in npcs
         where point.distance(to: poi.scaled(w: w, h: h)) < DesertPOI.reach {

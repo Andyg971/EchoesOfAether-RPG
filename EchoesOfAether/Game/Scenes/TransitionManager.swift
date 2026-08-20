@@ -102,7 +102,6 @@ enum TransitionManager {
             btnLabel.verticalAlignmentMode = .center
             btnLabel.name = "continueBtn"
             btn.addChild(btnLabel)
-            JuiceEngine.pulse(btn, scale: 1.04)
         }
 
         overlay.run(.fadeAlpha(to: 1, duration: 0.8))
@@ -240,7 +239,6 @@ enum TransitionManager {
         closeLbl.isUserInteractionEnabled = false
         closeBtn.addChild(closeLbl)
         overlay.addChild(closeBtn)
-        JuiceEngine.pulse(closeBtn, scale: 1.04)
 
         overlay.run(.fadeIn(withDuration: 0.6))
         for (i, child) in overlay.children.enumerated() {
@@ -348,7 +346,6 @@ enum TransitionManager {
         btnLabel.verticalAlignmentMode = .center
         btnLabel.name = "continueBtn"
         btn.addChild(btnLabel)
-        JuiceEngine.pulse(btn, scale: 1.04)
 
         overlay.run(.fadeAlpha(to: 1, duration: 1.2))
         for child in overlay.children {

@@ -1105,7 +1105,6 @@ final class GameManager {
         skip.horizontalAlignmentMode = .center
         skip.position = CGPoint(x: scene.size.width / 2, y: 26)
         overlay.addChild(skip)
-        JuiceEngine.pulse(skip, scale: 1.06)
 
         overlay.run(.sequence([
             .wait(forDuration: delay + 0.4),

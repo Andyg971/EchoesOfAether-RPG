@@ -106,7 +106,6 @@ final class TutorialOverlay {
         let illustration = makeIllustration(for: index)
         illustration.position = CGPoint(x: cx, y: top - 108)
         root.addChild(illustration)
-        JuiceEngine.pulse(illustration, scale: 1.06)
 
         let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         bodyLabel.text = currentPanel.body
@@ -131,7 +130,6 @@ final class TutorialOverlay {
         // en dessous sans cet écart.
         nextBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 77)
         root.addChild(nextBtn)
-        JuiceEngine.pulse(nextBtn, scale: 1.03)
 
         if !isLast {
             let skipBtn = PixelUI.makeButton(

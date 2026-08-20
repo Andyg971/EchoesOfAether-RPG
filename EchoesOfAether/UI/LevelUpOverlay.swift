@@ -50,7 +50,6 @@ final class LevelUpOverlay {
         hintLabel.horizontalAlignmentMode = .center
         hintLabel.text = String(localized: "levelUp.tapToContinue")
         root.addChild(hintLabel)
-        JuiceEngine.pulse(hintLabel, scale: 1.1)
 
         layout(in: scene.size)
     }

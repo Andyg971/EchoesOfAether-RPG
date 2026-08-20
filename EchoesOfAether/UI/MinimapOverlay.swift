@@ -76,6 +76,5 @@ final class MinimapOverlay {
         kaelDot.zRotation = .pi / 4
         kaelDot.zPosition = 3
         root.addChild(kaelDot)
-        JuiceEngine.pulse(kaelDot, scale: 1.3)
     }
 }

@@ -223,9 +223,8 @@ final class WorldMapOverlay {
             token.position = CGPoint(x: p.x, y: p.y + 20)
             root.addChild(token)
             nodes.append(token)
-            JuiceEngine.pulse(token, scale: 1.2)
         case .available:
-            JuiceEngine.pulse(square, scale: 1.08)
+            break
         case .locked:
             // Cadenas minimal : barre + arc carrés
             let lock = SKSpriteNode(color: SKColor(white: 0.55, alpha: 0.9),

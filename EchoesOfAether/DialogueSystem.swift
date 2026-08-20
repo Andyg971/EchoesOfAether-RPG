@@ -101,7 +101,6 @@ final class DialogueSystem {
         continueIndicator.horizontalAlignmentMode = .right
         continueIndicator.isHidden = true
         root.addChild(continueIndicator)
-        JuiceEngine.pulse(continueIndicator, scale: 1.15)
 
         layout(in: scene.size)
     }

@@ -194,7 +194,6 @@ final class InventoryOverlay {
         glow.zPosition = -0.5
         root.addChild(glow)
         statLabels.append(glow)
-        JuiceEngine.pulse(glow, scale: 1.02)
 
         let hint = SKLabelNode(fontNamed: PixelUI.uiFont)
         hint.text = String(localized: "inventory.potionHint")
@@ -205,7 +204,6 @@ final class InventoryOverlay {
         hint.position = CGPoint(x: 0, y: -panelHeight / 2 + 62)
         root.addChild(hint)
         statLabels.append(hint)
-        JuiceEngine.pulse(hint, scale: 1.06)
     }
 
     /// Bouton A / toucher la ligne : boit une potion. Erreur haptique si

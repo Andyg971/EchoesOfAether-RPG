@@ -124,7 +124,6 @@ final class HUDOverlay {
         interactionHintLabel.verticalAlignmentMode = .center
         interactionHintLabel.isHidden = true
         root.addChild(interactionHintLabel)
-        JuiceEngine.pulse(interactionHintLabel, scale: 1.05)
 
         hpLabel.fontSize = 12
         hpLabel.fontColor = SKColor(red: 0.50, green: 0.90, blue: 0.60, alpha: 1)

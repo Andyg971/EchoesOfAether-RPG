@@ -1606,15 +1606,20 @@ final class WorldBuilder {
     func switchToThreshold(in scene: SKScene,
                            echoJoined: Bool = false,
                            spiritsCalmed: Set<String> = [],
-                           shadesDefeated: Bool = false) {
+                           shadesDefeated: Bool = false,
+                           eranMet: Bool = false) {
         clearBackdrop()
         worldNode.position = .zero
         // worldHeight est défini par buildThreshold (couloir vertical scrollable).
+        // Eran N'EST PAS dans cette liste : une fois compagnon (eran.isHidden
+        // = false via showEranCompanion), une reconstruction du décor ne doit
+        // pas le re-masquer — il continue de suivre le trio.
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
         scene.backgroundColor = SKColor(red: 0.03, green: 0.02, blue: 0.08, alpha: 1)
         buildThreshold(in: scene, echoJoined: echoJoined,
                        spiritsCalmed: spiritsCalmed,
-                       shadesDefeated: shadesDefeated)
+                       shadesDefeated: shadesDefeated,
+                       eranMet: eranMet)
         if echoJoined { showLyraEcho(in: scene) }
     }
 
@@ -4802,7 +4807,8 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
     private func buildThreshold(in scene: SKScene,
                                 echoJoined: Bool = false,
                                 spiritsCalmed: Set<String> = [],
-                                shadesDefeated: Bool = false) {
+                                shadesDefeated: Bool = false,
+                                eranMet: Bool = false) {
         // Plan unique de la zone (décor, hit-tests, bulles, spawns le partagent).
         let plan = ThresholdLayout(sceneSize: scene.size)
         let w = plan.width
@@ -4912,7 +4918,13 @@ private func scatterVillageFlowers(in scene: SKScene, w: CGFloat, h: CGFloat) {
                      at: CGPoint(x: w * 0.86, y: h * 0.135), scale: 0.50, flipped: true)
 
         // Eran Solace sur son palier — le Premier Gardien attend Kael.
-        addEran(in: scene, at: plan.eran)
+        // Une fois recruté (eranMet), il vit comme compagnon (cf.
+        // showEranCompanion) : re-poser son décor ici à chaque reconstruction
+        // créait un second Eran, jamais masqué par showEranCompanion (déjà
+        // passée, donc idempotente-silencieuse sur les appels suivants).
+        if !eranMet {
+            addEran(in: scene, at: plan.eran)
+        }
 
         // ── L'Écho de Lyra attend juste après l'entrée ──
         if !echoJoined {

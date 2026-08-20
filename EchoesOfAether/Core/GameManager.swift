@@ -625,9 +625,15 @@ final class GameManager {
             if lyraInParty {
                 if world.lyra.isHidden { world.showLyraCompanion() }
                 world.updateLyraFollow(deltaTime: deltaTime)
-            } else if phase == .act3 || phase == .act4, player.act3EchoJoined {
-                world.updateLyraFollow(deltaTime: deltaTime)
-                // Eran ferme la marche du trio, derrière l'Écho de Lyra.
+            } else if phase == .act3 || phase == .act4 {
+                if player.act3EchoJoined {
+                    world.updateLyraFollow(deltaTime: deltaTime)
+                }
+                // Eran ferme la marche du trio, derrière l'Écho de Lyra —
+                // ou marche seul si elle n'a pas encore rejoint : son
+                // recrutement (act3EranMet) n'exige pas l'Écho. Il restait
+                // sinon planté sur son palier au Seuil, invisible, alors
+                // qu'il combattait déjà dans act3Party.
                 if player.act3EranMet {
                     if world.eran.isHidden { world.showEranCompanion() }
                     world.updateEranFollow(deltaTime: deltaTime)
@@ -2757,7 +2763,8 @@ final class GameManager {
         world.switchToThreshold(in: scene,
                                 echoJoined: player.act3EchoJoined,
                                 spiritsCalmed: player.act3SpiritsCalmed,
-                                shadesDefeated: player.act3ShadesDefeated)
+                                shadesDefeated: player.act3ShadesDefeated,
+                                eranMet: player.act3EranMet)
         if placeKael {
             // Le couloir se parcourt du sud au nord : Kael entre par le bas.
             world.kael.position = ThresholdLayout(sceneSize: scene.size).entrance

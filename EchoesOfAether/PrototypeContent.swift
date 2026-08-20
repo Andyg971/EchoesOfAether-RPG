@@ -195,10 +195,6 @@ enum PrototypeContent {
         .line(speaker: "Garen", text: String(localized: "dialogue.garen.delivery2"))
     ]
 
-    static let garenQuestDoneDialogue: [DialogueStep] = [
-        .line(speaker: "Garen", text: String(localized: "dialogue.garen.done1"))
-    ]
-
     // MARK: - Sage (aubergiste)
 
     static let sageFirstDialogue: [DialogueStep] = [
@@ -613,27 +609,6 @@ enum PrototypeContent {
         .line(speaker: "Kael", text: String(localized: "quest.garenScout.found"))
     ]
 
-    static let villagerDialogue: [DialogueStep] = [
-        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.1")),
-        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.2")),
-        .choice(
-            prompt: String(localized: "dialogue.villager.prompt"),
-            options: [
-                DialogueChoice(
-                    title: String(localized: "dialogue.villager.choice1"),
-                    responseSpeaker: String(localized: "dialogue.villager.name"),
-                    response: String(localized: "dialogue.villager.response1")
-                ),
-                DialogueChoice(
-                    title: String(localized: "dialogue.villager.choice2"),
-                    responseSpeaker: String(localized: "dialogue.villager.name"),
-                    response: String(localized: "dialogue.villager.response2")
-                )
-            ]
-        ),
-        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.villager.line2"))
-    ]
-
     // MARK: - Forêt — après combat bosquet
 
     static let forestGroveDialogue: [DialogueStep] = [
@@ -822,11 +797,6 @@ enum PrototypeContent {
     static let act2RuinsCombat1Dialogue: [DialogueStep] = [
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.combat1.lyra1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.combat1.kael1"))
-    ]
-
-    static let act2RuinsCombat2Dialogue: [DialogueStep] = [
-        .line(speaker: "Kael", text: String(localized: "dialogue.act2.ruins.combat2.kael1")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.ruins.combat2.lyra1"))
     ]
 
     // MARK: - Acte II — Découverte & Confrontation

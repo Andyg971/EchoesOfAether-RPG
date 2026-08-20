@@ -45,9 +45,13 @@ final class GameManager {
     /// Suite du récit mise en attente pendant que le mur d'achat est ouvert.
     var pendingUnlockAction: (() -> Void)?
 
-    /// Lyra combat aux côtés de Kael dans les zones du pacte (tant qu'elle vit).
+    /// Lyra combat aux côtés de Kael dans les zones du pacte (tant qu'elle
+    /// vit) — sauf aux mines : elle l'a annoncé elle-même en y entrant
+    /// (« Je garde l'entrée. Si ça tourne mal, tu cries. Promis ? »,
+    /// dialogue.mines.enter.lyra1). La suivre dans la galerie contredisait
+    /// sa propre réplique.
     var lyraInParty: Bool {
-        [.forest, .shrine, .ruins].contains(phase) && !player.lyraDeceased
+        [.forest, .shrine, .ruins].contains(phase) && !player.lyraDeceased && !inMines
     }
 
     /// Trio de l'Acte III : l'Écho de Lyra puis Eran rejoignent Kael.
@@ -618,7 +622,7 @@ final class GameManager {
         // Lyra accompagne Kael dans les zones du pacte (tant qu'elle vit) ;
         // au Seuil, c'est son Écho spectral qui suit (une fois rejoint).
         if state == .exploration || state == .dialogue {
-            if [.forest, .shrine, .ruins].contains(phase), !player.lyraDeceased {
+            if lyraInParty {
                 if world.lyra.isHidden { world.showLyraCompanion() }
                 world.updateLyraFollow(deltaTime: deltaTime)
             } else if phase == .act3 || phase == .act4, player.act3EchoJoined {

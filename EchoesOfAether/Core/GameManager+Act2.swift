@@ -10,6 +10,18 @@ extension GameManager {
     func beginAct2() {
         guard scene != nil else { return }
         GameCenterManager.shared.report(.act2Reached)
+        // Le cristal-mère de Lyra ne se conclut qu'au comptoir du village
+        // (openLyraDialogue, cas .found) — inatteignable dès que l'Acte II
+        // commence (Lyra passe sur openAct2LyraDialogue, sans branche de
+        // quête). Un joueur qui trouve le cristal puis file au Sanctuaire
+        // perdait la conclusion — et l'or — pour toujours. On la solde ici,
+        // sans la scène dédiée (elle ne collerait plus au ton de l'Acte II).
+        if player.questLyraShards == .found {
+            player.questLyraShards = .complete
+            player.gold += 50
+            syncGold()
+            GameCenterManager.shared.report(.lyraQuest)
+        }
         phase = .act2
         // Kael rentre du Sanctuaire : il réapparaît sur la CARTE DU MONDE et
         // regagne Solis À PIED (le village a changé pendant son absence). Les

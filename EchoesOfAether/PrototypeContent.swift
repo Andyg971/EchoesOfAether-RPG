@@ -1263,17 +1263,17 @@ enum PrototypeContent {
               text: String(localized: "dialogue.act3.eranJoin2"))
     ]
 
+    /// Le Gardien du Seuil EST Eran — ou plutôt ce qu'il a laissé derrière en
+    /// tenant le sceau seul vingt ans : son Ombre. Eran (déjà libre, dans le
+    /// groupe depuis act3EranMeetDialogue) affronte cette part de lui-même à
+    /// nos côtés. Ne rejoue PAS « premières retrouvailles » ni l'origine de
+    /// l'amnésie de Kael (déjà racontées, en détail et sans contradiction,
+    /// dans act3EranMeetDialogue) — les deux faisaient doublon avec cette
+    /// scène-là et se contredisaient en plus sur qui avait scellé quoi.
     static let act3GuardianPreDialogue: [DialogueStep] = [
-        // La confrontation (scène ACT4_SC11 du scénario, adaptée à Eran)
-        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.1")),
-        .line(speaker: "Kael", text: String(localized: "dialogue.finale.kael.1")),
-        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.2")),
-        .line(speaker: "Eran", text: String(localized: "dialogue.finale.eran.3")),
-        .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.finale.voice.1")),
-        .line(speaker: "Kael", text: String(localized: "dialogue.finale.kael.2")),
-        .line(speaker: String(localized: "dialogue.act3.voiceName"),
-              text: String(localized: "dialogue.finale.voice.2")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.act3.shadowPre1")),
+        .line(speaker: "Kael", text: String(localized: "dialogue.act3.shadowPre2")),
+        .line(speaker: "Eran", text: String(localized: "dialogue.act3.shadowPre3")),
         .line(speaker: "Eran",
               text: String(localized: "dialogue.act3.guardianEran2")),
         .line(speaker: "Kael",

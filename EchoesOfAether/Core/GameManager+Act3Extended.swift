@@ -170,12 +170,34 @@ extension GameManager {
             // Eran vient de dire à Kael ce qu'il a payé : sa mémoire.
             player.loreDiscovered.insert("price")
             hud.objectiveText = String(localized: "hud.objective.act3Boss")
-            // Eran rejoint le trio pour la suite du Seuil.
-            dialogue.start(PrototypeContent.act3EranJoinDialogue) { [weak self] in
+
+            let joinEran = { [weak self] in
                 guard let self else { return }
-                AudioEngine.shared.playQuestComplete()
-                saveGame()
-                transition(to: .exploration)
+                // Eran rejoint le trio pour la suite du Seuil.
+                dialogue.start(PrototypeContent.act3EranJoinDialogue) { [weak self] in
+                    guard let self else { return }
+                    AudioEngine.shared.playQuestComplete()
+                    saveGame()
+                    transition(to: .exploration)
+                }
+            }
+
+            if player.act3EndingChoice == 1 {
+                // « L'Aether me contrôle » se lisait comme la réponse la plus
+                // lucide alors qu'elle saute l'Acte IV entier sans prévenir —
+                // contrairement à « Franchir » qui a sa propre garde-fou plus
+                // tard (act4ThresholdWarningDialogue). Même garantie ici,
+                // tout de suite après le choix.
+                dialogue.start(PrototypeContent.act3ResistWarningDialogue) { [weak self] in
+                    guard let self else { return }
+                    if dialogue.lastChoiceIndex == 1 {
+                        player.act3EndingChoice = 0   // reconsidéré : franchir
+                    }
+                    saveGame()
+                    joinEran()
+                }
+            } else {
+                joinEran()
             }
         }
     }

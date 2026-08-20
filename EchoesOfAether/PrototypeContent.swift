@@ -1149,6 +1149,34 @@ enum PrototypeContent {
         )
     ]
 
+    /// Même garde-fou que act4ThresholdWarningDialogue, côté « résister » :
+    /// ce choix mettait fin au jeu sans prévenir (crédits directs, Acte IV
+    /// sauté), alors que sa réplique (« L'Aether me contrôle ») se lisait
+    /// comme la réponse la plus lucide. Jouée juste après le choix fait à
+    /// Eran, avant qu'il ne rejoigne officiellement. Choix lu via
+    /// `dialogue.lastChoiceIndex` (0 = confirmer, 1 = reconsidérer).
+    static let act3ResistWarningDialogue: [DialogueStep] = [
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistWarning1")),
+        .line(speaker: String(localized: "dialogue.act3.voiceName"),
+              text: String(localized: "dialogue.act3.resistWarning2")),
+        .choice(
+            prompt: String(localized: "dialogue.act3.resistWarningPrompt"),
+            options: [
+                DialogueChoice(
+                    title: String(localized: "dialogue.act3.resistWarningConfirm"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act3.resistWarningConfirmResponse")
+                ),
+                DialogueChoice(
+                    title: String(localized: "dialogue.act3.resistWarningReconsider"),
+                    responseSpeaker: "Kael",
+                    response: String(localized: "dialogue.act3.resistWarningReconsiderResponse")
+                )
+            ]
+        )
+    ]
+
     /// Pré-combat : le Gardien du Seuil se dresse devant Kael.
     // ── Acte III étendu : l'Écho de Lyra, les esprits, les stèles ──
 

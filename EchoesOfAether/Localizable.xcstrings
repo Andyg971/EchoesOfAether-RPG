@@ -16578,6 +16578,125 @@
           }
         }
       }
+    },
+    "dialogue.act3.resistWarning1": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn away now, and the Void stays behind the Threshold — never faced, never closed."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se détourner maintenant, c'est laisser le Vide derrière le Seuil — jamais affronté, jamais refermé."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarning2": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This road ends here. Whatever waited beyond will not come."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ce chemin s'arrête ici. Ce qui t'attendait au-delà n'arrivera pas."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarningPrompt": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Turn your back on the Threshold?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tourner le dos au Seuil ?"
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarningConfirm": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "I stop here — that's enough"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Je m'arrête ici — ça suffit"
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarningConfirmResponse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "That's enough. I'm going home."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ça suffit. Je rentre."
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarningReconsider": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wait — not yet"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Attends — pas encore"
+          }
+        }
+      }
+    },
+    "dialogue.act3.resistWarningReconsiderResponse": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No. There may still be something to finish."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Non. Il reste peut-être une chose à finir."
+          }
+        }
+      }
     }
   },
   "version": "1.1"

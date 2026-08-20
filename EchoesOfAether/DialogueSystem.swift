@@ -24,6 +24,10 @@ final class DialogueSystem {
     private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var choiceNodes: [SKShapeNode] = []
+    /// Hauteur réelle de chaque bouton de choix (28pt, ou plus si le titre
+    /// passe sur 2 lignes) — tient le texte au lieu de le laisser déborder
+    /// du cadre sur un bouton voisin.
+    private var choiceHeights: [CGFloat] = []
     private var choiceSelection = 0   // curseur sur les choix (A valide)
     private var steps: [DialogueStep] = []
     private var index = 0
@@ -42,10 +46,13 @@ final class DialogueSystem {
     private let panelHeightLine: CGFloat = 72
     private var safeBottom: CGFloat = 0
 
-    /// Hauteur ajustée au contenu : en-tête (prompt) + N boutons de choix
-    /// + marge basse — plus de grand vide noir sous les choix.
+    /// Hauteur ajustée au contenu : en-tête (prompt) + somme des boutons de
+    /// choix (chacun sur sa hauteur réelle, 1 ou 2 lignes) + marge basse —
+    /// plus de grand vide noir sous les choix, et plus de texte qui déborde
+    /// sur le bouton suivant quand un titre est long.
     private var panelHeightChoices: CGFloat {
-        68 + CGFloat(max(0, choiceNodes.count - 1)) * 32
+        guard !choiceHeights.isEmpty else { return 68 }
+        return 40 + choiceHeights.reduce(0, +) + CGFloat(choiceHeights.count - 1) * 4
     }
 
     /// Largeur compacte : le panneau ne barre plus tout l'écran.
@@ -555,9 +562,24 @@ final class DialogueSystem {
         guard let sceneRef = root.scene else { return }
         let panelWidth = panelWidth(for: sceneRef.size)
         let buttonWidth = panelWidth - 28
-        let buttonHeight: CGFloat = 28
+        let minButtonHeight: CGFloat = 28
 
         for (offset, option) in options.enumerated() {
+            // Le label est mesuré AVANT le bouton : un titre qui passe sur
+            // 2 lignes (traductions longues, FR en particulier) doit gonfler
+            // le bouton plutôt que déborder sur celui d'en dessous.
+            let label = SKLabelNode(fontNamed: PixelUI.uiFont)
+            label.text = option.title
+            label.fontSize = 12 * AccessibilitySettings.textScale
+            label.fontColor = .white
+            label.numberOfLines = 2
+            label.preferredMaxLayoutWidth = buttonWidth - 32
+            label.verticalAlignmentMode = .center
+            label.horizontalAlignmentMode = .left
+
+            let buttonHeight = max(minButtonHeight, ceil(label.frame.height) + 14)
+            choiceHeights.append(buttonHeight)
+
             let button = SKShapeNode()
             PixelUI.stylePanel(button,
                                size: CGSize(width: buttonWidth, height: buttonHeight),
@@ -578,14 +600,6 @@ final class DialogueSystem {
             bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)
             button.addChild(bullet)
 
-            let label = SKLabelNode(fontNamed: PixelUI.uiFont)
-            label.text = option.title
-            label.fontSize = 12 * AccessibilitySettings.textScale
-            label.fontColor = .white
-            label.numberOfLines = 2
-            label.preferredMaxLayoutWidth = buttonWidth - 32
-            label.verticalAlignmentMode = .center
-            label.horizontalAlignmentMode = .left
             label.position = CGPoint(x: -buttonWidth / 2 + 22, y: 0)
             button.addChild(label)
 
@@ -613,19 +627,24 @@ final class DialogueSystem {
     }
 
     private func layoutChoices(panelWidth: CGFloat, panelHeight: CGFloat) {
-        guard !choiceNodes.isEmpty else { return }
-        let buttonHeight: CGFloat = 28
-        // Premier bouton juste sous le séparateur ; le panneau colle au
-        // dernier bouton (hauteur dynamique, voir panelHeightChoices).
-        let startY = panelHeight / 2 - 44
+        guard !choiceNodes.isEmpty, choiceHeights.count == choiceNodes.count else { return }
+        // Premier bouton à 30pt sous le haut du panneau (même retrait que
+        // l'ancien pas fixe) ; chaque bouton suivant colle au précédent avec
+        // 4pt d'écart, sur SA hauteur réelle — plus de chevauchement quand
+        // un titre passe sur 2 lignes.
+        var cursorY = panelHeight / 2 - 30 - choiceHeights[0] / 2
 
         for (offset, node) in choiceNodes.enumerated() {
-            node.position = CGPoint(x: 0, y: startY - CGFloat(offset) * (buttonHeight + 4))
+            if offset > 0 {
+                cursorY -= choiceHeights[offset - 1] / 2 + 4 + choiceHeights[offset] / 2
+            }
+            node.position = CGPoint(x: 0, y: cursorY)
         }
     }
 
     private func clearChoices() {
         choiceNodes.forEach { $0.removeFromParent() }
         choiceNodes.removeAll()
+        choiceHeights.removeAll()
     }
 }

@@ -62,7 +62,7 @@ extension GameManager {
         TransitionManager.fade(in: scene) { [weak self] in
             guard let self, let scene = self.scene else { return }
             inOverworld = true
-            inDesert = false; inMines = false; inCave = false
+            inDesert = false; inMines = false; inCave = false; inForest = false
             hud.objectiveText = objective ?? String(localized: "map.title")
             AudioEngine.shared.setMood(.title)
             world.switchToOverworld(in: scene)
@@ -113,7 +113,15 @@ extension GameManager {
                 }
                 world.kael.position = CGPoint(x: midX, y: scene.size.height * 0.30)
             case "forest":
-                phase = .forest
+                if phase.rawValue >= GamePhase.act2.rawValue {
+                    // L'histoire est déjà partie plus loin (Acte II+) : ne
+                    // PAS régresser `phase` vers .forest, ça effaçait l'acte
+                    // en cours (et la sauvegarde suivante l'enregistrait —
+                    // soft-lock). Simple visite, comme mines/désert/caverne.
+                    inForest = true
+                } else {
+                    phase = .forest
+                }
                 hud.objectiveText = String(localized: "hud.objective.forest")
                 AudioEngine.shared.setMood(.forPhase(.forest))
                 showForest(in: scene)
@@ -132,7 +140,11 @@ extension GameManager {
                 world.kael.position = CGPoint(x: midX, y: wh() * 0.06)
                 spawnDesertRoamers()
             case "mines":
-                phase = .forest; inMines = true
+                // Les mines sont une excursion, pas une GamePhase (cf.
+                // enterMines()) : forcer phase = .forest ici cassait l'Acte
+                // II+ exactement comme "forest" plus haut, en plus sournois
+                // (inMines masquait l'effet le temps de la visite).
+                inMines = true
                 hud.objectiveText = String(localized: "hud.objective.mines")
                 AudioEngine.shared.setMood(.mines)
                 world.switchToMines(in: scene, progress: player.minesProgress,

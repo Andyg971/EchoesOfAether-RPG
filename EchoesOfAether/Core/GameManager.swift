@@ -109,6 +109,14 @@ final class GameManager {
     /// Vrai quand Kael explore la Caverne aux Échos (donjon optionnel,
     /// entrée dans la forêt — pas une GamePhase, comme les mines).
     var inCave = false
+    /// Vrai quand Kael revisite la forêt DEPUIS LA CARTE alors que l'histoire
+    /// est déjà passée à l'Acte II ou plus loin. Contrairement aux mines/la
+    /// caverne (des excursions posées PENDANT la phase .forest, qui ne la
+    /// changent donc pas), entrer en forêt depuis la carte forçait
+    /// `phase = .forest` sans condition — et l'Acte II ne repartait jamais :
+    /// un aller simple hors de son propre acte. Ce flag permet de router les
+    /// interactions/rôdeurs de la forêt sans toucher à `phase`.
+    var inForest = false
 
     // MARK: - Setup
 
@@ -1186,6 +1194,12 @@ final class GameManager {
             return
         }
 
+        if inForest {
+            if tryForestInteraction(wp, in: scene) { return }
+            tapAndMove(point, in: scene)
+            return
+        }
+
         if trySaveCrystalTap(wp, in: scene) { return }
 
         switch phase {
@@ -2014,6 +2028,22 @@ final class GameManager {
                 bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
                 actionPoint = nearest.point
             }
+        } else if inForest {
+            // Revisite de la forêt depuis la carte (Acte II+) : mêmes POI
+            // qu'en Acte I, sauf le seuil du sanctuaire — cf. le garde
+            // `!inForest` de tryForestInteraction, ce bouton ne fait plus
+            // rien ici, donc pas de bulle « Entrer » trompeuse.
+            let w = scene.size.width
+            let h = world.worldHeight > 0 ? world.worldHeight : scene.size.height
+            let checkpoints: [(CGPoint, String)] = [
+                (CGPoint(x: w*0.88, y: h*0.30), "hint.enter")   // Mines de Cendreval
+            ]
+            if let nearest = nearestCheckpoint(from: kaelPos, points: checkpoints, radius: radius) {
+                hint = localizedHint(nearest.key)
+                bubbleAction = InteractionBubble.Action(hintKey: nearest.key)
+                bubbleAnchor = CGPoint(x: nearest.point.x, y: nearest.point.y + 40)
+                actionPoint = nearest.point
+            }
         } else if inOverworld {
             // Carte du monde : à l'approche d'un lieu OUVERT, « A · Entrer … ».
             // Les lieux verrouillés par l'histoire ne proposent rien (anti-saut).
@@ -2683,7 +2713,7 @@ final class GameManager {
     /// Peuple la forêt : combat de progression courant + chasses optionnelles
     /// non encore vaincues cette visite. Coords MONDE (trek scrollable).
     func spawnForestRoamers() {
-        guard let scene, !inMines, !inCave, phase == .forest else { clearRoamers(); return }
+        guard let scene, !inMines, !inCave, phase == .forest || inForest else { clearRoamers(); return }
         clearRoamers()
         let w = scene.size.width
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
@@ -2863,6 +2893,7 @@ final class GameManager {
     private var currentPlaceID: String {
         if inDesert { return "desert" }
         if inMines { return "mines" }
+        if inForest { return "forest" }
         switch phase {
         case .wake, .village, .complete, .act2, .fallen: return "village"
         case .forest: return "forest"

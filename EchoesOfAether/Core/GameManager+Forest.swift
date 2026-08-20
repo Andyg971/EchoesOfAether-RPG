@@ -17,8 +17,12 @@ extension GameManager {
         // déclenchent plus au tap : des monstres baladeurs chargent Kael
         // (cf. spawnForestRoamers).
 
-        // Zone 3 : Seuil du sanctuaire (nord)
-        if player.forestProgress >= 2 {
+        // Zone 3 : Seuil du sanctuaire (nord) — pas en simple visite depuis
+        // la carte (inForest) : enterShrine() force phase = .shrine sans
+        // condition, ce qui écraserait l'Acte II/III/IV en cours. Le
+        // sanctuaire n'a de toute façon plus rien à offrir une fois l'Acte I
+        // franchi.
+        if player.forestProgress >= 2, !inForest {
             let deepPath = CGPoint(x: w * 0.55, y: h * 0.90)
             if point.distance(to: deepPath) < 70 {
                 enterShrine()

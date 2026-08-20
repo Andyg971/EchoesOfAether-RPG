@@ -101,7 +101,14 @@ extension GameManager {
             let midX = scene.size.width * 0.5
             switch id {
             case "village":
-                if phase == .wake { phase = .village }
+                // N'importe quel retour à Solis pendant l'Acte I (avant même
+                // d'avoir quitté pour la forêt, ou après, tant que l'Acte II
+                // n'a pas commencé) doit redevenir un vrai village : sinon
+                // `phase` restait .forest, le tap routait vers
+                // tryForestInteraction au lieu de tryVillageInteraction, et
+                // les PNJ pourtant visibles ne répondaient plus à rien.
+                // L'Acte II garde son traitement à part (Dorin à la porte).
+                if phase != .act2 { phase = .village }
                 AudioEngine.shared.setMood(.forPhase(phase))
                 world.switchToVillage(in: scene)
                 if phase == .act2 {

@@ -120,22 +120,27 @@ final class TutorialOverlay {
         root.addChild(bodyLabel)
 
         let isLast = index >= panels.count - 1
-        let nextBtn = makeButton(
+        let nextBtn = PixelUI.makeButton(
             isLast ? String(localized: "tutorial.finish") : String(localized: "tutorial.next"),
+            size: CGSize(width: 200, height: 44),
             fill: SKColor(red: 0.14, green: 0.11, blue: 0.07, alpha: 1),
-            stroke: PixelUI.gold,
-            name: "tutorialNext", width: 200)
-        nextBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 74)
+            accent: PixelUI.gold,
+            fontSize: 20, name: "tutorialNext")
+        // +3/-3 vs l'ancien pas (74/30) : la double bordure du bouton pixel
+        // (liseré sombre extérieur) se touchait avec celle de "Passer" juste
+        // en dessous sans cet écart.
+        nextBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 77)
         root.addChild(nextBtn)
         JuiceEngine.pulse(nextBtn, scale: 1.03)
 
         if !isLast {
-            let skipBtn = makeButton(
+            let skipBtn = PixelUI.makeButton(
                 String(localized: "tutorial.skip"),
+                size: CGSize(width: 140, height: 44),
                 fill: SKColor(red: 0.10, green: 0.10, blue: 0.16, alpha: 1),
-                stroke: SKColor(red: 0.40, green: 0.35, blue: 0.55, alpha: 0.8),
-                name: "tutorialSkip", width: 140)
-            skipBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 30)
+                accent: SKColor(red: 0.40, green: 0.35, blue: 0.55, alpha: 0.8),
+                fontSize: 20, name: "tutorialSkip")
+            skipBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 27)
             root.addChild(skipBtn)
         }
 
@@ -228,25 +233,4 @@ final class TutorialOverlay {
         return PixelIcons.custom(map: map, palette: palette, pixel: 5)
     }
 
-    // MARK: - Private
-
-    private func makeButton(_ text: String, fill: SKColor, stroke: SKColor,
-                            name: String, width: CGFloat) -> SKShapeNode {
-        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
-        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 44))
-        btn.fillColor = fill
-        btn.strokeColor = stroke
-        btn.lineWidth = 2
-        btn.glowWidth = 0
-        btn.name = name
-        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
-        lbl.text = text
-        lbl.fontSize = 20
-        lbl.fontColor = .white
-        lbl.verticalAlignmentMode = .center
-        lbl.horizontalAlignmentMode = .center
-        lbl.isUserInteractionEnabled = false
-        btn.addChild(lbl)
-        return btn
-    }
 }

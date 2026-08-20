@@ -167,24 +167,27 @@ final class OptionsOverlay {
         let largeurBouton: CGFloat = 196
         let pas = largeurBouton + 12
 
-        let tutorialBtn = makeButton(String(localized: "options.replayTutorial"),
+        let tutorialBtn = PixelUI.makeButton(String(localized: "options.replayTutorial"),
+            size: CGSize(width: largeurBouton, height: 46),
             fill: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1),
-            stroke: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
-            name: "optionsTutorial", width: largeurBouton)
+            accent: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
+            fontSize: 18, name: "optionsTutorial")
         tutorialBtn.position = CGPoint(x: cx - pas, y: y)
         root.addChild(tutorialBtn)
 
-        let resetBtn = makeButton(String(localized: "options.resetSave"),
+        let resetBtn = PixelUI.makeButton(String(localized: "options.resetSave"),
+            size: CGSize(width: largeurBouton, height: 46),
             fill: SKColor(red: 0.16, green: 0.05, blue: 0.05, alpha: 1),
-            stroke: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
-            name: "optionsReset", width: largeurBouton)
+            accent: SKColor(red: 0.65, green: 0.18, blue: 0.18, alpha: 0.9),
+            fontSize: 18, name: "optionsReset")
         resetBtn.position = CGPoint(x: cx, y: y)
         root.addChild(resetBtn)
 
-        let closeBtn = makeButton(String(localized: "options.close"),
+        let closeBtn = PixelUI.makeButton(String(localized: "options.close"),
+            size: CGSize(width: largeurBouton, height: 46),
             fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
-            stroke: Palette.panelBorder,
-            name: "optionsClose", width: largeurBouton)
+            accent: Palette.panelBorder,
+            fontSize: 18, name: "optionsClose")
         closeBtn.position = CGPoint(x: cx + pas, y: y)
         root.addChild(closeBtn)
 
@@ -554,28 +557,6 @@ final class OptionsOverlay {
         row.addChild(badgeLbl)
 
         return row
-    }
-
-    /// `width` : 220 par défaut (pile de boutons), 196 pour les trois boutons
-    /// alignés en pied de panneau paysage.
-    private func makeButton(_ text: String, fill: SKColor, stroke: SKColor,
-                            name: String, width: CGFloat = 220) -> SKShapeNode {
-        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
-        let btn = SKShapeNode(rectOf: CGSize(width: width, height: 46))
-        btn.fillColor = fill
-        btn.strokeColor = stroke
-        btn.lineWidth = 2
-        btn.glowWidth = 0
-        btn.name = name
-        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
-        lbl.text = text
-        lbl.fontSize = 18
-        lbl.fontColor = .white
-        lbl.verticalAlignmentMode = .center
-        lbl.horizontalAlignmentMode = .center
-        lbl.isUserInteractionEnabled = false
-        btn.addChild(lbl)
-        return btn
     }
 
     private func label(_ text: String, size: CGFloat, color: SKColor) -> SKLabelNode {

@@ -87,10 +87,12 @@ final class DeathOverlay {
         root.addChild(sub)
 
         // Bouton Réessayer
-        let retryBtn = makeButton(
-            label: String(localized: "death.retry"),
+        let retryBtn = PixelUI.makeButton(
+            String(localized: "death.retry"),
+            size: CGSize(width: 220, height: 50),
             fill: SKColor(red: 0.18, green: 0.08, blue: 0.08, alpha: 1),
-            stroke: SKColor(red: 0.65, green: 0.20, blue: 0.20, alpha: 1),
+            accent: SKColor(red: 0.65, green: 0.20, blue: 0.20, alpha: 1),
+            fontSize: 21,
             name: "deathRetry"
         )
         retryBtn.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.42)
@@ -98,10 +100,12 @@ final class DeathOverlay {
         root.addChild(retryBtn)
 
         // Bouton Revenir au cristal
-        let crystalBtn = makeButton(
-            label: String(localized: "death.returnCrystal"),
+        let crystalBtn = PixelUI.makeButton(
+            String(localized: "death.returnCrystal"),
+            size: CGSize(width: 220, height: 50),
             fill: SKColor(red: 0.06, green: 0.06, blue: 0.18, alpha: 1),
-            stroke: SKColor(red: 0.30, green: 0.40, blue: 0.80, alpha: 0.9),
+            accent: SKColor(red: 0.30, green: 0.40, blue: 0.80, alpha: 0.9),
+            fontSize: 21,
             name: "deathCrystal"
         )
         crystalBtn.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.31)
@@ -172,26 +176,5 @@ final class DeathOverlay {
             "m": SKColor(red: 0.17, green: 0.15, blue: 0.20, alpha: 1)    // terre sombre
         ]
         return PixelIcons.custom(map: map, palette: palette, pixel: 4)
-    }
-
-    private func makeButton(label: String, fill: SKColor,
-                            stroke: SKColor, name: String) -> SKShapeNode {
-        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
-        let btn = SKShapeNode(rectOf: CGSize(width: 220, height: 50))
-        btn.fillColor = fill
-        btn.strokeColor = stroke
-        btn.lineWidth = 2
-        btn.glowWidth = 0
-        btn.name = name
-
-        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
-        lbl.text = label
-        lbl.fontSize = 21
-        lbl.fontColor = .white
-        lbl.verticalAlignmentMode = .center
-        lbl.horizontalAlignmentMode = .center
-        lbl.isUserInteractionEnabled = false
-        btn.addChild(lbl)
-        return btn
     }
 }

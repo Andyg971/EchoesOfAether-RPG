@@ -61,34 +61,38 @@ final class PauseOverlay {
         let centerX = scene.size.width / 2
         let centerY = scene.size.height / 2
 
-        let resumeBtn = makeButton(String(localized: "pause.resume"),
+        let resumeBtn = PixelUI.makeButton(String(localized: "pause.resume"),
+            size: CGSize(width: 200, height: 48),
             fill: SKColor(red: 0.10, green: 0.20, blue: 0.12, alpha: 1),
-            stroke: SKColor(red: 0.30, green: 0.70, blue: 0.40, alpha: 1),
-            name: "pauseResume")
+            accent: SKColor(red: 0.30, green: 0.70, blue: 0.40, alpha: 1),
+            fontSize: 20, name: "pauseResume")
         resumeBtn.position = CGPoint(x: centerX, y: centerY + 60)
         resumeBtn.alpha = 0
         root.addChild(resumeBtn)
 
-        let saveBtn = makeButton(String(localized: "pause.save"),
+        let saveBtn = PixelUI.makeButton(String(localized: "pause.save"),
+            size: CGSize(width: 200, height: 48),
             fill: SKColor(red: 0.06, green: 0.06, blue: 0.18, alpha: 1),
-            stroke: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
-            name: "pauseSave")
+            accent: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
+            fontSize: 20, name: "pauseSave")
         saveBtn.position = CGPoint(x: centerX, y: centerY)
         saveBtn.alpha = 0
         root.addChild(saveBtn)
 
-        let optionsBtn = makeButton(String(localized: "pause.options"),
+        let optionsBtn = PixelUI.makeButton(String(localized: "pause.options"),
+            size: CGSize(width: 200, height: 48),
             fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
-            stroke: Palette.panelBorder,
-            name: "pauseOptions")
+            accent: Palette.panelBorder,
+            fontSize: 20, name: "pauseOptions")
         optionsBtn.position = CGPoint(x: centerX, y: centerY - 58)
         optionsBtn.alpha = 0
         root.addChild(optionsBtn)
 
-        let menuBtn = makeButton(String(localized: "pause.mainMenu"),
+        let menuBtn = PixelUI.makeButton(String(localized: "pause.mainMenu"),
+            size: CGSize(width: 200, height: 48),
             fill: SKColor(red: 0.12, green: 0.06, blue: 0.06, alpha: 1),
-            stroke: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
-            name: "pauseMenu")
+            accent: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
+            fontSize: 20, name: "pauseMenu")
         menuBtn.position = CGPoint(x: centerX, y: centerY - 118)
         menuBtn.alpha = 0
         root.addChild(menuBtn)
@@ -96,10 +100,11 @@ final class PauseOverlay {
         // Débloquer le jeu complet — uniquement pour les joueurs de l'Acte I.
         var unlockBtn: SKNode?
         if showsUnlockButton {
-            let btn = makeButton(String(localized: "pause.unlock"),
+            let btn = PixelUI.makeButton(String(localized: "pause.unlock"),
+                size: CGSize(width: 200, height: 48),
                 fill: SKColor(red: 0.16, green: 0.12, blue: 0.05, alpha: 1),
-                stroke: PixelUI.gold,
-                name: "pauseUnlock")
+                accent: PixelUI.gold,
+                fontSize: 20, name: "pauseUnlock")
             btn.position = CGPoint(x: centerX, y: centerY - 176)
             btn.alpha = 0
             root.addChild(btn)
@@ -229,26 +234,4 @@ final class PauseOverlay {
         return true
     }
 
-    // MARK: - Private
-
-    private func makeButton(_ label: String, fill: SKColor,
-                            stroke: SKColor, name: String) -> SKShapeNode {
-        // Bouton pixel : rectangle net, zéro coin arrondi, zéro glow.
-        let btn = SKShapeNode(rectOf: CGSize(width: 200, height: 48))
-        btn.fillColor = fill
-        btn.strokeColor = stroke
-        btn.lineWidth = 2
-        btn.glowWidth = 0
-        btn.name = name
-
-        let lbl = SKLabelNode(fontNamed: PixelUI.uiFont)
-        lbl.text = label
-        lbl.fontSize = 20
-        lbl.fontColor = .white
-        lbl.verticalAlignmentMode = .center
-        lbl.horizontalAlignmentMode = .center
-        lbl.isUserInteractionEnabled = false
-        btn.addChild(lbl)
-        return btn
-    }
 }

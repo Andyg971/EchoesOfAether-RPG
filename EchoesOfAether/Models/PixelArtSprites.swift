@@ -56,6 +56,30 @@ enum PixelUI {
         outer.zPosition = -0.1
         shape.addChild(outer)
     }
+
+    /// Bouton pixel réutilisable : même cadre RPG rétro que `stylePanel`
+    /// (double bordure sombre + accent) et un label centré. Remplace les
+    /// usines `makeButton` que chaque écran (mort, pause, options,
+    /// tutoriel) dupliquait avec un simple `SKShapeNode(rectOf:)` à liseré
+    /// unique — look plat qui tranchait avec le reste de l'UI.
+    @discardableResult
+    static func makeButton(_ text: String, size: CGSize,
+                           fill: SKColor, accent: SKColor,
+                           fontSize: CGFloat, name: String? = nil) -> SKShapeNode {
+        let btn = SKShapeNode()
+        stylePanel(btn, size: size, fill: fill, accent: accent)
+        btn.name = name
+
+        let lbl = SKLabelNode(fontNamed: uiFont)
+        lbl.text = text
+        lbl.fontSize = fontSize
+        lbl.fontColor = .white
+        lbl.verticalAlignmentMode = .center
+        lbl.horizontalAlignmentMode = .center
+        lbl.isUserInteractionEnabled = false
+        btn.addChild(lbl)
+        return btn
+    }
 }
 
 extension SKNode {

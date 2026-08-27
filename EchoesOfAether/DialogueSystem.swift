@@ -246,26 +246,14 @@ final class DialogueSystem {
         let key = speaker.lowercased()
         // Andy : les visages de Kael et d'Eran étaient inversés → on les
         // échange. Kael parle avec « portrait_eran », Eran avec l'icône (Kael).
+        // Seuls les 4 compagnons principaux ont un visage en dialogue ;
+        // Andy : les PNJ de base (marchands, gardes, sage, enfant…) restent
+        // en texte seul, pas de portrait générique.
         let table: [(String, String)] = [
             ("kael", "portrait_eran"),
             ("lyra", "portrait_lyra"),
             ("dorin", "portrait_dorin"),
-            ("bram", "portrait_bram"),
-            ("mara", "portrait_mara"),
-            ("garen", "portrait_garen"),
-            ("sage", "portrait_sage"),
-            ("eran", "portrait_kael_icon"),
-            ("archiv", "portrait_archivist"),
-            ("gardien", "portrait_guardian"),
-            ("guardian", "portrait_guardian"),
-            ("enfant", "portrait_child"),
-            ("child", "portrait_child"),
-            ("villageois", "portrait_villager"),
-            ("villager", "portrait_villager"),
-            // Habitants d'Ossara : rôles localisés → portrait générique.
-            ("caravan", "portrait_villager"),
-            ("marchand", "portrait_villager"),
-            ("merchant", "portrait_villager")
+            ("eran", "portrait_kael_icon")
         ]
         for (needle, asset) in table where key.contains(needle) { return asset }
         return nil
@@ -279,7 +267,8 @@ final class DialogueSystem {
     /// désert), sinon nil. Renvoie (id de cache, texture) pour l'anim de pop.
     private func codePortrait(for speaker: String) -> (String, SKTexture)? {
         let key = speaker.lowercased()
-        let deserty = ["marchand", "merchant", "caravan", "caravanier"]
+        // Désactivé : seuls les 4 compagnons principaux ont un visage.
+        let deserty: [String] = []
         guard deserty.contains(where: key.contains) else { return nil }
         let id = "code:desertMerchant"
         if let t = Self.codePortraitCache[id] { return (id, t) }

@@ -1116,8 +1116,9 @@ enum PrototypeContent {
         .line(speaker: "Kael",  text: String(localized: "dialogue.act3.price.kael3"))
     ]
 
-    /// Ecran de fin Acte III (placeholder)
-    static let act3EndPlaceholder: [DialogueStep] = [
+    /// Transition de fin d'Acte III : la Voix annonce l'Acte IV juste avant
+    /// `beginAct4()`. Deux répliques, contenu définitif.
+    static let act3EndingTransitionDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.act3.voiceName"),
               text: String(localized: "dialogue.act3.end1")),
         .line(speaker: String(localized: "dialogue.act3.voiceName"),

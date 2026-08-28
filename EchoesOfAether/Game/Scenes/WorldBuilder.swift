@@ -2268,7 +2268,6 @@ final class WorldBuilder {
         marker.position = CGPoint(x: w * 0.40, y: h * 0.63)
         marker.zPosition = 60   // marqueur de quête : au-dessus du monde, sous le HUD
 
-        // Bloc de minerai sombre (placeholder pixel)
         // Bloc de fer corrompu — grille pixel, filons violets (zéro glow)
         let rock = PixelIcons.custom(map: [
             "....RRRR....",

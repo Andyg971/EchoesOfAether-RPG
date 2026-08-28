@@ -297,7 +297,7 @@ extension GameManager {
         dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
             guard let self else { return }
             // « Ce n'était que le début » — la Voix annonce l'Acte IV.
-            dialogue.start(PrototypeContent.act3EndPlaceholder) { [weak self] in
+            dialogue.start(PrototypeContent.act3EndingTransitionDialogue) { [weak self] in
                 self?.beginAct4()
             }
         }

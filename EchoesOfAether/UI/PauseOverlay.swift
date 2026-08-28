@@ -8,7 +8,12 @@ final class PauseOverlay {
     var onResume: (() -> Void)?
     var onSave: (() -> Void)?
     var onOptions: (() -> Void)?
+    /// Ouvre l'Arbre de l'Aether (points de compétence).
+    var onSkills: (() -> Void)?
     var onMainMenu: (() -> Void)?
+    /// Points non dépensés — affichés en pastille sur le bouton pour que le
+    /// joueur ne les oublie pas au fond d'un menu.
+    var pendingSkillPoints = 0
     /// Rouvre le mur d'achat. Le bouton n'existe que si le jeu complet n'est
     /// pas encore débloqué — sinon rien ne rappelle l'achat au joueur payant.
     var onUnlock: (() -> Void)?
@@ -36,7 +41,7 @@ final class PauseOverlay {
 
         // Panel central — cadre pixel SNES (coins carrés, double bordure)
         let panelW: CGFloat = 280
-        let panelH: CGFloat = showsUnlockButton ? 420 : 360
+        let panelH: CGFloat = showsUnlockButton ? 480 : 420
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
                            fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.96),
@@ -66,7 +71,7 @@ final class PauseOverlay {
             fill: SKColor(red: 0.10, green: 0.20, blue: 0.12, alpha: 1),
             accent: SKColor(red: 0.30, green: 0.70, blue: 0.40, alpha: 1),
             fontSize: 20, name: "pauseResume")
-        resumeBtn.position = CGPoint(x: centerX, y: centerY + 60)
+        resumeBtn.position = CGPoint(x: centerX, y: centerY + 90)
         resumeBtn.alpha = 0
         root.addChild(resumeBtn)
 
@@ -75,7 +80,7 @@ final class PauseOverlay {
             fill: SKColor(red: 0.06, green: 0.06, blue: 0.18, alpha: 1),
             accent: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
             fontSize: 20, name: "pauseSave")
-        saveBtn.position = CGPoint(x: centerX, y: centerY)
+        saveBtn.position = CGPoint(x: centerX, y: centerY + 32)
         saveBtn.alpha = 0
         root.addChild(saveBtn)
 
@@ -84,16 +89,41 @@ final class PauseOverlay {
             fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
             accent: Palette.panelBorder,
             fontSize: 20, name: "pauseOptions")
-        optionsBtn.position = CGPoint(x: centerX, y: centerY - 58)
+        optionsBtn.position = CGPoint(x: centerX, y: centerY - 84)
         optionsBtn.alpha = 0
         root.addChild(optionsBtn)
+
+        // Arbre de l'Aether — pastille dorée quand des points dorment.
+        let skillsBtn = PixelUI.makeButton(String(localized: "pause.skills"),
+            size: CGSize(width: 200, height: 48),
+            fill: SKColor(red: 0.10, green: 0.07, blue: 0.18, alpha: 1),
+            accent: Palette.aether,
+            fontSize: 20, name: "pauseSkills")
+        skillsBtn.position = CGPoint(x: centerX, y: centerY - 26)
+        skillsBtn.alpha = 0
+        if pendingSkillPoints > 0 {
+            let badge = SKShapeNode()
+            PixelUI.stylePanel(badge, size: CGSize(width: 26, height: 20),
+                               fill: SKColor(red: 0.20, green: 0.14, blue: 0.04, alpha: 1),
+                               accent: PixelUI.gold)
+            badge.position = CGPoint(x: 84, y: 0)
+            let count = SKLabelNode(fontNamed: PixelUI.uiFont)
+            count.text = "\(pendingSkillPoints)"
+            count.fontSize = 15
+            count.fontColor = PixelUI.gold
+            count.verticalAlignmentMode = .center
+            count.horizontalAlignmentMode = .center
+            badge.addChild(count)
+            skillsBtn.addChild(badge)
+        }
+        root.addChild(skillsBtn)
 
         let menuBtn = PixelUI.makeButton(String(localized: "pause.mainMenu"),
             size: CGSize(width: 200, height: 48),
             fill: SKColor(red: 0.12, green: 0.06, blue: 0.06, alpha: 1),
             accent: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
             fontSize: 20, name: "pauseMenu")
-        menuBtn.position = CGPoint(x: centerX, y: centerY - 118)
+        menuBtn.position = CGPoint(x: centerX, y: centerY - 142)
         menuBtn.alpha = 0
         root.addChild(menuBtn)
 
@@ -105,7 +135,7 @@ final class PauseOverlay {
                 fill: SKColor(red: 0.16, green: 0.12, blue: 0.05, alpha: 1),
                 accent: PixelUI.gold,
                 fontSize: 20, name: "pauseUnlock")
-            btn.position = CGPoint(x: centerX, y: centerY - 176)
+            btn.position = CGPoint(x: centerX, y: centerY - 200)
             btn.alpha = 0
             root.addChild(btn)
             unlockBtn = btn
@@ -117,7 +147,8 @@ final class PauseOverlay {
         title.run(fadeIn)
         resumeBtn.run(.sequence([.wait(forDuration: 0.08), fadeIn]))
         saveBtn.run(.sequence([.wait(forDuration: 0.14), fadeIn]))
-        optionsBtn.run(.sequence([.wait(forDuration: 0.18), fadeIn]))
+        skillsBtn.run(.sequence([.wait(forDuration: 0.18), fadeIn]))
+        optionsBtn.run(.sequence([.wait(forDuration: 0.20), fadeIn]))
         let ready = SKAction.run { [weak self] in self?.buttonsReady = true }
         if let unlockBtn {
             menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn]))
@@ -144,7 +175,7 @@ final class PauseOverlay {
     // « Débloquer » n'entre dans le cycle que s'il est affiché.
     private var selection = 0
     private var buttonNames: [String] {
-        let base = ["pauseResume", "pauseSave", "pauseOptions", "pauseMenu"]
+        let base = ["pauseResume", "pauseSave", "pauseSkills", "pauseOptions", "pauseMenu"]
         return showsUnlockButton ? base + ["pauseUnlock"] : base
     }
 
@@ -171,6 +202,7 @@ final class PauseOverlay {
         switch buttonNames[selection] {
         case "pauseResume": onResume?()
         case "pauseSave": onSave?()
+        case "pauseSkills": onSkills?()
         case "pauseOptions": onOptions?()
         case "pauseMenu": onMainMenu?()
         case "pauseUnlock": onUnlock?()
@@ -214,6 +246,11 @@ final class PauseOverlay {
         if let btn = root.childNode(withName: "pauseSave") as? SKShapeNode,
            btn.contains(local) {
             onSave?()
+            return true
+        }
+        if let btn = root.childNode(withName: "pauseSkills") as? SKShapeNode,
+           btn.contains(local) {
+            onSkills?()
             return true
         }
         if let btn = root.childNode(withName: "pauseOptions") as? SKShapeNode,

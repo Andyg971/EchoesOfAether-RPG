@@ -396,9 +396,13 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var strikeBurned = false
     /// Le repère lumineux affiché au-dessus de l'acteur pendant l'élan.
     private var strikePrompt: SKLabelNode?
-    /// La Tempête est un atout unique : une fois lancée, elle est épuisée
-    /// jusqu'au prochain combat.
-    private var tempestUsed = false
+    /// La Tempête est un atout rare : une seule fois par combat, deux avec
+    /// le capstone TEMPÊTE JUMELLE (voie de l'Aether).
+    private var tempestUses = 0
+    private var tempestMaxUses: Int { _player?.hasTwinTempest == true ? 2 : 1 }
+    private var tempestSpent: Bool { tempestUses >= tempestMaxUses }
+    /// DERNIER SOUFFLE : le sursis ne joue qu'une fois par combat.
+    private var lastBreathUsed = false
 
     private var pendingHealSpell: CombatSpell?
     private var healTargetIndex = 0
@@ -564,7 +568,8 @@ private var goldReward = 0
                               shieldMax: tactics.shieldMax)
         }
         self.targetIndex = 0
-        self.tempestUsed = false
+        self.tempestUses = 0
+        self.lastBreathUsed = false
         // Compteurs de sprites remis à zéro : l'enchaînement d'attaques des
         // packs, et surtout la teinte de l'Archiviste. Sans ça il rouvrait le
         // combat dans la couleur où le précédent s'était arrêté — on tombait
@@ -990,12 +995,30 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     let blocked = closeBlockWindow()
     // Une parade réussie coupe le coup de 65 %. Elle ne l'annule pas : le
     // joueur doit rester attentif, pas devenir invincible.
-    let dmg = blocked ? max(1, Int(Double(rawDamage) * 0.35)) : rawDamage
+    var dmg = blocked ? max(1, Int(Double(rawDamage) * 0.35)) : rawDamage
+    // ÉGIDE (voie du Souffle) : mitigation passive sur Kael uniquement.
+    if victim == nil, let reduction = _player?.skillDamageReduction, reduction > 0 {
+        dmg = max(1, Int(CGFloat(dmg) * (1 - reduction)))
+    }
 
     if let victim {
         victim.combatant.hp = max(0, victim.combatant.hp - dmg)
     } else {
-        kael.hp = max(0, kael.hp - dmg)
+        // DERNIER SOUFFLE (capstone du Souffle) : le coup fatal laisse Kael
+        // à 1 PV, une seule fois par combat. Se déclenche avant l'écran de
+        // mort, donc le tour continue normalement.
+        let fatal = kael.hp - dmg <= 0
+        if fatal, _player?.hasLastBreath == true, !lastBreathUsed, kael.hp > 1 {
+            lastBreathUsed = true
+            kael.hp = 1
+            showEffect(String(localized: "combat.effect.lastBreath"),
+                       color: SKColor(red: 0.45, green: 0.90, blue: 0.60, alpha: 1))
+            AudioEngine.shared.playVictory()
+            HapticsEngine.success()
+            AccessibilitySettings.announce(String(localized: "combat.effect.lastBreath"))
+        } else {
+            kael.hp = max(0, kael.hp - dmg)
+        }
     }
 
     if blocked {
@@ -1595,7 +1618,10 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
     let slashDmg = actingAlly != nil
         ? Int(CGFloat(_player?.blackSlashDamage ?? 92) * 0.85)
         : (_player?.blackSlashDamage ?? 92)
-    let spellMult: CGFloat = actingAlly?.kind.spellMultiplier ?? 1.0
+    // La voie de l'Aether ne booste que les sorts DE KAEL : c'est son arbre,
+    // pas celui du groupe — les alliés gardent leur multiplicateur d'espèce.
+    let spellMult: CGFloat = actingAlly.map { $0.kind.spellMultiplier }
+        ?? (_player?.spellPowerMultiplier ?? 1.0)
 
     switch action {
     case .attack:
@@ -1666,6 +1692,13 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
             showEffect(String(localized: "combat.effect.burnAether"), color: SKColor(red: 0.95, green: 0.35, blue: 1.00, alpha: 1))
         }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
+        // ENTAILLE DOUBLE (capstone de la voie de la Lame) : la lame repasse
+        // aussitôt, à 55 %. Second coup uniquement pour Kael — c'est son arbre.
+        var echoDmg = 0
+        if actingAlly == nil, _player?.hasDoubleSlash == true, foe.combatant.hp > 0 {
+            echoDmg = max(1, Int(CGFloat(finalDmg) * 0.55))
+            foe.combatant.hp = max(0, foe.combatant.hp - echoDmg)
+        }
         statusLabel.text = boost > 0 ? String(localized: "combat.status.blackSlashBoosted \(boost + 1)") : String(localized: "combat.status.blackSlash \(resonance)")
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
@@ -1687,6 +1720,26 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         } else {
             showFloatingText("-" + String(finalDmg), at: enemyCenter,
                              color: hitBroken ? Self.brokenHitColor : CombatElement.aether.color)
+        }
+        // Le second coup s'annonce à part, légèrement décalé : sans ça le
+        // joueur croit à un seul gros chiffre et le capstone ne se voit pas.
+        if echoDmg > 0 {
+            let echo = echoDmg
+            root.run(.sequence([
+                .wait(forDuration: 0.22),
+                .run { [weak self] in
+                    guard let self else { return }
+                    spawnSlashArc(at: enemyCenter,
+                                  color: CombatElement.aether.color, strong: false)
+                    showFloatingText("-" + String(echo),
+                                     at: CGPoint(x: enemyCenter.x + 26, y: enemyCenter.y + 18),
+                                     color: CombatElement.aether.color)
+                    showEffect(String(localized: "combat.effect.doubleSlash"),
+                               color: CombatElement.aether.color)
+                    AudioEngine.shared.playHit()
+                    HapticsEngine.medium()
+                }
+            ]))
         }
 
     case .potion:
@@ -3719,14 +3772,14 @@ func menuConfirm() {
     if button === windButton { execute(.spell(.windBlade)); return }
     if button === emberButton { execute(.spell(.emberStrike)); return }
     if button === tempestButton {
-        guard !tempestUsed else {
+        guard !tempestSpent else {
             showEffect(String(localized: "combat.tempest.spent"),
                        color: Palette.frost)
             AudioEngine.shared.playTap()
             HapticsEngine.error()
             return
         }
-        tempestUsed = true
+        tempestUses += 1
         execute(.spell(.tempest))
         return
     }
@@ -3861,7 +3914,7 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
         label.text = spell.title(at: _player?.level ?? 1).uppercased()
     }
     // Tempête épuisée : le menu doit le dire sans qu'on ait à essayer.
-    let spent = node === tempestButton && tempestUsed
+    let spent = node === tempestButton && tempestSpent
     label.horizontalAlignmentMode = .left
     label.verticalAlignmentMode = .center
     label.fontSize = 13

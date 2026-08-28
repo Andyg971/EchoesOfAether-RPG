@@ -25,6 +25,7 @@ final class GameManager {
     let minimap   = MinimapOverlay()
     let worldMap  = WorldMapOverlay()
     let levelUp   = LevelUpOverlay()
+    let skills    = SkillTreeOverlay()
     let bubble    = InteractionBubble()
     let tutorial  = TutorialOverlay()
     let paywall   = PaywallOverlay()
@@ -141,6 +142,7 @@ final class GameManager {
         minimap.attach(to: scene)
         worldMap.attach(to: scene)
         levelUp.attach(to: scene)
+        skills.attach(to: scene)
         bubble.attach(to: scene)
         setupActionButton(in: scene)
         tutorial.attach(to: scene)
@@ -180,6 +182,7 @@ final class GameManager {
             AccessibilitySettings.announce(String(localized: "dialogue.save.line1"))
         }
         pause.onOptions   = { [weak self] in self?.openOptions() }
+        pause.onSkills    = { [weak self] in self?.openSkillTree() }
         pause.onMainMenu  = { [weak self] in
             self?.pause.hide()
             self?.onReturnToMenu?()
@@ -214,7 +217,7 @@ final class GameManager {
 
         // Debug : --overlay-test <nom> ouvre l'overlay demandé après le
         // chargement (à combiner avec --zone-*) pour audit visuel de l'UI.
-        // Noms : pause, options, inventory, questlog, lore, tutorial,
+        // Noms : pause, options, skills, inventory, questlog, lore, tutorial,
         // levelup, death, shop, credits, act2end, bestiary, paywall.
         if let idx = CommandLine.arguments.firstIndex(of: "--overlay-test"),
            CommandLine.arguments.indices.contains(idx + 1) {
@@ -760,6 +763,7 @@ final class GameManager {
         if tutorial.isActive { tutorial.skipExternally(); return }
         if paywall.isActive { paywall.dismiss(); return }
         if options.isActive { options.dismiss(); return }
+        if skills.isActive { skills.dismiss(); return }
         if pause.isActive { pause.dismiss(); return }
         if worldMap.isActive { worldMap.dismiss(); return }
         if shop.isActive { shop.dismiss(); syncGold(); return }
@@ -837,6 +841,8 @@ final class GameManager {
         if death.isActive { death.moveSelection(dy); return }
         if paywall.isActive { paywall.moveSelection(dy); return }
         if options.isActive { return }              // sliders : tactile assumé
+        // Arbre : dx change de voie, dy monte/descend dans la voie.
+        if skills.isActive { skills.moveSelection(dx: dx, dy: dy); return }
         if pause.isActive { pause.moveSelection(dy); return }
         if shop.isActive { shop.moveSelection(dy); return }
         if lore.isActive {
@@ -991,6 +997,7 @@ final class GameManager {
         // Le mur d'achat capture tout tant qu'il est ouvert (fermeture par
         // « Plus tard », par le bouton B, ou après un achat réussi).
         if paywall.isActive, paywall.handleTap(at: point, in: scene) { return }
+        if skills.handleTap(at: point, in: scene) { return }
         if pause.handleTap(at: point, in: scene) { return }
         if TransitionManager.handleEndScreenTap(at: point, in: scene) { return }
         if TransitionManager.handleCreditsTap(at: point, in: scene) { return }
@@ -1022,6 +1029,8 @@ final class GameManager {
             if attemptHook() { return }
             if paywall.isActive {
                 paywall.confirmSelection()
+            } else if skills.isActive {
+                skills.confirmSelection()
             } else if pause.isActive {
                 pause.confirmSelection()
             } else if shop.isActive {
@@ -1884,6 +1893,7 @@ final class GameManager {
         guard let scene else { return }
         // Le joueur qui a dit « plus tard » doit pouvoir revenir à l'achat.
         pause.showsUnlockButton = !isFullGameUnlocked
+        pause.pendingSkillPoints = player.skillPointsAvailable
         pause.show(in: scene)
         pause.resetSelection()
     }
@@ -1896,6 +1906,33 @@ final class GameManager {
         guard let scene else { return }
         pause.hide()
         options.show(in: scene)
+    }
+
+    /// ARBRE DE L'AETHER, ouvert depuis la pause. À la fermeture on
+    /// resynchronise le HUD : investir en PV/Magie change les jauges max.
+    private func openSkillTree() {
+        guard let scene else { return }
+        pause.hide()
+        skills.onRespec = { [weak self] in self?.performSkillRespec() ?? false }
+        skills.onClose = { [weak self] in
+            guard let self else { return }
+            player.currentHP = min(player.currentHP, player.currentMaxHP)
+            syncLevelHUD()
+            openPause()
+        }
+        skills.show(player: player, in: scene)
+    }
+
+    /// Refonte à la forge de Bram : débite l'or puis remet les points à zéro.
+    /// Retourne false si la bourse ne suit pas (l'overlay affiche le refus).
+    private func performSkillRespec() -> Bool {
+        let cost = SkillTree.respecCost(level: player.level)
+        guard player.gold >= cost else { return false }
+        player.gold -= cost
+        player.respecSkills()
+        syncGold()
+        syncLevelHUD()
+        return true
     }
 
     private func closeOptions() {
@@ -2508,6 +2545,17 @@ final class GameManager {
         switch name {
         case "pause":     openPause()
         case "options":   openOptions()
+        case "skills":
+            // Audit visuel : niveau 20 → 19 points à répartir, quelques rangs
+            // déjà posés pour voir les trois états (acquis, ouvert, verrouillé).
+            player.level = 20
+            player.skillRanks = ["blade.attack": 3, "blade.crit": 1, "aether.mp": 2]
+            openSkillTree()
+            // Curseur descendu d'un cran : met en pied de page une description
+            // avec pourcentage, pour vérifier son formatage à la capture.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                self?.skills.moveSelection(dx: 0, dy: -1)
+            }
         case "inventory": openInventory()
         case "questlog":  openQuestLog()
         case "lore":      openLore()

@@ -77,6 +77,9 @@ struct NewGamePlusSeed {
     let potions: Int
     let aetherShards: Int
     let newGamePlus: Int   // déjà incrémenté (palier de la nouvelle run)
+    /// L'Arbre de l'Aether traverse aussi : le build fait partie des acquis,
+    /// au même titre que l'arme et l'armure.
+    let skillRanks: [String: Int]
 
     /// Depuis une sauvegarde terminée → graine de la relance (palier +1).
     init(from data: SaveData) {
@@ -88,6 +91,7 @@ struct NewGamePlusSeed {
         potions = data.potions
         aetherShards = data.aetherShards
         newGamePlus = (data.newGamePlus ?? 0) + 1
+        skillRanks = data.skillRanks ?? [:]
     }
 
     /// Graine synthétique pour tests (`--ngplus N`) : Kael équipé, palier N.
@@ -95,6 +99,7 @@ struct NewGamePlusSeed {
         level = 15; xp = 0; gold = 500
         weaponLevel = 2; armorLevel = 2; potions = 3; aetherShards = 5
         newGamePlus = max(1, tier)
+        skillRanks = [:]
     }
 }
 
@@ -115,18 +120,30 @@ final class PlayerState {
     var level: Int = 1
     var xp: Int = 0               // XP cumulé dans le niveau courant
 
+    /// ARBRE DE L'AETHER — rangs investis par nœud (`SkillTree.allNodes`).
+    /// 1 point par niveau ; voir `SkillTree.swift` pour les bonus dérivés.
+    var skillRanks: [String: Int] = [:]
+
     /// ACCESSOIRE ÉQUIPÉ (un seul à la fois — c'est ce qui en fait un choix
     /// de build et non une accumulation). nil = aucun.
     /// `ember` = critiques, `shade` = esquive, `resonance` = régénération de MP.
     var equippedAccessory: String? = nil
 
-    /// Chance de coup critique : l'accessoire de braise la double.
-    var critChance: Double { equippedAccessory == "ember" ? 0.25 : 0.12 }
-    /// Chance d'esquiver un coup normal : l'amulette d'ombre la relève.
-    var dodgeChance: Double { equippedAccessory == "shade" ? 0.25 : 0.10 }
+    /// Chance de coup critique : l'accessoire de braise la double, la voie
+    /// de la Lame s'ajoute par-dessus.
+    var critChance: Double {
+        (equippedAccessory == "ember" ? 0.25 : 0.12) + skillCritBonus
+    }
+    /// Chance d'esquiver un coup normal : l'amulette d'ombre la relève, la
+    /// voie du Souffle s'ajoute par-dessus.
+    var dodgeChance: Double {
+        (equippedAccessory == "shade" ? 0.25 : 0.10) + skillDodgeBonus
+    }
     /// Magie régénérée par une attaque physique : le sceau la triple, et
     /// permet de tenir une rotation de sorts bien plus longtemps.
-    var attackMPRegen: Int { equippedAccessory == "resonance" ? 16 : 6 }
+    var attackMPRegen: Int {
+        (equippedAccessory == "resonance" ? 16 : 6) + skillMPRegenBonus
+    }
 
     var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
     var questMushroom: QuestState = .inactive   // champignon pour Mara (après forêt)
@@ -195,16 +212,18 @@ final class PlayerState {
     //
     // Gain par niveau : +12 HP / +2 ATK / +4 Black Slash. L1 → L30 :
     // HP 280→628, ATK 42→100, Black Slash 92→208 (avant équipement).
-    var attackDamage: Int      { 42 + weaponLevel * 22 + (level - 1) * 2 }
-    var blackSlashDamage: Int  { 92 + weaponLevel * 35 + (level - 1) * 4 }
-    var currentMaxHP: Int      { maxHP + armorLevel * 50 + (level - 1) * 12 }
+    // Les bonus `skill*` viennent de l'Arbre de l'Aether (SkillTree.swift) :
+    // le niveau donne la courbe de base, l'arbre la personnalise.
+    var attackDamage: Int      { 42 + weaponLevel * 22 + (level - 1) * 2 + skillAttackBonus }
+    var blackSlashDamage: Int  { 92 + weaponLevel * 35 + (level - 1) * 4 + skillSlashBonus }
+    var currentMaxHP: Int      { maxHP + armorLevel * 50 + (level - 1) * 12 + skillMaxHPBonus }
     /// Points de Magie : réserve qui alimente les sorts et l'Entaille noire.
     /// Kael est mage : il porte trois éléments et doit pouvoir les enchaîner,
     /// d'où la réserve la plus large du groupe (L1 = 46, L30 = 191). Lyra la
     /// suit de près (42), Eran l'homme d'acier plafonne à 18 — ses techniques
     /// coûtent aussi deux fois moins. Les attaques physiques n'en coûtent pas
     /// et en régénèrent un peu.
-    var maxMP: Int             { 46 + (level - 1) * 5 }
+    var maxMP: Int             { 46 + (level - 1) * 5 + skillMaxMPBonus }
 
     var potionsFull: Bool { potions >= 3 }
 
@@ -254,6 +273,7 @@ final class PlayerState {
             weaponLevel: weaponLevel, armorLevel: armorLevel,
             potions: potions, aetherShards: aetherShards,
             level: level, xp: xp,
+            skillRanks: skillRanks,
             questDelivery: questDelivery, questMushroom: questMushroom,
             questLyraShards: questLyraShards, questChildToy: questChildToy,
             questMedallion: questMedallion,
@@ -314,6 +334,13 @@ final class PlayerState {
         // Saves antérieurs au système de niveau : repart à L1/0
         level = max(1, min(Self.maxLevel, data.level ?? 1))
         xp = max(0, data.xp ?? 0)
+        // Saves antérieurs à l'Arbre de l'Aether : aucun point investi. Les
+        // rangs sont bornés au chargement pour qu'un save trafiqué ou un
+        // nœud rééquilibré à la baisse ne donne pas de bonus fantôme.
+        skillRanks = (data.skillRanks ?? [:]).reduce(into: [String: Int]()) { acc, entry in
+            guard let node = SkillTree.node(id: entry.key), entry.value > 0 else { return }
+            acc[entry.key] = min(entry.value, node.maxRank)
+        }
         questDelivery = data.questDelivery
         questMushroom = data.questMushroom
         questLyraShards = data.questLyraShards
@@ -383,6 +410,10 @@ final class PlayerState {
         potions = seed.potions
         aetherShards = seed.aetherShards
         newGamePlus = seed.newGamePlus
+        skillRanks = seed.skillRanks.reduce(into: [String: Int]()) { acc, entry in
+            guard let node = SkillTree.node(id: entry.key), entry.value > 0 else { return }
+            acc[entry.key] = min(entry.value, node.maxRank)
+        }
         currentHP = currentMaxHP
     }
 }
@@ -399,6 +430,9 @@ struct SaveData: Codable {
     // Niveau & XP (optionnels — saves antérieurs au système n'ont pas ces clés)
     let level: Int?
     let xp: Int?
+    // Arbre de l'Aether (optionnel — saves antérieures repartent sans point
+    // investi ; les points eux-mêmes se redéduisent du niveau)
+    let skillRanks: [String: Int]?
     let questDelivery: QuestState
     let questMushroom: QuestState
     let questLyraShards: QuestState

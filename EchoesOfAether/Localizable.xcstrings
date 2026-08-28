@@ -12801,6 +12801,22 @@
         }
       }
     },
+    "levelUp.skillPoint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+1 skill point — Pause ▸ Skills"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "+1 point de compétence — Pause ▸ Compétences"
+          }
+        }
+      }
+    },
     "levelUp.spellsEvolved %@" : {
       "localizations" : {
         "en" : {

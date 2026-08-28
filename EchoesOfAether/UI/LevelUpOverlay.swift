@@ -10,6 +10,9 @@ final class LevelUpOverlay {
     private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let subtitleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let statsLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    /// Point de compétence gagné. Sans cette ligne, l'Arbre de l'Aether est
+    /// invisible : rien d'autre ne dit au joueur qu'il a de quoi dépenser.
+    private let skillLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let hintLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private var onDismiss: (() -> Void)?
 
@@ -44,6 +47,13 @@ final class LevelUpOverlay {
         statsLabel.horizontalAlignmentMode = .center
         root.addChild(statsLabel)
 
+        skillLabel.fontSize = 16
+        skillLabel.fontColor = PixelUI.gold
+        skillLabel.verticalAlignmentMode = .center
+        skillLabel.horizontalAlignmentMode = .center
+        skillLabel.text = String(localized: "levelUp.skillPoint")
+        root.addChild(skillLabel)
+
         hintLabel.fontSize = 15
         hintLabel.fontColor = SKColor(white: 0.55, alpha: 1)
         hintLabel.verticalAlignmentMode = .center
@@ -70,7 +80,8 @@ final class LevelUpOverlay {
         titleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 60)
         subtitleLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 + 22)
         statsLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 22)
-        hintLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 76)
+        skillLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 50)
+        hintLabel.position = CGPoint(x: size.width / 2, y: size.height / 2 - 80)
 
         // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
         UIScale.apply(to: root, sceneSize: size)
@@ -98,6 +109,9 @@ final class LevelUpOverlay {
         statsLabel.fontColor = isMax
             ? SKColor(red: 0.95, green: 0.70, blue: 0.30, alpha: 1)
             : SKColor(red: 0.55, green: 0.85, blue: 0.65, alpha: 1)
+        // Au plafond, plus aucun niveau donc plus aucun point : la ligne
+        // serait un mensonge.
+        skillLabel.isHidden = isMax
 
         root.isHidden = false
         root.alpha = 0
@@ -130,7 +144,8 @@ final class LevelUpOverlay {
         HapticsEngine.heavy()
         AudioEngine.shared.playVictory()
         AccessibilitySettings.announce(
-            "\(titleLabel.text ?? ""). \(subtitleLabel.text ?? ""). \(statsLabel.text ?? "")")
+            "\(titleLabel.text ?? ""). \(subtitleLabel.text ?? ""). \(statsLabel.text ?? "")"
+            + (isMax ? "" : ". \(skillLabel.text ?? "")"))
 
         // Sécurité : auto-dismiss après 3.5s si pas tapé
         root.run(.sequence([

@@ -227,6 +227,21 @@ final class GameManager {
             }
         }
 
+        // Debug : --skills-maxed remplit l'Arbre de l'Aether pour auditer les
+        // trois capstones en combat réel. Les rangs sont posés directement,
+        // sans passer par `unlockSkill` : 39 points, donc plus que les 29
+        // gagnables en jeu — c'est le seul moyen de voir les trois d'un coup.
+        if CommandLine.arguments.contains("--skills-maxed") {
+            player.level = PlayerState.maxLevel
+            player.skillRanks = [
+                "blade.attack": 3, "blade.crit": 3, "blade.slash": 2, "blade.capstone": 1,
+                "aether.mp": 3, "aether.power": 3, "aether.regen": 2, "aether.capstone": 1,
+                "breath.hp": 3, "breath.dodge": 3, "breath.ward": 2, "breath.capstone": 1
+            ]
+            player.currentHP = player.currentMaxHP
+            syncLevelHUD()
+        }
+
         // Debug : --combat-test / --combat-multi / --archivist-test /
         // --boss-test démarrent directement un combat pour capturer le rendu
         // de l'arène (skip wake/save).

@@ -379,13 +379,22 @@ final class WorldBuilder {
         // régulièrement un villageois sur un banc ou dans un arbre : la
         // collision autorise le « derrière », l'œil y lit « dessus ».
         var dest = npc.position
-        for _ in 0..<10 {
+        for attempt in 0..<10 {
             let target = CGPoint(
                 x: min(max(home.x + .random(in: -radius...radius), 40), sceneWidth - 40),
                 y: min(max(home.y + .random(in: -radius...radius), 72), wh - 52))
             guard !isCluttered(target) else { continue }
             let candidate = clampDestination(from: npc.position, to: target)
             guard !isCluttered(candidate) else { continue }
+            // Les sprites de village n'ont QU'UN cycle de marche de face :
+            // ni dos, ni profil. Une longue montée donne donc un villageois
+            // qui s'éloigne en regardant la caméra — il « marche à
+            // reculons ». On privilégie les trajets horizontaux, où le sprite
+            // de face reste lisible. Après 6 essais on accepte ce qui vient :
+            // mieux vaut un trajet imparfait qu'un PNJ figé dans un coin.
+            let travelX = abs(candidate.x - npc.position.x)
+            let travelY = abs(candidate.y - npc.position.y)
+            if attempt < 6, travelY > travelX * 0.6 { continue }
             dest = candidate
             break
         }

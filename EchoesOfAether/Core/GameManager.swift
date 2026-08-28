@@ -252,6 +252,7 @@ final class GameManager {
                 self.phase = .forest
                 self.showForest(in: scene)
                 self.startGroveCombat()
+                self.scheduleDebugMenuScript()
             }
             return
         }
@@ -286,6 +287,7 @@ final class GameManager {
                 self.phase = .shrine
                 self.world.switchToShrine(in: scene)
                 self.startBossFight()
+                self.scheduleDebugMenuScript()
             }
             return
         }
@@ -2553,6 +2555,35 @@ final class GameManager {
     }
 
     // MARK: - Helpers
+
+    /// Debug : `--combat-script <n>` descend n fois dans le menu de combat
+    /// puis valide. Le combat n'accepte AUCUN tap (`CombatSystem.handleTap`
+    /// avale tout) — il se pilote au joystick + A/B, ce qui est impossible à
+    /// simuler proprement. Ce script passe par la même API publique que les
+    /// contrôles classiques, donc il exerce le vrai chemin de code.
+    private func scheduleDebugMenuScript() {
+        guard let idx = CommandLine.arguments.firstIndex(of: "--combat-script"),
+              CommandLine.arguments.indices.contains(idx + 1),
+              let steps = Int(CommandLine.arguments[idx + 1]) else { return }
+        // Le combat de boss s'ouvre sur un dialogue : naviguer pendant ce
+        // temps ne fait rien. On attend donc que le menu ait vraiment la main
+        // plutôt que de parier sur un délai fixe.
+        func attempt(_ remaining: Int) {
+            guard remaining > 0 else { return }
+            guard state == .combat, !dialogue.isActive else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                    guard self != nil else { return }
+                    attempt(remaining - 1)
+                }
+                return
+            }
+            for _ in 0..<steps { combat.menuNav(dx: 0, dy: -1) }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
+                self?.combat.menuConfirm()
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { attempt(60) }
+    }
 
     /// Ouvre un overlay par son nom (hook debug --overlay-test).
     private func debugShowOverlay(named name: String) {

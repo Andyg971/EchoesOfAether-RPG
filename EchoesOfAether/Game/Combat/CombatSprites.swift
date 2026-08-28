@@ -479,13 +479,10 @@ enum CombatSprites {
         root.addChild(statue)
         JuiceEngine.float(statue, distance: 4)
 
-        // Cœur d'Aether qui bat dans la pierre — carré pixel net (zéro glow).
-        let core = SKSpriteNode(color: SKColor(red: 0.65, green: 0.25, blue: 0.95, alpha: 1),
-                                size: CGSize(width: 14, height: 14))
-        core.position = CGPoint(x: 0, y: 26)
-        core.zPosition = 2
-        root.addChild(core)
-        JuiceEngine.pulse(core, scale: 1.25)
+        // Cœur d'Aether retiré à la demande : un aplat violet de 14×14 posé
+        // sur la statue ne lisait pas comme un cœur qui bat, mais comme une
+        // texture manquante. Les yeux corrompus suffisent à dire la
+        // corruption, et le sprite de pierre reste pur.
 
         // Yeux corrompus — petits carrés nets, pas de glow flou.
         for dx: CGFloat in [-7, 7] {

@@ -4223,6 +4223,20 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
             + shieldW
         var x = -totalW / 2
 
+        // FOND DE PANNEAU. Sans lui, losanges et pips flottent nus sur ce
+        // qu'il y a derrière : chez un ennemi haut comme le Gardien, la
+        // rangée tombe en plein sur son torse et se lit comme des carrés de
+        // couleur collés au sprite, pas comme de l'interface. Le fond les
+        // rattache au HUD.
+        if !weaknesses.isEmpty || foe.shieldMax > 0 {
+            let plate = SKShapeNode()
+            PixelUI.stylePanel(plate, size: CGSize(width: totalW + 16, height: 20),
+                               fill: SKColor(red: 0.05, green: 0.04, blue: 0.07, alpha: 0.92),
+                               accent: SKColor(white: 0.34, alpha: 0.85))
+            plate.zPosition = -1
+            targetInfoRow.addChild(plate)
+        }
+
         for element in weaknesses {
             let diamond = SKSpriteNode(color: element.color,
                                        size: CGSize(width: side, height: side))

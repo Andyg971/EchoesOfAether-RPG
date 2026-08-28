@@ -484,14 +484,10 @@ enum CombatSprites {
         // texture manquante. Les yeux corrompus suffisent à dire la
         // corruption, et le sprite de pierre reste pur.
 
-        // Yeux corrompus — petits carrés nets, pas de glow flou.
-        for dx: CGFloat in [-7, 7] {
-            let eye = SKSpriteNode(color: SKColor(red: 0.95, green: 0.45, blue: 1, alpha: 1),
-                                   size: CGSize(width: 4, height: 4))
-            eye.position = CGPoint(x: dx, y: 78)
-            eye.zPosition = 2
-            root.addChild(eye)
-        }
+        // Yeux corrompus retirés : posés à y = 78 ils ne tombaient pas sur le
+        // visage de la statue mais sur ses MAINS jointes, où ils se lisaient
+        // comme deux carrés magenta collés au sprite. Sans repère fiable sur
+        // l'asset pour viser les yeux, mieux vaut la pierre nue.
         // Halo/aura retiré à la demande : le sprite pixel reste pur.
     }
 

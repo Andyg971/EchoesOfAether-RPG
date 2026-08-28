@@ -378,23 +378,31 @@ final class WorldBuilder {
         // tombe pas dans du décor. Le tirage unique d'avant plantait
         // régulièrement un villageois sur un banc ou dans un arbre : la
         // collision autorise le « derrière », l'œil y lit « dessus ».
+        // MARCHE HORIZONTALE UNIQUEMENT.
+        //
+        // Les sprites de village n'ont QU'UN cycle de marche de face : ni dos,
+        // ni profil. Dès qu'un PNJ remonte vers le nord, il joue des pas qui
+        // avancent vers la caméra tout en s'éloignant — il marche à reculons,
+        // et aucun miroir horizontal ne peut le rattraper.
+        //
+        // Tant qu'il n'existe pas de planche de dos, la seule marche honnête
+        // est latérale : on fige la destination sur la LIGNE du poste, à un
+        // jitter près (±6 pt) qui reste sous le seuil de perception. Le PNJ
+        // flâne alors de gauche à droite devant chez lui, ce qu'un sprite de
+        // face rend correctement.
+        // L'ordonnée est FIXÉE sur la ligne du poste avant toute validation :
+        // la destination testée contre le décor est donc celle où le PNJ ira
+        // vraiment. (Écraser `dest.y` après coup rouvrirait la porte aux
+        // villageois plantés dans un banc.)
+        let lineY = min(max(home.y, 72), wh - 52)
         var dest = npc.position
-        for attempt in 0..<10 {
+        for _ in 0..<10 {
             let target = CGPoint(
                 x: min(max(home.x + .random(in: -radius...radius), 40), sceneWidth - 40),
-                y: min(max(home.y + .random(in: -radius...radius), 72), wh - 52))
+                y: lineY)
             guard !isCluttered(target) else { continue }
             let candidate = clampDestination(from: npc.position, to: target)
             guard !isCluttered(candidate) else { continue }
-            // Les sprites de village n'ont QU'UN cycle de marche de face :
-            // ni dos, ni profil. Une longue montée donne donc un villageois
-            // qui s'éloigne en regardant la caméra — il « marche à
-            // reculons ». On privilégie les trajets horizontaux, où le sprite
-            // de face reste lisible. Après 6 essais on accepte ce qui vient :
-            // mieux vaut un trajet imparfait qu'un PNJ figé dans un coin.
-            let travelX = abs(candidate.x - npc.position.x)
-            let travelY = abs(candidate.y - npc.position.y)
-            if attempt < 6, travelY > travelX * 0.6 { continue }
             dest = candidate
             break
         }

@@ -2550,6 +2550,7 @@ final class GameManager {
             // déjà posés pour voir les trois états (acquis, ouvert, verrouillé).
             player.level = 20
             player.skillRanks = ["blade.attack": 3, "blade.crit": 1, "aether.mp": 2]
+            syncLevelHUD()   // le HUD a été rempli avant ce forçage de niveau
             openSkillTree()
             // Curseur descendu d'un cran : met en pied de page une description
             // avec pourcentage, pour vérifier son formatage à la capture.

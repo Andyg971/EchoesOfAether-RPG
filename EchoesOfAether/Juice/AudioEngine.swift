@@ -78,10 +78,17 @@ final class AudioEngine {
     enum Sound: CaseIterable {
         case tap, select, hit, blackSlash, damage
         case gold, purchase, quest, victory, step, shopOpen
+        /// Sons d'interface DOUX, synthétisés (pas de fichier). Les SFX
+        /// embarqués sont taillés pour l'action : `sfx_tap` tient 0,17 s à
+        /// 0,28 de RMS avec un facteur de crête de 1,8 — une tonalité quasi
+        /// carrée, sans décroissance, qui agresse dès qu'on l'entend en
+        /// rafale dans un menu. Ces deux-là sont des sinus à faible niveau.
+        case uiMove, uiConfirm
 
         /// SFX CC0 embarqué (Juhani Junkala) ; nil = synthèse.
         var fileName: String? {
             switch self {
+            case .uiMove, .uiConfirm: return nil   // synthétisés
             case .tap:        return "sfx_tap"
             case .select:     return "sfx_select"
             case .hit:        return "sfx_hit"
@@ -249,6 +256,10 @@ final class AudioEngine {
     func playVictory()      { play(.victory) }
     func playStep()         { play(.step) }
     func playShopOpen()     { play(.shopOpen) }
+    /// Déplacement de curseur dans un menu (doux, discret).
+    func playUIMove()       { play(.uiMove) }
+    /// Validation dans un menu (doux, sans claquement).
+    func playUIConfirm()    { play(.uiConfirm) }
 
     func playMusic()  { startMusic() }
     func stopMusic()  {
@@ -517,6 +528,24 @@ final class AudioEngine {
 
     private func renderSFX(_ sound: Sound) -> AVAudioPCMBuffer {
         switch sound {
+        case .uiMove:
+            // Curseur de menu : sinus pur, niveau très bas, attaque adoucie.
+            // Pensé pour être entendu vingt fois d'affilée sans fatiguer.
+            return makeBuffer(duration: 0.08) { t in
+                let e: Float = env(t, 0.08, attack: 0.010, release: 0.068)
+                return e * 0.085 * sine(t, 620)
+            }
+        case .uiConfirm:
+            // Validation : quinte montante en cloche douce — fondamentale
+            // plus une octave discrète qui s'éteint vite. Aucun front raide,
+            // aucun bruit : c'est ce qui sépare « doux » de « claquant ».
+            return makeBuffer(duration: 0.26) { t in
+                let f: Double = t < 0.075 ? 587 : 880
+                let body: Float = sine(t, f)
+                let shimmer: Float = sine(t, f * 2) * 0.18 * expF(-t * 14)
+                let e: Float = env(t, 0.26, attack: 0.012, release: 0.20)
+                return e * 0.13 * (body + shimmer)
+            }
         case .tap:
             return makeBuffer(duration: 0.06) { t in
                 let e: Float = env(t, 0.06, attack: 0.002, release: 0.05)

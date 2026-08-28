@@ -249,7 +249,7 @@ final class SkillTreeOverlay {
 
         if let btn = root.childNode(withName: "skillClose") as? SKShapeNode,
            btn.contains(local) {
-            AudioEngine.shared.playTap()
+            AudioEngine.shared.playUIMove()
             dismiss()
             return true
         }
@@ -272,7 +272,7 @@ final class SkillTreeOverlay {
         guard let player else { return }
         if let lock = player.skillLock(for: node) {
             setDetail(lock.message, color: SKColor(red: 0.90, green: 0.45, blue: 0.40, alpha: 1))
-            AudioEngine.shared.playTap()
+            AudioEngine.shared.playUIMove()
             HapticsEngine.error()
             AccessibilitySettings.announce(lock.message)
             return
@@ -281,8 +281,8 @@ final class SkillTreeOverlay {
         respecArmed = false
         rebuild()
         setDetail("\(node.title) — \(node.detail)", color: PixelUI.gold)
-        AudioEngine.shared.playSelect()
-        HapticsEngine.success()
+        AudioEngine.shared.playUIConfirm()
+        HapticsEngine.light()
         AccessibilitySettings.announce(
             "\(node.title). \(node.detail). "
             + String(localized: "skill.points \(player.skillPointsAvailable)"))
@@ -303,7 +303,7 @@ final class SkillTreeOverlay {
             let cost = SkillTree.respecCost(level: player.level)
             setDetail(String(localized: "skill.respec.warning \(cost)"),
                       color: SKColor(red: 0.95, green: 0.65, blue: 0.30, alpha: 1))
-            AudioEngine.shared.playTap()
+            AudioEngine.shared.playUIMove()
             HapticsEngine.light()
             return
         }
@@ -317,7 +317,7 @@ final class SkillTreeOverlay {
         }
         rebuild()
         setDetail(String(localized: "skill.respec.done"), color: PixelUI.gold)
-        AudioEngine.shared.playSelect()
+        AudioEngine.shared.playUIConfirm()
         HapticsEngine.success()
         AccessibilitySettings.announce(String(localized: "skill.respec.done"))
     }
@@ -341,7 +341,7 @@ final class SkillTreeOverlay {
         row = (row - dy + perColumn) % perColumn
         selection = col * perColumn + row
         HapticsEngine.light()
-        AudioEngine.shared.playStep()
+        AudioEngine.shared.playUIMove()
         refreshSelectionHighlight()
         let node = SkillTree.allNodes[selection]
         setDetail("\(node.title) — \(node.detail)", color: SKColor(white: 0.80, alpha: 1))

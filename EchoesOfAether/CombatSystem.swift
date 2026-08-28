@@ -3566,10 +3566,19 @@ private func setupButtons(scene: SKScene) {
               fill: SKColor(red: 0.24, green: 0.09, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.90, green: 0.45, blue: 0.20, alpha: 1), fontSize: 12,
               chip: CombatElement.fire.color)
 
+    // BOOST et POTION en CHROME NEUTRE, pas en couleur d'élément. Dans ce
+    // combat la couleur dit une seule chose — feu, glace, foudre, aether —
+    // et c'est ce qui permet d'apparier une commande à une faiblesse d'un
+    // coup d'œil. Un cadre violet et un cadre vert qui ne désignent aucun
+    // élément diluent ce code : l'œil cherche un sens qui n'existe pas.
+    // Leur état actif/inactif passe déjà par l'alpha, et le curseur doré
+    // marque la sélection.
+    let neutralFill = SKColor(red: 0.09, green: 0.08, blue: 0.12, alpha: 1)
+    let neutralStroke = SKColor(white: 0.46, alpha: 0.9)
     addButton(boostButton, title: String(localized: "combat.button.boost"), at: CGPoint(x: scene.size.width / 2 - 46, y: panelY + 56), width: 84, height: 22,
-              fill: SKColor(red: 0.15, green: 0.09, blue: 0.24, alpha: 1), stroke: SKColor(red: 0.62, green: 0.48, blue: 0.82, alpha: 1), fontSize: 12)
+              fill: neutralFill, stroke: neutralStroke, fontSize: 12)
     addButton(potionButton, title: String(localized: "combat.button.potion"), at: CGPoint(x: scene.size.width / 2 + 46, y: panelY + 56), width: 84, height: 22,
-              fill: SKColor(red: 0.06, green: 0.18, blue: 0.11, alpha: 1), stroke: SKColor(red: 0.38, green: 0.75, blue: 0.48, alpha: 1), fontSize: 12)
+              fill: neutralFill, stroke: neutralStroke, fontSize: 12)
 
     layoutActionMenu()
 

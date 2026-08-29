@@ -224,7 +224,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.voidAvatar"),
-                enemyHP: 1600,
+                enemyHP: 2200,
                 goldReward: 0,
                 player: player,
                 enemyKind: .ruinsGuardian,

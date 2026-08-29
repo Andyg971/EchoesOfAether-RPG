@@ -250,7 +250,7 @@ extension GameManager {
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.ruinsGuardian"),
-            enemyHP: 360,
+            enemyHP: 500,
             goldReward: 30,
             player: player,
             enemyKind: .ruinsGuardian,
@@ -287,12 +287,15 @@ extension GameManager {
             // son registre est intact (bouclier debout), il se RECOMPOSE à
             // chaque tour. On ne le bat pas en frappant fort, mais en le
             // brisant sur ses faiblesses — son combat est une énigme.
+            // Il était le boss le PLUS FAIBLE du jeu (520 PV) alors qu'il
+            // clôt l'Acte II, après un Gardien à 860. Sa rage se déclenchait
+            // aussi très tard (35 %), ce qui la réduisait à un baroud final.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.35,
+                enrageThreshold: 0.50,
                 enrageSpeedMult: 1.5,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 62,
+                specialDamage: 74,
                 specialName: String(localized: "combat.archivist.specialName"),
                 regenPercent: 0.07,
                 regenName: String(localized: "combat.archivist.regen"),
@@ -303,7 +306,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.archivist"),
-                enemyHP: 520,
+                enemyHP: 1100,
                 goldReward: 55,
                 player: player,
                 enemyKind: .archivist,

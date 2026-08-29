@@ -228,7 +228,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.thresholdGuardian"),
-                enemyHP: 1400,
+                enemyHP: 1750,
                 goldReward: 0,
                 player: player,
                 enemyKind: .guardian,

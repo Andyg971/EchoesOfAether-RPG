@@ -137,7 +137,7 @@ extension GameManager {
             to: scene,
             enemySpecs: [
                 EnemySpec(name: String(localized: "combat.enemy.ashGolem"),
-                          hp: 560, kind: .ruinsGuardian, baseDamage: 48)
+                          hp: 780, kind: .ruinsGuardian, baseDamage: 48)
             ],
             goldReward: 150,
             player: player,

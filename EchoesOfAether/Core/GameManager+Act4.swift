@@ -146,11 +146,14 @@ extension GameManager {
                 to: scene,
                 enemySpecs: [
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
-                              hp: 340, kind: .boneWalker, baseDamage: 48),
+                              hp: EncounterBalance.LateEnemy.devourerStrong,
+                              kind: .boneWalker, baseDamage: 48),
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
-                              hp: 340, kind: .boneWalker, baseDamage: 48),
+                              hp: EncounterBalance.LateEnemy.devourerStrong,
+                              kind: .boneWalker, baseDamage: 48),
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(3)"),
-                              hp: 300, kind: .wolf, baseDamage: 44)
+                              hp: EncounterBalance.LateEnemy.devourerSwift,
+                              kind: .wolf, baseDamage: 44)
                 ],
                 goldReward: 130,
                 player: player,
@@ -211,11 +214,11 @@ extension GameManager {
             // Au-delà du Gardien du Seuil : enrage plus tôt, frappe plus
             // fort — le trio complet et le niveau 30 sont attendus ici.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.55,
+                enrageThreshold: EncounterBalance.VoidAvatar.enrageThreshold,
                 enrageSpeedMult: 1.8,
                 enrageDamageMult: 3,
                 specialAttackInterval: 2,
-                specialDamage: 98,
+                specialDamage: EncounterBalance.VoidAvatar.specialDamage,
                 specialName: String(localized: "combat.voidAvatar.specialName"),
                 music: .boss
             )
@@ -224,7 +227,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.voidAvatar"),
-                enemyHP: 2200,
+                enemyHP: EncounterBalance.VoidAvatar.hp,
                 goldReward: 0,
                 player: player,
                 enemyKind: .ruinsGuardian,

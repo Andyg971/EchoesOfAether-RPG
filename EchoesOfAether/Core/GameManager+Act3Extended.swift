@@ -96,11 +96,14 @@ extension GameManager {
                 to: scene2,
                 enemySpecs: [
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(1)"),
-                              hp: 300, kind: .boneWalker, baseDamage: 44),
+                              hp: EncounterBalance.LateEnemy.voidShadeStrong,
+                              kind: .boneWalker, baseDamage: 44),
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(2)"),
-                              hp: 300, kind: .boneWalker, baseDamage: 44),
+                              hp: EncounterBalance.LateEnemy.voidShadeStrong,
+                              kind: .boneWalker, baseDamage: 44),
                     EnemySpec(name: String(localized: "combat.enemy.numbered \(name) \(3)"),
-                              hp: 260, kind: .wolf, baseDamage: 40)
+                              hp: EncounterBalance.LateEnemy.voidShadeSwift,
+                              kind: .wolf, baseDamage: 40)
                 ],
                 goldReward: 110,
                 player: player,
@@ -215,11 +218,11 @@ extension GameManager {
             // Boss FINAL : le mur du jeu. Enrage tôt, spéciale fréquente
             // et brutale — le joueur doit maîtriser break/boost/soin.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.60,
+                enrageThreshold: EncounterBalance.ThresholdGuardian.enrageThreshold,
                 enrageSpeedMult: 1.8,
                 enrageDamageMult: 3,
                 specialAttackInterval: 2,
-                specialDamage: 92,
+                specialDamage: EncounterBalance.ThresholdGuardian.specialDamage,
                 specialName: String(localized: "combat.thresholdGuardian.specialName"),
                 music: .boss
             )
@@ -228,7 +231,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.thresholdGuardian"),
-                enemyHP: 1750,
+                enemyHP: EncounterBalance.ThresholdGuardian.hp,
                 goldReward: 0,
                 player: player,
                 enemyKind: .guardian,

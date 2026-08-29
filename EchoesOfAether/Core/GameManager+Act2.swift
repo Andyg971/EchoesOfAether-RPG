@@ -250,7 +250,7 @@ extension GameManager {
         combat.attach(
             to: scene,
             enemyName: String(localized: "combat.enemy.ruinsGuardian"),
-            enemyHP: 500,
+            enemyHP: EncounterBalance.SideBoss.ruinsSentinel,
             goldReward: 30,
             player: player,
             enemyKind: .ruinsGuardian,
@@ -291,11 +291,11 @@ extension GameManager {
             // clôt l'Acte II, après un Gardien à 860. Sa rage se déclenchait
             // aussi très tard (35 %), ce qui la réduisait à un baroud final.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.50,
+                enrageThreshold: EncounterBalance.Archivist.enrageThreshold,
                 enrageSpeedMult: 1.5,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 74,
+                specialDamage: EncounterBalance.Archivist.specialDamage,
                 specialName: String(localized: "combat.archivist.specialName"),
                 regenPercent: 0.07,
                 regenName: String(localized: "combat.archivist.regen"),
@@ -306,7 +306,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.archivist"),
-                enemyHP: 1100,
+                enemyHP: EncounterBalance.Archivist.hp,
                 goldReward: 55,
                 player: player,
                 enemyKind: .archivist,

@@ -342,11 +342,11 @@ extension GameManager {
             // La rage se déclenche aussi plus tôt (55 % au lieu de 45 %) :
             // la phase dangereuse dure plus longtemps qu'un baroud final.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.55,
+                enrageThreshold: EncounterBalance.Guardian.enrageThreshold,
                 enrageSpeedMult: 1.6,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 78,
+                specialDamage: EncounterBalance.Guardian.specialDamage,
                 specialName: String(localized: "combat.boss.specialName")
             )
 
@@ -354,7 +354,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.guardian"),
-                enemyHP: 860,
+                enemyHP: EncounterBalance.Guardian.hp,
                 goldReward: 120,
                 player: player,
                 enemyKind: .guardian,

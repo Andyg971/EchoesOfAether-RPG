@@ -469,7 +469,8 @@ extension GameManager {
             to: scene,
             enemySpecs: [
                 EnemySpec(name: String(localized: "combat.enemy.sandColossus"),
-                          hp: 880, kind: .ruinsGuardian, baseDamage: 52)
+                          hp: EncounterBalance.SideBoss.sandColossus,
+                          kind: .ruinsGuardian, baseDamage: 52)
             ],
             goldReward: 180,
             player: player,

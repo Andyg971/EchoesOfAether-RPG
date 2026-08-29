@@ -1657,7 +1657,6 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         if boost > 0 { JuiceEngine.zoomPunch(root, around: enemyCenter) }
         playActorAttackAnimation(on: foe, strong: boost > 0)
         spawnSlashArc(at: enemyCenter, color: .white, strong: boost > 0)
-        root.addChild(ParticleFactory.impactSparks(at: enemyCenter, color: .white, count: 8 + boost * 4))
         if isCrit {
             playCritEffect(at: enemyCenter, damage: finalDmg)
         } else {
@@ -1714,7 +1713,10 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         // L'Entaille noire est le coup signature : le GRAND sort du pack.
         playActorAttackAnimation(on: foe, strong: true, signature: true)
         spawnSlashArc(at: enemyCenter, color: CombatElement.aether.color, strong: true)
-        root.addChild(ParticleFactory.blackAetherBurst(at: enemyCenter))
+        // Éclats violets retirés : les actions de Kael se contentent
+        // désormais de leur animation et de leur arc, comme les techniques
+        // d'Eran qui n'existent que par leur pack. Plus de gerbe de carrés
+        // projetés par-dessus le sprite.
         if isCrit {
             playCritEffect(at: enemyCenter, damage: finalDmg)
         } else {
@@ -2455,7 +2457,8 @@ private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
 private func playCritEffect(at position: CGPoint, damage: Int) {
     let gold = SKColor(red: 1.00, green: 0.84, blue: 0.25, alpha: 1)
     showEffect(String(localized: "combat.effect.crit"), color: gold)
-    root.addChild(ParticleFactory.impactSparks(at: position, color: gold, count: 12))
+    // Gerbe d'éclats retirée : le mot CRITIQUE, le coup de zoom et le gros
+    // chiffre doré disent déjà le critique, sans carrés projetés.
     JuiceEngine.zoomPunch(root, around: position, scale: 1.05)
     HapticsEngine.heavy()
 

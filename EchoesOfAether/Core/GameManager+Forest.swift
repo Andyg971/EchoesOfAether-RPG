@@ -330,12 +330,23 @@ extension GameManager {
             guard let self, let scene = self.scene else { return }
             transition(to: .combat)
 
+            // Le Gardien tombait trop vite pour un boss de fin d'acte.
+            //
+            // Le durcissement passe surtout par les PV, pas par les dégâts :
+            // gonfler les dégâts transforme le combat en loterie de premier
+            // tour, gonfler les PV laisse au joueur le temps de jouer le
+            // système (cf. la même règle dans `Difficulty`). Le BREAK rend
+            // 1,8× de dégâts : qui exploite ses faiblesses (GLACE, AETHER)
+            // garde un rythme correct, qui tape au hasard sent le mur.
+            //
+            // La rage se déclenche aussi plus tôt (55 % au lieu de 45 %) :
+            // la phase dangereuse dure plus longtemps qu'un baroud final.
             let bossConfig = BossConfig(
-                enrageThreshold: 0.45,
+                enrageThreshold: 0.55,
                 enrageSpeedMult: 1.6,
                 enrageDamageMult: 2,
                 specialAttackInterval: 3,
-                specialDamage: 68,
+                specialDamage: 78,
                 specialName: String(localized: "combat.boss.specialName")
             )
 
@@ -343,7 +354,7 @@ extension GameManager {
             combat.attach(
                 to: scene,
                 enemyName: String(localized: "combat.enemy.guardian"),
-                enemyHP: 620,
+                enemyHP: 860,
                 goldReward: 120,
                 player: player,
                 enemyKind: .guardian,

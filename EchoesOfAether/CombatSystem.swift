@@ -1032,8 +1032,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         HapticsEngine.heavy()
         JuiceEngine.screenShake(root, intensity: shakeIntensity, duration: 0.15)
         if isSpecial { JuiceEngine.zoomPunch(root, around: victimHome, scale: 1.05) }
-        root.addChild(ParticleFactory.impactSparks(
-            at: victimHome, color: sparkColor, count: isSpecial ? 12 : 6))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
     }
     showFloatingText("-" + String(dmg), at: victimHome,
                      color: blocked
@@ -1205,9 +1204,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     /// Éclat doré sur l'acteur quand la frappe est réussie.
     private func playStrikeFlourish() {
         let anchor = actingAlly?.home ?? kaelHomePosition
-        root.addChild(ParticleFactory.impactSparks(
-            at: CGPoint(x: anchor.x, y: anchor.y + 40),
-            color: PixelUI.gold, count: 12))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         showFloatingText(String(localized: "combat.strike.perfect"),
                          at: CGPoint(x: anchor.x, y: anchor.y + 70),
                          color: PixelUI.gold)
@@ -1232,9 +1229,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         statusLabel.text = boss.regenName
         showFloatingText("+" + String(heal), at: foe.homePosition,
                          color: SKColor(red: 0.55, green: 0.95, blue: 0.70, alpha: 1))
-        root.addChild(ParticleFactory.impactSparks(
-            at: foe.homePosition,
-            color: SKColor(red: 0.55, green: 0.95, blue: 0.70, alpha: 1), count: 10))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         foe.sprite?.run(.sequence([
             .scale(to: 1.06, duration: 0.14),
             .scale(to: 1.0, duration: 0.14)
@@ -1286,9 +1281,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         refreshLockIcons(for: foe)
         AudioEngine.shared.playQuestComplete()
         HapticsEngine.medium()
-        root.addChild(ParticleFactory.impactSparks(
-            at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 74),
-            color: Palette.goldCombat, count: 10))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         showFloatingText(String(localized: "combat.locks.broken"),
                          at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 96),
                          color: Palette.goldCombat)
@@ -1338,9 +1331,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
                 color: SKColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1),
                 duration: 0.22)
         }
-        root.addChild(ParticleFactory.impactSparks(
-            at: foe.homePosition,
-            color: Palette.goldCombat, count: 22))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
     }
 
     /// Bouton A pendant un coup ennemi. Retourne `true` si l'appui a été
@@ -1510,7 +1501,6 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
                 duration: 0.3)
             // Boss aura particles + pulse du sprite (boss = ennemi unique)
             if let boss = enemies.first {
-                root.addChild(ParticleFactory.blackAetherBurst(at: boss.homePosition))
                 boss.sprite?.run(.sequence([
                     .scale(to: 1.15, duration: 0.15),
                     .scale(to: 1.0, duration: 0.25)
@@ -2374,60 +2364,9 @@ private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
                       count: boosted ? 22 : 16,
                       fromRadius: 6, toRadius: boosted ? 62 : 46,
                       pixel: 5, flatten: 0.32, duration: 0.4)
-    // Scintillements autour du corps pendant le soin.
-    for i in 0..<(boosted ? 7 : 5) {
-        PixelFX.twinkle(in: root,
-                        at: CGPoint(x: home.x + .random(in: -30...30),
-                                    y: home.y + .random(in: -14...60)),
-                        color: pal[0], size: 3,
-                        delay: 0.1 + Double(i) * 0.09)
-    }
-
-    // Colonne bâtie en carrés empilés (pixel, pas de rect lisse)
-    let colW: CGFloat = boosted ? 48 : 36
-    let column = SKNode()
-    let rows = 10
-    for r in 0..<rows {
-        for _ in 0..<3 {
-            let side = CGFloat.random(in: 5...9)
-            let sq = SKSpriteNode(color: pal[Int.random(in: 0...2)].withAlphaComponent(0.5),
-                                  size: CGSize(width: side, height: side))
-            sq.position = CGPoint(x: .random(in: -colW/2...colW/2),
-                                  y: CGFloat(r) * 13 + .random(in: -4...4))
-            column.addChild(sq)
-        }
-    }
-    column.position = base
-    column.zPosition = 824
-    column.alpha = 0
-    root.addChild(column)
-    column.run(.sequence([
-        .fadeIn(withDuration: 0.12),
-        .wait(forDuration: 0.35),
-        .fadeOut(withDuration: 0.3),
-        .removeFromParent()
-    ]))
-
-    // Spirale ascendante de pixels
-    for i in 0..<(boosted ? 16 : 10) {
-        let side = CGFloat.random(in: 4...7)
-        let mote = SKSpriteNode(color: pal.randomElement() ?? .green,
-                                size: CGSize(width: side, height: side))
-        let angle = CGFloat(i) * 0.7
-        mote.position = CGPoint(x: base.x + cos(angle) * 16, y: base.y)
-        mote.zPosition = 826
-        root.addChild(mote)
-        let rise: CGFloat = .random(in: 70...110)
-        mote.run(.sequence([
-            .wait(forDuration: Double(i) * 0.04),
-            .group([
-                .moveBy(x: -cos(angle) * 20, y: rise, duration: 0.6),
-                .fadeOut(withDuration: 0.6),
-                .scale(to: 0.4, duration: 0.6)
-            ]),
-            .removeFromParent()
-        ]))
-    }
+    // Scintillements, colonne de carrés empilés et spirale de motes retirés :
+    // aucune attaque ni aucun sort du jeu ne projette de carrés de couleur.
+    // L'anneau au sol et la croix de soin portent seuls le sort de Lyra.
     // Croix de lumière brève au-dessus du soigné
     let cross = SKNode()
     let vBar = SKSpriteNode(color: pal[0], size: CGSize(width: 4, height: 18))
@@ -2549,13 +2488,11 @@ private func showComboIfNeeded() {
         enemies.filter { $0.sprite?.alpha ?? 0 > 0 }.forEach { playEnemyDeathAnimation($0) }
         // Les héros survivants fêtent la victoire (saut de joie en cascade).
         playVictoryPose()
-        if isBoss, let scene = parentScene, let boss = enemies.first {
-            // Epic boss death: slow-mo + big burst + flash
+        if isBoss, let scene = parentScene {
+            // Mort de boss : ralenti + secousse + flash. La gerbe de carrés
+            // est retirée — aucune attaque du jeu n'en projette.
             JuiceEngine.slowMotion(scene: scene, duration: 0.4, factor: 0.15)
             JuiceEngine.screenShake(root, intensity: 18, duration: 0.6)
-            root.addChild(ParticleFactory.blackAetherBurst(at: boss.homePosition))
-            root.addChild(ParticleFactory.impactSparks(at: boss.homePosition,
-                                                       color: .white, count: 20))
             JuiceEngine.flashOverlay(in: root, size: scene.size,
                 color: SKColor(red: 0.50, green: 0.25, blue: 0.80, alpha: 1),
                 duration: 0.35)
@@ -3230,9 +3167,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     private func playEnemyDeathAnimation(_ foe: EnemyState) {
         guard let e = foe.sprite else { return }
-        root.addChild(ParticleFactory.impactSparks(at: foe.homePosition,
-                                                   color: SKColor(white: 0.9, alpha: 1),
-                                                   count: 10))
+        // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         e.run(.sequence([
             .group([
                 .fadeOut(withDuration: 0.6),
@@ -3270,16 +3205,10 @@ private func setupComboAndStatusUI(scene: SKScene) {
                 .rotate(toAngle: -0.08, duration: 0.16, shortestUnitArc: true),
                 .rotate(toAngle: 0, duration: 0.14, shortestUnitArc: true)
             ])
+            // Saut de joie seul : la gerbe dorée au-dessus de la tête est
+            // retirée avec toutes les autres.
             node.run(.sequence([
                 .wait(forDuration: delay),
-                .run { [weak self, weak node] in
-                    guard let self, let node else { return }
-                    let sparkle = ParticleFactory.impactSparks(
-                        at: CGPoint(x: node.position.x, y: node.position.y + 30),
-                        color: SKColor(red: 1.0, green: 0.9, blue: 0.5, alpha: 1),
-                        count: 6)
-                    self.root.addChild(sparkle)
-                },
                 .group([hop, sway])
             ]))
         }

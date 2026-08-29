@@ -109,7 +109,15 @@ enum JuiceEngine {
     static func flashOverlay(in parent: SKNode, size: CGSize, color: SKColor, duration: TimeInterval = 0.15) {
         // Accessibilité : atténue fortement les flashs (notamment rouges agressifs).
         let reduce = AccessibilitySettings.reduceMotion
-        let overlay = SKShapeNode(rectOf: size)
+        // Le flash doit COUVRIR l'écran, pas y poser un rectangle.
+        // Avant : `rectOf: size` créé à l'origine du parent (coin, pas
+        // centre) et à la taille de la scène — plus étroite que l'affichage
+        // réel en aspect fill. Résultat : un gros rectangle de couleur aux
+        // bords nets en plein milieu, pris pour un bug d'affichage. On le
+        // centre et on déborde largement.
+        let overlay = SKShapeNode(rectOf: CGSize(width: size.width * 3,
+                                                 height: size.height * 3))
+        overlay.position = CGPoint(x: size.width / 2, y: size.height / 2)
         overlay.fillColor = color
         overlay.strokeColor = .clear
         overlay.alpha = reduce ? 0.18 : 0.6

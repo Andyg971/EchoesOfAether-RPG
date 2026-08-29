@@ -1690,18 +1690,19 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         statusLabel.text = boost > 0 ? String(localized: "combat.status.blackSlashBoosted \(boost + 1)") : String(localized: "combat.status.blackSlash \(resonance)")
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
-        JuiceEngine.screenShake(root, intensity: 12 + CGFloat(boost) * 3, duration: 0.35)
-        JuiceEngine.zoomPunch(root, around: enemyCenter, scale: 1.045)
-        JuiceEngine.slowMotion(scene: scene, duration: 0.18, factor: 0.25)
+        // L'Entaille noire ne peint plus rien sur la cible : tout son poids
+        // passe par l'écran. Ralenti plus long, secousse et zoom plus francs.
+        JuiceEngine.screenShake(root, intensity: 18 + CGFloat(boost) * 4, duration: 0.45)
+        JuiceEngine.zoomPunch(root, around: enemyCenter, scale: 1.075)
+        JuiceEngine.slowMotion(scene: scene, duration: 0.30, factor: 0.16)
         JuiceEngine.flashOverlay(
             in: root,
             size: scene.size,
             color: SKColor(red: 0.30, green: 0.02, blue: 0.40, alpha: 1),
-            duration: 0.2
+            duration: 0.32
         )
         // L'Entaille noire est le coup signature : le GRAND sort du pack.
         playActorAttackAnimation(on: foe, strong: true, signature: true)
-        tintTarget(foe, color: CombatElement.aether.color, strength: 0.85)
         // Éclats violets retirés : les actions de Kael se contentent
         // désormais de leur animation et de leur arc, comme les techniques
         // d'Eran qui n'existent que par leur pack. Plus de gerbe de carrés
@@ -1720,7 +1721,6 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
                 .wait(forDuration: 0.22),
                 .run { [weak self] in
                     guard let self else { return }
-                    tintTarget(foe, color: CombatElement.aether.color, strength: 0.7)
                     showFloatingText("-" + String(echo),
                                      at: CGPoint(x: enemyCenter.x + 26, y: enemyCenter.y + 18),
                                      color: CombatElement.aether.color)
@@ -1857,28 +1857,6 @@ private func endPlayerAction() {
             if let i = nextIdx { self.startAllyTurn(i) } else { self.startEnemyTurn() }
         }
     ]))
-}
-
-/// Teinte brève de la cible — remplace le croissant de slash, qui était
-/// dessiné en carrés pixel. Ici on ne DESSINE rien par-dessus l'ennemi : on
-/// colore son propre sprite, le temps d'un battement. L'Entaille noire se
-/// lit donc sur la chair de la cible, pas sur une décoration posée devant.
-private func tintTarget(_ foe: EnemyState, color: SKColor, strength: CGFloat) {
-    guard let root = foe.sprite else { return }
-    // `foe.sprite` est un conteneur : les vrais SKSpriteNode sont ses
-    // descendants. On restaure la teinte D'ORIGINE de chacun (le Gardien,
-    // par exemple, est déjà teinté violet sombre à 0,35) — sinon le sort
-    // laverait définitivement la couleur du boss.
-    root.forEachDescendantSprite { sprite in
-        let previousColor = sprite.color
-        let previousBlend = sprite.colorBlendFactor
-        sprite.removeAction(forKey: "aetherTint")
-        sprite.run(.sequence([
-            .colorize(with: color, colorBlendFactor: strength, duration: 0.05),
-            .wait(forDuration: 0.06),
-            .colorize(with: previousColor, colorBlendFactor: previousBlend, duration: 0.22)
-        ]), withKey: "aetherTint")
-    }
 }
 
 private func applyBoost() {

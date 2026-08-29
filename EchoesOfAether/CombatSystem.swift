@@ -2129,9 +2129,9 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     let pal = Self.firePalette
     let start = CGPoint(x: actorHomePosition.x + 30, y: actorHomePosition.y + 40)
 
-    // Motes retirées à la demande : ni charge aspirée, ni traînée de
-    // braises, ni éclats à l'impact. La boule, l'onde, les flammes au sol
-    // et la fumée portent seules le sort.
+    // 1. Charge : pixels de braise aspirés vers la main de Kael.
+    PixelFX.converge(in: root, to: start, palette: pal,
+                     count: boosted ? 14 : 10, radius: 46, duration: 0.18)
 
     // 2. Noyau de la boule = carrés concentriques tournoyants.
     let ball = SKNode()
@@ -2147,6 +2147,27 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     ball.run(.repeatForever(.rotate(byAngle: .pi, duration: 0.25)))
     root.addChild(ball)
 
+    // Traînée : braises carrées lâchées en continu.
+    let trail = SKAction.repeatForever(.sequence([
+        .run { [weak self, weak ball] in
+            guard let self, let ball else { return }
+            for _ in 0..<3 {
+                let side = CGFloat.random(in: 4...8)
+                let ember = SKSpriteNode(color: pal.randomElement() ?? .orange,
+                                         size: CGSize(width: side, height: side))
+                ember.position = CGPoint(x: ball.position.x + .random(in: -7...7),
+                                         y: ball.position.y + .random(in: -7...7))
+                ember.zPosition = 825
+                self.root.addChild(ember)
+                ember.run(.sequence([
+                    .group([.fadeOut(withDuration: 0.3), .scale(to: 0.2, duration: 0.3)]),
+                    .removeFromParent()
+                ]))
+            }
+        },
+        .wait(forDuration: 0.02)
+    ]))
+
     // 3. Vol en cloche : la boule monte puis retombe sur la cible.
     let impact = CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 20)
     let arc = CGMutablePath()
@@ -2158,12 +2179,23 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     fly.timingMode = .easeIn
 
     ball.run(.sequence([
-        .scale(to: 1.0, duration: 0.16),
+        .group([.scale(to: 1.0, duration: 0.16),
+                .sequence([.wait(forDuration: 0.16),
+                           .run { ball.run(trail, withKey: "trail") }])]),
         .wait(forDuration: 0.04),
         fly,
         .run { [weak self] in
             guard let self else { return }
+            ball.removeAction(forKey: "trail")
             let ground = foe.homePosition
+            // Explosion radiale massive + gerbe montante + fumée.
+            PixelFX.burst(in: self.root, at: ground, palette: pal,
+                          count: boosted ? 52 : 34, speed: 130...300,
+                          gravity: 380, pixel: 5...11)
+            PixelFX.burst(in: self.root, at: ground, palette: pal,
+                          count: boosted ? 18 : 12, speed: 70...150,
+                          gravity: -120, pixel: 4...8,
+                          baseAngle: .pi / 2, spread: .pi * 0.6)
             // Onde de choc au sol, écrasée en perspective.
             PixelFX.shockRing(in: self.root, at: ground, palette: pal,
                               count: boosted ? 26 : 18,
@@ -2186,8 +2218,23 @@ private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
     let pal = Self.icePalette
     let count = boosted ? 6 : 4
 
-    // Motes retirées à la demande : ni brume au sol, ni scintillement sur
-    // les pointes, ni éclats de bris. Les stalactites et l'onde suffisent.
+    // Brume de givre qui rampe au sol avant le jaillissement.
+    for _ in 0..<(boosted ? 12 : 8) {
+        let side = CGFloat.random(in: 4...8)
+        let mist = SKSpriteNode(color: pal[0].withAlphaComponent(0.55),
+                                size: CGSize(width: side, height: side))
+        mist.position = CGPoint(x: foe.homePosition.x + .random(in: -50...50),
+                                y: foe.homePosition.y - 30 + .random(in: -4...6))
+        mist.zPosition = 824
+        mist.alpha = 0
+        root.addChild(mist)
+        mist.run(.sequence([
+            .group([.fadeAlpha(to: 0.55, duration: 0.10),
+                    .moveBy(x: .random(in: -20...20), y: 4, duration: 0.5)]),
+            .fadeOut(withDuration: 0.3),
+            .removeFromParent()
+        ]))
+    }
 
     for i in 0..<count {
         let h: CGFloat = CGFloat.random(in: 30...46) * (boosted ? 1.25 : 1.0)
@@ -2216,7 +2263,24 @@ private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
         spike.run(.sequence([
             .wait(forDuration: Double(i) * 0.05),
             .scaleY(to: 1.0, duration: 0.08),   // jaillit sec
+            .run { [weak self] in
+                guard let self else { return }
+                // Sparkle 16-bit sur la pointe fraîchement sortie.
+                PixelFX.twinkle(in: self.root,
+                                at: CGPoint(x: spike.position.x + .random(in: -4...4),
+                                            y: spike.position.y + h - 2),
+                                color: pal[1], size: 3,
+                                delay: Double.random(in: 0...0.1))
+            },
             .wait(forDuration: 0.28),
+            .run { [weak self] in
+                guard let self else { return }
+                // Se brise en éclats pixel qui retombent
+                PixelFX.burst(in: self.root,
+                              at: CGPoint(x: spike.position.x, y: spike.position.y + h * 0.5),
+                              palette: pal, count: boosted ? 12 : 8,
+                              speed: 80...180, gravity: 420, pixel: 3...6)
+            },
             .group([.fadeOut(withDuration: 0.18), .scaleY(to: 0.5, duration: 0.18)]),
             .removeFromParent()
         ]))
@@ -2274,13 +2338,26 @@ private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
                                  duration: 0.09)
     }]))
     JuiceEngine.screenShake(root, intensity: boosted ? 9 : 6, duration: 0.18)
-    // Motes retirées à la demande : ni éclats rasants, ni crépitement.
-    // L'éclair lui-même et l'onde au sol portent le coup.
+    // Éclats projetés horizontalement au point d'impact (rasants).
+    PixelFX.burst(in: root, at: hit, palette: pal, count: boosted ? 28 : 18,
+                  speed: 140...320, gravity: 300, pixel: 3...6,
+                  baseAngle: 0, spread: .pi * 0.5)
+    PixelFX.burst(in: root, at: hit, palette: pal, count: boosted ? 28 : 18,
+                  speed: 140...320, gravity: 300, pixel: 3...6,
+                  baseAngle: .pi, spread: .pi * 0.5)
     // Onde de choc électrique rasante au sol.
     PixelFX.shockRing(in: root, at: hit, palette: pal,
                       count: boosted ? 24 : 16,
                       fromRadius: 6, toRadius: boosted ? 84 : 60,
                       pixel: 5, flatten: 0.3, duration: 0.26)
+    // Crépitement résiduel : étincelles qui claquent sur l'ennemi.
+    for i in 0..<(boosted ? 8 : 5) {
+        PixelFX.twinkle(in: root,
+                        at: CGPoint(x: foe.homePosition.x + .random(in: -26...26),
+                                    y: foe.homePosition.y + .random(in: -20...36)),
+                        color: pal[1], size: 3,
+                        delay: 0.10 + Double(i) * 0.06)
+    }
 }
 
 /// SOIN : anneau béni au sol, colonne de carrés translucides, spirale de

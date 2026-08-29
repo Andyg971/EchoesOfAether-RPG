@@ -935,11 +935,8 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
         sparkColor = SKColor(red: 0.55, green: 0.15, blue: 0.80, alpha: 1)
         shakeIntensity = 10
         statusLabel.text = boss.specialName
-        if let scene = parentScene {
-            JuiceEngine.flashOverlay(in: root, size: scene.size,
-                color: SKColor(red: 0.40, green: 0.05, blue: 0.55, alpha: 1),
-                duration: 0.25)
-        }
+        // Voile violet retiré : la secousse et le nom du coup annoncent le
+        // grand coup du boss sans noyer l'écran de couleur.
     } else {
         // Facteur de menace : les monstres frappent plus fort pour que le
         // joueur doive vraiment gérer PV/MP/Boost et ses grosses attaques.
@@ -1690,17 +1687,14 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
         statusLabel.text = boost > 0 ? String(localized: "combat.status.blackSlashBoosted \(boost + 1)") : String(localized: "combat.status.blackSlash \(resonance)")
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
-        // L'Entaille noire ne peint plus rien sur la cible : tout son poids
-        // passe par l'écran. Ralenti plus long, secousse et zoom plus francs.
+        // AUCUN VOILE VIOLET. Le flash de l'Entaille noire noyait tout
+        // l'écran de violet pendant un tiers de seconde : c'est ce qu'on
+        // voyait comme un grand carré de couleur posé sur le jeu. Le poids
+        // du coup passe par le MOUVEMENT — ralenti, secousse, zoom — qui ne
+        // colore rien.
         JuiceEngine.screenShake(root, intensity: 18 + CGFloat(boost) * 4, duration: 0.45)
         JuiceEngine.zoomPunch(root, around: enemyCenter, scale: 1.075)
         JuiceEngine.slowMotion(scene: scene, duration: 0.30, factor: 0.16)
-        JuiceEngine.flashOverlay(
-            in: root,
-            size: scene.size,
-            color: SKColor(red: 0.30, green: 0.02, blue: 0.40, alpha: 1),
-            duration: 0.32
-        )
         // L'Entaille noire est le coup signature : le GRAND sort du pack.
         playActorAttackAnimation(on: foe, strong: true, signature: true)
         // Éclats violets retirés : les actions de Kael se contentent
@@ -2486,9 +2480,8 @@ private func showComboIfNeeded() {
             // est retirée — aucune attaque du jeu n'en projette.
             JuiceEngine.slowMotion(scene: scene, duration: 0.4, factor: 0.15)
             JuiceEngine.screenShake(root, intensity: 18, duration: 0.6)
-            JuiceEngine.flashOverlay(in: root, size: scene.size,
-                color: SKColor(red: 0.50, green: 0.25, blue: 0.80, alpha: 1),
-                duration: 0.35)
+            // Voile violet retiré aussi : le ralenti et la secousse portent
+            // la mort du boss.
         }
 
         // Restauration PV 100% entre combats — Kael se soigne après victoire.

@@ -54,13 +54,19 @@ extension GameManager {
             tapAndMove(point, in: scene)
 
         case .shrine:
+            let exit = ShrinePOI.exit.scaled(w: scene.size.width, h: scene.size.height)
+            let gate = ShrinePOI.gate.scaled(w: scene.size.width, h: scene.size.height)
+            let kaelPos = world.kael.position
             // Sortie ouest → retour forêt (le joueur n'est plus coincé).
-            if wp.distance(to: CGPoint(x: scene.size.width * 0.06,
-                                       y: scene.size.height * 0.46)) < 60 {
+            if wp.distance(to: exit) < ShrinePOI.exitReach {
                 exitShrine()
             } else if trySaveCrystalTap(wp, in: scene) {
                 return   // cristal de sauvegarde fonctionnel
-            } else if wp.x > scene.size.width * 0.55 && !player.bossDefeated {
+            } else if !player.bossDefeated,
+                      wp.distance(to: gate) < ShrinePOI.gateReach,
+                      kaelPos.distance(to: gate) < ShrinePOI.gateReach {
+                // Même condition que la bulle « A · Combattre » : on vise la
+                // porte ET on est devant. Ailleurs sur l'écran, on marche.
                 startBossFight()
             } else {
                 tapAndMove(point, in: scene)

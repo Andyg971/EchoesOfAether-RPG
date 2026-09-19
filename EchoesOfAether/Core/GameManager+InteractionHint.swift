@@ -151,15 +151,20 @@ extension GameManager {
         } else {
             switch phase {
             case .shrine:
-                if !player.bossDefeated {
-                    let gate = CGPoint(x: scene.size.width * 0.72,
-                                       y: scene.size.height * 0.50)
-                    if kaelPos.distance(to: gate) < 130 {
-                        hint = localizedHint("hint.fight")
-                        bubbleAction = .fight
-                        bubbleAnchor = CGPoint(x: gate.x, y: gate.y + 40)
-                        actionPoint = gate
-                    }
+                let gate = ShrinePOI.gate.scaled(w: scene.size.width, h: scene.size.height)
+                let exit = ShrinePOI.exit.scaled(w: scene.size.width, h: scene.size.height)
+                if !player.bossDefeated, kaelPos.distance(to: gate) < ShrinePOI.gateReach {
+                    hint = localizedHint("hint.fight")
+                    bubbleAction = .fight
+                    bubbleAnchor = CGPoint(x: gate.x, y: gate.y + 40)
+                    actionPoint = gate
+                } else if kaelPos.distance(to: exit) < ShrinePOI.exitReach + 40 {
+                    // La sortie avait un panneau mais ni bulle ni bouton A : il
+                    // fallait taper pile dessus. Elle s'annonce comme partout.
+                    hint = localizedHint("hint.exit")
+                    bubbleAction = .enter   // « hint.exit » partage l'icône porte
+                    bubbleAnchor = CGPoint(x: exit.x, y: exit.y + 40)
+                    actionPoint = exit
                 }
             case .village, .act2:
             let npcs: [(SKNode, String)] = [

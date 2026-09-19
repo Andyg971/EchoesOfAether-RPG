@@ -293,11 +293,10 @@ extension CombatSystem {
     let blocked = closeBlockWindow()
     // Une parade réussie coupe le coup de 65 %. Elle ne l'annule pas : le
     // joueur doit rester attentif, pas devenir invincible.
-    var dmg = blocked ? max(1, Int(Double(rawDamage) * 0.35)) : rawDamage
     // ÉGIDE (voie du Souffle) : mitigation passive sur Kael uniquement.
-    if victim == nil, let reduction = _player?.skillDamageReduction, reduction > 0 {
-        dmg = max(1, Int(CGFloat(dmg) * (1 - reduction)))
-    }
+    let dmg = CombatMath.incomingDamage(
+        raw: rawDamage, blocked: blocked,
+        damageReduction: victim == nil ? (_player?.skillDamageReduction ?? 0) : 0)
 
     if let victim {
         victim.combatant.hp = max(0, victim.combatant.hp - dmg)
@@ -305,17 +304,18 @@ extension CombatSystem {
         // DERNIER SOUFFLE (capstone du Souffle) : le coup fatal laisse Kael
         // à 1 PV, une seule fois par combat. Se déclenche avant l'écran de
         // mort, donc le tour continue normalement.
-        let fatal = kael.hp - dmg <= 0
-        if fatal, _player?.hasLastBreath == true, !lastBreathUsed, kael.hp > 1 {
+        let outcome = CombatMath.applyHitToKael(
+            hp: kael.hp, damage: dmg,
+            hasLastBreath: _player?.hasLastBreath == true,
+            lastBreathUsed: lastBreathUsed)
+        kael.hp = outcome.hp
+        if outcome.lastBreathTriggered {
             lastBreathUsed = true
-            kael.hp = 1
             showEffect(String(localized: "combat.effect.lastBreath"),
                        color: SKColor(red: 0.45, green: 0.90, blue: 0.60, alpha: 1))
             AudioEngine.shared.playVictory()
             HapticsEngine.success()
             AccessibilitySettings.announce(String(localized: "combat.effect.lastBreath"))
-        } else {
-            kael.hp = max(0, kael.hp - dmg)
         }
     }
 

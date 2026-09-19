@@ -43,8 +43,7 @@ extension CombatSystem {
     let boost = queuedBoost
     // Boost (Octopath) et frappe au timing (Sea of Stars) se cumulent :
     // bien jouer les deux récompense vraiment.
-    let damageMultiplier = (1.0 + CGFloat(boost) * 0.55)
-        * (timedBonus ? Self.strikeBonus : 1.0)
+    let damageMultiplier = CombatMath.actionMultiplier(boost: boost, timedStrike: timedBonus)
     queuedBoost = 0
     if boost > 0 { boostedThisRound = true }
 
@@ -73,14 +72,13 @@ extension CombatSystem {
         }
         breakSpecialLocks(on: foe, with: [.physical])
         comboCount += 1
-        let comboMult: Int = comboCount >= 5 ? 14 : (comboCount >= 3 ? 12 : 10)
-        var finalDmg = Int(CGFloat(atkDmg * comboMult / 10) * damageMultiplier)
         let isCrit = Double.random(in: 0...1) < (_player?.critChance ?? 0.12)
-        if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         // Cible déjà cassée : décharge dévastatrice (l'attaque physique ne
         // brise pas de bouclier, mais frappe fort une cible à terre).
         let hitBroken = foe.brokenTurns > 0
-        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
+        let finalDmg = CombatMath.attackDamage(base: atkDmg, comboCount: comboCount,
+                                               multiplier: damageMultiplier,
+                                               isCrit: isCrit, targetBroken: hitBroken)
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         if boost > 0 {
             statusLabel.text = String(localized: "combat.status.attackBoosted \(boost + 1) \(finalDmg)")
@@ -107,16 +105,15 @@ extension CombatSystem {
         breakSpecialLocks(on: foe, with: [.aether])
         comboCount = 0
         resonance += 1
-        var finalDmg = Int(CGFloat(slashDmg) * damageMultiplier)
         let isCrit = Double.random(in: 0...1) < (_player?.critChance ?? 0.12)
-        if isCrit { finalDmg = Int(CGFloat(finalDmg) * 1.5) }
         // Était-elle déjà cassée avant ce coup ? (hitWeakness va peut-être
         // la casser maintenant ; dans les deux cas le Black Slash encaisse
         // le bonus Break.)
         let wasBroken = foe.brokenTurns > 0
         let broke = hitWeakness(on: foe, with: .aether)
         let hitBroken = wasBroken || broke
-        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
+        let finalDmg = CombatMath.blackSlashDamage(base: slashDmg, multiplier: damageMultiplier,
+                                                   isCrit: isCrit, targetBroken: hitBroken)
         if resonance == 3 {
             foe.combatant.stunned = true
             showEffect(String(localized: "combat.effect.stun"), color: SKColor(red: 0.45, green: 0.70, blue: 1.00, alpha: 1))
@@ -130,11 +127,11 @@ extension CombatSystem {
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         // ENTAILLE DOUBLE (capstone de la voie de la Lame) : la lame repasse
         // aussitôt, à 55 %. Second coup uniquement pour Kael — c'est son arbre.
-        var echoDmg = 0
-        if actingAlly == nil, _player?.hasDoubleSlash == true, foe.combatant.hp > 0 {
-            echoDmg = max(1, Int(CGFloat(finalDmg) * 0.55))
-            foe.combatant.hp = max(0, foe.combatant.hp - echoDmg)
-        }
+        let echoDmg = CombatMath.doubleSlashEcho(
+            primaryDamage: finalDmg, isKael: actingAlly == nil,
+            hasCapstone: _player?.hasDoubleSlash == true,
+            targetHPAfterPrimary: foe.combatant.hp)
+        if echoDmg > 0 { foe.combatant.hp = max(0, foe.combatant.hp - echoDmg) }
         statusLabel.text = boost > 0 ? String(localized: "combat.status.blackSlashBoosted \(boost + 1)") : String(localized: "combat.status.blackSlash \(resonance)")
         AudioEngine.shared.playBlackSlash()
         HapticsEngine.heavy()
@@ -258,12 +255,12 @@ extension CombatSystem {
         let isWeak = hitElements.contains { foe.weaknesses.contains($0) }
         let breakElement = hitElements.first { foe.weaknesses.contains($0) } ?? element
         let broke = isWeak ? hitWeakness(on: foe, with: breakElement) : false
-        var finalDmg = Int(CGFloat(spell.power(at: _player?.level ?? 1))
-                           * damageMultiplier * spellMult)
-        if isWeak { finalDmg = Int(CGFloat(finalDmg) * 1.35) }
         // Payoff Break uniforme (était ×1.25, incohérent avec attaque/slash).
         let hitBroken = foe.brokenTurns > 0 || broke
-        if hitBroken { finalDmg = Int(CGFloat(finalDmg) * Self.brokenDamageMultiplier) }
+        let finalDmg = CombatMath.spellDamage(
+            power: spell.power(at: _player?.level ?? 1),
+            multiplier: damageMultiplier, spellMultiplier: spellMult,
+            hitsWeakness: isWeak, targetBroken: hitBroken)
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
         statusLabel.text = isWeak
             ? String(localized: "combat.status.spellWeak \(spell.title(at: _player?.level ?? 1)) \(finalDmg)")

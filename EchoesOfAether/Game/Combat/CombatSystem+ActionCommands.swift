@@ -39,8 +39,7 @@ extension CombatSystem {
     static let strikeWindup: TimeInterval = 0.26
     /// Durée de la fenêtre — même exigence que la parade.
     static let strikeWindow: TimeInterval = 0.38
-    /// Bonus de dégâts d'une frappe réussie.
-    static let strikeBonus: CGFloat = 1.35
+    // Le bonus de frappe vit dans CombatMath.strikeBonus.
 
     /// Les actions qui se méritent au timing (offensives uniquement : ni
     /// potion, ni soin, ni bénédiction).

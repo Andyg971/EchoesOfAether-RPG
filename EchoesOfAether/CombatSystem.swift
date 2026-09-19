@@ -265,62 +265,62 @@ enum CombatAllyKind {
 
 @MainActor
 final class CombatSystem {
-    private let root = SKNode()
-    private let statusLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let root = SKNode()
+    let statusLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // HP bars
-    private let kaelHPBack = SKShapeNode()
-    private let kaelHPFill = SKShapeNode()
-    private let kaelHPGhost = SKShapeNode()   // « dégâts fantômes » qui fondent
-    private let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let kaelHPBack = SKShapeNode()
+    let kaelHPFill = SKShapeNode()
+    let kaelHPGhost = SKShapeNode()   // « dégâts fantômes » qui fondent
+    let kaelHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     // Barre de Points de Magie (Kael) : alimente sorts + Black Slash.
-    private let kaelMPBack = SKShapeNode()
-    private let kaelMPFill = SKShapeNode()
-    private let kaelMPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let kaelMPBack = SKShapeNode()
+    let kaelMPFill = SKShapeNode()
+    let kaelMPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
-    private let enemyHPBack = SKShapeNode()
-    private let enemyHPFill = SKShapeNode()
-    private let enemyHPGhost = SKShapeNode()
-    private var lastTargetIndexForGhost = -1
-    private let enemyHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let targetNameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let enemyHPBack = SKShapeNode()
+    let enemyHPFill = SKShapeNode()
+    let enemyHPGhost = SKShapeNode()
+    var lastTargetIndexForGhost = -1
+    let enemyHPLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let targetNameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     /// Faiblesses (losanges d'élément) + bouclier (pips) de la cible.
     /// Reconstruit à chaque changement — voir `refreshTargetInfoRow`.
-    private let targetInfoRow = SKNode()
+    let targetInfoRow = SKNode()
     /// Dernier état rendu, pour ne pas reconstruire la rangée à chaque frame.
-    private var lastTargetInfoKey = ""
+    var lastTargetInfoKey = ""
 
     // Tour par tour
-    private enum TurnPhase { case intro, playerTurn, playerActing, enemyTurn, finished }
-    private enum TurnActor { case player, enemy }
-    private var phase: TurnPhase = .intro
-    private let turnBanner = SKShapeNode(rectOf: CGSize(width: 240, height: 30), cornerRadius: 15)
-    private let turnBannerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let turnPipsRoot = SKNode()
+    enum TurnPhase { case intro, playerTurn, playerActing, enemyTurn, finished }
+    enum TurnActor { case player, enemy }
+    var phase: TurnPhase = .intro
+    let turnBanner = SKShapeNode(rectOf: CGSize(width: 240, height: 30), cornerRadius: 15)
+    let turnBannerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let turnPipsRoot = SKNode()
 
     // Buttons
-private let attackButton = SKShapeNode(rectOf: CGSize(width: 150, height: 54), cornerRadius: 16)
-private let blackSlashButton = SKShapeNode(rectOf: CGSize(width: 190, height: 54), cornerRadius: 16)
-private let fireButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let iceButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let attackButton = SKShapeNode(rectOf: CGSize(width: 150, height: 54), cornerRadius: 16)
+let blackSlashButton = SKShapeNode(rectOf: CGSize(width: 190, height: 54), cornerRadius: 16)
+let fireButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let iceButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let lightningButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let healButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 /// Bénédiction — sort signature de Lyra (nova sacrée, soin de groupe).
-private let blessingButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let blessingButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 /// TEMPÊTE — l'ultime de Kael, une fois par combat.
-private let tempestButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let tempestButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
 /// Techniques d'Eran : bourrasque (vent) et lame ardente (feu).
-private let windButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let emberButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
-private let boostLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+let windButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let emberButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let boostButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let potionButton = SKShapeNode(rectOf: CGSize(width: 1, height: 1), cornerRadius: 10)
+let boostLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Sprites combattants (refonte UI : on doit voir les personnages se battre)
-    private var kaelSprite: SKNode?
-    private var kaelHomePosition: CGPoint = .zero
-    private var arenaFloor: SKNode?
+    var kaelSprite: SKNode?
+    var kaelHomePosition: CGPoint = .zero
+    var arenaFloor: SKNode?
 
     /// Alliés jouables aux côtés de Kael (0 à 2) : Lyra dans les zones
     /// du pacte, l'Écho de Lyra et Eran au Seuil (trio de l'Acte III).
@@ -350,22 +350,22 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         }
     }
 
-    private var allies: [AllyState] = []
+    var allies: [AllyState] = []
     /// nil = Kael agit ; sinon index de l'allié en train d'agir.
-    private var actingAllyIndex: Int?
-    private var actingAlly: AllyState? {
+    var actingAllyIndex: Int?
+    var actingAlly: AllyState? {
         actingAllyIndex.flatMap { allies.indices.contains($0) ? allies[$0] : nil }
     }
-    private var aliveAllies: [AllyState] { allies.filter { $0.combatant.isAlive } }
+    var aliveAllies: [AllyState] { allies.filter { $0.combatant.isAlive } }
     /// Position d'origine de l'acteur en train d'agir (FX des sorts).
-    private var actorHomePosition: CGPoint {
+    var actorHomePosition: CGPoint {
         actingAlly?.home ?? kaelHomePosition
     }
-    private var actorSprite: SKNode? { actingAlly?.sprite ?? kaelSprite }
+    var actorSprite: SKNode? { actingAlly?.sprite ?? kaelSprite }
     // Étiquette de l'acteur courant sur le panneau d'actions
-    private let actorTagLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let actionPanel = SKShapeNode()
-    private var actionPanelWidth: CGFloat = 288
+    let actorTagLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let actionPanel = SKShapeNode()
+    var actionPanelWidth: CGFloat = 288
     // Curseur de sélection (contrôles classiques, zéro tactile) :
     // rangée 0 = techniques, rangée 1 = BOOST/POTION, rangée 2 = cible.
     /// Soin en attente d'une cible : le joueur a choisi SOIN, il doit
@@ -374,49 +374,49 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     /// joueur ne décidait rien.
     // ── Parade au timing ──
     /// Fenêtre ouverte : un appui sur A pare le coup en cours.
-    private var blockArmed = false
+    var blockArmed = false
     /// Le joueur a appuyé dans la fenêtre.
-    private var blockPressed = false
+    var blockPressed = false
     /// Appui hors fenêtre : la parade est brûlée pour ce coup. C'est ce qui
     /// empêche de marteler A à l'aveugle.
-    private var blockBurned = false
+    var blockBurned = false
     /// Le « ! » affiché au-dessus de l'ennemi qui s'annonce.
-    private var blockPrompt: SKLabelNode?
+    var blockPrompt: SKLabelNode?
 
     // ── Frappe au timing (pendant du bloc, côté offensif) ──
     /// L'action est lancée : l'élan court, A est capté par la frappe et non
     /// par le menu. Le combat cesse d'être un menu passif : chaque coup se
     /// mérite (modèle Sea of Stars).
-    private var strikeWindupActive = false
+    var strikeWindupActive = false
     /// Fenêtre ouverte : un appui sur A décuple le coup.
-    private var strikeArmed = false
+    var strikeArmed = false
     /// Le joueur a appuyé dans la fenêtre.
-    private var strikePressed = false
+    var strikePressed = false
     /// Appui trop tôt : le bonus est brûlé pour ce coup (interdit le matraquage).
-    private var strikeBurned = false
+    var strikeBurned = false
     /// Le repère lumineux affiché au-dessus de l'acteur pendant l'élan.
-    private var strikePrompt: SKLabelNode?
+    var strikePrompt: SKLabelNode?
     /// La Tempête est un atout rare : une seule fois par combat, deux avec
     /// le capstone TEMPÊTE JUMELLE (voie de l'Aether).
-    private var tempestUses = 0
-    private var tempestMaxUses: Int { _player?.hasTwinTempest == true ? 2 : 1 }
-    private var tempestSpent: Bool { tempestUses >= tempestMaxUses }
+    var tempestUses = 0
+    var tempestMaxUses: Int { _player?.hasTwinTempest == true ? 2 : 1 }
+    var tempestSpent: Bool { tempestUses >= tempestMaxUses }
     /// DERNIER SOUFFLE : le sursis ne joue qu'une fois par combat.
-    private var lastBreathUsed = false
+    var lastBreathUsed = false
 
-    private var pendingHealSpell: CombatSpell?
-    private var healTargetIndex = 0
+    var pendingHealSpell: CombatSpell?
+    var healTargetIndex = 0
     /// Cible validée, lue par le cas `.mend` de `perform`. nil = pas de
     /// choix explicite, on retombe sur l'ancien automatisme.
-    private var chosenHealIndex: Int?
-    private var menuRow = 0
-    private var menuCol = 0
-    private let selectionCursor = SKShapeNode()
+    var chosenHealIndex: Int?
+    var menuRow = 0
+    var menuCol = 0
+    let selectionCursor = SKShapeNode()
 
     /// État complet par ennemi : stats, tactique (faiblesses/bouclier)
     /// et nœuds UI (sprite, minibar HP).
     @MainActor
-    private final class EnemyState {
+    final class EnemyState {
         var combatant: Combatant
         let kind: CombatSpriteKind
         var weaknesses: Set<CombatElement>
@@ -445,66 +445,66 @@ private let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         }
     }
 
-    private var kael = Combatant(name: "Kael", maxHP: 280, hp: 280)
-    private var enemies: [EnemyState] = []
-    private var targetIndex = 0
-    private let targetMarker = SKShapeNode()
-private var resonance = 0
-private var playerBP = 0
-private var queuedBoost = 0
+    var kael = Combatant(name: "Kael", maxHP: 280, hp: 280)
+    var enemies: [EnemyState] = []
+    var targetIndex = 0
+    let targetMarker = SKShapeNode()
+var resonance = 0
+var playerBP = 0
+var queuedBoost = 0
 /// Payoff du Break (façon Octopath) : un ennemi au bouclier cassé subit
 /// bien plus de dégâts de TOUTE source pendant qu'il est à terre. C'est la
 /// récompense qui rend le ciblage des faiblesses + la décharge du Boost
 /// vraiment satisfaisants. Auparavant seuls les sorts avaient un maigre
 /// bonus (×1.25) ; l'attaque et le Black Slash n'en avaient aucun.
-private static let brokenDamageMultiplier: CGFloat = 1.8
+static let brokenDamageMultiplier: CGFloat = 1.8
 /// Facteur de menace global des attaques ennemies normales : > 1 rend les
 /// monstres plus dangereux (le joueur galère, doit utiliser ses options).
 /// Réglable d'un seul endroit après playtests.
-private static let enemyDamageScale: CGFloat = 1.5
+static let enemyDamageScale: CGFloat = 1.5
 /// Facteur de robustesse global : les ennemis encaissent davantage → les
 /// combats durent plus (Andy les trouvait « trop rapides / trop faciles »).
-private static let enemyHPScale: CGFloat = 1.4
+static let enemyHPScale: CGFloat = 1.4
 /// Couleur du dégât flottant quand le coup profite du bonus Break :
 /// ambre vif, pour que le joueur SENTE le moment de décharger.
-private static let brokenHitColor = SKColor(red: 1.0, green: 0.66, blue: 0.15, alpha: 1)
+static let brokenHitColor = SKColor(red: 1.0, green: 0.66, blue: 0.15, alpha: 1)
 /// Règle du Boost (façon Octopath) : booster épuise le flux — aucun BP
 /// ne se régénère à la manche suivante.
-private var boostedThisRound = false
-private var bpRecharging = false
-private var goldReward = 0
-    private var completion: ((Int, Int) -> Void)?
-    private weak var parentScene: SKScene?
-    private var _player: PlayerState?
+var boostedThisRound = false
+var bpRecharging = false
+var goldReward = 0
+    var completion: ((Int, Int) -> Void)?
+    weak var parentScene: SKScene?
+    var _player: PlayerState?
 
     // Audit visuel des sorts (--fx-demo)
-    private var fxDemoIndex = 0
+    var fxDemoIndex = 0
     // Ambiance musicale à restaurer en quittant l'arène
-    private var moodBeforeCombat: AudioEngine.MusicMood = .calm
+    var moodBeforeCombat: AudioEngine.MusicMood = .calm
 
     // Combo
-    private var comboCount = 0
-    private let comboLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    var comboCount = 0
+    let comboLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Status effect label
-    private let statusEffectLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let statusEffectLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
     // Boss
-    private var bossConfig: BossConfig?
-    private var isEnraged = false
-    private var enemyTurnCount = 0
-    private let enrageLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    var bossConfig: BossConfig?
+    var isEnraged = false
+    var enemyTurnCount = 0
+    let enrageLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
-    private let barWidth: CGFloat = 140
-    private let barHeight: CGFloat = 14
+    let barWidth: CGFloat = 140
+    let barHeight: CGFloat = 14
 
     var isActive: Bool { root.parent != nil }
 
     /// Cible courante des actions du joueur.
-    private var target: EnemyState? {
+    var target: EnemyState? {
         enemies.indices.contains(targetIndex) ? enemies[targetIndex] : nil
     }
-    private var aliveEnemies: [EnemyState] {
+    var aliveEnemies: [EnemyState] {
         enemies.filter { $0.combatant.isAlive }
     }
 
@@ -653,7 +653,7 @@ self.phase = .intro
 
     /// Transition d'entrée en combat façon SNES : l'écran est couvert de
     /// carrés noirs qui se dissipent en ordre aléatoire, révélant l'arène.
-    private func playBattleIntroDissolve(scene: SKScene) {
+    func playBattleIntroDissolve(scene: SKScene) {
         let overlay = SKNode()
         overlay.zPosition = 990
         root.addChild(overlay)
@@ -705,7 +705,7 @@ func update(deltaTime: TimeInterval) {}
 
 // MARK: - Boucle de tours
 
-private func startPlayerTurn() {
+func startPlayerTurn() {
     guard isActive, kael.isAlive, !aliveEnemies.isEmpty else { return }
     phase = .playerTurn
     actingAllyIndex = nil
@@ -742,7 +742,7 @@ private func startPlayerTurn() {
 
 /// Tour d'un allié : même panneau d'actions, le joueur contrôle tout
 /// le trio (Kael → allié 1 → allié 2 → ennemis).
-private func startAllyTurn(_ index: Int) {
+func startAllyTurn(_ index: Int) {
     guard isActive, kael.isAlive, allies.indices.contains(index),
           allies[index].combatant.isAlive, !aliveEnemies.isEmpty else {
         startEnemyTurn(); return
@@ -765,7 +765,7 @@ private func startAllyTurn(_ index: Int) {
 
 /// Audit visuel des sorts : --fx-demo caste automatiquement
 /// feu → soin → glace → foudre à chaque tour du joueur.
-private func runFXDemoIfNeeded() {
+func runFXDemoIfNeeded() {
     guard CommandLine.arguments.contains("--fx-demo") else { return }
     // Kits séparés : Kael caste feu, Lyra alterne glace/soin/foudre.
     let order: [CombatSpell]
@@ -787,20 +787,20 @@ private func runFXDemoIfNeeded() {
 }
 
 /// Si la cible est morte, bascule sur le premier ennemi vivant.
-private func retargetIfNeeded() {
+func retargetIfNeeded() {
     guard target?.combatant.isAlive != true,
           let next = enemies.firstIndex(where: { $0.combatant.isAlive }) else { return }
     targetIndex = next
 }
 
 /// Phase ennemie : chaque ennemi vivant agit l'un après l'autre.
-private func startEnemyTurn() {
+func startEnemyTurn() {
     guard isActive, kael.isAlive, !aliveEnemies.isEmpty else { return }
     phase = .enemyTurn
     runEnemyAction(at: 0)
 }
 
-private func runEnemyAction(at index: Int) {
+func runEnemyAction(at index: Int) {
     guard isActive, kael.isAlive else { return }
     guard index < enemies.count else {
         // Mécanique propre au boss (Archiviste) : il se recompose tant qu'il
@@ -892,7 +892,7 @@ private func runEnemyAction(at index: Int) {
     ]))
 }
 
-private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> Void) {
+func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> Void) {
     guard isActive, phase == .enemyTurn, kael.isAlive, e.combatant.isAlive else { return }
 
     let isSpecial = bossConfig.map { enemyTurnCount % $0.specialAttackInterval == 0 } ?? false
@@ -985,7 +985,7 @@ private func executeEnemyAttack(_ e: EnemyState, then proceed: @escaping () -> V
 }
 
 /// Applique le coup, une fois la fenêtre de parade refermée.
-private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
+func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
                              victim: AllyState?, victimHome: CGPoint,
                              sparkColor: SKColor, shakeIntensity: CGFloat,
                              proceed: @escaping () -> Void) {
@@ -1052,7 +1052,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
     /// Ouvre la fenêtre. Elle reste ouverte pendant l'annonce ET le bond :
     /// on peut parer dès qu'on voit venir, jusqu'au contact.
-    private func openBlockWindow() {
+    func openBlockWindow() {
         blockArmed = true
         blockPressed = false
         blockBurned = false
@@ -1060,7 +1060,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
     /// Referme et dit si la parade est réussie.
     @discardableResult
-    private func closeBlockWindow() -> Bool {
+    func closeBlockWindow() -> Bool {
         let ok = blockPressed && !blockBurned
         blockArmed = false
         blockPressed = false
@@ -1082,7 +1082,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
     /// Les actions qui se méritent au timing (offensives uniquement : ni
     /// potion, ni soin, ni bénédiction).
-    private func usesTimedStrike(_ action: CombatAction) -> Bool {
+    func usesTimedStrike(_ action: CombatAction) -> Bool {
         switch action {
         case .attack, .blackSlash:
             return true
@@ -1097,7 +1097,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     /// offensives passent par la frappe au timing, les autres partent
     /// directement. Les MP sont vérifiés avant l'élan pour ne pas faire jouer
     /// une animation qui finirait en « Magie insuffisante ».
-    private func execute(_ action: CombatAction) {
+    func execute(_ action: CombatAction) {
         guard phase == .playerTurn, !strikeWindupActive else { return }
         let cost = mpCost(for: action)
         let actorMP = actingAlly?.combatant.mp ?? kael.mp
@@ -1116,7 +1116,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
     /// Lance l'élan : repère au-dessus de l'acteur, fenêtre qui s'ouvre puis
     /// se referme, et enfin l'action résolue avec (ou sans) le bonus.
-    private func beginTimedStrike(_ action: CombatAction) {
+    func beginTimedStrike(_ action: CombatAction) {
         strikeWindupActive = true
         strikeArmed = false
         strikePressed = false
@@ -1141,7 +1141,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
         ]), withKey: "timedStrike")
     }
 
-    private func closeStrikeWindow() {
+    func closeStrikeWindow() {
         strikeWindupActive = false
         strikeArmed = false
         strikePressed = false
@@ -1171,7 +1171,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Repère discret pendant l'élan (le joueur voit que ça se prépare).
-    private func showStrikePrompt() {
+    func showStrikePrompt() {
         strikePrompt?.removeFromParent()
         let prompt = SKLabelNode(fontNamed: PixelUI.uiFont)
         prompt.text = String(localized: "combat.strike.prompt")
@@ -1186,7 +1186,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// La fenêtre s'ouvre : le repère s'allume en or et pulse — c'est LE signal.
-    private func armStrikePrompt() {
+    func armStrikePrompt() {
         guard let prompt = strikePrompt else { return }
         prompt.fontColor = PixelUI.gold
         prompt.alpha = 1
@@ -1199,7 +1199,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Éclat doré sur l'acteur quand la frappe est réussie.
-    private func playStrikeFlourish() {
+    func playStrikeFlourish() {
         let anchor = actingAlly?.home ?? kaelHomePosition
         // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         showFloatingText(String(localized: "combat.strike.perfect"),
@@ -1214,7 +1214,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     /// registre et se recompose tant qu'il n'a pas été BRISÉ. Taper fort ne
     /// suffit plus — il faut viser ses faiblesses pour l'ouvrir, sinon le
     /// combat ne finit jamais. C'est ce qui en fait une énigme, pas un mur.
-    private func applyBossRegenIfNeeded() {
+    func applyBossRegenIfNeeded() {
         guard let boss = bossConfig, boss.regenPercent > 0,
               let foe = enemies.first, foe.combatant.isAlive else { return }
         // Brisé = incapable de se recomposer : la fenêtre du groupe.
@@ -1238,7 +1238,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     /// sceaux élémentaires. Le groupe a un tour complet pour tous les briser :
     /// s'il y parvient, le coup est annulé et le boss s'effondre, exposé.
     /// C'est ce qui transforme un boss « sac à PV » en énigme à résoudre.
-    private func armSpecialLocksIfNeeded() {
+    func armSpecialLocksIfNeeded() {
         guard let boss = bossConfig,
               let foe = enemies.first, foe.combatant.isAlive,
               foe.specialLockTotal == 0 else { return }
@@ -1265,7 +1265,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Retire les sceaux touchés par les éléments d'une action.
-    private func breakSpecialLocks(on foe: EnemyState, with elements: [CombatElement]) {
+    func breakSpecialLocks(on foe: EnemyState, with elements: [CombatElement]) {
         guard foe.specialLockTotal > 0, !foe.specialLocks.isEmpty else { return }
         let before = foe.specialLocks.count
         for element in elements {
@@ -1285,7 +1285,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Redessine la rangée de sceaux (un losange par verrou restant).
-    private func refreshLockIcons(for foe: EnemyState) {
+    func refreshLockIcons(for foe: EnemyState) {
         foe.lockIcons.removeAllChildren()
         guard !foe.specialLocks.isEmpty else { return }
         let spacing: CGFloat = 20
@@ -1311,7 +1311,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Tous les sceaux ont sauté : le grand coup avorte et le boss s'expose.
-    private func cancelSpecial(for foe: EnemyState) {
+    func cancelSpecial(for foe: EnemyState) {
         foe.specialLockTotal = 0
         foe.lockIcons.removeAllChildren()
         foe.shield = 0
@@ -1360,7 +1360,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     /// L'ennemi s'annonce : il recule pour prendre son élan et un « ! »
     /// s'allume au-dessus de sa cible. Sans annonce, la parade serait une
     /// loterie.
-    private func telegraphAttack(from foe: EnemyState, isSpecial: Bool) {
+    func telegraphAttack(from foe: EnemyState, isSpecial: Bool) {
         foe.sprite?.run(.sequence([
             .moveBy(x: 26, y: 0, duration: Self.telegraphDuration * 0.7),
             .moveBy(x: -6, y: 0, duration: Self.telegraphDuration * 0.3)
@@ -1397,7 +1397,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
     }
 
     /// Éclat bleu net à la parade : pixel art, aucun flou.
-    private func playBlockEffect(at pos: CGPoint) {
+    func playBlockEffect(at pos: CGPoint) {
         // Le pareur lève vraiment son bouclier quand son pack en dessine un
         // (le wizard d'Eran a un jeu complet bouclier au bras), et la rune
         // de garde du pack s'allume sur lui.
@@ -1437,7 +1437,7 @@ private func resolveEnemyHit(_ e: EnemyState, rawDamage: Int, isSpecial: Bool,
 
 /// Un allié tombe : KO visuel, il saute ses tours.
 /// La défaite n'arrive que si Kael tombe.
-private func handleAllyDown(_ ally: AllyState) {
+func handleAllyDown(_ ally: AllyState) {
     showEffect(String(localized: "combat.status.allyDown \(ally.combatant.name)"),
                color: SKColor(red: 1.00, green: 0.55, blue: 0.45, alpha: 1))
     ally.sprite?.run(.group([
@@ -1448,14 +1448,14 @@ private func handleAllyDown(_ ally: AllyState) {
     HapticsEngine.heavy()
 }
 
-private func scheduleNextPlayerTurn(after delay: TimeInterval) {
+func scheduleNextPlayerTurn(after delay: TimeInterval) {
     root.run(.sequence([
         .wait(forDuration: delay),
         .run { [weak self] in self?.startPlayerTurn() }
     ]))
 }
 
-private func checkEnrage() {
+func checkEnrage() {
     guard let boss = bossConfig, !isEnraged, let first = enemies.first else { return }
     if CGFloat(first.combatant.hp) / CGFloat(first.combatant.maxHP) <= boss.enrageThreshold {
         triggerEnrage(boss)
@@ -1463,7 +1463,7 @@ private func checkEnrage() {
 }
 
 /// Mort individuelle (combat multi) : animation + retarget.
-private func handleEnemyDeath(_ e: EnemyState) {
+func handleEnemyDeath(_ e: EnemyState) {
     playEnemyDeathAnimation(e)
     retargetIfNeeded()
 }
@@ -1479,7 +1479,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
 // MARK: - Boss Mechanics
 
 
-    private func triggerEnrage(_ boss: BossConfig) {
+    func triggerEnrage(_ boss: BossConfig) {
         isEnraged = true
         statusLabel.text = String(localized: "combat.boss.enrage")
         enrageLabel.alpha = 1
@@ -1508,7 +1508,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         AudioEngine.shared.playBlackSlash()
     }
 
-    private func handleDefeat() {
+    func handleDefeat() {
         phase = .finished
         AudioEngine.shared.setMood(moodBeforeCombat)
         statusLabel.text = String(localized: "combat.status.defeat")
@@ -1525,7 +1525,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         ]))
     }
 
-    private func setupBossUI(scene: SKScene) {
+    func setupBossUI(scene: SKScene) {
         enrageLabel.text = String(localized: "combat.boss.enrageLabel")
         enrageLabel.fontSize = 22
         enrageLabel.fontColor = SKColor(red: 0.90, green: 0.20, blue: 0.15, alpha: 1)
@@ -1556,7 +1556,7 @@ func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
     // MARK: - Actions
 
 /// Coût exact en Points de Magie d'une action (Kael). Physique = gratuit.
-private func mpCost(for action: CombatAction) -> Int {
+func mpCost(for action: CombatAction) -> Int {
     switch action {
     case .blackSlash:      return 14
     case .spell(let spell): return spell.mpCost
@@ -1565,7 +1565,7 @@ private func mpCost(for action: CombatAction) -> Int {
 }
 
 /// `timedBonus` : la frappe au timing a été réussie (cf. beginTimedStrike).
-private func perform(_ action: CombatAction, timedBonus: Bool = false) {
+func perform(_ action: CombatAction, timedBonus: Bool = false) {
     guard let scene = parentScene, phase == .playerTurn,
           let foe = target else { return }
 
@@ -1834,7 +1834,7 @@ private func perform(_ action: CombatAction, timedBonus: Bool = false) {
 
 /// Clôt l'action de l'acteur courant : victoire, enrage boss,
 /// puis tour de Lyra (si elle n'a pas encore agi) ou phase ennemie.
-private func endPlayerAction() {
+func endPlayerAction() {
     updateVisuals()
     guard !aliveEnemies.isEmpty else { checkVictory(); return }
     checkEnrage()
@@ -1853,7 +1853,7 @@ private func endPlayerAction() {
     ]))
 }
 
-private func applyBoost() {
+func applyBoost() {
     guard playerBP > 0, queuedBoost < 3 else { return }
     playerBP -= 1
     queuedBoost += 1
@@ -1864,7 +1864,7 @@ private func applyBoost() {
 }
 
 @discardableResult
-private func hitWeakness(on foe: EnemyState, with element: CombatElement) -> Bool {
+func hitWeakness(on foe: EnemyState, with element: CombatElement) -> Bool {
     guard foe.weaknesses.contains(element), foe.brokenTurns == 0 else { return false }
     foe.shield = max(0, foe.shield - 1)
     showEffect(String(localized: "combat.effect.shieldHit \(element.icon) \(foe.shield) \(foe.shieldMax)"),
@@ -1890,7 +1890,7 @@ private func hitWeakness(on foe: EnemyState, with element: CombatElement) -> Boo
 /// puis reste affaissé et incliné tant qu'il est brisé, redressé au réveil.
 /// Géométrie seule (rotation + affaissement) — on ne touche pas la couleur
 /// pour ne pas écraser les sprites déjà teintés (loup d'ombre).
-private func setBrokenPose(_ foe: EnemyState, broken: Bool) {
+func setBrokenPose(_ foe: EnemyState, broken: Bool) {
     guard let s = foe.sprite else { return }
     s.removeAction(forKey: "brokenPose")
     if broken {
@@ -1909,7 +1909,7 @@ private func setBrokenPose(_ foe: EnemyState, broken: Bool) {
     }
 }
 
-private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
+func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
                                   wasWeak: Bool, boosted: Bool) {
     switch spell {
     case .ember:
@@ -1953,7 +1953,7 @@ private func applySpellSideEffect(_ spell: CombatSpell, on foe: EnemyState,
 
 /// Chaque sort a sa mise en scène : projectile de feu, pics de glace,
 /// foudre qui tombe, colonne de soin — plus d'anneau générique.
-private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, boosted: Bool) {
+func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, boosted: Bool) {
     // ── Le lanceur joue sa VRAIE gestuelle de sort ──
     // Les deux sorts du pack ne sont pas interchangeables :
     //   skill1 = sphère d'énergie protectrice → soutien, donc le SOIN.
@@ -2079,24 +2079,24 @@ private func playSpellAnimation(_ spell: CombatSpell, on foe: EnemyState, booste
 // MARK: - Moteur de particules pixel (carrés nets, zéro glow)
 
 /// Palettes pixel par élément (du plus clair au plus sombre).
-private static let firePalette: [SKColor] = [
+static let firePalette: [SKColor] = [
     SKColor(red: 1.00, green: 0.96, blue: 0.62, alpha: 1),
     SKColor(red: 1.00, green: 0.58, blue: 0.16, alpha: 1),
     SKColor(red: 0.88, green: 0.24, blue: 0.06, alpha: 1),
     SKColor(red: 0.45, green: 0.10, blue: 0.05, alpha: 1)
 ]
-private static let icePalette: [SKColor] = [
+static let icePalette: [SKColor] = [
     SKColor(red: 0.92, green: 0.99, blue: 1.00, alpha: 1),
     SKColor(red: 0.56, green: 0.86, blue: 1.00, alpha: 1),
     SKColor(red: 0.30, green: 0.60, blue: 0.95, alpha: 1),
     SKColor(red: 0.16, green: 0.34, blue: 0.72, alpha: 1)
 ]
-private static let boltPalette: [SKColor] = [
+static let boltPalette: [SKColor] = [
     SKColor(red: 1.00, green: 1.00, blue: 0.88, alpha: 1),
     SKColor(red: 1.00, green: 0.90, blue: 0.40, alpha: 1),
     SKColor(red: 0.95, green: 0.72, blue: 0.18, alpha: 1)
 ]
-private static let healPalette: [SKColor] = [
+static let healPalette: [SKColor] = [
     SKColor(red: 0.75, green: 1.00, blue: 0.78, alpha: 1),
     Palette.vitalityDim,
     SKColor(red: 0.18, green: 0.70, blue: 0.42, alpha: 1)
@@ -2104,7 +2104,7 @@ private static let healPalette: [SKColor] = [
 
 /// FEU : charge aspirée, boule de feu massive en cloche, traînée épaisse,
 /// explosion pixel + onde de choc + flammes résiduelles + fumée.
-private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
+func playEmberEffect(on foe: EnemyState, boosted: Bool) {
     let pal = Self.firePalette
     let start = CGPoint(x: actorHomePosition.x + 30, y: actorHomePosition.y + 40)
 
@@ -2193,7 +2193,7 @@ private func playEmberEffect(on foe: EnemyState, boosted: Bool) {
 
 /// GLACE : brume givrée au sol, éventail de stalactites cristallines,
 /// scintillements sur les pointes, éclats à l'impact.
-private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
+func playFrostEffect(on foe: EnemyState, boosted: Bool) {
     let pal = Self.icePalette
     let count = boosted ? 6 : 4
 
@@ -2279,7 +2279,7 @@ private func playFrostEffect(on foe: EnemyState, boosted: Bool) {
 
 /// FOUDRE : éclairs pixel en escalier (zéro diagonale lissée), double flash,
 /// onde de choc rasante + crépitement résiduel sur la cible.
-private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
+func playThunderEffect(on foe: EnemyState, boosted: Bool) {
     guard let scene = parentScene else { return }
     let pal = Self.boltPalette
     let hit = CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 6)
@@ -2341,7 +2341,7 @@ private func playThunderEffect(on foe: EnemyState, boosted: Bool) {
 
 /// SOIN : anneau béni au sol, colonne de carrés translucides, spirale de
 /// pixels verts montants + scintillements 16-bit.
-private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
+func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
     let pal = Self.healPalette
     let home = targetHome ?? actorHomePosition
     let base = CGPoint(x: home.x, y: home.y - 18)
@@ -2380,7 +2380,7 @@ private func playMendEffect(boosted: Bool, at targetHome: CGPoint? = nil) {
 }
 
 /// CRITIQUE : dégâts dorés en gros, éclat d'étincelles, punch caméra.
-private func playCritEffect(at position: CGPoint, damage: Int) {
+func playCritEffect(at position: CGPoint, damage: Int) {
     let gold = SKColor(red: 1.00, green: 0.84, blue: 0.25, alpha: 1)
     showEffect(String(localized: "combat.effect.crit"), color: gold)
     // Gerbe d'éclats retirée : le mot CRITIQUE, le coup de zoom et le gros
@@ -2405,7 +2405,7 @@ private func playCritEffect(at position: CGPoint, damage: Int) {
 }
 
 /// ESQUIVE : pas de côté vif du sprite, aucun dégât.
-private func playDodgeEffect(sprite: SKNode?, home: CGPoint) {
+func playDodgeEffect(sprite: SKNode?, home: CGPoint) {
     showEffect(String(localized: "combat.effect.dodge"),
                color: SKColor(red: 0.65, green: 0.95, blue: 1.00, alpha: 1))
     showFloatingText(String(localized: "combat.effect.dodge"), at: home,
@@ -2422,7 +2422,7 @@ private func playDodgeEffect(sprite: SKNode?, home: CGPoint) {
     HapticsEngine.light()
 }
 
-private func showFloatingText(_ text: String, at position: CGPoint, color: SKColor) {
+func showFloatingText(_ text: String, at position: CGPoint, color: SKColor) {
     let label = SKLabelNode(fontNamed: PixelUI.uiFont)
     label.text = text
     label.fontSize = 25
@@ -2436,14 +2436,14 @@ private func showFloatingText(_ text: String, at position: CGPoint, color: SKCol
     ]))
 }
 
-private func showEffect(_ text: String, color: SKColor) {
+func showEffect(_ text: String, color: SKColor) {
     statusEffectLabel.text = text
     statusEffectLabel.fontColor = color
     statusEffectLabel.alpha = 1
     statusEffectLabel.run(.sequence([.fadeIn(withDuration: 0.08), .wait(forDuration: 0.85), .fadeOut(withDuration: 0.35)]))
 }
 
-private func showComboIfNeeded() {
+func showComboIfNeeded() {
 
         guard comboCount >= 3 else { return }
         let text = comboCount >= 5
@@ -2461,7 +2461,7 @@ private func showComboIfNeeded() {
         HapticsEngine.combo()
     }
 
-    private func checkVictory() {
+    func checkVictory() {
         guard aliveEnemies.isEmpty, let last = enemies.last else { return }
         phase = .finished
         let finalResonance = resonance
@@ -2505,7 +2505,7 @@ private func showComboIfNeeded() {
         ]))
     }
 
-private func setupComboAndStatusUI(scene: SKScene) {
+func setupComboAndStatusUI(scene: SKScene) {
     comboLabel.fontSize = 24
     comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
     comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.56)
@@ -2536,7 +2536,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     // MARK: - Arena visuals
 
-    private func setupArenaFloor(scene: SKScene, enemyKind: CombatSpriteKind, isBoss: Bool) {
+    func setupArenaFloor(scene: SKScene, enemyKind: CombatSpriteKind, isBoss: Bool) {
         let floor = SKNode()
         floor.zPosition = -5
 
@@ -2629,7 +2629,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         arenaFloor = floor
     }
 
-    private struct ArenaPalette {
+    struct ArenaPalette {
         let skyColor: SKColor
         let haloColor: SKColor
         let horizonColor: SKColor
@@ -2650,7 +2650,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     ///
     /// Les couches DÉRIVENT à des vitesses croissantes vers l'avant : c'est
     /// ce décalage, et non le dessin, qui fait lire la profondeur.
-    private func addArenaBackdrop(to parent: SKNode, size: CGSize,
+    func addArenaBackdrop(to parent: SKNode, size: CGSize,
                                   kind: CombatSpriteKind,
                                   palette: ArenaPalette, floorY: CGFloat) {
         let season: String
@@ -2719,7 +2719,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         }
     }
 
-    private func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
+    func arenaPalette(for kind: CombatSpriteKind, isBoss: Bool) -> ArenaPalette {
         switch kind {
         // ⚠️ Ces teintes servent de FOND aux couches de décor
         // (`addArenaBackdrop`). Descendues trop bas, le décor ne se détache
@@ -2765,7 +2765,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Silhouettes d'arrière-plan adaptées à la zone. Tente d'abord les
     /// sprites pixel art importés depuis `Assets.xcassets` (Modern Exteriors) ;
     /// fallback automatique sur les shapes programmatiques si l'asset manque.
-    private func addBackgroundDecor(to floor: SKNode, size: CGSize,
+    func addBackgroundDecor(to floor: SKNode, size: CGSize,
                                      kind: CombatSpriteKind, palette: ArenaPalette) {
         let baseY = size.height * 0.48
         let decorColor = palette.decorColor
@@ -2824,12 +2824,12 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Charge un sprite pixel art comme décor avec ancre centrée bas.
     /// Le facteur `pixelScale` upscale les pixels 16×16 vers une taille
     /// lisible à l'écran (×3.5 = ~56pt, équivalent silhouette précédente).
-    private func decorSprite(name: String, pixelScale: CGFloat) -> SKNode? {
+    func decorSprite(name: String, pixelScale: CGFloat) -> SKNode? {
         PixelArtSprites.still(name: name, scale: pixelScale,
                               anchor: CGPoint(x: 0.5, y: 0))
     }
 
-    private func makeTreeSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+    func makeTreeSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
         let node = SKNode()
         // Tronc
         let trunk = SKShapeNode(rectOf: CGSize(width: 8, height: height * 0.4), cornerRadius: 2)
@@ -2854,7 +2854,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         return node
     }
 
-    private func makePillarSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+    func makePillarSilhouette(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
         let node = SKNode()
         let shaft = SKShapeNode(rectOf: CGSize(width: 22, height: height), cornerRadius: 2)
         shaft.fillColor = color
@@ -2876,7 +2876,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         return node
     }
 
-    private func makeBrokenColumn(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
+    func makeBrokenColumn(height: CGFloat, color: SKColor, edge: SKColor) -> SKNode {
         let node = SKNode()
         let shaft = SKShapeNode(rectOf: CGSize(width: 26, height: height), cornerRadius: 1)
         shaft.fillColor = color
@@ -2903,7 +2903,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         return node
     }
 
-    private func setupCombatants(scene: SKScene) {
+    func setupCombatants(scene: SKScene) {
         // Perspective 3/4 à la Octopath : Kael au premier plan, ennemis
         // étagés à droite.
         //
@@ -2974,7 +2974,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         }
     }
 
-    private func playEntranceAnimation() {
+    func playEntranceAnimation() {
         guard let k = kaelSprite else { return }
         k.alpha = 0
         k.position = CGPoint(x: kaelHomePosition.x - 80, y: kaelHomePosition.y)
@@ -3013,7 +3013,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// `signature` : l'Entaille noire, qui sort le grand sort du pack (skill2).
     /// `strong` : coup appuyé par le Boost — skill1.
     /// Sinon l'attaque normale (Eran enchaîne ses trois attaques).
-    private func playActorAttackAnimation(on foe: EnemyState, strong: Bool = false,
+    func playActorAttackAnimation(on foe: EnemyState, strong: Bool = false,
                                           signature: Bool = false) {
         guard let k = actorSprite else { return }
         let home = actorHomePosition
@@ -3063,7 +3063,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     /// Compteur d'attaques par lanceur : sert à faire tourner les éléments
     /// d'une attaque simple (glace, puis foudre, puis glace…).
-    private var spellCycle: [ObjectIdentifier: Int] = [:]
+    var spellCycle: [ObjectIdentifier: Int] = [:]
 
     /// Lance les FX du sort correspondant à l'action de l'acteur courant.
     ///
@@ -3071,7 +3071,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// dormaient dans le catalogue : `BattleSprites.playEffect` n'avait aucun
     /// appelant. C'est ici qu'elles entrent en scène, chacune chez le
     /// personnage dont elle vient du pack (cf. `Hero.spells(for:)`).
-    private func playActorSpellFX(_ clip: BattleSprites.Clip, on foe: EnemyState) {
+    func playActorSpellFX(_ clip: BattleSprites.Clip, on foe: EnemyState) {
         guard let k = actorSprite, let hero = CombatSprites.heroOf(k) else { return }
         let spells = hero.spells(for: clip)
         guard !spells.isEmpty else { return }
@@ -3100,7 +3100,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         }
     }
 
-    private func playEnemyHitReact(_ foe: EnemyState, strong: Bool) {
+    func playEnemyHitReact(_ foe: EnemyState, strong: Bool) {
         guard let e = foe.sprite else { return }
         let dx: CGFloat = strong ? 30 : 16
         let recoil = SKAction.sequence([
@@ -3121,7 +3121,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         }
     }
 
-    private func playEnemyAttackAnimation(_ foe: EnemyState, isSpecial: Bool,
+    func playEnemyAttackAnimation(_ foe: EnemyState, isSpecial: Bool,
                                           victim: AllyState? = nil,
                                           dodged: Bool = false) {
         guard let e = foe.sprite else { return }
@@ -3137,7 +3137,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         if !dodged { playAllyHitReact(victim: victim) }
     }
 
-    private func playAllyHitReact(victim: AllyState? = nil) {
+    func playAllyHitReact(victim: AllyState? = nil) {
         guard let k = victim?.sprite ?? kaelSprite else { return }
         let recoil = SKAction.sequence([
             .moveBy(x: -18, y: 0, duration: 0.06),
@@ -3151,7 +3151,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         k.forEachDescendantSprite { $0.run(flash) }
     }
 
-    private func playEnemyDeathAnimation(_ foe: EnemyState) {
+    func playEnemyDeathAnimation(_ foe: EnemyState) {
         guard let e = foe.sprite else { return }
         // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         e.run(.sequence([
@@ -3164,7 +3164,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         ]))
     }
 
-    private func playKaelDefeatAnimation() {
+    func playKaelDefeatAnimation() {
         guard let k = kaelSprite else { return }
         k.run(.group([
             .rotate(toAngle: -.pi / 2, duration: 0.5, shortestUnitArc: true),
@@ -3176,7 +3176,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// Pose de victoire : Kael puis les alliés font un petit saut de joie
     /// en cascade, avec une étincelle dorée. Sprites existants, zéro frame
     /// nouvelle — remplaçable par une vraie anim de victoire plus tard.
-    private func playVictoryPose() {
+    func playVictoryPose() {
         // Bond joyeux : montée franche, retombée amortie, léger balancement.
         func celebrate(_ node: SKNode, delay: TimeInterval) {
             let hop = SKAction.sequence([
@@ -3210,7 +3210,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     // MARK: - Setup
 
-    private func setupStatus(scene: SKScene) {
+    func setupStatus(scene: SKScene) {
         // Ligne de log, sous la rangée de plates.
         //
         // Elle était à 0.645h, ce qui la faisait passer pile sur le label de
@@ -3224,7 +3224,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         root.addChild(statusLabel)
     }
 
-    private func setupHPBars(scene: SKScene) {
+    func setupHPBars(scene: SKScene) {
         // Les plates se rangent dans l'ordre des sprites sur le terrain.
         //
         // Elles étaient posées à des fractions écrites en dur (Kael 0.13,
@@ -3358,7 +3358,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
 
     /// UI tour par tour : bannière de tour (haut centre) + file
     /// d'initiative (pips des 4 prochains acteurs).
-    private func setupTurnUI(scene: SKScene) {
+    func setupTurnUI(scene: SKScene) {
         PixelUI.stylePanel(turnBanner, size: CGSize(width: 240, height: 30),
                            fill: SKColor(red: 0.05, green: 0.04, blue: 0.10, alpha: 0.92),
                            accent: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 0.9))
@@ -3384,7 +3384,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
     }
 
     /// Anime la bannière au changement de tour.
-    private func showTurnBanner(_ text: String, color: SKColor) {
+    func showTurnBanner(_ text: String, color: SKColor) {
         turnBannerLabel.text = text
         AccessibilitySettings.announce(text)
         PixelUI.stylePanel(turnBanner, size: CGSize(width: 240, height: 30),
@@ -3407,12 +3407,12 @@ private func setupComboAndStatusUI(scene: SKScene) {
     /// File d'initiative (pips K L B K) retirée à la demande : elle
     /// alourdissait l'écran de combat. La bannière de tour + le curseur
     /// d'acteur suffisent à savoir qui joue.
-    private func refreshTurnOrder(currentEnemyIndex: Int?) {
+    func refreshTurnOrder(currentEnemyIndex: Int?) {
         turnPipsRoot.removeAllChildren()
     }
 
     /// Petit pulse du panneau d'actions quand la main revient au joueur.
-    private func pulseActionPanel() {
+    func pulseActionPanel() {
         for (i, button) in [attackButton, fireButton, iceButton,
                             blackSlashButton, lightningButton, healButton,
                             blessingButton, windButton, emberButton,
@@ -3426,7 +3426,7 @@ private func setupComboAndStatusUI(scene: SKScene) {
         HapticsEngine.light()
     }
 
-private func setupButtons(scene: SKScene) {
+func setupButtons(scene: SKScene) {
     // Panneau compact façon menu SNES : une rangée de techniques par
     // acteur. Kael : ATTAQUE + FEU + AETHER. Lyra : ATTAQUE + GLACE +
     // FOUDRE + SOIN. `layoutActionMenu` répartit à chaque tour.
@@ -3513,13 +3513,13 @@ private func setupButtons(scene: SKScene) {
 }
 
 /// Boutons de la rangée courante du curseur.
-private var currentMenuRowButtons: [SKShapeNode] {
+var currentMenuRowButtons: [SKShapeNode] {
     menuRow == 1 ? [boostButton, potionButton] : currentActorButtons
 }
 
 /// Replace le cadre doré sur le bouton sélectionné (rangée cible :
 /// le chevron au-dessus de l'ennemi sert déjà de curseur).
-private func updateSelectionCursor() {
+func updateSelectionCursor() {
     if menuRow == 2 {
         selectionCursor.isHidden = true
         return
@@ -3626,7 +3626,7 @@ func menuNav(dx: Int, dy: Int) {
 }
 
 /// VoiceOver : annonce l'action ou la cible sous le curseur de combat.
-private func announceCombatFocus() {
+func announceCombatFocus() {
     if menuRow == 2 {
         if pendingHealSpell != nil, healTargets.indices.contains(healTargetIndex) {
             AccessibilitySettings.announce(healTargets[healTargetIndex].name)
@@ -3717,7 +3717,7 @@ func menuConfirm() {
 }
 
 /// Fait tourner la cible parmi les ennemis vivants.
-private func cycleTarget(direction: Int) {
+func cycleTarget(direction: Int) {
     // Mode soin : on parcourt le GROUPE, pas les ennemis.
     if pendingHealSpell != nil {
         let count = healTargets.count
@@ -3735,7 +3735,7 @@ private func cycleTarget(direction: Int) {
 /// Cibles possibles d'un soin : Kael puis les alliés vivants, dans l'ordre
 /// où ils sont posés à l'écran. Chaque entrée porte sa position pour que le
 /// chevron sache où se placer.
-private var healTargets: [(name: String, home: CGPoint, hp: Int, maxHP: Int)] {
+var healTargets: [(name: String, home: CGPoint, hp: Int, maxHP: Int)] {
     var list: [(String, CGPoint, Int, Int)] = [
         (kael.name, kaelHomePosition, kael.hp, kael.maxHP)
     ]
@@ -3747,7 +3747,7 @@ private var healTargets: [(name: String, home: CGPoint, hp: Int, maxHP: Int)] {
 }
 
 /// Applique le soin à la cible choisie par le joueur.
-private func applyHeal(_ amount: Int, toIndex index: Int) -> CGPoint {
+func applyHeal(_ amount: Int, toIndex index: Int) -> CGPoint {
     if index == 0 {
         kael.hp = min(kael.maxHP, kael.hp + amount)
         return kaelHomePosition
@@ -3769,7 +3769,7 @@ private func applyHeal(_ amount: Int, toIndex index: Int) -> CGPoint {
 /// la glace et la foudre ne sont pas à elle — ses sorts sont sacrés (soin,
 /// bénédiction), et ce sont ceux que son pack anime. Eran est un guerrier :
 /// il frappe, et son Aether tranche.
-private var currentActorButtons: [SKShapeNode] {
+var currentActorButtons: [SKShapeNode] {
     switch actingAlly?.kind {
     case .lyra:     return [attackButton, healButton, blessingButton]
     // L'Écho garde la Bénédiction. Elle n'apparaissait que chez la Lyra
@@ -3791,7 +3791,7 @@ private var currentActorButtons: [SKShapeNode] {
 /// Fantasy : une seule boîte sombre, une commande par ligne, le coût en
 /// Magie aligné à droite. La rangée horizontale de boîtes colorées se lisait
 /// comme une barre d'outils — rouge, bleu, jaune côte à côte, sans hiérarchie.
-private func layoutActionMenu() {
+func layoutActionMenu() {
     guard let scene = parentScene else { return }
     let visible = currentActorButtons
     let hidden = [attackButton, fireButton, iceButton,
@@ -3827,7 +3827,7 @@ private func layoutActionMenu() {
 
 /// Une ligne de commande : pas de boîte, pas de couleur de fond. Le nom à
 /// gauche, la pastille d'élément avant lui, le coût en Magie à droite.
-private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloat) {
+func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloat) {
     node.path = CGPath(rect: CGRect(x: -width / 2, y: -height / 2,
                                     width: width, height: height), transform: nil)
     node.fillColor = .clear
@@ -3884,7 +3884,7 @@ private func styleCommandRow(_ node: SKShapeNode, width: CGFloat, height: CGFloa
 }
 
 /// Sort porté par ce bouton (nil = attaque physique, sans palier).
-private func spellForButton(_ node: SKShapeNode) -> CombatSpell? {
+func spellForButton(_ node: SKShapeNode) -> CombatSpell? {
     if node === fireButton      { return .ember }
     if node === iceButton       { return .frost }
     if node === lightningButton { return .thunder }
@@ -3897,7 +3897,7 @@ private func spellForButton(_ node: SKShapeNode) -> CombatSpell? {
 }
 
 /// Coût en Magie de la commande portée par ce bouton.
-private func mpCostForButton(_ node: SKShapeNode) -> Int {
+func mpCostForButton(_ node: SKShapeNode) -> Int {
     if node === fireButton      { return CombatSpell.ember.mpCost }
     if node === iceButton       { return CombatSpell.frost.mpCost }
     if node === lightningButton { return CombatSpell.thunder.mpCost }
@@ -3912,7 +3912,7 @@ private func mpCostForButton(_ node: SKShapeNode) -> Int {
 
 /// Redimensionne un bouton existant (repasse le style pixel, recadre
 /// la pastille + le label à gauche).
-private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
+func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     guard let label = node.children.compactMap({ $0 as? SKLabelNode }).first,
           let diamond = node.children.compactMap({ $0 as? SKSpriteNode }).first
     else { return }
@@ -3930,7 +3930,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
 
 
 
-    private func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,
+    func configureBar(_ back: SKShapeNode, _ fill: SKShapeNode,
                               width: CGFloat, height: CGFloat,
                               color: SKColor, at position: CGPoint,
                               ghost: SKShapeNode? = nil) {
@@ -3965,7 +3965,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
 
     /// Barre fantôme : suit la vraie barre avec un temps de retard quand
     /// les PV baissent ; se cale instantanément quand ils remontent.
-    private func updateGhostBar(_ ghost: SKShapeNode, to ratio: CGFloat) {
+    func updateGhostBar(_ ghost: SKShapeNode, to ratio: CGFloat) {
         if ratio >= ghost.xScale - 0.001 {
             ghost.removeAllActions()
             ghost.xScale = ratio
@@ -3980,7 +3980,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     /// Pictos de statut persistants au-dessus d'un ennemi : brûlure
     /// (flamme), gel/paralysie (éclair), garde brisée (bouclier fêlé).
     /// Reconstruits à chaque updateVisuals — 3 pictos max, coût nul.
-    private func refreshStatusIcons(for e: EnemyState) {
+    func refreshStatusIcons(for e: EnemyState) {
         e.statusIcons.removeAllChildren()
         guard e.combatant.isAlive else { return }
 
@@ -4012,7 +4012,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     }
 
     /// Flamme pixel (3 carrés étagés) + pips de tours restants.
-    private static func makeFlameIcon(palette: [SKColor], ticks: Int) -> SKNode {
+    static func makeFlameIcon(palette: [SKColor], ticks: Int) -> SKNode {
         let icon = SKNode()
         let base = SKSpriteNode(color: palette[1], size: CGSize(width: 8, height: 6))
         icon.addChild(base)
@@ -4032,7 +4032,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     }
 
     /// Éclair pixel jaune : gel / paralysie (tour sauté).
-    private static func makeBoltIcon() -> SKNode {
+    static func makeBoltIcon() -> SKNode {
         let icon = SKNode()
         let yellow = SKColor(red: 1.00, green: 0.88, blue: 0.30, alpha: 1)
         for (dx, dy, w, h) in [(1.5, 6.0, 5.0, 4.0), (-0.5, 2.0, 5.0, 4.0),
@@ -4045,7 +4045,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     }
 
     /// Bouclier fêlé doré : garde brisée (BREAK).
-    private static func makeBrokenShieldIcon() -> SKNode {
+    static func makeBrokenShieldIcon() -> SKNode {
         let icon = SKNode()
         let gold = Palette.goldCombatBright
         let dark = SKColor(red: 0.35, green: 0.25, blue: 0.05, alpha: 1)
@@ -4063,7 +4063,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         return icon
     }
 
-    private func addCombatantLabel(_ text: String, at position: CGPoint) {
+    func addCombatantLabel(_ text: String, at position: CGPoint) {
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = text
         label.fontSize = 19
@@ -4072,7 +4072,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         root.addChild(label)
     }
 
-    private func addSmallLabel(_ text: String, at position: CGPoint) {
+    func addSmallLabel(_ text: String, at position: CGPoint) {
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = text
         label.fontSize = 13
@@ -4081,7 +4081,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         root.addChild(label)
     }
 
-    private func addButton(_ node: SKShapeNode, title: String, at position: CGPoint,
+    func addButton(_ node: SKShapeNode, title: String, at position: CGPoint,
                            width: CGFloat, height: CGFloat,
                            fill: SKColor, stroke: SKColor,
                            fontSize: CGFloat = 14,
@@ -4124,7 +4124,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
     /// pas un mot. Le bouclier suit sous forme de pips — plein = encore
     /// debout, éteint = entamé ; à zéro l'ennemi est brisé et la rangée
     /// s'allume en ambre.
-    private func refreshTargetInfoRow(for foe: EnemyState) {
+    func refreshTargetInfoRow(for foe: EnemyState) {
         // Ordre stable : celui de `CombatElement`, pas celui d'un Set.
         let order: [CombatElement] = [.physical, .fire, .ice, .lightning, .aether]
         let weaknesses = order.filter { foe.weaknesses.contains($0) }
@@ -4183,7 +4183,7 @@ private func resizeButton(_ node: SKShapeNode, width: CGFloat) {
         }
     }
 
-    private func updateVisuals() {
+    func updateVisuals() {
         let kaelHPRatio = max(0.02, CGFloat(kael.hp) / CGFloat(kael.maxHP))
         kaelHPFill.xScale = kaelHPRatio
         kaelHPLabel.text = String(kael.hp) + "/" + String(kael.maxHP)

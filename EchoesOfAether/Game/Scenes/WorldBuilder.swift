@@ -41,6 +41,22 @@ enum MinesPOI {
     static let reach: CGFloat = 60
 }
 
+/// Repères du Sanctuaire, en fractions de l'ÉCRAN (zone d'un seul écran).
+/// Même contrat que `DesertPOI` : le décor pose, l'exploration teste, l'indice
+/// d'interaction lit — une seule table pour les trois.
+enum ShrinePOI {
+    /// Sortie ouest, retour à la forêt (le joueur peut se renforcer avant
+    /// d'affronter le Gardien).
+    static let exit = CGPoint(x: 0.06, y: 0.46)
+    static let exitReach: CGFloat = 60
+    /// La porte du Gardien. Le combat ne se déclenche QU'À PORTÉE, jamais
+    /// sur un simple tap dans la moitié droite de l'écran : arriver au
+    /// Sanctuaire et se faire attaquer en voulant avancer, c'était une
+    /// embuscade, pas un boss.
+    static let gate = CGPoint(x: 0.72, y: 0.50)
+    static let gateReach: CGFloat = 130
+}
+
 extension CGPoint {
     /// Fractions (x, y) → point monde. Évite d'écrire `w * p.x, h * p.y` des
     /// deux côtés et de se tromper de hauteur en chemin.

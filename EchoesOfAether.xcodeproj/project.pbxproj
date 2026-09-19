@@ -13,6 +13,15 @@
 		6D7E1007B8A741B0A0000001 /* DialogueSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E1006B8A741B0A0000001 /* DialogueSystem.swift */; };
 		6D7E1009B8A741B0A0000001 /* CombatSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E1008B8A741B0A0000001 /* CombatSystem.swift */; };
 		6D7E100BB8A741B0A0000001 /* PrototypeContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */; };
+		6B06AA78827FC8FD5CB6E0E8 /* PrototypeContent+SideQuests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4026EEA9C22DD04E50781B44 /* PrototypeContent+SideQuests.swift */; };
+		9CE4B58A2BBCD816320AFA82 /* PrototypeContent+Shrine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AEC7CD8EBB4A7460D8D1807 /* PrototypeContent+Shrine.swift */; };
+		0F398AA1A1BB6FD5EFC4C305 /* PrototypeContent+Lore.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA4285DCE3A2EE1AD9028F05 /* PrototypeContent+Lore.swift */; };
+		8DA4B457073C3BE693B15C23 /* PrototypeContent+Excursions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 323E6E5466F119354C5540AD /* PrototypeContent+Excursions.swift */; };
+		C9CB1CF43A2561AD69A33A99 /* PrototypeContent+Act4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54BADD2C16497B4BFE92EDD2 /* PrototypeContent+Act4.swift */; };
+		03C9500E2F88A511BC838219 /* PrototypeContent+Act3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 589B1C6C95542585319147D1 /* PrototypeContent+Act3.swift */; };
+		A452C5FEDA14158DA20FBFF5 /* PrototypeContent+Act2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C02842E55086D53C54A1C48A /* PrototypeContent+Act2.swift */; };
+		62DE8C634DEC253F8C32CD83 /* PrototypeContent+Act1Village.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2599BF436711BF5D3D3C088E /* PrototypeContent+Act1Village.swift */; };
+		57FE36C5B9B54850291E5B82 /* PrototypeContent+Act1Forest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119DDB7DF9B7B2BAB2E54C5B /* PrototypeContent+Act1Forest.swift */; };
 		6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2001B8A741B0A0000001 /* GameState.swift */; };
 		6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF0001B8A741B0A0000001 /* Viewport.swift */; };
 		6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFE0001B8A741B0A0000001 /* Difficulty.swift */; };
@@ -185,6 +194,15 @@
 		6D7E1006B8A741B0A0000001 /* DialogueSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialogueSystem.swift; sourceTree = "<group>"; };
 		6D7E1008B8A741B0A0000001 /* CombatSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatSystem.swift; sourceTree = "<group>"; };
 		6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrototypeContent.swift; sourceTree = "<group>"; };
+		4026EEA9C22DD04E50781B44 /* PrototypeContent+SideQuests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+SideQuests.swift"; sourceTree = "<group>"; };
+		0AEC7CD8EBB4A7460D8D1807 /* PrototypeContent+Shrine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Shrine.swift"; sourceTree = "<group>"; };
+		CA4285DCE3A2EE1AD9028F05 /* PrototypeContent+Lore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Lore.swift"; sourceTree = "<group>"; };
+		323E6E5466F119354C5540AD /* PrototypeContent+Excursions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Excursions.swift"; sourceTree = "<group>"; };
+		54BADD2C16497B4BFE92EDD2 /* PrototypeContent+Act4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Act4.swift"; sourceTree = "<group>"; };
+		589B1C6C95542585319147D1 /* PrototypeContent+Act3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Act3.swift"; sourceTree = "<group>"; };
+		C02842E55086D53C54A1C48A /* PrototypeContent+Act2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Act2.swift"; sourceTree = "<group>"; };
+		2599BF436711BF5D3D3C088E /* PrototypeContent+Act1Village.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Act1Village.swift"; sourceTree = "<group>"; };
+		119DDB7DF9B7B2BAB2E54C5B /* PrototypeContent+Act1Forest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrototypeContent+Act1Forest.swift"; sourceTree = "<group>"; };
 		6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EchoesOfAether.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D7E2001B8A741B0A0000001 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		6DFF0001B8A741B0A0000001 /* Viewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Viewport.swift; sourceTree = "<group>"; };
@@ -378,6 +396,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E1006B8A741B0A0000001 /* DialogueSystem.swift */,
 				6D7E1008B8A741B0A0000001 /* CombatSystem.swift */,
 				6D7E100AB8A741B0A0000001 /* PrototypeContent.swift */,
+				D1456CC6E1A023ECC6FE928B /* Content */,
 				6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */,
 				6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */,
 				6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */,
@@ -397,6 +416,22 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		D1456CC6E1A023ECC6FE928B /* Content */ = {
+			isa = PBXGroup;
+			children = (
+				119DDB7DF9B7B2BAB2E54C5B /* PrototypeContent+Act1Forest.swift */,
+				2599BF436711BF5D3D3C088E /* PrototypeContent+Act1Village.swift */,
+				C02842E55086D53C54A1C48A /* PrototypeContent+Act2.swift */,
+				589B1C6C95542585319147D1 /* PrototypeContent+Act3.swift */,
+				54BADD2C16497B4BFE92EDD2 /* PrototypeContent+Act4.swift */,
+				323E6E5466F119354C5540AD /* PrototypeContent+Excursions.swift */,
+				CA4285DCE3A2EE1AD9028F05 /* PrototypeContent+Lore.swift */,
+				0AEC7CD8EBB4A7460D8D1807 /* PrototypeContent+Shrine.swift */,
+				4026EEA9C22DD04E50781B44 /* PrototypeContent+SideQuests.swift */,
+			);
+			path = Content;
 			sourceTree = "<group>";
 		};
 		6D7E2009B8A741B0A0000001 /* Core */ = {
@@ -791,6 +826,15 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7E1007B8A741B0A0000001 /* DialogueSystem.swift in Sources */,
 				6D7E1009B8A741B0A0000001 /* CombatSystem.swift in Sources */,
 				6D7E100BB8A741B0A0000001 /* PrototypeContent.swift in Sources */,
+				6B06AA78827FC8FD5CB6E0E8 /* PrototypeContent+SideQuests.swift in Sources */,
+				9CE4B58A2BBCD816320AFA82 /* PrototypeContent+Shrine.swift in Sources */,
+				0F398AA1A1BB6FD5EFC4C305 /* PrototypeContent+Lore.swift in Sources */,
+				8DA4B457073C3BE693B15C23 /* PrototypeContent+Excursions.swift in Sources */,
+				C9CB1CF43A2561AD69A33A99 /* PrototypeContent+Act4.swift in Sources */,
+				03C9500E2F88A511BC838219 /* PrototypeContent+Act3.swift in Sources */,
+				A452C5FEDA14158DA20FBFF5 /* PrototypeContent+Act2.swift in Sources */,
+				62DE8C634DEC253F8C32CD83 /* PrototypeContent+Act1Village.swift in Sources */,
+				57FE36C5B9B54850291E5B82 /* PrototypeContent+Act1Forest.swift in Sources */,
 				6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */,
 				6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */,
 				6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */,

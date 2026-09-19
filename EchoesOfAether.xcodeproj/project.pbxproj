@@ -64,6 +64,17 @@
 		6D7ECC02B8A741B0A0000001 /* GameCenterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC01B8A741B0A0000001 /* GameCenterManager.swift */; };
 		6DAAFF02B8A741B0A0000001 /* BattleSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAAFF01B8A741B0A0000001 /* BattleSprites.swift */; };
 		6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */; };
+		2CD417E458B428D447213F5A /* CombatModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3AA2562FA29C0BF544C2595 /* CombatModels.swift */; };
+		53594AE2F9161F25CB9DB3FE /* CombatSystem+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */; };
+		CC00898CF91A519D4A6DF875 /* CombatSystem+HealTargeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */; };
+		ED46A0726F6B475782D60424 /* CombatSystem+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */; };
+		88F294D423AAD73C52245AC1 /* CombatSystem+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */; };
+		BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */; };
+		FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */; };
+		BEF418EB3EDD16ED4108D182 /* CombatSystem+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */; };
+		FEC9CD4987CF458CC34A07DB /* CombatSystem+Boss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */; };
+		FA4892F1A2DB62FFDBCA2D7D /* CombatSystem+ActionCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */; };
+		0F88A329531F519A9AAFC22C /* CombatSystem+TurnLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */; };
 		6D7ECC51B8A741B0A0000001 /* PixelFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC50B8A741B0A0000001 /* PixelFX.swift */; };
 		6D7ECC21B8A741B0A0000001 /* LevelUpOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */; };
 		6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */; };
@@ -188,6 +199,17 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7ECC03B8A741B0A0000001 /* EchoesOfAether.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = EchoesOfAether.entitlements; sourceTree = "<group>"; };
 		6DAAFF01B8A741B0A0000001 /* BattleSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BattleSprites.swift; sourceTree = "<group>"; };
 		6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatSprites.swift; sourceTree = "<group>"; };
+		F3AA2562FA29C0BF544C2595 /* CombatModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CombatModels.swift; sourceTree = "<group>"; };
+		97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Helpers.swift"; sourceTree = "<group>"; };
+		4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+HealTargeting.swift"; sourceTree = "<group>"; };
+		90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Setup.swift"; sourceTree = "<group>"; };
+		7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Animations.swift"; sourceTree = "<group>"; };
+		9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Arena.swift"; sourceTree = "<group>"; };
+		3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+PixelFX.swift"; sourceTree = "<group>"; };
+		BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Actions.swift"; sourceTree = "<group>"; };
+		4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Boss.swift"; sourceTree = "<group>"; };
+		D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+ActionCommands.swift"; sourceTree = "<group>"; };
+		AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+TurnLoop.swift"; sourceTree = "<group>"; };
 		6D7ECC50B8A741B0A0000001 /* PixelFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelFX.swift; sourceTree = "<group>"; };
 		6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelUpOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArtSprites.swift; sourceTree = "<group>"; };
@@ -398,6 +420,17 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6DAAFF01B8A741B0A0000001 /* BattleSprites.swift */,
 				6D7ECC10B8A741B0A0000001 /* CombatSprites.swift */,
+				F3AA2562FA29C0BF544C2595 /* CombatModels.swift */,
+				97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */,
+				4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */,
+				90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */,
+				7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */,
+				9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */,
+				3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */,
+				BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */,
+				4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */,
+				D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */,
+				AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */,
 				6D7ECC50B8A741B0A0000001 /* PixelFX.swift */,
 			);
 			path = Combat;
@@ -689,6 +722,17 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */,
 				6DAAFF02B8A741B0A0000001 /* BattleSprites.swift in Sources */,
 				6D7ECC11B8A741B0A0000001 /* CombatSprites.swift in Sources */,
+				2CD417E458B428D447213F5A /* CombatModels.swift in Sources */,
+				53594AE2F9161F25CB9DB3FE /* CombatSystem+Helpers.swift in Sources */,
+				CC00898CF91A519D4A6DF875 /* CombatSystem+HealTargeting.swift in Sources */,
+				ED46A0726F6B475782D60424 /* CombatSystem+Setup.swift in Sources */,
+				88F294D423AAD73C52245AC1 /* CombatSystem+Animations.swift in Sources */,
+				BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */,
+				FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */,
+				BEF418EB3EDD16ED4108D182 /* CombatSystem+Actions.swift in Sources */,
+				FEC9CD4987CF458CC34A07DB /* CombatSystem+Boss.swift in Sources */,
+				FA4892F1A2DB62FFDBCA2D7D /* CombatSystem+ActionCommands.swift in Sources */,
+				0F88A329531F519A9AAFC22C /* CombatSystem+TurnLoop.swift in Sources */,
 				6D7ECC51B8A741B0A0000001 /* PixelFX.swift in Sources */,
 				6D7ECC21B8A741B0A0000001 /* LevelUpOverlay.swift in Sources */,
 				6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */,

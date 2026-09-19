@@ -54,6 +54,20 @@
 		AE48F9420656816CF4A36C7C /* WorldBuilder+BuildingBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2F76DD06BF7D880F910DE81 /* WorldBuilder+BuildingBlocks.swift */; };
 		E43294C4C798D55C0D98B143 /* VillageTileMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60527A0EBC7C35084100B871 /* VillageTileMap.swift */; };
 		6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2013B8A741B0A0000001 /* GameManager.swift */; };
+		209A6118D9F9C957F544BED7 /* GameManager+SaveLoad.swift in Sources */ = {isa = PBXBuildFile; fileRef = 081392F6A388EC4F1BE85249 /* GameManager+SaveLoad.swift */; };
+		F5872B1BAF336E8C24F842D9 /* GameManager+WorldMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 400C0ED050A109F9A0DAF7C0 /* GameManager+WorldMap.swift */; };
+		149A946DBFE08151A316F0B2 /* GameManager+Roamers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5621EDC07991BCF07C0F9E5E /* GameManager+Roamers.swift */; };
+		EF2FDF98657D1D3E3728F185 /* GameManager+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */; };
+		26382103C895D91C67EC5B6F /* GameManager+Progression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */; };
+		3DE098C86E6DA296A5E9B12A /* GameManager+InteractionHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */; };
+		96AB6B7EE9620A31FB53A33F /* GameManager+Overlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */; };
+		676E70EF6E64C11457BFBEF6 /* GameManager+Shop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983193C0B256759AA2B3401F /* GameManager+Shop.swift */; };
+		F1EFE1707E3F21813006A2F1 /* GameManager+Dialogues.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */; };
+		DCE8F8C02709DA0F9BD83347 /* GameManager+Exploration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AD66CF7D3676558CC8328D5 /* GameManager+Exploration.swift */; };
+		389386D820D20571BB17646D /* GameManager+StoryFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B8F58CD4D542B8E7733736 /* GameManager+StoryFlow.swift */; };
+		515D5C0209683995674710C8 /* GameManager+Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */; };
+		0B73708376C7F12AB2510F13 /* GameManager+SetupDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */; };
+		5603CDEC66B9884DB30C65CC /* GameManager+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */; };
 		6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */; };
 		6DFA0002B8A741B0A0000001 /* GameManager+Fishing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFA0001B8A741B0A0000001 /* GameManager+Fishing.swift */; };
 		6DBC0002B8A741B0A0000001 /* GameManager+Forest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DBC0001B8A741B0A0000001 /* GameManager+Forest.swift */; };
@@ -211,6 +225,20 @@
 		A2F76DD06BF7D880F910DE81 /* WorldBuilder+BuildingBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+BuildingBlocks.swift"; sourceTree = "<group>"; };
 		60527A0EBC7C35084100B871 /* VillageTileMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VillageTileMap.swift"; sourceTree = "<group>"; };
 		6D7E2013B8A741B0A0000001 /* GameManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameManager.swift; sourceTree = "<group>"; };
+		081392F6A388EC4F1BE85249 /* GameManager+SaveLoad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+SaveLoad.swift"; sourceTree = "<group>"; };
+		400C0ED050A109F9A0DAF7C0 /* GameManager+WorldMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+WorldMap.swift"; sourceTree = "<group>"; };
+		5621EDC07991BCF07C0F9E5E /* GameManager+Roamers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Roamers.swift"; sourceTree = "<group>"; };
+		8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Helpers.swift"; sourceTree = "<group>"; };
+		155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Progression.swift"; sourceTree = "<group>"; };
+		45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+InteractionHint.swift"; sourceTree = "<group>"; };
+		B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Overlays.swift"; sourceTree = "<group>"; };
+		983193C0B256759AA2B3401F /* GameManager+Shop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Shop.swift"; sourceTree = "<group>"; };
+		BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Dialogues.swift"; sourceTree = "<group>"; };
+		0AD66CF7D3676558CC8328D5 /* GameManager+Exploration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Exploration.swift"; sourceTree = "<group>"; };
+		52B8F58CD4D542B8E7733736 /* GameManager+StoryFlow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+StoryFlow.swift"; sourceTree = "<group>"; };
+		41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Input.swift"; sourceTree = "<group>"; };
+		8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+SetupDebug.swift"; sourceTree = "<group>"; };
+		238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Setup.swift"; sourceTree = "<group>"; };
 		6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act2.swift"; sourceTree = "<group>"; };
 		6DFA0001B8A741B0A0000001 /* GameManager+Fishing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Fishing.swift"; sourceTree = "<group>"; };
 		6DBC0001B8A741B0A0000001 /* GameManager+Forest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Forest.swift"; sourceTree = "<group>"; };
@@ -374,6 +402,20 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6DFF0001B8A741B0A0000001 /* Viewport.swift */,
 				6DFE0001B8A741B0A0000001 /* Difficulty.swift */,
 				6D7E2013B8A741B0A0000001 /* GameManager.swift */,
+				081392F6A388EC4F1BE85249 /* GameManager+SaveLoad.swift */,
+				400C0ED050A109F9A0DAF7C0 /* GameManager+WorldMap.swift */,
+				5621EDC07991BCF07C0F9E5E /* GameManager+Roamers.swift */,
+				8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */,
+				155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */,
+				45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */,
+				B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */,
+				983193C0B256759AA2B3401F /* GameManager+Shop.swift */,
+				BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */,
+				0AD66CF7D3676558CC8328D5 /* GameManager+Exploration.swift */,
+				52B8F58CD4D542B8E7733736 /* GameManager+StoryFlow.swift */,
+				41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */,
+				8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */,
+				238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */,
 				6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */,
 				6DFA0001B8A741B0A0000001 /* GameManager+Fishing.swift */,
 				6DBC0001B8A741B0A0000001 /* GameManager+Forest.swift */,
@@ -784,6 +826,20 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AE48F9420656816CF4A36C7C /* WorldBuilder+BuildingBlocks.swift in Sources */,
 				E43294C4C798D55C0D98B143 /* VillageTileMap.swift in Sources */,
 				6D7E2014B8A741B0A0000001 /* GameManager.swift in Sources */,
+				209A6118D9F9C957F544BED7 /* GameManager+SaveLoad.swift in Sources */,
+				F5872B1BAF336E8C24F842D9 /* GameManager+WorldMap.swift in Sources */,
+				149A946DBFE08151A316F0B2 /* GameManager+Roamers.swift in Sources */,
+				EF2FDF98657D1D3E3728F185 /* GameManager+Helpers.swift in Sources */,
+				26382103C895D91C67EC5B6F /* GameManager+Progression.swift in Sources */,
+				3DE098C86E6DA296A5E9B12A /* GameManager+InteractionHint.swift in Sources */,
+				96AB6B7EE9620A31FB53A33F /* GameManager+Overlays.swift in Sources */,
+				676E70EF6E64C11457BFBEF6 /* GameManager+Shop.swift in Sources */,
+				F1EFE1707E3F21813006A2F1 /* GameManager+Dialogues.swift in Sources */,
+				DCE8F8C02709DA0F9BD83347 /* GameManager+Exploration.swift in Sources */,
+				389386D820D20571BB17646D /* GameManager+StoryFlow.swift in Sources */,
+				515D5C0209683995674710C8 /* GameManager+Input.swift in Sources */,
+				0B73708376C7F12AB2510F13 /* GameManager+SetupDebug.swift in Sources */,
+				5603CDEC66B9884DB30C65CC /* GameManager+Setup.swift in Sources */,
 				6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */,
 				6DFA0002B8A741B0A0000001 /* GameManager+Fishing.swift in Sources */,
 				6DBC0002B8A741B0A0000001 /* GameManager+Forest.swift in Sources */,

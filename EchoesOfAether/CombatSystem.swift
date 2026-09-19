@@ -136,7 +136,7 @@ let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     /// La Tempête est un atout rare : une seule fois par combat, deux avec
     /// le capstone TEMPÊTE JUMELLE (voie de l'Aether).
     var tempestUses = 0
-    var tempestMaxUses: Int { _player?.hasTwinTempest == true ? 2 : 1 }
+    var tempestMaxUses: Int { CombatMath.tempestMaxUses(hasTwinTempest: _player?.hasTwinTempest == true) }
     var tempestSpent: Bool { tempestUses >= tempestMaxUses }
     /// DERNIER SOUFFLE : le sursis ne joue qu'une fois par combat.
     var lastBreathUsed = false
@@ -189,12 +189,8 @@ let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 var resonance = 0
 var playerBP = 0
 var queuedBoost = 0
-/// Payoff du Break (façon Octopath) : un ennemi au bouclier cassé subit
-/// bien plus de dégâts de TOUTE source pendant qu'il est à terre. C'est la
-/// récompense qui rend le ciblage des faiblesses + la décharge du Boost
-/// vraiment satisfaisants. Auparavant seuls les sorts avaient un maigre
-/// bonus (×1.25) ; l'attaque et le Black Slash n'en avaient aucun.
-static let brokenDamageMultiplier: CGFloat = 1.8
+// Le multiplicateur BREAK vit dans CombatMath.brokenMultiplier — une seule
+// source de vérité, testée.
 /// Facteur de menace global des attaques ennemies normales : > 1 rend les
 /// monstres plus dangereux (le joueur galère, doit utiliser ses options).
 /// Réglable d'un seul endroit après playtests.

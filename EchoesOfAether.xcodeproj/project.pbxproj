@@ -143,6 +143,8 @@
 		53594AE2F9161F25CB9DB3FE /* CombatSystem+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */; };
 		CC00898CF91A519D4A6DF875 /* CombatSystem+HealTargeting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */; };
 		ED46A0726F6B475782D60424 /* CombatSystem+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */; };
+		C6AF3361F97307D6D0F491C4 /* CombatSystem+MenuNav.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C738FB4E48B468722055BDB /* CombatSystem+MenuNav.swift */; };
+		FF03A988B0E664827B233F20 /* CombatSystem+HPBars.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D1A83621D2FA61B70EF630E /* CombatSystem+HPBars.swift */; };
 		88F294D423AAD73C52245AC1 /* CombatSystem+Animations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */; };
 		BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */; };
 		FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */; };
@@ -356,6 +358,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Helpers.swift"; sourceTree = "<group>"; };
 		4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+HealTargeting.swift"; sourceTree = "<group>"; };
 		90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Setup.swift"; sourceTree = "<group>"; };
+		5C738FB4E48B468722055BDB /* CombatSystem+MenuNav.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+MenuNav.swift"; sourceTree = "<group>"; };
+		3D1A83621D2FA61B70EF630E /* CombatSystem+HPBars.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+HPBars.swift"; sourceTree = "<group>"; };
 		7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Animations.swift"; sourceTree = "<group>"; };
 		9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Arena.swift"; sourceTree = "<group>"; };
 		3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+PixelFX.swift"; sourceTree = "<group>"; };
@@ -663,6 +667,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				97352D1F303F7D6D01AEF947 /* CombatSystem+Helpers.swift */,
 				4A36804315F095C036E153F1 /* CombatSystem+HealTargeting.swift */,
 				90AD122EEFB49FC32A0807DA /* CombatSystem+Setup.swift */,
+				5C738FB4E48B468722055BDB /* CombatSystem+MenuNav.swift */,
+				3D1A83621D2FA61B70EF630E /* CombatSystem+HPBars.swift */,
 				7B92E4DC09D04A5925A396A1 /* CombatSystem+Animations.swift */,
 				9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */,
 				3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */,
@@ -1044,6 +1050,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				53594AE2F9161F25CB9DB3FE /* CombatSystem+Helpers.swift in Sources */,
 				CC00898CF91A519D4A6DF875 /* CombatSystem+HealTargeting.swift in Sources */,
 				ED46A0726F6B475782D60424 /* CombatSystem+Setup.swift in Sources */,
+				C6AF3361F97307D6D0F491C4 /* CombatSystem+MenuNav.swift in Sources */,
+				FF03A988B0E664827B233F20 /* CombatSystem+HPBars.swift in Sources */,
 				88F294D423AAD73C52245AC1 /* CombatSystem+Animations.swift in Sources */,
 				BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */,
 				FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */,

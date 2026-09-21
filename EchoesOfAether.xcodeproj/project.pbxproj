@@ -100,6 +100,8 @@
 		EF2FDF98657D1D3E3728F185 /* GameManager+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */; };
 		26382103C895D91C67EC5B6F /* GameManager+Progression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */; };
 		3DE098C86E6DA296A5E9B12A /* GameManager+InteractionHint.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */; };
+		F5A5FE0E0C7AECF3770F4C9A /* GameManager+InteractionHintPhases.swift in Sources */ = {isa = PBXBuildFile; fileRef = C0B14DABA9FCE311CAFBB2CA /* GameManager+InteractionHintPhases.swift */; };
+		62675B74C0EB9819E6209A30 /* GameManager+InteractionHintZones.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668733FFC8C42D80AA8E8F24 /* GameManager+InteractionHintZones.swift */; };
 		96AB6B7EE9620A31FB53A33F /* GameManager+Overlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */; };
 		676E70EF6E64C11457BFBEF6 /* GameManager+Shop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 983193C0B256759AA2B3401F /* GameManager+Shop.swift */; };
 		F1EFE1707E3F21813006A2F1 /* GameManager+Dialogues.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */; };
@@ -347,6 +349,8 @@
 		8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Helpers.swift"; sourceTree = "<group>"; };
 		155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Progression.swift"; sourceTree = "<group>"; };
 		45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+InteractionHint.swift"; sourceTree = "<group>"; };
+		C0B14DABA9FCE311CAFBB2CA /* GameManager+InteractionHintPhases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+InteractionHintPhases.swift"; sourceTree = "<group>"; };
+		668733FFC8C42D80AA8E8F24 /* GameManager+InteractionHintZones.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+InteractionHintZones.swift"; sourceTree = "<group>"; };
 		B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Overlays.swift"; sourceTree = "<group>"; };
 		983193C0B256759AA2B3401F /* GameManager+Shop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Shop.swift"; sourceTree = "<group>"; };
 		BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Dialogues.swift"; sourceTree = "<group>"; };
@@ -583,6 +587,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				8F5DD5CC3A3664627255F728 /* GameManager+Helpers.swift */,
 				155006E5D1290A19840B8CB2 /* GameManager+Progression.swift */,
 				45FBDCB57E2F0AA746C56DA0 /* GameManager+InteractionHint.swift */,
+				C0B14DABA9FCE311CAFBB2CA /* GameManager+InteractionHintPhases.swift */,
+				668733FFC8C42D80AA8E8F24 /* GameManager+InteractionHintZones.swift */,
 				B78B339F16C1E3D139D7C33B /* GameManager+Overlays.swift */,
 				983193C0B256759AA2B3401F /* GameManager+Shop.swift */,
 				BD5A53CB4075D001328F98A6 /* GameManager+Dialogues.swift */,
@@ -1109,6 +1115,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				EF2FDF98657D1D3E3728F185 /* GameManager+Helpers.swift in Sources */,
 				26382103C895D91C67EC5B6F /* GameManager+Progression.swift in Sources */,
 				3DE098C86E6DA296A5E9B12A /* GameManager+InteractionHint.swift in Sources */,
+				F5A5FE0E0C7AECF3770F4C9A /* GameManager+InteractionHintPhases.swift in Sources */,
+				62675B74C0EB9819E6209A30 /* GameManager+InteractionHintZones.swift in Sources */,
 				96AB6B7EE9620A31FB53A33F /* GameManager+Overlays.swift in Sources */,
 				676E70EF6E64C11457BFBEF6 /* GameManager+Shop.swift in Sources */,
 				F1EFE1707E3F21813006A2F1 /* GameManager+Dialogues.swift in Sources */,

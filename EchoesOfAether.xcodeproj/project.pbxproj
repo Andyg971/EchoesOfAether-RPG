@@ -47,6 +47,8 @@
 		76C3D96C4CCBD879B0214C50 /* WorldBuilder+Shrine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79422B23669822D9937F014F /* WorldBuilder+Shrine.swift */; };
 		8A1533F3FD42593A2631B4D7 /* WorldBuilder+SaveCrystal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23BC69F97E2D33E79FA5E928 /* WorldBuilder+SaveCrystal.swift */; };
 		C21D08D6A674244F6F7C2F14 /* WorldBuilder+Ruins.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBCA4CC6FE6B7655EF85E2D7 /* WorldBuilder+Ruins.swift */; };
+		122DE62E61B0463921290647 /* WorldBuilder+VoidHeart.swift in Sources */ = {isa = PBXBuildFile; fileRef = B41744969DAE3ACF5A6907E8 /* WorldBuilder+VoidHeart.swift */; };
+		222136D82D8B098250B55B48 /* WorldBuilder+Threshold.swift in Sources */ = {isa = PBXBuildFile; fileRef = C350FAF855BAAFDF65458F47 /* WorldBuilder+Threshold.swift */; };
 		28C47D06E66F8DC983B9C8F0 /* WorldBuilder+Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */; };
 		15E8F708B2D06400EB0BEE8E /* WorldBuilder+QuestMarkers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */; };
 		37843A3AC099072DE3BF87F5 /* WorldBuilder+VillageFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */; };
@@ -96,6 +98,8 @@
 		6DAF0002B8A741B0A0000001 /* GameManager+Act4.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAF0001B8A741B0A0000001 /* GameManager+Act4.swift */; };
 		6DAE0002B8A741B0A0000001 /* GameManager+Act3Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAE0001B8A741B0A0000001 /* GameManager+Act3Extended.swift */; };
 		6DAD0002B8A741B0A0000001 /* GameManager+Desert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */; };
+		5991BEE3EEA96F3D23ED28D4 /* GameManager+DesertCombat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5430D9F6695B9CC86D05790E /* GameManager+DesertCombat.swift */; };
+		CCE8CA702222A05D0F43F977 /* GameManager+Overworld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6539BD88D25BAA18B5A7822A /* GameManager+Overworld.swift */; };
 		6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2015B8A741B0A0000001 /* MovementController.swift */; };
 		6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2017B8A741B0A0000001 /* TransitionManager.swift */; };
 		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
@@ -248,6 +252,8 @@
 		79422B23669822D9937F014F /* WorldBuilder+Shrine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Shrine.swift"; sourceTree = "<group>"; };
 		23BC69F97E2D33E79FA5E928 /* WorldBuilder+SaveCrystal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+SaveCrystal.swift"; sourceTree = "<group>"; };
 		FBCA4CC6FE6B7655EF85E2D7 /* WorldBuilder+Ruins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Ruins.swift"; sourceTree = "<group>"; };
+		B41744969DAE3ACF5A6907E8 /* WorldBuilder+VoidHeart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+VoidHeart.swift"; sourceTree = "<group>"; };
+		C350FAF855BAAFDF65458F47 /* WorldBuilder+Threshold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Threshold.swift"; sourceTree = "<group>"; };
 		F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Rendering.swift"; sourceTree = "<group>"; };
 		18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+QuestMarkers.swift"; sourceTree = "<group>"; };
 		AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+VillageFlora.swift"; sourceTree = "<group>"; };
@@ -297,6 +303,8 @@
 		6DAF0001B8A741B0A0000001 /* GameManager+Act4.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act4.swift"; sourceTree = "<group>"; };
 		6DAE0001B8A741B0A0000001 /* GameManager+Act3Extended.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act3Extended.swift"; sourceTree = "<group>"; };
 		6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Desert.swift"; sourceTree = "<group>"; };
+		5430D9F6695B9CC86D05790E /* GameManager+DesertCombat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+DesertCombat.swift"; sourceTree = "<group>"; };
+		6539BD88D25BAA18B5A7822A /* GameManager+Overworld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Overworld.swift"; sourceTree = "<group>"; };
 		6D7E2015B8A741B0A0000001 /* MovementController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovementController.swift; sourceTree = "<group>"; };
 		6D7E2017B8A741B0A0000001 /* TransitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransitionManager.swift; sourceTree = "<group>"; };
 		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -504,6 +512,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6DAF0001B8A741B0A0000001 /* GameManager+Act4.swift */,
 				6DAE0001B8A741B0A0000001 /* GameManager+Act3Extended.swift */,
 				6DAD0001B8A741B0A0000001 /* GameManager+Desert.swift */,
+				5430D9F6695B9CC86D05790E /* GameManager+DesertCombat.swift */,
+				6539BD88D25BAA18B5A7822A /* GameManager+Overworld.swift */,
 				6DAAFD01B8A741B0A0000001 /* StoreManager.swift */,
 				6D7E4002B8A741B0A0000001 /* SaveManager.swift */,
 				6D7EFB01B8A741B0A0000888 /* EncounterBalance.swift */,
@@ -584,6 +594,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				79422B23669822D9937F014F /* WorldBuilder+Shrine.swift */,
 				23BC69F97E2D33E79FA5E928 /* WorldBuilder+SaveCrystal.swift */,
 				FBCA4CC6FE6B7655EF85E2D7 /* WorldBuilder+Ruins.swift */,
+				B41744969DAE3ACF5A6907E8 /* WorldBuilder+VoidHeart.swift */,
+				C350FAF855BAAFDF65458F47 /* WorldBuilder+Threshold.swift */,
 				F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */,
 				18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */,
 				AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */,
@@ -918,6 +930,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				76C3D96C4CCBD879B0214C50 /* WorldBuilder+Shrine.swift in Sources */,
 				8A1533F3FD42593A2631B4D7 /* WorldBuilder+SaveCrystal.swift in Sources */,
 				C21D08D6A674244F6F7C2F14 /* WorldBuilder+Ruins.swift in Sources */,
+				122DE62E61B0463921290647 /* WorldBuilder+VoidHeart.swift in Sources */,
+				222136D82D8B098250B55B48 /* WorldBuilder+Threshold.swift in Sources */,
 				28C47D06E66F8DC983B9C8F0 /* WorldBuilder+Rendering.swift in Sources */,
 				15E8F708B2D06400EB0BEE8E /* WorldBuilder+QuestMarkers.swift in Sources */,
 				37843A3AC099072DE3BF87F5 /* WorldBuilder+VillageFlora.swift in Sources */,
@@ -967,6 +981,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6DAF0002B8A741B0A0000001 /* GameManager+Act4.swift in Sources */,
 				6DAE0002B8A741B0A0000001 /* GameManager+Act3Extended.swift in Sources */,
 				6DAD0002B8A741B0A0000001 /* GameManager+Desert.swift in Sources */,
+				5991BEE3EEA96F3D23ED28D4 /* GameManager+DesertCombat.swift in Sources */,
+				CCE8CA702222A05D0F43F977 /* GameManager+Overworld.swift in Sources */,
 				6D7E2016B8A741B0A0000001 /* MovementController.swift in Sources */,
 				6D7E2018B8A741B0A0000001 /* TransitionManager.swift in Sources */,
 				6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */,

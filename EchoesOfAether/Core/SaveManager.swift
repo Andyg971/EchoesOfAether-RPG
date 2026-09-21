@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 /// Métadonnées légères d'un slot de sauvegarde — pour l'affichage du menu
 /// sans avoir à exposer toute la `SaveData`.
@@ -13,6 +14,11 @@ struct SaveSlotInfo {
 }
 
 enum SaveManager {
+    /// Journal structuré (Console.app, filtrable par sous-système) — jamais
+    /// de `print()` en production, cf. CLAUDE.md.
+    private static let log = Logger(subsystem: "com.appmakerstudio.echoesofaether",
+                                    category: "SaveManager")
+
 
     /// Nombre de slots de sauvegarde exposés au joueur.
     static let slotCount = 3
@@ -53,7 +59,7 @@ enum SaveManager {
                 try fm.moveItem(at: legacyURL, to: slot1)
             } catch {
                 #if DEBUG
-                print("[SaveManager] legacy migration failed: \(error)")
+                log.error("legacy migration failed: \(error.localizedDescription, privacy: .public)")
                 #endif
             }
         }
@@ -72,7 +78,7 @@ enum SaveManager {
             NSUbiquitousKeyValueStore.default.set(json, forKey: cloudKey(slot: slot))
         } catch {
             #if DEBUG
-            print("[SaveManager] save failed (slot \(slot)): \(error)")
+            log.error("save failed (slot \(slot)): \(error.localizedDescription, privacy: .public)")
             #endif
         }
     }
@@ -96,7 +102,7 @@ enum SaveManager {
             if cloudDate > localDate {
                 try? cloudJSON.write(to: fileURL(slot: slot), options: .atomic)
                 #if DEBUG
-                print("[SaveManager] slot \(slot) restauré depuis iCloud (\(cloudDate))")
+                log.info("slot \(slot) restauré depuis iCloud (\(cloudDate, privacy: .public))")
                 #endif
             }
         }
@@ -112,7 +118,7 @@ enum SaveManager {
             return try JSONDecoder().decode(SaveData.self, from: json)
         } catch {
             #if DEBUG
-            print("[SaveManager] load failed (slot \(slot)): \(error)")
+            log.error("load failed (slot \(slot)): \(error.localizedDescription, privacy: .public)")
             #endif
             return nil
         }

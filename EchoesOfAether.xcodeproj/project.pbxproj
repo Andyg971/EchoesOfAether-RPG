@@ -47,6 +47,12 @@
 		28C47D06E66F8DC983B9C8F0 /* WorldBuilder+Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */; };
 		15E8F708B2D06400EB0BEE8E /* WorldBuilder+QuestMarkers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */; };
 		4F1D2C37CDE483665D1DBE7E /* WorldBuilder+OverworldPOI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */; };
+		89CB639F4B79C3AE6D8D9B25 /* WorldBuilder+OverworldDesertFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */; };
+		84A801215BC9ECF464C47A27 /* WorldBuilder+OverworldLandmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */; };
+		C8F8AC4DAB8123D31777BBD1 /* WorldBuilder+OverworldForestFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */; };
+		F9997099D680023FEF19A9B0 /* WorldBuilder+OverworldTerrainEast.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3A4912FDCBFE3522D42164B /* WorldBuilder+OverworldTerrainEast.swift */; };
+		642F1229DB4FE7084C2CFB8A /* WorldBuilder+OverworldTerrain.swift in Sources */ = {isa = PBXBuildFile; fileRef = E99F590C1E6187A9B073BFCC /* WorldBuilder+OverworldTerrain.swift */; };
+		9D66C1B30AA93A5360A5DB44 /* OverworldGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = C61398B5EF362538DECB467A /* OverworldGeometry.swift */; };
 		99B73060E2E924CE6A266A6F /* WorldBuilder+Overworld.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE5A40EED54116CF62F0A2 /* WorldBuilder+Overworld.swift */; };
 		C9ECD9E7CF8FB0D22D87BDCA /* WorldBuilder+Mines.swift in Sources */ = {isa = PBXBuildFile; fileRef = F00FB86FF7260F9D7BF2EAB8 /* WorldBuilder+Mines.swift */; };
 		10154AA9F9761E76C764996D /* WorldBuilder+Interiors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4EBB91D5D7C3938EFA0C1936 /* WorldBuilder+Interiors.swift */; };
@@ -229,6 +235,12 @@
 		F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Rendering.swift"; sourceTree = "<group>"; };
 		18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+QuestMarkers.swift"; sourceTree = "<group>"; };
 		FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldPOI.swift"; sourceTree = "<group>"; };
+		D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldDesertFlora.swift"; sourceTree = "<group>"; };
+		DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldLandmarks.swift"; sourceTree = "<group>"; };
+		C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldForestFlora.swift"; sourceTree = "<group>"; };
+		A3A4912FDCBFE3522D42164B /* WorldBuilder+OverworldTerrainEast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldTerrainEast.swift"; sourceTree = "<group>"; };
+		E99F590C1E6187A9B073BFCC /* WorldBuilder+OverworldTerrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldTerrain.swift"; sourceTree = "<group>"; };
+		C61398B5EF362538DECB467A /* OverworldGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OverworldGeometry.swift"; sourceTree = "<group>"; };
 		56EE5A40EED54116CF62F0A2 /* WorldBuilder+Overworld.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Overworld.swift"; sourceTree = "<group>"; };
 		F00FB86FF7260F9D7BF2EAB8 /* WorldBuilder+Mines.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Mines.swift"; sourceTree = "<group>"; };
 		4EBB91D5D7C3938EFA0C1936 /* WorldBuilder+Interiors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Interiors.swift"; sourceTree = "<group>"; };
@@ -543,6 +555,12 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				F44028F2AC2BD9FCF49F43FB /* WorldBuilder+Rendering.swift */,
 				18A53D0F27E387E6B5AF9EFD /* WorldBuilder+QuestMarkers.swift */,
 				FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */,
+				D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */,
+				DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */,
+				C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */,
+				A3A4912FDCBFE3522D42164B /* WorldBuilder+OverworldTerrainEast.swift */,
+				E99F590C1E6187A9B073BFCC /* WorldBuilder+OverworldTerrain.swift */,
+				C61398B5EF362538DECB467A /* OverworldGeometry.swift */,
 				56EE5A40EED54116CF62F0A2 /* WorldBuilder+Overworld.swift */,
 				F00FB86FF7260F9D7BF2EAB8 /* WorldBuilder+Mines.swift */,
 				4EBB91D5D7C3938EFA0C1936 /* WorldBuilder+Interiors.swift */,
@@ -861,6 +879,12 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				28C47D06E66F8DC983B9C8F0 /* WorldBuilder+Rendering.swift in Sources */,
 				15E8F708B2D06400EB0BEE8E /* WorldBuilder+QuestMarkers.swift in Sources */,
 				4F1D2C37CDE483665D1DBE7E /* WorldBuilder+OverworldPOI.swift in Sources */,
+				89CB639F4B79C3AE6D8D9B25 /* WorldBuilder+OverworldDesertFlora.swift in Sources */,
+				84A801215BC9ECF464C47A27 /* WorldBuilder+OverworldLandmarks.swift in Sources */,
+				C8F8AC4DAB8123D31777BBD1 /* WorldBuilder+OverworldForestFlora.swift in Sources */,
+				F9997099D680023FEF19A9B0 /* WorldBuilder+OverworldTerrainEast.swift in Sources */,
+				642F1229DB4FE7084C2CFB8A /* WorldBuilder+OverworldTerrain.swift in Sources */,
+				9D66C1B30AA93A5360A5DB44 /* OverworldGeometry.swift in Sources */,
 				99B73060E2E924CE6A266A6F /* WorldBuilder+Overworld.swift in Sources */,
 				C9ECD9E7CF8FB0D22D87BDCA /* WorldBuilder+Mines.swift in Sources */,
 				10154AA9F9761E76C764996D /* WorldBuilder+Interiors.swift in Sources */,

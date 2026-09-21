@@ -4,6 +4,13 @@ import SpriteKit
 // Extrait de WorldBuilder.swift (découpage du monolithe).
 @MainActor
 extension WorldBuilder {
+    /// Marque une ROUTE entre deux lieux dans la grille d'autotiling : un ruban
+    /// de cellules de terre qui serpente doucement. Les transitions herbe/terre
+    /// sont posées ensuite par `renderTileMap` — d'où le rendu net des autres
+    /// zones, au lieu de plaques carrées superposées.
+    /// `half` : demi-largeur du ruban. Une route de plaine s'assume large ;
+    /// sous les arbres, le même gabarit ouvrait une saignée de terre nue qui
+    /// annulait le couvert — le sentier forestier passe donc en étroit.
     func stampRoad(_ map: inout VillageTileMap, from a: CGPoint, to b: CGPoint,
                            half: CGFloat = 15) {
         let dx = b.x - a.x, dy = b.y - a.y

@@ -106,6 +106,8 @@
 		515D5C0209683995674710C8 /* GameManager+Input.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */; };
 		0B73708376C7F12AB2510F13 /* GameManager+SetupDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */; };
 		5603CDEC66B9884DB30C65CC /* GameManager+Setup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */; };
+		785F700F9DA87BCE117ED801 /* GameManager+SetupDebugZones.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92CF0EA089559E1E0417E8B /* GameManager+SetupDebugZones.swift */; };
+		5C8E7DC5459FD53291168E00 /* GameManager+SetupDebugCombat.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD0A2E3BA14A91778C1CA1F4 /* GameManager+SetupDebugCombat.swift */; };
 		6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */; };
 		B87F169F8962D644519A4207 /* GameManager+Act2Ending.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59DC330BAB5FB1CD1E7FDE1B /* GameManager+Act2Ending.swift */; };
 		211F25850B215FF8B1C58F39 /* GameManager+Act2Ruins.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B722F93202CB49E508AC5AF /* GameManager+Act2Ruins.swift */; };
@@ -344,6 +346,8 @@
 		41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Input.swift"; sourceTree = "<group>"; };
 		8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+SetupDebug.swift"; sourceTree = "<group>"; };
 		238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Setup.swift"; sourceTree = "<group>"; };
+		E92CF0EA089559E1E0417E8B /* GameManager+SetupDebugZones.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+SetupDebugZones.swift"; sourceTree = "<group>"; };
+		FD0A2E3BA14A91778C1CA1F4 /* GameManager+SetupDebugCombat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+SetupDebugCombat.swift"; sourceTree = "<group>"; };
 		6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act2.swift"; sourceTree = "<group>"; };
 		59DC330BAB5FB1CD1E7FDE1B /* GameManager+Act2Ending.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act2Ending.swift"; sourceTree = "<group>"; };
 		8B722F93202CB49E508AC5AF /* GameManager+Act2Ruins.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManager+Act2Ruins.swift"; sourceTree = "<group>"; };
@@ -573,6 +577,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				41BCA14BC9D633B0F37654B3 /* GameManager+Input.swift */,
 				8A18E03CBB816CFBA03CBA00 /* GameManager+SetupDebug.swift */,
 				238EEA9465B41ED526B3C21E /* GameManager+Setup.swift */,
+				E92CF0EA089559E1E0417E8B /* GameManager+SetupDebugZones.swift */,
+				FD0A2E3BA14A91778C1CA1F4 /* GameManager+SetupDebugCombat.swift */,
 				6DBD0001B8A741B0A0000001 /* GameManager+Act2.swift */,
 				59DC330BAB5FB1CD1E7FDE1B /* GameManager+Act2Ending.swift */,
 				8B722F93202CB49E508AC5AF /* GameManager+Act2Ruins.swift */,
@@ -1088,6 +1094,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				515D5C0209683995674710C8 /* GameManager+Input.swift in Sources */,
 				0B73708376C7F12AB2510F13 /* GameManager+SetupDebug.swift in Sources */,
 				5603CDEC66B9884DB30C65CC /* GameManager+Setup.swift in Sources */,
+				785F700F9DA87BCE117ED801 /* GameManager+SetupDebugZones.swift in Sources */,
+				5C8E7DC5459FD53291168E00 /* GameManager+SetupDebugCombat.swift in Sources */,
 				6DBD0002B8A741B0A0000001 /* GameManager+Act2.swift in Sources */,
 				B87F169F8962D644519A4207 /* GameManager+Act2Ending.swift in Sources */,
 				211F25850B215FF8B1C58F39 /* GameManager+Act2Ruins.swift in Sources */,

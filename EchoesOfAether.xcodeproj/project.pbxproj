@@ -147,6 +147,8 @@
 		BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */; };
 		FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */; };
 		BEF418EB3EDD16ED4108D182 /* CombatSystem+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */; };
+		EE96123E6DDAFF120AA6D3D1 /* CombatSystem+ActionSpells.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5428E487C5332FE3F41C5198 /* CombatSystem+ActionSpells.swift */; };
+		EF5C6965A5F4AC7CA39EC9DD /* CombatSystem+ActionStrikes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DCC8E0A1E76B6AD012D179C /* CombatSystem+ActionStrikes.swift */; };
 		FEC9CD4987CF458CC34A07DB /* CombatSystem+Boss.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */; };
 		FA4892F1A2DB62FFDBCA2D7D /* CombatSystem+ActionCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */; };
 		0F88A329531F519A9AAFC22C /* CombatSystem+TurnLoop.swift in Sources */ = {isa = PBXBuildFile; fileRef = AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */; };
@@ -358,6 +360,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Arena.swift"; sourceTree = "<group>"; };
 		3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+PixelFX.swift"; sourceTree = "<group>"; };
 		BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Actions.swift"; sourceTree = "<group>"; };
+		5428E487C5332FE3F41C5198 /* CombatSystem+ActionSpells.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+ActionSpells.swift"; sourceTree = "<group>"; };
+		4DCC8E0A1E76B6AD012D179C /* CombatSystem+ActionStrikes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+ActionStrikes.swift"; sourceTree = "<group>"; };
 		4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+Boss.swift"; sourceTree = "<group>"; };
 		D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+ActionCommands.swift"; sourceTree = "<group>"; };
 		AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystem+TurnLoop.swift"; sourceTree = "<group>"; };
@@ -663,6 +667,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				9218DE302490318493A32BC1 /* CombatSystem+Arena.swift */,
 				3E060E58C10D92ABF5D2E0AD /* CombatSystem+PixelFX.swift */,
 				BA9575A956A9E6114A98CB87 /* CombatSystem+Actions.swift */,
+				5428E487C5332FE3F41C5198 /* CombatSystem+ActionSpells.swift */,
+				4DCC8E0A1E76B6AD012D179C /* CombatSystem+ActionStrikes.swift */,
 				4CF55A10DDA23CFABB27F52E /* CombatSystem+Boss.swift */,
 				D6EEA33A8E76EE4AC8628872 /* CombatSystem+ActionCommands.swift */,
 				AAF47979291D3D430D74C012 /* CombatSystem+TurnLoop.swift */,
@@ -1042,6 +1048,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				BA57226338232DCE19A257B3 /* CombatSystem+Arena.swift in Sources */,
 				FC5AB881ED0F16622002941F /* CombatSystem+PixelFX.swift in Sources */,
 				BEF418EB3EDD16ED4108D182 /* CombatSystem+Actions.swift in Sources */,
+				EE96123E6DDAFF120AA6D3D1 /* CombatSystem+ActionSpells.swift in Sources */,
+				EF5C6965A5F4AC7CA39EC9DD /* CombatSystem+ActionStrikes.swift in Sources */,
 				FEC9CD4987CF458CC34A07DB /* CombatSystem+Boss.swift in Sources */,
 				FA4892F1A2DB62FFDBCA2D7D /* CombatSystem+ActionCommands.swift in Sources */,
 				0F88A329531F519A9AAFC22C /* CombatSystem+TurnLoop.swift in Sources */,

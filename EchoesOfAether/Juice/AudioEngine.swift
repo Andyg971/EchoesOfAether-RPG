@@ -1,4 +1,5 @@
 import AVFoundation
+import os
 
 /// AudioEngine — synthèse procédurale temps réel.
 ///
@@ -10,6 +11,8 @@ import AVFoundation
 /// audio, graphe stable.
 @MainActor
 final class AudioEngine {
+    private static let log = Logger(subsystem: "com.appmakerstudio.echoesofaether",
+                                    category: "AudioEngine")
 
     static let shared = AudioEngine()
 
@@ -224,7 +227,7 @@ final class AudioEngine {
             try engine.start()
         } catch {
             #if DEBUG
-            print("[AudioEngine] start failed: \(error)")
+            Self.log.error("start failed: \(error.localizedDescription, privacy: .public)")
             #endif
             return
         }

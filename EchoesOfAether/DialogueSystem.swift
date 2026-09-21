@@ -14,51 +14,37 @@ enum DialogueStep {
 
 @MainActor
 final class DialogueSystem {
-    private let root = SKNode()
-    private let panel = SKShapeNode()
-    private let separator = SKShapeNode()          // trait fin sous le nom
-    private let portraitFrame = SKShapeNode()      // cadre pixel du portrait
-    private let portraitSprite = SKSpriteNode()    // visage du locuteur
-    private var hasPortrait = false
-    private let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private var choiceNodes: [SKShapeNode] = []
+    let root = SKNode()
+    let panel = SKShapeNode()
+    let separator = SKShapeNode()          // trait fin sous le nom
+    let portraitFrame = SKShapeNode()      // cadre pixel du portrait
+    let portraitSprite = SKSpriteNode()    // visage du locuteur
+    var hasPortrait = false
+    let speakerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let bodyLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
+    let continueIndicator = SKLabelNode(fontNamed: PixelUI.uiFont)
+    var choiceNodes: [SKShapeNode] = []
     /// Hauteur réelle de chaque bouton de choix (28pt, ou plus si le titre
     /// passe sur 2 lignes) — tient le texte au lieu de le laisser déborder
     /// du cadre sur un bouton voisin.
-    private var choiceHeights: [CGFloat] = []
-    private var choiceSelection = 0   // curseur sur les choix (A valide)
+    var choiceHeights: [CGFloat] = []
+    var choiceSelection = 0   // curseur sur les choix (A valide)
     private var steps: [DialogueStep] = []
-    private var index = 0
+    var index = 0
     /// Index du choix déjà résolu — B (skip) ne doit pas le re-poser.
-    private var answeredChoiceIndex = -1
-    private var pendingNPC: (speaker: String, text: String)?
+    var answeredChoiceIndex = -1
+    var pendingNPC: (speaker: String, text: String)?
     private var completion: (() -> Void)?
     private var hasAnimatedEntrance = false
 
     /// Index du dernier choix sélectionné dans une étape `.choice` (nil tant
     /// qu'aucun choix n'a été fait). Permet de rendre un choix déterminant.
-    private(set) var lastChoiceIndex: Int?
+    var lastChoiceIndex: Int?
     /// Callback déclenché quand le joueur sélectionne un choix (index 0-based).
     var onChoiceSelected: ((Int) -> Void)?
 
-    private let panelHeightLine: CGFloat = 72
-    private var safeBottom: CGFloat = 0
-
-    /// Hauteur ajustée au contenu : en-tête (prompt) + somme des boutons de
-    /// choix (chacun sur sa hauteur réelle, 1 ou 2 lignes) + marge basse —
-    /// plus de grand vide noir sous les choix, et plus de texte qui déborde
-    /// sur le bouton suivant quand un titre est long.
-    private var panelHeightChoices: CGFloat {
-        guard !choiceHeights.isEmpty else { return 68 }
-        return 40 + choiceHeights.reduce(0, +) + CGFloat(choiceHeights.count - 1) * 4
-    }
-
-    /// Largeur compacte : le panneau ne barre plus tout l'écran.
-    private func panelWidth(for size: CGSize) -> CGFloat {
-        min(size.width - 48, 640)
-    }
+    let panelHeightLine: CGFloat = 72
+    var safeBottom: CGFloat = 0
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -105,68 +91,6 @@ final class DialogueSystem {
         layout(in: scene.size)
     }
 
-    func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        self.safeBottom = safeBottom
-        // Accessibilité « gros texte » : agrandit les polices du dialogue.
-        // VT323 est étroite : tailles relevées pour garder la lisibilité.
-        let ts = AccessibilitySettings.textScale
-        speakerLabel.fontSize = 15 * ts
-        bodyLabel.fontSize = 14 * ts
-        continueIndicator.fontSize = 12 * ts
-        let hasChoices = !choiceNodes.isEmpty
-        let panelWidth = panelWidth(for: size)
-
-        // Géométrie du portrait AVANT la hauteur : la largeur de texte en
-        // dépend, et la hauteur du panneau suit le texte mesuré — les
-        // longues répliques (Dorin, Sage…) passent sur 3 lignes sans
-        // déborder du cadre.
-        let portraitSide: CGFloat = 52
-        let portraitX = -panelWidth / 2 + portraitSide / 2 + 10
-        // En mode choix, le portrait recouvrait les boutons : on le masque.
-        let showPortrait = hasPortrait && !hasChoices
-        let textX = showPortrait
-            ? portraitX + portraitSide / 2 + 12
-            : -panelWidth / 2 + 14
-        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - 18
-
-        let bodyHeight = max(16, bodyLabel.frame.height)
-        let panelHeight = hasChoices
-            ? panelHeightChoices
-            : max(panelHeightLine, 34 + bodyHeight + 16)
-
-        // Cadre RPG pixel art (coins carrés, liseré sombre + bordure or)
-        PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight))
-
-        let baseY = panelHeight / 2 + 20 + safeBottom
-        root.position = CGPoint(x: size.width / 2, y: baseY)
-
-        // Portrait (44px natif) dans un cadre pixel à gauche ; le texte
-        // se décale quand un visage est affiché.
-        PixelUI.stylePanel(portraitFrame,
-                           size: CGSize(width: portraitSide, height: portraitSide),
-                           fill: SKColor(red: 0.08, green: 0.06, blue: 0.12, alpha: 1),
-                           accent: PixelUI.goldDim)
-        portraitFrame.position = CGPoint(x: portraitX, y: 0)
-        portraitSprite.position = portraitFrame.position
-        portraitSprite.size = CGSize(width: portraitSide - 8, height: portraitSide - 8)
-        portraitFrame.isHidden = !showPortrait
-        portraitSprite.isHidden = !showPortrait
-
-        speakerLabel.position = CGPoint(x: textX, y: panelHeight / 2 - 16)
-
-        let sepY = panelHeight / 2 - 26
-        let sepPath = CGMutablePath()
-        sepPath.move(to: CGPoint(x: textX, y: sepY))
-        sepPath.addLine(to: CGPoint(x: panelWidth / 2 - 22, y: sepY))
-        separator.path = sepPath
-
-        bodyLabel.position = CGPoint(x: textX, y: sepY - 6)
-
-        continueIndicator.position = CGPoint(x: panelWidth / 2 - 18, y: -panelHeight / 2 + 16)
-
-        layoutChoices(panelWidth: panelWidth, panelHeight: panelHeight)
-    }
-
     func start(_ steps: [DialogueStep], completion: (() -> Void)? = nil) {
         // Audit visuel : --skip-dialogue court-circuite tout dialogue
         // (utile avec --boss-test/--fx-demo pour filmer les effets).
@@ -206,184 +130,6 @@ final class DialogueSystem {
         hasAnimatedEntrance = true
     }
 
-    /// Couleur d'accent dérivée du nom du speaker — stable pour un même speaker.
-    private func portraitColor(for speaker: String) -> SKColor {
-        // Couleurs fixes pour les speakers principaux ; fallback via hash sinon.
-        let key = speaker.lowercased()
-        if key.contains("kael") {
-            return SKColor(red: 0.55, green: 0.20, blue: 0.85, alpha: 1)
-        }
-        if key.contains("lyra") {
-            return SKColor(red: 0.25, green: 0.70, blue: 0.45, alpha: 1)
-        }
-        if key.contains("dorin") {
-            return SKColor(red: 0.85, green: 0.62, blue: 0.25, alpha: 1)
-        }
-        if key.contains("bram") {
-            return SKColor(red: 0.70, green: 0.45, blue: 0.25, alpha: 1)
-        }
-        if key.contains("mara") {
-            return SKColor(red: 0.30, green: 0.75, blue: 0.40, alpha: 1)
-        }
-        if key.contains("garen") {
-            return SKColor(red: 0.55, green: 0.55, blue: 0.65, alpha: 1)
-        }
-        if key.contains("sage") || key.contains("archi") {
-            return SKColor(red: 0.45, green: 0.30, blue: 0.85, alpha: 1)
-        }
-        if key.contains("voix") || key.contains("voice") {
-            return SKColor(red: 0.20, green: 0.20, blue: 0.30, alpha: 1)
-        }
-        // Fallback hash → teinte stable
-        let hash = abs(speaker.hashValue)
-        let hue = CGFloat(hash % 360) / 360
-        return SKColor(hue: hue, saturation: 0.55, brightness: 0.75, alpha: 1)
-    }
-
-    /// Asset de portrait pixel par locuteur (nil = pas de visage :
-    /// voix, cristal, plaque… le panneau retombe en mode texte seul).
-    private func portraitAsset(for speaker: String) -> String? {
-        let key = speaker.lowercased()
-        // Andy : les visages de Kael et d'Eran étaient inversés → on les
-        // échange. Kael parle avec « portrait_eran », Eran avec l'icône (Kael).
-        // Seuls les 4 compagnons principaux ont un visage en dialogue ;
-        // Andy : les PNJ de base (marchands, gardes, sage, enfant…) restent
-        // en texte seul, pas de portrait générique.
-        let table: [(String, String)] = [
-            ("kael", "portrait_eran"),
-            ("lyra", "portrait_lyra"),
-            ("dorin", "portrait_dorin"),
-            ("eran", "portrait_kael_icon")
-        ]
-        for (needle, asset) in table where key.contains(needle) { return asset }
-        return nil
-    }
-
-    // MARK: - Portraits dessinés en code (habitants d'Ossara)
-
-    private static var codePortraitCache: [String: SKTexture] = [:]
-
-    /// Portrait pixel dessiné en code pour un locuteur (marchand/caravanier du
-    /// désert), sinon nil. Renvoie (id de cache, texture) pour l'anim de pop.
-    private func codePortrait(for speaker: String) -> (String, SKTexture)? {
-        let key = speaker.lowercased()
-        // Désactivé : seuls les 4 compagnons principaux ont un visage.
-        let deserty: [String] = []
-        guard deserty.contains(where: key.contains) else { return nil }
-        let id = "code:desertMerchant"
-        if let t = Self.codePortraitCache[id] { return (id, t) }
-        let t = Self.renderPortrait(Self.desertMerchantMap,
-                                    palette: Self.desertMerchantPalette)
-        Self.codePortraitCache[id] = t
-        return (id, t)
-    }
-
-    private static func renderPortrait(_ map: [String],
-                                       palette: [Character: SKColor]) -> SKTexture {
-        let rows = map.count
-        let cols = map.map(\.count).max() ?? 0
-        let format = UIGraphicsImageRendererFormat(); format.scale = 1
-        let image = UIGraphicsImageRenderer(
-            size: CGSize(width: cols, height: rows), format: format
-        ).image { ctx in
-            for (r, line) in map.enumerated() {
-                for (c, ch) in line.enumerated() {
-                    guard let color = palette[ch] else { continue }
-                    color.setFill()
-                    ctx.cgContext.fill(CGRect(x: c, y: r, width: 1, height: 1))
-                }
-            }
-        }
-        let tex = SKTexture(image: image); tex.filteringMode = .nearest
-        return tex
-    }
-
-    private static let desertMerchantPalette: [Character: SKColor] = [
-        "o": SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1),
-        "T": SKColor(red: 0.85, green: 0.78, blue: 0.60, alpha: 1),   // turban
-        "t": SKColor(red: 0.70, green: 0.62, blue: 0.45, alpha: 1),
-        "B": SKColor(red: 0.72, green: 0.36, blue: 0.26, alpha: 1),   // bandeau
-        "S": SKColor(red: 0.82, green: 0.62, blue: 0.44, alpha: 1),   // peau
-        "N": SKColor(red: 0.66, green: 0.48, blue: 0.34, alpha: 1),   // nez
-        "E": SKColor(red: 0.14, green: 0.11, blue: 0.10, alpha: 1),   // œil
-        "b": SKColor(red: 0.28, green: 0.20, blue: 0.14, alpha: 1),   // barbe
-        "R": SKColor(red: 0.55, green: 0.42, blue: 0.28, alpha: 1)    // robe
-    ]
-
-    private static let desertMerchantMap = [
-        ".....oooooo.....",
-        "...oTTTTTTTTo...",
-        "..oTTTTTTTTTTo..",
-        "..oTttttttttTo..",
-        "..oBBBBBBBBBBo..",
-        "..oTSSSSSSSSTo..",
-        "..oSSSSSSSSSSo..",
-        "..oSSEESSEESSo..",
-        "..oSSSSSSSSSSo..",
-        "..oSSSSNNSSSSo..",
-        "..oSbSSSSSSbSo..",
-        "..oSbbSSSSbbSo..",
-        "..oSbbbbbbbbSo..",
-        "..obbbbbbbbbbo..",
-        "...obbbbbbbbo...",
-        "....obbbbbbo....",
-        "..oRRRRRRRRRRo..",
-        ".oRRRRRRRRRRRRo.",
-        ".oRRRRRRRRRRRRo.",
-        ".oRRRRRRRRRRRRo."
-    ]
-
-    /// Nom teinté à la couleur du locuteur + portrait pixel si disponible.
-    private func applyPortrait(for speaker: String) {
-        let color = portraitColor(for: speaker)
-        var h: CGFloat = 0, s: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
-        color.getHue(&h, saturation: &s, brightness: &b, alpha: &a)
-        speakerLabel.fontColor = b < 0.6
-            ? SKColor(hue: h, saturation: min(s, 0.6), brightness: 0.80, alpha: 1)
-            : color
-
-        // Portrait dessiné en code (habitants d'Ossara) — prime sur l'asset
-        // générique portrait_villager.
-        if let (id, tex) = codePortrait(for: speaker) {
-            let changed = portraitSprite.userData?["asset"] as? String != id
-            portraitSprite.texture = tex
-            hasPortrait = true
-            if changed {
-                portraitSprite.userData = ["asset": id]
-                portraitSprite.setScale(0.82)
-                portraitSprite.run(.sequence([
-                    .scale(to: 1.06, duration: 0.10),
-                    .scale(to: 1.0, duration: 0.10)
-                ]))
-            }
-            return
-        }
-
-        if let asset = portraitAsset(for: speaker), UIImage(named: asset) != nil {
-            let changed = portraitSprite.userData?["asset"] as? String != asset
-            let texture = SKTexture(imageNamed: asset)
-            texture.filteringMode = .nearest
-            portraitSprite.texture = texture
-            hasPortrait = true
-            if changed {
-                portraitSprite.userData = ["asset": asset]
-                // Pop du portrait quand le locuteur change
-                portraitSprite.setScale(0.82)
-                portraitSprite.run(.sequence([
-                    .scale(to: 1.06, duration: 0.10),
-                    .scale(to: 1.0, duration: 0.10)
-                ]))
-            }
-        } else {
-            hasPortrait = false
-            portraitSprite.userData = nil
-        }
-    }
-
-    /// Le dialogue est modal, mais le toucher direct marche aussi :
-    /// tap sur un choix = sélection + validation, tap sur le panneau =
-    /// avancer d'une réplique. Le joystick + A/B restent disponibles
-    /// (contrôles classiques).
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive, !root.isHidden else { return false }
         let local = root.convert(point, from: scene)
@@ -405,57 +151,6 @@ final class DialogueSystem {
         return true   // absorbe le reste (modal)
     }
 
-    /// Joystick haut/bas : déplace le curseur sur les choix.
-    func moveChoiceSelection(_ dy: Int) {
-        guard isActive, !choiceNodes.isEmpty else { return }
-        let count = choiceNodes.count
-        choiceSelection = (choiceSelection - dy + count) % count
-        HapticsEngine.light()
-        AudioEngine.shared.playStep()
-        refreshChoiceHighlight()
-        if let title = choiceNodes[choiceSelection].userData?["title"] as? String {
-            AccessibilitySettings.announce(title)
-        }
-    }
-
-    /// Le choix sélectionné est encadré d'or, les autres estompés.
-    private func refreshChoiceHighlight() {
-        for (i, node) in choiceNodes.enumerated() {
-            let selected = i == choiceSelection
-            node.strokeColor = selected
-                ? PixelUI.gold
-                : SKColor(red: 0.62, green: 0.48, blue: 0.90, alpha: 0.5)
-            node.alpha = selected ? 1.0 : 0.72
-            node.setScale(selected ? 1.02 : 1.0)
-        }
-    }
-
-    /// Bouton A pendant un choix : valide le choix sélectionné.
-    func confirmChoice() {
-        guard isActive, choiceNodes.indices.contains(choiceSelection) else { return }
-        let node = choiceNodes[choiceSelection]
-        guard let title = node.userData?["title"] as? String,
-              let npcSpeaker = node.userData?["responseSpeaker"] as? String,
-              let npcText = node.userData?["response"] as? String else { return }
-        if let chosenIndex = node.userData?["index"] as? Int {
-            lastChoiceIndex = chosenIndex
-            onChoiceSelected?(chosenIndex)
-        }
-        answeredChoiceIndex = index
-        pendingNPC = (speaker: npcSpeaker, text: npcText)
-        clearChoices()
-        let kaelName = String(localized: "dialogue.kael")
-        speakerLabel.text = kaelName
-        applyPortrait(for: kaelName)
-        bodyLabel.text = title
-        continueIndicator.isHidden = false
-        AudioEngine.shared.playSelect()
-        if let sceneRef = root.scene {
-            layout(in: sceneRef.size, safeBottom: safeBottom)
-        }
-    }
-
-    var hasChoicesOnScreen: Bool { !choiceNodes.isEmpty }
 
     /// Bouton A : valide le choix sélectionné s'il y en a, sinon avance
     /// d'une réplique (ou affiche la réaction du PNJ après un choix).
@@ -546,93 +241,4 @@ final class DialogueSystem {
         }
     }
 
-    private func createChoices(_ options: [DialogueChoice]) {
-        guard let sceneRef = root.scene else { return }
-        let panelWidth = panelWidth(for: sceneRef.size)
-        let buttonWidth = panelWidth - 28
-        let minButtonHeight: CGFloat = 28
-
-        for (offset, option) in options.enumerated() {
-            // Le label est mesuré AVANT le bouton : un titre qui passe sur
-            // 2 lignes (traductions longues, FR en particulier) doit gonfler
-            // le bouton plutôt que déborder sur celui d'en dessous.
-            let label = SKLabelNode(fontNamed: PixelUI.uiFont)
-            label.text = option.title
-            label.fontSize = 12 * AccessibilitySettings.textScale
-            label.fontColor = .white
-            label.numberOfLines = 2
-            label.preferredMaxLayoutWidth = buttonWidth - 32
-            label.verticalAlignmentMode = .center
-            label.horizontalAlignmentMode = .left
-
-            let buttonHeight = max(minButtonHeight, ceil(label.frame.height) + 14)
-            choiceHeights.append(buttonHeight)
-
-            let button = SKShapeNode()
-            PixelUI.stylePanel(button,
-                               size: CGSize(width: buttonWidth, height: buttonHeight),
-                               fill: SKColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1),
-                               accent: SKColor(red: 0.62, green: 0.48, blue: 0.90, alpha: 1))
-            button.userData = [
-                "title": option.title,
-                "responseSpeaker": option.responseSpeaker,
-                "response": option.response,
-                "index": offset
-            ]
-
-            // Puce en losange pixel (carré tourné) — plus de cercle ni de
-            // glow, cohérent avec le reste de l'UI rétro.
-            let bullet = SKSpriteNode(color: SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1),
-                                      size: CGSize(width: 5, height: 5))
-            bullet.zRotation = .pi / 4
-            bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)
-            button.addChild(bullet)
-
-            label.position = CGPoint(x: -buttonWidth / 2 + 22, y: 0)
-            button.addChild(label)
-
-            let chevron = SKLabelNode(fontNamed: PixelUI.uiFont)
-            chevron.text = "›"
-            chevron.fontSize = 13
-            chevron.fontColor = SKColor(red: 0.65, green: 0.55, blue: 0.95, alpha: 0.8)
-            chevron.verticalAlignmentMode = .center
-            chevron.horizontalAlignmentMode = .right
-            chevron.position = CGPoint(x: buttonWidth / 2 - 10, y: 0)
-            button.addChild(chevron)
-
-            // Position provisoire — layoutChoices() replace précisément
-            // dès que la hauteur dynamique du panneau est connue.
-            let yOffset = -CGFloat(offset) * (buttonHeight + 4)
-            button.position = CGPoint(x: 0, y: yOffset - 10)
-
-            root.addChild(button)
-            choiceNodes.append(button)
-
-            JuiceEngine.popIn(button, delay: Double(offset) * 0.06)
-        }
-        choiceSelection = 0
-        refreshChoiceHighlight()
-    }
-
-    private func layoutChoices(panelWidth: CGFloat, panelHeight: CGFloat) {
-        guard !choiceNodes.isEmpty, choiceHeights.count == choiceNodes.count else { return }
-        // Premier bouton à 30pt sous le haut du panneau (même retrait que
-        // l'ancien pas fixe) ; chaque bouton suivant colle au précédent avec
-        // 4pt d'écart, sur SA hauteur réelle — plus de chevauchement quand
-        // un titre passe sur 2 lignes.
-        var cursorY = panelHeight / 2 - 30 - choiceHeights[0] / 2
-
-        for (offset, node) in choiceNodes.enumerated() {
-            if offset > 0 {
-                cursorY -= choiceHeights[offset - 1] / 2 + 4 + choiceHeights[offset] / 2
-            }
-            node.position = CGPoint(x: 0, y: cursorY)
-        }
-    }
-
-    private func clearChoices() {
-        choiceNodes.forEach { $0.removeFromParent() }
-        choiceNodes.removeAll()
-        choiceHeights.removeAll()
-    }
 }

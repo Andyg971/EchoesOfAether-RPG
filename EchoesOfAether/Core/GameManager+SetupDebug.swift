@@ -1,6 +1,6 @@
 import SpriteKit
 
-// Mise en place — seconde moitié : arguments de debug (--zone-*, --overlay-test, --combat-*), niveau/HUD.
+// Mise en place — layout selon la safe area, niveau/HUD, ouverture d'un overlay de debug.
 // Extrait de GameManager.swift (découpage du monolithe).
 @MainActor
 extension GameManager {

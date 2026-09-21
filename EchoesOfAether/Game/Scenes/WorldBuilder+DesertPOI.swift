@@ -4,6 +4,7 @@ import SpriteKit
 // Extrait de WorldBuilder.swift (découpage du monolithe).
 @MainActor
 extension WorldBuilder {
+    /// Figurant de la cité : animation d'idle, pas d'errance (ils ont peur).
     func addDesertVillager(_ asset: String, in scene: SKScene, at pos: CGPoint) {
         guard let npc = PixelArtSprites.animated(
             name: asset, frames: 6,

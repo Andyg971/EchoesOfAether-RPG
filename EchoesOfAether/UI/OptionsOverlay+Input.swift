@@ -2,54 +2,65 @@ import SpriteKit
 
 // OptionsOverlay — taps : volumes, bascules, langue, reset avec confirmation.
 extension OptionsOverlay {
+    /// Le bouton nommé `name` est-il sous le doigt ? Recherche RÉCURSIVE : les
+    /// boutons de volume vivent dans le conteneur de leur ligne, et
+    /// `childNode(withName:)` sans `//` ne regarde que les enfants directs —
+    /// les « < » « > » ne répondaient jamais. Le point est converti dans le
+    /// repère du parent du bouton, celui que `contains` attend.
+    private func hit(_ name: String, at point: CGPoint, in scene: SKScene) -> SKShapeNode? {
+        guard let btn = root.childNode(withName: "//\(name)") as? SKShapeNode,
+              let parent = btn.parent,
+              btn.contains(parent.convert(point, from: scene)) else { return nil }
+        return btn
+    }
+
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard isActive else { return false }
-        let local = root.convert(point, from: scene)
 
-        if let btn = root.childNode(withName: "sfxDown") as? SKShapeNode, btn.contains(local) {
+        if hit("sfxDown", at: point, in: scene) != nil {
             sfxVolume = max(0, sfxVolume - 0.25)
             refreshVolumeDisplay(.sfx)
             HapticsEngine.light()
             onVolumeChange?(sfxVolume)
             return true
         }
-        if let btn = root.childNode(withName: "sfxUp") as? SKShapeNode, btn.contains(local) {
+        if hit("sfxUp", at: point, in: scene) != nil {
             sfxVolume = min(1, sfxVolume + 0.25)
             refreshVolumeDisplay(.sfx)
             HapticsEngine.light()
             onVolumeChange?(sfxVolume)
             return true
         }
-        if let btn = root.childNode(withName: "musicDown") as? SKShapeNode, btn.contains(local) {
+        if hit("musicDown", at: point, in: scene) != nil {
             musicVolume = max(0, musicVolume - 0.25)
             refreshVolumeDisplay(.music)
             HapticsEngine.light()
             onMusicVolumeChange?(musicVolume)
             return true
         }
-        if let btn = root.childNode(withName: "musicUp") as? SKShapeNode, btn.contains(local) {
+        if hit("musicUp", at: point, in: scene) != nil {
             musicVolume = min(1, musicVolume + 0.25)
             refreshVolumeDisplay(.music)
             HapticsEngine.light()
             onMusicVolumeChange?(musicVolume)
             return true
         }
-        if let btn = root.childNode(withName: "cycleDifficulty") as? SKShapeNode, btn.contains(local) {
+        if hit("cycleDifficulty", at: point, in: scene) != nil {
             Difficulty.current = Difficulty.current.next
             HapticsEngine.light()
             show(in: scene)   // rebuild pour afficher le nouveau palier
             return true
         }
-        if let btn = root.childNode(withName: "toggleReduceMotion") as? SKShapeNode, btn.contains(local) {
+        if hit("toggleReduceMotion", at: point, in: scene) != nil {
             toggle(key: AccessibilitySettings.reduceMotionKey, scene: scene)
             return true
         }
-        if let btn = root.childNode(withName: "toggleLargeText") as? SKShapeNode, btn.contains(local) {
+        if hit("toggleLargeText", at: point, in: scene) != nil {
             toggle(key: AccessibilitySettings.largeTextKey, scene: scene)
             onLargeTextChange?()
             return true
         }
-        if let btn = root.childNode(withName: "toggleHaptics") as? SKShapeNode, btn.contains(local) {
+        if hit("toggleHaptics", at: point, in: scene) != nil {
             // Défaut activé : on bascule depuis la valeur effective, pas depuis
             // le brut UserDefaults.bool (qui vaut false tant qu'on n'a rien écrit).
             UserDefaults.standard.set(!HapticsEngine.enabled, forKey: HapticsEngine.enabledKey)
@@ -57,24 +68,24 @@ extension OptionsOverlay {
             show(in: scene)
             return true
         }
-        if let btn = root.childNode(withName: "optionsTutorial") as? SKShapeNode, btn.contains(local) {
+        if hit("optionsTutorial", at: point, in: scene) != nil {
             HapticsEngine.light()
             onShowTutorial?()
             return true
         }
-        if let btn = root.childNode(withName: "langFR") as? SKShapeNode, btn.contains(local) {
+        if hit("langFR", at: point, in: scene) != nil {
             selectLanguage("fr")
             return true
         }
-        if let btn = root.childNode(withName: "langEN") as? SKShapeNode, btn.contains(local) {
+        if hit("langEN", at: point, in: scene) != nil {
             selectLanguage("en")
             return true
         }
-        if let btn = root.childNode(withName: "optionsReset") as? SKShapeNode, btn.contains(local) {
+        if let btn = hit("optionsReset", at: point, in: scene) {
             handleReset(btn: btn)
             return true
         }
-        if let btn = root.childNode(withName: "optionsClose") as? SKShapeNode, btn.contains(local) {
+        if hit("optionsClose", at: point, in: scene) != nil {
             HapticsEngine.light()
             onClose?()
             return true

@@ -247,6 +247,7 @@
 		AA20LEGI000000000000TEST /* OverlayLegibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */; };
+		B7ABE9D575C7D2D20F5454F7 /* ContentLocalizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 310864627FEE4E7974B95D5A /* ContentLocalizationTests.swift */; };
 		05854D74440AC2452ABA6299 /* GameManagerFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFEB70CC056CEDA8701DAE7C /* GameManagerFlowTests.swift */; };
 		2A0A8BB26BB2B3EB748B4CCD /* CombatSystemFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F469E3433626C0730519C482 /* CombatSystemFlowTests.swift */; };
 		6D7EFB04B8A741B0A0000888 /* EncounterBalanceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFB03B8A741B0A0000888 /* EncounterBalanceTests.swift */; };
@@ -509,6 +510,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
 		42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatMathTests.swift"; sourceTree = "<group>"; };
+		310864627FEE4E7974B95D5A /* ContentLocalizationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContentLocalizationTests.swift"; sourceTree = "<group>"; };
 		CFEB70CC056CEDA8701DAE7C /* GameManagerFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "GameManagerFlowTests.swift"; sourceTree = "<group>"; };
 		F469E3433626C0730519C482 /* CombatSystemFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatSystemFlowTests.swift"; sourceTree = "<group>"; };
 		6D7EFB03B8A741B0A0000888 /* EncounterBalanceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EncounterBalanceTests.swift; sourceTree = "<group>"; };
@@ -856,6 +858,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				B090FF8964809699D851868F /* PlayerStateTests.swift */,
 				42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */,
+				310864627FEE4E7974B95D5A /* ContentLocalizationTests.swift */,
 				CFEB70CC056CEDA8701DAE7C /* GameManagerFlowTests.swift */,
 				F469E3433626C0730519C482 /* CombatSystemFlowTests.swift */,
 				6D7EFB03B8A741B0A0000888 /* EncounterBalanceTests.swift */,
@@ -1060,6 +1063,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			files = (
 				8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */,
 				010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */,
+				B7ABE9D575C7D2D20F5454F7 /* ContentLocalizationTests.swift in Sources */,
 				05854D74440AC2452ABA6299 /* GameManagerFlowTests.swift in Sources */,
 				2A0A8BB26BB2B3EB748B4CCD /* CombatSystemFlowTests.swift in Sources */,
 				6D7EFB04B8A741B0A0000888 /* EncounterBalanceTests.swift in Sources */,

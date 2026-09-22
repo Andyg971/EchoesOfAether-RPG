@@ -142,7 +142,7 @@ extension HUDOverlay {
     /// Bouton « icône seule » : plus de plaque noire — la forme du bouton
     /// reste la zone tactile (44 pt, invisible), l'icône est agrandie et
     /// reçoit une ombre portée dure (même recette que les labels du HUD).
-    func finishIconButton(_ button: SKShapeNode, icon: SKNode) {
+    private func finishIconButton(_ button: SKShapeNode, icon: SKNode) {
         button.fillColor = .clear
         button.strokeColor = .clear
         button.lineWidth = 0
@@ -158,13 +158,13 @@ extension HUDOverlay {
 
     /// Copie sombre de l'icône (ombre portée) : chaque forme garde sa
     /// géométrie mais passe en quasi-noir.
-    func darkSilhouette(of node: SKNode) -> SKNode {
+    private func darkSilhouette(of node: SKNode) -> SKNode {
         guard let copy = node.copy() as? SKNode else { return SKNode() }
         paintDark(copy)
         return copy
     }
 
-    func paintDark(_ node: SKNode) {
+    private func paintDark(_ node: SKNode) {
         let dark = SKColor(red: 0.02, green: 0.02, blue: 0.04, alpha: 0.80)
         if let shape = node as? SKShapeNode {
             if shape.fillColor != .clear { shape.fillColor = dark }

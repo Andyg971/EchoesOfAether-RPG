@@ -8,7 +8,7 @@ extension DialogueSystem {
     /// choix (chacun sur sa hauteur réelle, 1 ou 2 lignes) + marge basse —
     /// plus de grand vide noir sous les choix, et plus de texte qui déborde
     /// sur le bouton suivant quand un titre est long.
-    var panelHeightChoices: CGFloat {
+    private var panelHeightChoices: CGFloat {
         guard !choiceHeights.isEmpty else { return 68 }
         return 40 + choiceHeights.reduce(0, +) + CGFloat(choiceHeights.count - 1) * 4
     }

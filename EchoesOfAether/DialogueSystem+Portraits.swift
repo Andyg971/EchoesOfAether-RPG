@@ -4,7 +4,7 @@ import UIKit
 // DialogueSystem — portraits : couleur d'accent, asset ou pixel-art dessiné en code, application.
 extension DialogueSystem {
     /// Couleur d'accent dérivée du nom du speaker — stable pour un même speaker.
-    func portraitColor(for speaker: String) -> SKColor {
+    private func portraitColor(for speaker: String) -> SKColor {
         // Couleurs fixes pour les speakers principaux ; fallback via hash sinon.
         let key = speaker.lowercased()
         if key.contains("kael") {
@@ -39,7 +39,7 @@ extension DialogueSystem {
 
     /// Asset de portrait pixel par locuteur (nil = pas de visage :
     /// voix, cristal, plaque… le panneau retombe en mode texte seul).
-    func portraitAsset(for speaker: String) -> String? {
+    private func portraitAsset(for speaker: String) -> String? {
         let key = speaker.lowercased()
         // Andy : les visages de Kael et d'Eran étaient inversés → on les
         // échange. Kael parle avec « portrait_eran », Eran avec l'icône (Kael).
@@ -58,11 +58,11 @@ extension DialogueSystem {
 
     // MARK: - Portraits dessinés en code (habitants d'Ossara)
 
-    static var codePortraitCache: [String: SKTexture] = [:]
+    static private var codePortraitCache: [String: SKTexture] = [:]
 
     /// Portrait pixel dessiné en code pour un locuteur (marchand/caravanier du
     /// désert), sinon nil. Renvoie (id de cache, texture) pour l'anim de pop.
-    func codePortrait(for speaker: String) -> (String, SKTexture)? {
+    private func codePortrait(for speaker: String) -> (String, SKTexture)? {
         let key = speaker.lowercased()
         // Désactivé : seuls les 4 compagnons principaux ont un visage.
         let deserty: [String] = []
@@ -75,7 +75,7 @@ extension DialogueSystem {
         return (id, t)
     }
 
-    static func renderPortrait(_ map: [String],
+    static private func renderPortrait(_ map: [String],
                                        palette: [Character: SKColor]) -> SKTexture {
         let rows = map.count
         let cols = map.map(\.count).max() ?? 0
@@ -95,7 +95,7 @@ extension DialogueSystem {
         return tex
     }
 
-    static let desertMerchantPalette: [Character: SKColor] = [
+    static private let desertMerchantPalette: [Character: SKColor] = [
         "o": SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1),
         "T": SKColor(red: 0.85, green: 0.78, blue: 0.60, alpha: 1),   // turban
         "t": SKColor(red: 0.70, green: 0.62, blue: 0.45, alpha: 1),
@@ -107,7 +107,7 @@ extension DialogueSystem {
         "R": SKColor(red: 0.55, green: 0.42, blue: 0.28, alpha: 1)    // robe
     ]
 
-    static let desertMerchantMap = [
+    static private let desertMerchantMap = [
         ".....oooooo.....",
         "...oTTTTTTTTo...",
         "..oTTTTTTTTTTo..",

@@ -94,8 +94,8 @@ extension TransitionManager {
         creditsOverlayRef = overlay
     }
 
-    static var creditsClosureClosure: (() -> Void)?
-    static var creditsOverlayRef: SKShapeNode?
+    static private var creditsClosureClosure: (() -> Void)?
+    static private var creditsOverlayRef: SKShapeNode?
 
     static func handleCreditsTap(at point: CGPoint, in scene: SKScene) -> Bool {
         guard let overlay = creditsOverlayRef else { return false }

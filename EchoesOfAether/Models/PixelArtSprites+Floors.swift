@@ -62,7 +62,7 @@ extension PixelArtSprites {
 
     /// RNG déterministe (LCG) : le motif du plancher est stable
     /// d'une reconstruction de pièce à l'autre.
-    struct SeededRNG: RandomNumberGenerator {
+    private struct SeededRNG: RandomNumberGenerator {
         var state: UInt64
         mutating func next() -> UInt64 {
             state = state &* 6364136223846793005 &+ 1442695040888963407

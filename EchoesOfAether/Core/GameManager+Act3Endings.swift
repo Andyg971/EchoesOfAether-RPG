@@ -41,7 +41,7 @@ extension GameManager {
 
     /// Franchissement effectif du Seuil : narration de fin d'Acte III puis
     /// bascule vers l'Acte IV. Appelé uniquement après confirmation « Franchir ».
-    func performAct3Crossing() {
+    private func performAct3Crossing() {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
             guard let self else { return }

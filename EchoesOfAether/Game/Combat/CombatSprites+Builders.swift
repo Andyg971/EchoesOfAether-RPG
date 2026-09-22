@@ -145,7 +145,7 @@ extension CombatSprites {
     }
 
     /// Fallback shape si l'asset statue manque.
-    static func buildGuardianFallback(into root: SKNode) {
+    static private func buildGuardianFallback(into root: SKNode) {
         let body = SKShapeNode(rectOf: CGSize(width: 70, height: 90), cornerRadius: 14)
         body.fillColor = SKColor(red: 0.18, green: 0.10, blue: 0.28, alpha: 1)
         body.strokeColor = SKColor(red: 0.55, green: 0.22, blue: 0.85, alpha: 0.8)

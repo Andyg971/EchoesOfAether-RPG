@@ -66,7 +66,7 @@ extension WorldMapOverlay {
     }
 
     /// Route pointillée : petits carrés pixel régulièrement espacés.
-    func drawRoad(from a: CGPoint, to b: CGPoint, dimmed: Bool) {
+    private func drawRoad(from a: CGPoint, to b: CGPoint, dimmed: Bool) {
         let d = CGFloat(hypot(b.x - a.x, b.y - a.y))
         guard d > 1 else { return }
         let step: CGFloat = 12
@@ -83,7 +83,7 @@ extension WorldMapOverlay {
         }
     }
 
-    func addPlaceNode(_ place: WorldMapPlace) {
+    private func addPlaceNode(_ place: WorldMapPlace) {
         let p = panelPoint(place.point)
 
         // Carré du lieu (16 pt) — couleur du lieu, bordure selon l'état

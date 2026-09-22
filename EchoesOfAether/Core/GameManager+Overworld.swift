@@ -244,7 +244,7 @@ extension GameManager {
         }
     }
 
-    func returnToOverworldAfterCombat() {
+    private func returnToOverworldAfterCombat() {
         guard let scene else { return }
         transition(to: .transition)
         TransitionManager.fade(in: scene) { [weak self] in

@@ -40,7 +40,7 @@ extension InventoryOverlay {
 
     /// Libellé + valeur d'une ligne (sans icône) : partagé entre addRow
     /// et addQuestRow.
-    func addLabels(label: String, detail: String,
+    private func addLabels(label: String, detail: String,
                            y: CGFloat, lineH: CGFloat,
                            color: SKColor) -> CGFloat {
         let nameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)

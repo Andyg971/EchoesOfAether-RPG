@@ -29,7 +29,7 @@ final class DialogueSystem {
     /// du cadre sur un bouton voisin.
     var choiceHeights: [CGFloat] = []
     var choiceSelection = 0   // curseur sur les choix (A valide)
-    private var steps: [DialogueStep] = []
+    private(set) var steps: [DialogueStep] = []   // lu par les tests de flux
     var index = 0
     /// Index du choix déjà résolu — B (skip) ne doit pas le re-poser.
     var answeredChoiceIndex = -1

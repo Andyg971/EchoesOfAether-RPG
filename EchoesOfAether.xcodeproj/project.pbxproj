@@ -247,6 +247,7 @@
 		AA20LEGI000000000000TEST /* OverlayLegibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */; };
+		1478422D8656CB86FC9F76E5 /* InteractionHintTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */; };
 		26BFF907E1429B9713897897 /* OverlayFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E92026B4D8B545C4CBA0551F /* OverlayFlowTests.swift */; };
 		88E05524854C1FB52B113B18 /* StoryActsFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BFD917BFDA9C02CC2FE370C /* StoryActsFlowTests.swift */; };
 		2BDFFFD87B1B2E4975D594BC /* LiveScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = DECFF40E9D6ED4A0D94625C6 /* LiveScene.swift */; };
@@ -514,6 +515,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
 		42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatMathTests.swift"; sourceTree = "<group>"; };
+		A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InteractionHintTests.swift"; sourceTree = "<group>"; };
 		E92026B4D8B545C4CBA0551F /* OverlayFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OverlayFlowTests.swift"; sourceTree = "<group>"; };
 		7BFD917BFDA9C02CC2FE370C /* StoryActsFlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "StoryActsFlowTests.swift"; sourceTree = "<group>"; };
 		DECFF40E9D6ED4A0D94625C6 /* LiveScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = LiveScene.swift; path = Support/LiveScene.swift; sourceTree = "<group>"; };
@@ -866,6 +868,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				B090FF8964809699D851868F /* PlayerStateTests.swift */,
 				42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */,
+				A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */,
 				E92026B4D8B545C4CBA0551F /* OverlayFlowTests.swift */,
 				7BFD917BFDA9C02CC2FE370C /* StoryActsFlowTests.swift */,
 				DECFF40E9D6ED4A0D94625C6 /* LiveScene.swift */,
@@ -1075,6 +1078,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			files = (
 				8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */,
 				010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */,
+				1478422D8656CB86FC9F76E5 /* InteractionHintTests.swift in Sources */,
 				26BFF907E1429B9713897897 /* OverlayFlowTests.swift in Sources */,
 				88E05524854C1FB52B113B18 /* StoryActsFlowTests.swift in Sources */,
 				2BDFFFD87B1B2E4975D594BC /* LiveScene.swift in Sources */,

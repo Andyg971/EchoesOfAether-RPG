@@ -19,8 +19,11 @@ final class StoryActsFlowTests: XCTestCase {
     private var gm: GameManager!
     private var returnedToMenu = 0
 
-    override func setUp() {
-        super.setUp()
+
+
+    // XCTest déclare setUp/tearDown non isolés et interdit de les isoler : l'état
+    // @MainActor se prépare donc au début de chaque test (`prepare()` + `defer`).
+    private func prepare() {
         live = LiveScene()
         gm = GameManager()
         gm.activeSlot = 3
@@ -31,11 +34,10 @@ final class StoryActsFlowTests: XCTestCase {
         gm.state = .exploration
     }
 
-    override func tearDown() {
+    private func cleanup() {
         SaveManager.delete(slot: 3)
         live.tearDown()
         gm = nil; live = nil
-        super.tearDown()
     }
 
     // MARK: - Helpers
@@ -83,6 +85,8 @@ final class StoryActsFlowTests: XCTestCase {
     // MARK: - Acte II : retour à Solis, Dorin, le Sage
 
     func test_act2_villageReturn_setsFlagsAndObjective() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .act2
         gm.playAct2VillageReturn()
         assertDialogueOpen(PrototypeContent.act2ReturnVillageDialogue, "retrouvailles")
@@ -97,6 +101,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act2_dorinGate_blocksThenDoubtsThenOpensRuins() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .act2
         gm.player.act2DorinPassed = false
         gm.handleAct2Dorin(scene: live.scene)
@@ -125,6 +131,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act2_sage_nightmareThenInnThenRevelation() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .act2
         gm.player.act2NightmareSeen = false
         gm.handleAct2Sage(scene: live.scene)
@@ -173,6 +181,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act2_discovery_complice_endsActAndChainsToAct3() {
+        prepare()
+        defer { cleanup() }
         playDiscovery(corruptionChoice: 0)
         XCTAssertTrue(gm.player.kaelChoseCorruption, "« Oui » = complice")
         assertDialogueOpen(PrototypeContent.act2KaelAloneDialogue, "Kael seul, complice")
@@ -191,6 +201,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act2_discovery_overwhelmed_playsResistedAftermath() {
+        prepare()
+        defer { cleanup() }
         playDiscovery(corruptionChoice: 1)
         XCTAssertFalse(gm.player.kaelChoseCorruption, "« … » = dépassé par son pouvoir")
         assertDialogueOpen(PrototypeContent.act2KaelAloneResistedDialogue, "Kael seul, brisé")
@@ -199,6 +211,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act2_lastWords_mentionEranWhenFound() {
+        prepare()
+        defer { cleanup() }
         gm.player.act2EranFound = true
         gm.phase = .ruins
         gm.player.ruinsProgress = 2
@@ -224,6 +238,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act3_eranMeet_capturesResistChoice_andWarningCanReconsider() {
+        prepare()
+        defer { cleanup() }
         enterAct3()
         gm.openAct3EranMeet()
         assertDialogueOpen(PrototypeContent.act3EranMeetDialogue, "Eran")
@@ -240,6 +256,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act3_eranMeet_crossChoice_skipsWarning() {
+        prepare()
+        defer { cleanup() }
         enterAct3()
         gm.openAct3EranMeet()
         finishDialogue(dialogue, choosing: [0])
@@ -248,6 +266,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act3_resistEnding_rollsCreditsToMenu() {
+        prepare()
+        defer { cleanup() }
         enterAct3()
         gm.player.act3EndingChoice = 1
         gm.showAct3TrueEnding()
@@ -260,6 +280,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act3_crossEnding_warningCanStay_orOpensAct4() {
+        prepare()
+        defer { cleanup() }
         enterAct3()
         gm.player.act3EndingChoice = 0
         gm.showAct3TrueEnding()
@@ -290,6 +312,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act4_voiceConfront_capturesChoice() {
+        prepare()
+        defer { cleanup() }
         enterAct4()
         gm.openAct4VoiceConfront()
         assertDialogueOpen(PrototypeContent.act4VoiceConfrontDialogue, "la Voix")
@@ -318,6 +342,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act4_destroyEnding_asComplice() {
+        prepare()
+        defer { cleanup() }
         playAct4Ending(choice: 0, choseCorruption: true,
                        expectReflection: PrototypeContent.act4DestroyChoseDialogue,
                        expectEnding: PrototypeContent.act4DestroyEndingDialogue,
@@ -325,6 +351,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act4_destroyEnding_asResisted() {
+        prepare()
+        defer { cleanup() }
         playAct4Ending(choice: 0, choseCorruption: false,
                        expectReflection: PrototypeContent.act4DestroyResistedDialogue,
                        expectEnding: PrototypeContent.act4DestroyEndingDialogue,
@@ -332,6 +360,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act4_mergeEnding_asComplice() {
+        prepare()
+        defer { cleanup() }
         playAct4Ending(choice: 1, choseCorruption: true,
                        expectReflection: PrototypeContent.act4MergeChoseDialogue,
                        expectEnding: PrototypeContent.act4MergeEndingDialogue,
@@ -339,6 +369,8 @@ final class StoryActsFlowTests: XCTestCase {
     }
 
     func test_act4_mergeEnding_asResisted() {
+        prepare()
+        defer { cleanup() }
         playAct4Ending(choice: 1, choseCorruption: false,
                        expectReflection: PrototypeContent.act4MergeResistedDialogue,
                        expectEnding: PrototypeContent.act4MergeEndingDialogue,

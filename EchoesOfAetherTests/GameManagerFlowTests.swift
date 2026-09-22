@@ -18,18 +18,7 @@ final class GameManagerFlowTests: XCTestCase {
     /// Slot scratch : `transition(to: .exploration)` sauvegarde à chaque fois.
     private let scratchSlot = 3
 
-    override func setUp() {
-        super.setUp()
-        gm = GameManager()
-        gm.activeSlot = scratchSlot
-    }
 
-    override func tearDown() {
-        SaveManager.delete(slot: scratchSlot)
-        gm = nil
-        heldScene = nil
-        super.tearDown()
-    }
 
     /// Un GameManager avec monde et HUD posés sur une scène : le minimum pour
     /// reconstruire une zone (`restoreFrom`, `showForest`…).
@@ -43,9 +32,24 @@ final class GameManagerFlowTests: XCTestCase {
         return scene
     }
 
+    // XCTest déclare setUp/tearDown non isolés et interdit de les isoler : l'état
+    // @MainActor se prépare donc au début de chaque test (`prepare()` + `defer`).
+    private func prepare() {
+        gm = GameManager()
+        gm.activeSlot = scratchSlot
+    }
+
+    private func cleanup() {
+        SaveManager.delete(slot: scratchSlot)
+        gm = nil
+        heldScene = nil
+    }
+
     // MARK: - Verrous de la carte du monde (anti-saut de scénario)
 
     func test_placeDiscovered_atWake_onlyVillageIsOpen() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .wake
         XCTAssertTrue(gm.placeDiscovered("village"))
         for id in ["forest", "shrine", "mines", "desert", "ruins", "threshold"] {
@@ -54,6 +58,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_placeDiscovered_atForest_opensExcursionsButNotShrine() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .forest
         XCTAssertTrue(gm.placeDiscovered("forest"))
         XCTAssertTrue(gm.placeDiscovered("mines"), "excursion optionnelle dès la forêt")
@@ -66,12 +72,16 @@ final class GameManagerFlowTests: XCTestCase {
     /// Les loups de la clairière vaincus (`forestProgress == 2`) ouvrent le
     /// Sanctuaire même si la phase n'a pas encore basculé.
     func test_placeDiscovered_shrineOpensOnceForestIsCleared() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .forest
         gm.player.forestProgress = 2
         XCTAssertTrue(gm.placeDiscovered("shrine"))
     }
 
     func test_placeDiscovered_followsStoryPhases() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .ruins
         XCTAssertTrue(gm.placeDiscovered("ruins"))
         XCTAssertFalse(gm.placeDiscovered("threshold"))
@@ -81,12 +91,16 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_placeDiscovered_visitedPlaceStaysOpen() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .wake
         gm.discoveredPlaces.insert("desert")
         XCTAssertTrue(gm.placeDiscovered("desert"), "déjà visité = toujours voyageable")
     }
 
     func test_placeDiscovered_unknownIdIsClosed() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .act4
         XCTAssertFalse(gm.placeDiscovered("voidheart"), "le Cœur du Vide n'est pas un lieu de carte")
         XCTAssertFalse(gm.placeDiscovered("atlantide"))
@@ -98,6 +112,8 @@ final class GameManagerFlowTests: XCTestCase {
     /// la sortie de la carte et l'inscription du lieu visité. Le changement
     /// de zone lui-même vit dans le fondu (SKAction) — hors de portée ici.
     func test_enterZoneFromMap_lockedPlace_changesNothing() {
+        prepare()
+        defer { cleanup() }
         _ = makeSceneBackedManager()
         gm.phase = .forest
         gm.inOverworld = true
@@ -112,6 +128,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_enterZoneFromMap_openPlace_leavesMapAndRemembersVisit() {
+        prepare()
+        defer { cleanup() }
         _ = makeSceneBackedManager()
         gm.phase = .forest
         gm.inOverworld = true
@@ -126,6 +144,8 @@ final class GameManagerFlowTests: XCTestCase {
     // MARK: - Coffres de la carte du monde
 
     func test_openOverworldChest_rewardsOnceOnly() {
+        prepare()
+        defer { cleanup() }
         _ = makeSceneBackedManager()
         let chest = try! XCTUnwrap(WorldBuilder.overworldChests.first { $0.id == "summit" })
         let gold = gm.player.gold, shards = gm.player.aetherShards
@@ -140,6 +160,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_openOverworldChest_unknownIdIsIgnored() {
+        prepare()
+        defer { cleanup() }
         _ = makeSceneBackedManager()
         let gold = gm.player.gold
         gm.openOverworldChest("eldorado")
@@ -150,6 +172,8 @@ final class GameManagerFlowTests: XCTestCase {
     // MARK: - Disponibilité de la carte
 
     func test_worldMapAvailable_onlyInFreePhases() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .village
         XCTAssertFalse(gm.worldMapAvailable, "Acte I au village : pas de carte")
         gm.phase = .forest
@@ -161,6 +185,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_worldMapAvailable_neverFromMinesOrInterior() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .forest
         gm.inMines = true
         XCTAssertFalse(gm.worldMapAvailable)
@@ -170,6 +196,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_worldMapAvailable_alwaysFromOverworldAndDesert() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .village
         gm.inOverworld = true
         XCTAssertTrue(gm.worldMapAvailable, "sur la carte : bouton = voyage rapide")
@@ -179,6 +207,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_currentPlaceID_excursionsWinOverPhase() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .act2
         XCTAssertEqual(gm.currentPlaceID, "village")
         gm.inForest = true
@@ -190,6 +220,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_currentPlaceID_mapsEveryPhase() {
+        prepare()
+        defer { cleanup() }
         let expected: [GamePhase: String] = [
             .wake: "village", .village: "village", .forest: "forest", .shrine: "shrine",
             .complete: "village", .act2: "village", .ruins: "ruins", .fallen: "village",
@@ -204,6 +236,8 @@ final class GameManagerFlowTests: XCTestCase {
     // MARK: - Potion en exploration
 
     func test_useHealthPotion_healsFortyPercentAndConsumes() {
+        prepare()
+        defer { cleanup() }
         gm.player.potions = 1
         gm.player.currentHP = 100
         let expected = min(gm.player.currentMaxHP,
@@ -214,6 +248,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_useHealthPotion_refusesWithoutStockOrAtFullHP() {
+        prepare()
+        defer { cleanup() }
         gm.player.potions = 0
         gm.player.currentHP = 10
         XCTAssertFalse(gm.useHealthPotion(), "pas de fiole")
@@ -228,6 +264,8 @@ final class GameManagerFlowTests: XCTestCase {
     /// Sans scène, `openPaywall` ne fait rien : on observe juste que l'action
     /// est mise en attente puis rejouée EXACTEMENT une fois au déverrouillage.
     func test_requireFullGame_deferredActionResumesOnUnlock() throws {
+        prepare()
+        defer { cleanup() }
         try XCTSkipIf(gm.isFullGameUnlocked, "jeu déjà débloqué sur cet hôte : rien à différer")
         var calls = 0
         gm.requireFullGame { calls += 1 }
@@ -243,6 +281,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_dismissPaywall_dropsTheDeferredAction() throws {
+        prepare()
+        defer { cleanup() }
         try XCTSkipIf(gm.isFullGameUnlocked, "jeu déjà débloqué sur cet hôte")
         var calls = 0
         gm.requireFullGame { calls += 1 }
@@ -262,6 +302,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_restore_village_restoresPlayerAndExplores() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
         let data = save(phase: .village, resonance: 7) { $0.gold = 123; $0.potions = 2 }
 
@@ -280,6 +322,8 @@ final class GameManagerFlowTests: XCTestCase {
     /// Une save faite aux mines ou au désert reprend en zone d'ORIGINE : ces
     /// excursions ne sont jamais stockées.
     func test_restore_clearsExcursionFlags() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
         gm.inMines = true
         gm.inDesert = true
@@ -291,6 +335,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_restore_forest_placesKaelAtSouthEdgeAndSpawnsRoamers() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
 
         gm.restoreFrom(save: save(phase: .forest), scene: scene)
@@ -305,6 +351,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_restore_ruins_objectiveFollowsProgress() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
 
         gm.restoreFrom(save: save(phase: .ruins) { $0.ruinsProgress = 0 }, scene: scene)
@@ -317,6 +365,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_restore_act3_marksCorruptionCinematicAsSeen() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
 
         gm.restoreFrom(save: save(phase: .act3) { $0.kaelCorruptionLevel = 3 }, scene: scene)
@@ -327,6 +377,8 @@ final class GameManagerFlowTests: XCTestCase {
     }
 
     func test_restore_act4_explores() {
+        prepare()
+        defer { cleanup() }
         let scene = makeSceneBackedManager()
 
         gm.restoreFrom(save: save(phase: .act4), scene: scene)
@@ -339,6 +391,8 @@ final class GameManagerFlowTests: XCTestCase {
     /// Save interrompue entre les Actes : la suite doit se relancer (cul-de-sac
     /// historique). Verrouillé : la reprise passe par le mur d'achat.
     func test_restore_complete_requeuesAct2BehindPaywall() throws {
+        prepare()
+        defer { cleanup() }
         try XCTSkipIf(gm.isFullGameUnlocked, "jeu débloqué : l'Acte II démarre directement")
         let scene = makeSceneBackedManager()
 

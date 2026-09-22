@@ -23,8 +23,19 @@ final class CombatSystemFlowTests: XCTestCase {
     /// PV de base de l'ennemi ; `attach` les relève (× robustesse × difficulté).
     private let baseEnemyHP = 2_000
 
-    override func setUp() {
-        super.setUp()
+
+
+    private var foe: CombatSystem.EnemyState { sut.enemies[0] }
+
+    /// Le tour du joueur est relancé à la main entre deux actions (sans
+    /// boucle de jeu, `endPlayerAction` ne le fait pas tout seul).
+    private func nextPlayerTurn() {
+        sut.phase = .playerTurn
+    }
+
+    // XCTest déclare setUp/tearDown non isolés et interdit de les isoler : l'état
+    // @MainActor se prépare donc au début de chaque test (`prepare()` + `defer`).
+    private func prepare() {
         difficultyBefore = Difficulty.current
         Difficulty.current = .normal
         scene = SKScene(size: CGSize(width: 844, height: 390))
@@ -35,23 +46,16 @@ final class CombatSystemFlowTests: XCTestCase {
         sut.startPlayerTurn()
     }
 
-    override func tearDown() {
+    private func cleanup() {
         Difficulty.current = difficultyBefore
         sut = nil; scene = nil; player = nil
-        super.tearDown()
-    }
-
-    private var foe: CombatSystem.EnemyState { sut.enemies[0] }
-
-    /// Le tour du joueur est relancé à la main entre deux actions (sans
-    /// boucle de jeu, `endPlayerAction` ne le fait pas tout seul).
-    private func nextPlayerTurn() {
-        sut.phase = .playerTurn
     }
 
     // MARK: - Ouverture
 
     func test_attach_scalesEnemyAndOpensOnPlayerTurn() {
+        prepare()
+        defer { cleanup() }
         let expectedHP = Int((Double(baseEnemyHP) * Double(CombatSystem.enemyHPScale)).rounded())
         XCTAssertEqual(foe.combatant.maxHP, expectedHP, "robustesse de base appliquée")
         XCTAssertEqual(foe.combatant.hp, expectedHP)
@@ -66,6 +70,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Attaque physique
 
     func test_performAttack_damagesTargetRegensMPAndStartsCombo() {
+        prepare()
+        defer { cleanup() }
         sut.kael.mp = 10
         let hpBefore = foe.combatant.hp
 
@@ -86,6 +92,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Magie
 
     func test_performSpell_withoutEnoughMP_isRefusedAndKeepsTurn() {
+        prepare()
+        defer { cleanup() }
         sut.kael.mp = CombatSpell.ember.mpCost - 1
         let hpBefore = foe.combatant.hp
 
@@ -97,6 +105,8 @@ final class CombatSystemFlowTests: XCTestCase {
     }
 
     func test_performSpell_spendsMPAndDamages() {
+        prepare()
+        defer { cleanup() }
         let mpBefore = sut.kael.mp
         let hpBefore = foe.combatant.hp
 
@@ -111,6 +121,8 @@ final class CombatSystemFlowTests: XCTestCase {
     /// La Bête est faible au feu, bouclier 2 : le premier Brasier entame,
     /// le second BRISE (l'ennemi est à terre pour un tour).
     func test_spellOnWeakness_breaksShieldOnTheLastHit() {
+        prepare()
+        defer { cleanup() }
         XCTAssertTrue(foe.weaknesses.contains(.fire))
         XCTAssertEqual(foe.shieldMax, 2)
         sut.kael.mp = 100
@@ -126,6 +138,8 @@ final class CombatSystemFlowTests: XCTestCase {
     }
 
     func test_spellOffWeakness_leavesShieldIntact() {
+        prepare()
+        defer { cleanup() }
         XCTAssertFalse(foe.weaknesses.contains(.ice))
         sut.kael.mp = 100
 
@@ -138,6 +152,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Entaille noire
 
     func test_blackSlash_buildsResonanceAndStunsAtThree() {
+        prepare()
+        defer { cleanup() }
         sut.kael.mp = 100
 
         sut.perform(.blackSlash)
@@ -159,6 +175,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Soins
 
     func test_potion_healsFortyPercentAndConsumesOne() {
+        prepare()
+        defer { cleanup() }
         player.potions = 2
         sut.kael.hp = 100
         let expected = min(sut.kael.maxHP, 100 + Int(CGFloat(sut.kael.maxHP) * 0.40))
@@ -171,6 +189,8 @@ final class CombatSystemFlowTests: XCTestCase {
     }
 
     func test_mend_healsKaelBySpellPower() {
+        prepare()
+        defer { cleanup() }
         sut.kael.hp = 50
         let mpBefore = sut.kael.mp
         let power = Int(CGFloat(CombatSpell.mend.power(at: player.level)) * player.spellPowerMultiplier)
@@ -184,6 +204,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Coups ennemis
 
     func test_enemyHit_unblocked_takesFullDamage() {
+        prepare()
+        defer { cleanup() }
         sut.phase = .enemyTurn
         let hpBefore = sut.kael.hp
         var proceeded = false
@@ -200,6 +222,8 @@ final class CombatSystemFlowTests: XCTestCase {
     }
 
     func test_enemyHit_blocked_isReducedAndClosesTheWindow() {
+        prepare()
+        defer { cleanup() }
         sut.phase = .enemyTurn
         sut.openBlockWindow()
         XCTAssertTrue(sut.attemptBlock(), "parade prise dans la fenêtre")
@@ -217,6 +241,8 @@ final class CombatSystemFlowTests: XCTestCase {
 
     /// Appuyer AVANT l'annonce brûle la parade : le coup passe en entier.
     func test_enemyHit_blockPressedTooEarly_isBurned() {
+        prepare()
+        defer { cleanup() }
         sut.phase = .enemyTurn
         XCTAssertTrue(sut.attemptBlock(), "l'appui est consommé…")
         sut.openBlockWindow()
@@ -231,6 +257,8 @@ final class CombatSystemFlowTests: XCTestCase {
     // MARK: - Dernier souffle (capstone du Souffle)
 
     func test_lastBreath_leavesKaelAtOneHPOncePerCombat() {
+        prepare()
+        defer { cleanup() }
         player.skillRanks["breath.capstone"] = 1
         XCTAssertTrue(player.hasLastBreath)
         sut.phase = .enemyTurn
@@ -252,6 +280,8 @@ final class CombatSystemFlowTests: XCTestCase {
     /// Un petit ennemi (60 PV × 1,4 = 84) : l'XP gagnée (84 / 3 = 28) reste
     /// sous le seuil du niveau 2 (80), donc lisible sans changement de niveau.
     func test_killingLastEnemy_finishesCombatAndRewardsPlayer() {
+        prepare()
+        defer { cleanup() }
         var completion: (resonance: Int, gold: Int)?
         sut.attach(to: scene, enemyName: "Louveteau", enemyHP: 60,
                    goldReward: 45, player: player) { completion = ($0, $1) }

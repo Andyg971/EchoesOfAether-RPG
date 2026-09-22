@@ -18,8 +18,18 @@ final class InteractionRoutingTests: XCTestCase {
     private var scene: SKScene!
     private let size = CGSize(width: 844, height: 390)
 
-    override func setUp() {
-        super.setUp()
+
+
+    private var w: CGFloat { size.width }
+    /// Hauteur MONDE de la zone courante (les treks scrollent).
+    private var wh: CGFloat { gm.world.worldHeight > 0 ? gm.world.worldHeight : size.height }
+    private func p(_ fx: CGFloat, _ fy: CGFloat) -> CGPoint { CGPoint(x: w * fx, y: wh * fy) }
+    /// Un point loin de tout POI.
+    private var nowhere: CGPoint { CGPoint(x: 3, y: 3) }
+
+    // XCTest déclare setUp/tearDown non isolés et interdit de les isoler : l'état
+    // @MainActor se prépare donc au début de chaque test (`prepare()` + `defer`).
+    private func prepare() {
         gm = GameManager()
         gm.activeSlot = 3
         scene = SKScene(size: size)
@@ -31,18 +41,10 @@ final class InteractionRoutingTests: XCTestCase {
         gm.state = .exploration
     }
 
-    override func tearDown() {
+    private func cleanup() {
         SaveManager.delete(slot: 3)
         gm = nil; scene = nil
-        super.tearDown()
     }
-
-    private var w: CGFloat { size.width }
-    /// Hauteur MONDE de la zone courante (les treks scrollent).
-    private var wh: CGFloat { gm.world.worldHeight > 0 ? gm.world.worldHeight : size.height }
-    private func p(_ fx: CGFloat, _ fy: CGFloat) -> CGPoint { CGPoint(x: w * fx, y: wh * fy) }
-    /// Un point loin de tout POI.
-    private var nowhere: CGPoint { CGPoint(x: 3, y: 3) }
 
     // MARK: - Forêt d'Ébène
 
@@ -52,12 +54,16 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_forest_tapNowhere_doesNothing() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         XCTAssertFalse(gm.tryForestInteraction(nowhere, in: scene))
         XCTAssertEqual(gm.state, .exploration)
     }
 
     func test_forest_toy_onlyWhileQuestIsActive() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         let spot = p(0.80, 0.45)
         gm.player.questChildToy = .inactive
@@ -71,6 +77,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_forest_sideQuestPickups_rewardAndComplete() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         gm.player.questMedallion = .active
         gm.player.questBramOre = .active
@@ -94,12 +102,16 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_forest_completedPickup_isInert() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         gm.player.questMedallion = .complete
         XCTAssertFalse(gm.tryForestInteraction(p(0.28, 0.72), in: scene), "déjà ramassé")
     }
 
     func test_forest_shrineThreshold_needsClearedForestAndStoryVisit() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         let threshold = p(0.55, 0.90)
         gm.player.forestProgress = 1
@@ -116,6 +128,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_forest_mineAndCaveEntrances_startATransition() {
+        prepare()
+        defer { cleanup() }
         enterForest()
         XCTAssertTrue(gm.tryForestInteraction(p(0.88, 0.30), in: scene), "bouche de mine")
         XCTAssertEqual(gm.state, .transition)
@@ -127,6 +141,8 @@ final class InteractionRoutingTests: XCTestCase {
     // MARK: - Village de Solis
 
     func test_village_tapOnNPC_opensDialogue_andNowhereDoesNothing() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .village
         XCTAssertFalse(gm.tryVillageInteraction(nowhere, in: scene))
         XCTAssertTrue(gm.tryVillageInteraction(gm.world.lyra.position, in: scene))
@@ -134,6 +150,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_village_tapOnHouseDoor_entersInterior() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .village
         let door = gm.world.houseDoorPosition(for: .armory, in: size)
         XCTAssertTrue(gm.tryVillageInteraction(door, in: scene))
@@ -142,6 +160,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_interior_exitAndCounter() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .village
         gm.activeInterior = .inn
         XCTAssertFalse(gm.tryInteriorInteraction(nowhere, in: scene))
@@ -156,6 +176,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_interior_withoutActiveInterior_isInert() {
+        prepare()
+        defer { cleanup() }
         gm.activeInterior = nil
         XCTAssertFalse(gm.tryInteriorInteraction(gm.world.interiorExitPosition(in: size), in: scene))
     }
@@ -163,6 +185,8 @@ final class InteractionRoutingTests: XCTestCase {
     // MARK: - Ruines de la Source (Acte II)
 
     func test_ruins_inscriptionsGateOnProgress() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .ruins
         gm.showRuins(in: scene)
         let plan = RuinsLayout(sceneSize: size)
@@ -192,6 +216,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_act3_echoWaitsAtTheEntrance_untilJoined() throws {
+        prepare()
+        defer { cleanup() }
         enterThreshold()
         let echo = try XCTUnwrap(gm.world.thresholdEchoPosition, "l'Écho est posé à l'entrée")
         gm.player.act3EchoJoined = false
@@ -200,6 +226,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_act3_stelesAndSpirits_onlyOnce() throws {
+        prepare()
+        defer { cleanup() }
         enterThreshold()
         let plan = ThresholdLayout(sceneSize: size)
         gm.player.act3EchoJoined = true
@@ -219,6 +247,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_act3_gateProgression_eranThenBossThenEnding() {
+        prepare()
+        defer { cleanup() }
         enterThreshold()
         let plan = ThresholdLayout(sceneSize: size)
         gm.player.act3EchoJoined = true
@@ -250,6 +280,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_act4_memoriesAndReflections_onlyOnce() throws {
+        prepare()
+        defer { cleanup() }
         enterVoidHeart()
         let plan = VoidHeartLayout(sceneSize: size)
         let memory = plan.memories[0]
@@ -267,6 +299,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_act4_heartProgression_voiceThenAvatarThenEnding() {
+        prepare()
+        defer { cleanup() }
         enterVoidHeart()
         let plan = VoidHeartLayout(sceneSize: size)
         gm.player.act4MemoriesSeen = ["1", "2", "3"]
@@ -299,6 +333,8 @@ final class InteractionRoutingTests: XCTestCase {
     }
 
     func test_desert_npcChestOasisExit() {
+        prepare()
+        defer { cleanup() }
         enterDesert()
         XCTAssertFalse(gm.tryDesertInteraction(nowhere, in: scene))
 
@@ -329,6 +365,8 @@ final class InteractionRoutingTests: XCTestCase {
     // MARK: - Mines de Cendreval
 
     func test_mines_plaqueVeinExit() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .forest
         gm.inMines = true
         gm.world.switchToMines(in: scene, progress: 0, goldTaken: false)
@@ -353,6 +391,8 @@ final class InteractionRoutingTests: XCTestCase {
     // MARK: - Caverne aux Échos
 
     func test_cave_chestOnlyAfterGuardian() {
+        prepare()
+        defer { cleanup() }
         gm.phase = .forest
         gm.inCave = true
         gm.world.switchToCave(in: scene, cleared: false, chestTaken: false)

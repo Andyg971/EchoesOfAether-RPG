@@ -121,6 +121,7 @@ extension GameManager {
         case "hint.examine": return String(localized: "hint.examine")
         case "hint.enter":   return String(localized: "hint.enter")
         case "hint.exit":    return String(localized: "hint.exit")
+        case "hint.fish":    return String(localized: "hint.fish")
         default:             return key
         }
     }

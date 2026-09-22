@@ -96,7 +96,7 @@ extension MainMenuScene {
     }
 
     /// Nom court de la phase pour l'affichage du slot.
-    func phaseDisplayName(_ phase: GamePhase) -> String {
+    private func phaseDisplayName(_ phase: GamePhase) -> String {
         switch phase {
         case .wake:     return String(localized: "menu.phase.wake")
         case .village:  return String(localized: "menu.phase.village")

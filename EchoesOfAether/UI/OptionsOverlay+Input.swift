@@ -94,7 +94,7 @@ extension OptionsOverlay {
 
     /// Persiste la langue choisie. iOS charge le bundle au lancement :
     /// effectif au prochain démarrage (on l'indique au joueur).
-    func selectLanguage(_ code: String) {
+    private func selectLanguage(_ code: String) {
         HapticsEngine.light()
         guard code != currentLanguageCode() else { return }
         UserDefaults.standard.set([code], forKey: "AppleLanguages")
@@ -107,7 +107,7 @@ extension OptionsOverlay {
         }
     }
 
-    func refreshLangSelection(selected: String) {
+    private func refreshLangSelection(selected: String) {
         for (name, code) in [("langFR", "fr"), ("langEN", "en")] {
             guard let btn = root.childNode(withName: name) as? SKShapeNode else { continue }
             styleLangButton(btn, selected: code == selected)
@@ -131,7 +131,7 @@ extension OptionsOverlay {
         return btn
     }
 
-    func styleLangButton(_ btn: SKShapeNode, selected: Bool) {
+    private func styleLangButton(_ btn: SKShapeNode, selected: Bool) {
         if selected {
             btn.fillColor = SKColor(red: 0.30, green: 0.22, blue: 0.50, alpha: 1)
             btn.strokeColor = SKColor(red: 0.70, green: 0.58, blue: 1.0, alpha: 1)
@@ -147,7 +147,7 @@ extension OptionsOverlay {
 
     // MARK: - Private
 
-    func handleReset(btn: SKShapeNode) {
+    private func handleReset(btn: SKShapeNode) {
         if confirmDelete {
             HapticsEngine.error()
             onDeleteSave?()

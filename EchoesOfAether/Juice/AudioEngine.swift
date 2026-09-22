@@ -147,7 +147,7 @@ final class AudioEngine {
     }
 
     /// Index de la prochaine piste de combat standard.
-    var combatRotation = 0
+    private var combatRotation = 0
 
     /// Musique d'un combat ORDINAIRE : alterne entre trois variantes pour que
     /// les affrontements ne sonnent pas tous pareil. (Tant que

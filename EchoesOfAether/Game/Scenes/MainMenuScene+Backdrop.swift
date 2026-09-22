@@ -122,7 +122,7 @@ extension MainMenuScene {
 
     /// Sprite cercle pixel art : dessiné à `pixels` px de côté puis
     /// upscalé en `.nearest` — chaque pixel source devient un gros bloc.
-    func pixelCircleSprite(pixels: Int, fill: SKColor, rim: SKColor) -> SKSpriteNode {
+    private func pixelCircleSprite(pixels: Int, fill: SKColor, rim: SKColor) -> SKSpriteNode {
         let side = CGFloat(pixels)
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: side, height: side),
                                                format: {
@@ -141,7 +141,7 @@ extension MainMenuScene {
         return SKSpriteNode(texture: texture)
     }
 
-    func addBackdropSprite(_ name: String, at position: CGPoint,
+    private func addBackdropSprite(_ name: String, at position: CGPoint,
                                    scale: CGFloat, alpha: CGFloat, z: CGFloat) {
         guard let sprite = PixelArtSprites.still(name: name, scale: scale,
                                                   anchor: CGPoint(x: 0.5, y: 0.0)) else { return }

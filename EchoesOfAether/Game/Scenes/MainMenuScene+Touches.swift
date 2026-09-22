@@ -48,7 +48,7 @@ extension MainMenuScene {
         clearHighlight()
     }
 
-    func handleDeleteTap(slot: Int) {
+    private func handleDeleteTap(slot: Int) {
         HapticsEngine.heavy()
         if confirmDeleteSlot == slot {
             // Deuxième tap : suppression effective.
@@ -62,7 +62,7 @@ extension MainMenuScene {
         }
     }
 
-    func resetDeleteConfirmIfNeeded() {
+    private func resetDeleteConfirmIfNeeded() {
         guard confirmDeleteSlot != nil else { return }
         confirmDeleteSlot = nil
         rebuild()
@@ -93,7 +93,7 @@ extension MainMenuScene {
     }
 
     /// Renvoie le slot dont le bouton de suppression a été touché.
-    func deleteSlot(at point: CGPoint) -> Int? {
+    private func deleteSlot(at point: CGPoint) -> Int? {
         for node in nodes(at: point) {
             if let btn = node as? SKShapeNode, btn.name?.hasPrefix("slotDelete") == true,
                let slot = btn.userData?["slot"] as? Int {
@@ -107,7 +107,7 @@ extension MainMenuScene {
         return nil
     }
 
-    func clearHighlight() {
+    private func clearHighlight() {
         highlightedButton?.run(.scale(to: 1.0, duration: 0.08))
         highlightedButton = nil
     }

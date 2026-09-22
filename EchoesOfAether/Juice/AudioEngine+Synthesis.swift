@@ -27,7 +27,7 @@ extension AudioEngine {
 
     /// Charge une piste embarquée dans un buffer PCM au format du moteur
     /// (conversion AVAudioConverter si le fichier diffère).
-    func loadMusicFile(for mood: MusicMood) -> AVAudioPCMBuffer? {
+    private func loadMusicFile(for mood: MusicMood) -> AVAudioPCMBuffer? {
         guard let name = mood.fileName else { return nil }
         if let buffer = loadAudioBuffer(named: name, ext: "m4a") { return buffer }
         // Piste dédiée pas encore livrée : on retombe sur une piste existante
@@ -37,7 +37,7 @@ extension AudioEngine {
     }
 
     /// Fichier audio du bundle → buffer PCM au format du moteur.
-    func loadAudioBuffer(named name: String, ext: String) -> AVAudioPCMBuffer? {
+    private func loadAudioBuffer(named name: String, ext: String) -> AVAudioPCMBuffer? {
         guard let url = Bundle.main.url(forResource: name, withExtension: ext),
               let file = try? AVAudioFile(forReading: url) else { return nil }
 
@@ -74,7 +74,7 @@ extension AudioEngine {
 
     /// Crée un buffer stéréo et le remplit via une fonction d'échantillon
     /// `sample(t)` (t en secondes), identique sur les 2 canaux.
-    func makeBuffer(duration: Double, sample: (Double) -> Float) -> AVAudioPCMBuffer {
+    private func makeBuffer(duration: Double, sample: (Double) -> Float) -> AVAudioPCMBuffer {
         let frames = AVAudioFrameCount(duration * sampleRate)
         let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frames)!
         buffer.frameLength = frames
@@ -89,7 +89,7 @@ extension AudioEngine {
         return buffer
     }
 
-    func renderSFX(_ sound: Sound) -> AVAudioPCMBuffer {
+    private func renderSFX(_ sound: Sound) -> AVAudioPCMBuffer {
         switch sound {
         case .uiMove:
             // Curseur de menu : sinus pur, niveau très bas, attaque adoucie.
@@ -184,7 +184,7 @@ extension AudioEngine {
     /// Paramètres d'un pad d'ambiance bouclable.
     /// `beat` (Hz) ajoute un trémolo lent qui crée une tension/inquiétude ;
     /// 0 = drone stable et apaisé.
-    struct MusicConfig {
+    private struct MusicConfig {
         let duration: Double
         let root: Double      // fondamentale (drone grave)
         let fifth: Double     // quinte / intervalle de soutien
@@ -194,7 +194,7 @@ extension AudioEngine {
         let beat: Double      // fréquence du trémolo (0 = aucun)
     }
 
-    func config(for mood: MusicMood) -> MusicConfig {
+    private func config(for mood: MusicMood) -> MusicConfig {
         switch mood {
         case .mines, .inn, .title, .finale,
              .combat, .combat2, .combat3, .boss:
@@ -226,7 +226,7 @@ extension AudioEngine {
     /// Pad d'ambiance bouclable : drone + harmoniques + LFO lent, avec trémolo
     /// optionnel. Boucle de 8 s sans coupure perceptible (amplitude basse pour
     /// rester en fond).
-    func renderMusicLoop(_ mood: MusicMood) -> AVAudioPCMBuffer {
+    private func renderMusicLoop(_ mood: MusicMood) -> AVAudioPCMBuffer {
         let c = config(for: mood)
         return makeBuffer(duration: c.duration) { t in
             let lfo: Float = Float(0.5 + 0.5 * sin(2 * .pi * t / c.duration)) // 1 cycle / boucle
@@ -245,7 +245,7 @@ extension AudioEngine {
 
     func clamp(_ v: Float) -> Float { max(0, min(1, v)) }
 
-    func sine(_ t: Double, _ freq: Double) -> Float {
+    private func sine(_ t: Double, _ freq: Double) -> Float {
         Float(sin(2 * .pi * freq * t))
     }
 
@@ -255,10 +255,10 @@ extension AudioEngine {
 
     func noise() -> Float { Float.random(in: -1...1) }
 
-    func expF(_ x: Double) -> Float { Float(exp(x)) }
+    private func expF(_ x: Double) -> Float { Float(exp(x)) }
 
     /// Enveloppe attack/release linéaire (anti-clic), 1 au sustain.
-    func env(_ t: Double, _ dur: Double, attack: Double, release: Double) -> Float {
+    private func env(_ t: Double, _ dur: Double, attack: Double, release: Double) -> Float {
         if t < attack { return Float(t / attack) }
         if t > dur - release { return Float(max(0, (dur - t) / release)) }
         return 1
@@ -266,7 +266,7 @@ extension AudioEngine {
 
     /// Renvoie la fréquence de l'étape courante d'une séquence (arpège/accord
     /// égrené) : change toutes les `step` secondes.
-    func chordStep(_ t: Double, _ freqs: [Double], step: Double) -> Double {
+    private func chordStep(_ t: Double, _ freqs: [Double], step: Double) -> Double {
         let idx = min(freqs.count - 1, Int(t / step))
         return freqs[idx]
     }

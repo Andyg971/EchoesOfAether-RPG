@@ -57,7 +57,7 @@ extension LightingEngine {
 
     /// Blob de nuage pixel : quelques ellipses fusionnées sur une grille
     /// 36×20, rendu `.nearest` — l'ombre garde des bords en escalier.
-    static func cloudTexture() -> SKTexture {
+    static private func cloudTexture() -> SKTexture {
         let cols = 36, rows = 20
         let format = UIGraphicsImageRendererFormat()
         format.scale = 1

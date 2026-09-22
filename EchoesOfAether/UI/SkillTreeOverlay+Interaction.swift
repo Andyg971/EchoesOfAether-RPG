@@ -29,7 +29,7 @@ extension SkillTreeOverlay {
     }
 
     /// Investit un rang, ou explique pourquoi c'est impossible.
-    func invest(_ node: SkillNode) {
+    private func invest(_ node: SkillNode) {
         guard let player else { return }
         if let lock = player.skillLock(for: node) {
             setDetail(lock.message, color: SKColor(red: 0.90, green: 0.45, blue: 0.40, alpha: 1))
@@ -50,7 +50,7 @@ extension SkillTreeOverlay {
     }
 
     /// Deux temps : le premier tap arme (destructif), le second exécute.
-    func handleRespecTap() {
+    private func handleRespecTap() {
         guard let player else { return }
         guard player.skillPointsSpent > 0 else {
             setDetail(String(localized: "skill.respec.empty"),

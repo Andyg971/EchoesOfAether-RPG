@@ -97,7 +97,7 @@ extension AudioEngine {
     /// warning « consider using asynchronous alternative » (la variante
     /// async de `scheduleBuffer` ne rend jamais la main sur `.loops`).
     @MainActor
-    func startLoop(_ player: AVAudioPlayerNode, buffer: AVAudioPCMBuffer) {
+    private func startLoop(_ player: AVAudioPlayerNode, buffer: AVAudioPCMBuffer) {
         player.stop()
         player.volume = 0
         player.scheduleBuffer(buffer, at: nil, options: .loops, completionHandler: nil)

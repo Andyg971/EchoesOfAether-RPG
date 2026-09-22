@@ -126,7 +126,7 @@ extension GameManager {
     }
 
     /// Les derniers mots, prononcés sur le corps — la scène reste visible.
-    func playLyraLastWords() {
+    private func playLyraLastWords() {
         transition(to: .dialogue)
         let startDeath: () -> Void = { [weak self] in
             guard let self else { return }
@@ -142,7 +142,7 @@ extension GameManager {
     }
 
     /// Lyra se dissout dans la lumière, puis Kael reste seul.
-    func dissolveLyraAndEndAct2() {
+    private func dissolveLyraAndEndAct2() {
         guard let scene else { return }
         let lyra = world.lyra
         world.worldNode.addChild(ParticleFactory.impactSparks(

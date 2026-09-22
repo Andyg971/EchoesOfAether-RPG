@@ -11,7 +11,7 @@ extension OptionsOverlay {
         }
     }
 
-    func volumeString(_ v: Float) -> String {
+    private func volumeString(_ v: Float) -> String {
         let filled = Int((v * 4).rounded())
         let blocks = String(repeating: "█", count: filled) + String(repeating: "░", count: 4 - filled)
         return blocks
@@ -46,7 +46,7 @@ extension OptionsOverlay {
         return container
     }
 
-    func makeSmallButton(_ text: String, name: String) -> SKShapeNode {
+    private func makeSmallButton(_ text: String, name: String) -> SKShapeNode {
         // Carré pixel (pas de cercle : le rond casse le style rétro).
         let btn = SKShapeNode(rectOf: CGSize(width: 36, height: 36))
         btn.fillColor = Palette.panelNight

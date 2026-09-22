@@ -9669,22 +9669,6 @@
         }
       }
     },
-    "dialogue.pact.10" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I didn't ask you to."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je ne te l'ai pas demandé."
-          }
-        }
-      }
-    },
     "dialogue.pact.2" : {
       "localizations" : {
         "en" : {
@@ -9809,6 +9793,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Je ne te protègerai pas."
+          }
+        }
+      }
+    },
+    "dialogue.pact.10" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I didn't ask you to."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -11274,6 +11274,7 @@
       }
     },
     "hint.fish" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14134,6 +14135,7 @@
       }
     },
     "prologue.line1" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14150,6 +14152,7 @@
       }
     },
     "prologue.line2" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14166,6 +14169,7 @@
       }
     },
     "prologue.line3" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14182,6 +14186,7 @@
       }
     },
     "prologue.line4" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -14198,6 +14203,7 @@
       }
     },
     "prologue.line5" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15111,6 +15117,7 @@
       }
     },
     "questlog.bramOre.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15127,6 +15134,7 @@
       }
     },
     "questlog.bramOre.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15159,6 +15167,7 @@
       }
     },
     "questlog.delivery.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15175,6 +15184,7 @@
       }
     },
     "questlog.delivery.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15241,6 +15251,7 @@
       }
     },
     "questlog.garenScout.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15257,6 +15268,7 @@
       }
     },
     "questlog.garenScout.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15273,6 +15285,7 @@
       }
     },
     "questlog.medallion.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15289,6 +15302,7 @@
       }
     },
     "questlog.medallion.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15305,6 +15319,7 @@
       }
     },
     "questlog.mines.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15321,6 +15336,7 @@
       }
     },
     "questlog.mines.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15337,6 +15353,7 @@
       }
     },
     "questlog.sageHerb.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15353,6 +15370,7 @@
       }
     },
     "questlog.sageHerb.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15369,6 +15387,7 @@
       }
     },
     "questlog.shards.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15385,6 +15404,7 @@
       }
     },
     "questlog.shards.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15449,6 +15469,7 @@
       }
     },
     "questlog.toy.desc" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -15465,6 +15486,7 @@
       }
     },
     "questlog.toy.title" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

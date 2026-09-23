@@ -70,9 +70,17 @@ final class GameScene: SKScene {
                        safeLeft: safeAreaLeft, safeRight: safeAreaRight)
     }
 
+    #if DEBUG
+    /// `--fps-probe` : mesure de cadence sur appareil (cf. FrameRateProbe).
+    private lazy var fpsProbe = FrameRateProbe(arguments: manager.launchArguments)
+    #endif
+
     override func update(_ currentTime: TimeInterval) {
         let delta = lastUpdate == 0 ? 0 : currentTime - lastUpdate
         lastUpdate = currentTime
+        #if DEBUG
+        fpsProbe?.frame(delta: delta, scene: self, manager: manager)
+        #endif
         manager.update(deltaTime: delta)
     }
 

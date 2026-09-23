@@ -263,10 +263,12 @@ final class GameManagerFlowTests: XCTestCase {
 
     /// Sans scène, `openPaywall` ne fait rien : on observe juste que l'action
     /// est mise en attente puis rejouée EXACTEMENT une fois au déverrouillage.
-    func test_requireFullGame_deferredActionResumesOnUnlock() throws {
+    func test_requireFullGame_deferredActionResumesOnUnlock() {
         prepare()
         defer { cleanup() }
-        try XCTSkipIf(gm.isFullGameUnlocked, "jeu déjà débloqué sur cet hôte : rien à différer")
+        let wasUnlocked = StoreManager.shared.isUnlocked
+        StoreManager.shared.setUnlockedForTesting(false)   // mur d'achat actif
+        defer { StoreManager.shared.setUnlockedForTesting(wasUnlocked) }
         var calls = 0
         gm.requireFullGame { calls += 1 }
         XCTAssertEqual(calls, 0, "verrouillé : l'action attend")
@@ -280,10 +282,12 @@ final class GameManagerFlowTests: XCTestCase {
         XCTAssertEqual(calls, 1)
     }
 
-    func test_dismissPaywall_dropsTheDeferredAction() throws {
+    func test_dismissPaywall_dropsTheDeferredAction() {
         prepare()
         defer { cleanup() }
-        try XCTSkipIf(gm.isFullGameUnlocked, "jeu déjà débloqué sur cet hôte")
+        let wasUnlocked = StoreManager.shared.isUnlocked
+        StoreManager.shared.setUnlockedForTesting(false)   // mur d'achat actif
+        defer { StoreManager.shared.setUnlockedForTesting(wasUnlocked) }
         var calls = 0
         gm.requireFullGame { calls += 1 }
         gm.dismissPaywall()
@@ -390,10 +394,12 @@ final class GameManagerFlowTests: XCTestCase {
 
     /// Save interrompue entre les Actes : la suite doit se relancer (cul-de-sac
     /// historique). Verrouillé : la reprise passe par le mur d'achat.
-    func test_restore_complete_requeuesAct2BehindPaywall() throws {
+    func test_restore_complete_requeuesAct2BehindPaywall() {
         prepare()
         defer { cleanup() }
-        try XCTSkipIf(gm.isFullGameUnlocked, "jeu débloqué : l'Acte II démarre directement")
+        let wasUnlocked = StoreManager.shared.isUnlocked
+        StoreManager.shared.setUnlockedForTesting(false)   // mur d'achat actif
+        defer { StoreManager.shared.setUnlockedForTesting(wasUnlocked) }
         let scene = makeSceneBackedManager()
 
         gm.restoreFrom(save: save(phase: .complete), scene: scene)

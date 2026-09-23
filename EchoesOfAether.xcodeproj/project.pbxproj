@@ -65,6 +65,7 @@
 		37843A3AC099072DE3BF87F5 /* WorldBuilder+VillageFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */; };
 		63E91F11D913624CFCDC3DDB /* WorldBuilder+VillageDecor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 862409BBFE1FF1CEB5D4729D /* WorldBuilder+VillageDecor.swift */; };
 		4F1D2C37CDE483665D1DBE7E /* WorldBuilder+OverworldPOI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */; };
+		6B49D5D0FC86B42495468C04 /* WorldBuilder+OverworldSolids.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7DA7F977259A3195645384 /* WorldBuilder+OverworldSolids.swift */; };
 		89CB639F4B79C3AE6D8D9B25 /* WorldBuilder+OverworldDesertFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */; };
 		84A801215BC9ECF464C47A27 /* WorldBuilder+OverworldLandmarks.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */; };
 		C8F8AC4DAB8123D31777BBD1 /* WorldBuilder+OverworldForestFlora.swift in Sources */ = {isa = PBXBuildFile; fileRef = C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */; };
@@ -346,6 +347,7 @@
 		AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+VillageFlora.swift"; sourceTree = "<group>"; };
 		862409BBFE1FF1CEB5D4729D /* WorldBuilder+VillageDecor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+VillageDecor.swift"; sourceTree = "<group>"; };
 		FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldPOI.swift"; sourceTree = "<group>"; };
+		9A7DA7F977259A3195645384 /* WorldBuilder+OverworldSolids.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldSolids.swift"; sourceTree = "<group>"; };
 		D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldDesertFlora.swift"; sourceTree = "<group>"; };
 		DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldLandmarks.swift"; sourceTree = "<group>"; };
 		C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+OverworldForestFlora.swift"; sourceTree = "<group>"; };
@@ -787,6 +789,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				AE00AD5122D251FCC7BC5C0F /* WorldBuilder+VillageFlora.swift */,
 				862409BBFE1FF1CEB5D4729D /* WorldBuilder+VillageDecor.swift */,
 				FFA097210E3B1E0A1482E273 /* WorldBuilder+OverworldPOI.swift */,
+				9A7DA7F977259A3195645384 /* WorldBuilder+OverworldSolids.swift */,
 				D664E326778E1868C10FF502 /* WorldBuilder+OverworldDesertFlora.swift */,
 				DBF4B20981DBF9D0256F907C /* WorldBuilder+OverworldLandmarks.swift */,
 				C804792F3A4822FAFB3CD330 /* WorldBuilder+OverworldForestFlora.swift */,
@@ -1191,6 +1194,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				37843A3AC099072DE3BF87F5 /* WorldBuilder+VillageFlora.swift in Sources */,
 				63E91F11D913624CFCDC3DDB /* WorldBuilder+VillageDecor.swift in Sources */,
 				4F1D2C37CDE483665D1DBE7E /* WorldBuilder+OverworldPOI.swift in Sources */,
+				6B49D5D0FC86B42495468C04 /* WorldBuilder+OverworldSolids.swift in Sources */,
 				89CB639F4B79C3AE6D8D9B25 /* WorldBuilder+OverworldDesertFlora.swift in Sources */,
 				84A801215BC9ECF464C47A27 /* WorldBuilder+OverworldLandmarks.swift in Sources */,
 				C8F8AC4DAB8123D31777BBD1 /* WorldBuilder+OverworldForestFlora.swift in Sources */,

@@ -119,17 +119,13 @@ extension WorldBuilder {
                            noGrassEdges grounds: [VillageTileMap],
                            in scene: SKScene) {
         let pVillage = geo.village, pForest = geo.forest, pShrine = geo.shrine
-        let pRuins = geo.ruins, pMines = geo.mines, pDesert = geo.desert
-        let pThreshold = geo.threshold
+        let pDesert = geo.desert
         var roads = geo.emptyMap()
-        for (a, b) in [(pVillage, pForest), (pForest, pShrine),
-                       (pForest, pDesert), (pShrine, pRuins),
-                       (pShrine, pMines), (pMines, pThreshold),
-                       (pVillage, pRuins)] {
+        for (a, b) in geo.roadLinks {
             stampRoad(&roads, from: a, to: b)
         }
         // Clairière de terre sous chaque lieu : le POI est posé, pas flottant.
-        for p in [pVillage, pForest, pShrine, pRuins, pMines, pDesert, pThreshold] {
+        for p in geo.places {
             roads.stampEllipse(center: p, radiusX: 52, radiusY: 34)
         }
         var noGrassEdges = geo.emptyMap()

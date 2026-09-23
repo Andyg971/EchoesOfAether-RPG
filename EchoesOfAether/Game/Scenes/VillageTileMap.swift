@@ -29,6 +29,12 @@ struct VillageTileMap {
     /// connaître la matière cellule par cellule, pas seulement les pièces.
     func matter(_ c: Int, _ r: Int) -> Bool { isSet(c, r) }
 
+    /// La cellule sous ce point (coordonnées monde) est-elle marquée ?
+    func contains(_ p: CGPoint) -> Bool {
+        guard p.x >= 0, p.y >= 0 else { return false }
+        return isSet(Int(p.x / tile), Int(p.y / tile))
+    }
+
     /// Marque toutes les cellules intersectant le rectangle (points).
     mutating func stamp(rect: CGRect) {
         let c0 = max(0, Int(rect.minX / tile))

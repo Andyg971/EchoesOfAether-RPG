@@ -120,6 +120,9 @@ extension WorldBuilder {
                 guard !avoiding.contains(where: { $0.contains(p) }) else { continue }
 
                 let flora = pool.randomElement(using: &rng) ?? species[0]
+                // Rien de solide ne pousse sur une route ni dans une clairière.
+                let solid = isOverworldSolid(height: flora.height)
+                if solid && isOverworldPassage(p) { continue }
                 guard let texH = PixelArtSprites.pixelHeight(of: flora.asset),
                       texH > 0 else { continue }
                 // Variation de gabarit ±12 % : aucun arbre n'est le clone du voisin.
@@ -131,14 +134,17 @@ extension WorldBuilder {
                 node.position = p
                 node.zPosition = actorLayer(for: p.y) - 0.2
                 add(node, to: scene)
+                if solid { registerOverworldSolid(node) }
             }
             y += step
         }
     }
 
+    /// `solid` : le décor semé bloque Kael (rochers) — il évite alors aussi
+    /// les passages (routes, clairières), cf. `WorldBuilder+OverworldSolids`.
     func scatterOverworld(_ assets: [String], count: Int, in rect: CGRect,
                                   scale: CGFloat, avoiding: [CGRect] = [],
-                                  in scene: SKScene) {
+                                  solid: Bool = false, in scene: SKScene) {
         var rng = SystemRandomNumberGenerator()
         for _ in 0..<count {
             let name = assets.randomElement(using: &rng) ?? assets[0]
@@ -150,12 +156,14 @@ extension WorldBuilder {
             for _ in 0..<6 {
                 p = CGPoint(x: .random(in: rect.minX...rect.maxX, using: &rng),
                             y: .random(in: rect.minY...rect.maxY, using: &rng))
-                if !avoiding.contains(where: { $0.contains(p) }) { placed = true; break }
+                if !avoiding.contains(where: { $0.contains(p) }),
+                   !(solid && isOverworldPassage(p)) { placed = true; break }
             }
             guard placed else { continue }
             s.position = p
             s.zPosition = actorLayer(for: p.y) - 0.2
             add(s, to: scene)
+            if solid { registerOverworldSolid(s) }
         }
     }
 

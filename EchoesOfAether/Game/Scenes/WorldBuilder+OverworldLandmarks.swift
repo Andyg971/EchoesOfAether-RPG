@@ -9,6 +9,8 @@ extension WorldBuilder {
     /// acteurs. `tint` ramène l'objet à la matière du lieu : sortis de leur
     /// pack d'origine, les props gardaient chacun leur couleur (gris bleu,
     /// rouge vif, gris de cimetière) au milieu d'un sol qui disait autre chose.
+    /// Posé à la main, l'objet reste même sur un passage ; il n'y bloque
+    /// simplement pas (une lanterne au bord de la route ne la ferme pas).
     func placeOverworldProp(_ asset: String, at p: CGPoint, height: CGFloat,
                             tint: SKColor? = nil, blend: CGFloat = 0.55,
                             in scene: SKScene) {
@@ -25,6 +27,9 @@ extension WorldBuilder {
         node.position = p
         node.zPosition = actorLayer(for: p.y) - 0.2
         add(node, to: scene)
+        if isOverworldSolid(height: height), !isOverworldPassage(p) {
+            registerOverworldSolid(node)
+        }
     }
 
     // MARK: - Sanctuaire

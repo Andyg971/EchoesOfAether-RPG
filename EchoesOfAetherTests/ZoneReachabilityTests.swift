@@ -112,6 +112,52 @@ final class ZoneReachabilityTests: XCTestCase {
         ])
     }
 
+    // MARK: - Carte du monde
+
+    /// Arbres, rochers et cactus bloquent Kael sur la carte, mais la flore
+    /// est tirée au hasard à chaque construction : on vérifie plusieurs
+    /// tirages. Chaque lieu, chaque coffre et la rive de pêche doivent rester
+    /// accessibles à pied depuis le village.
+    func test_overworld_decorBlocksButEveryPlaceStaysReachable() {
+        defer { SaveManager.delete(slot: 3) }
+        for draw in 1...4 {
+            let (gm, scene) = prepare()
+            let w = gm.world
+            w.switchToOverworld(in: scene)
+            // Le lac seul posait un obstacle : il en faut des centaines.
+            XCTAssertGreaterThan(w.obstacles.count, 60,
+                                 "tirage \(draw) : le décor de la carte ne bloque pas")
+            var targets = w.overworldPlaces.map { ($0.id, $0.pos) }
+            targets += WorldBuilder.overworldChests.map {
+                ("coffre \($0.id)", WorldBuilder.overworldChestPoint($0.id, w: w.worldWidth,
+                                                                     h: w.worldHeight))
+            }
+            targets.append(("rive de pêche",
+                            WorldBuilder.overworldFishingSpot(w: w.worldWidth, h: w.worldHeight)))
+            XCTAssertEqual(w.overworldPlaces.count, 7)
+            let village = w.overworldPlaces.first { $0.id == "village" }?.pos ?? .zero
+            let spawn = w.nearestFreePoint(to: CGPoint(x: village.x, y: village.y - 90))
+            assertReachable("carte (tirage \(draw))", w, from: spawn, targets)
+        }
+    }
+
+    func test_overworld_roadsStayFreeOfSolidDecor() {
+        defer { SaveManager.delete(slot: 3) }
+        let (gm, scene) = prepare()
+        let w = gm.world
+        w.switchToOverworld(in: scene)
+        let geo = OverworldGeometry(w: w.worldWidth, h: w.worldHeight)
+        // Axe de chaque route (sans le serpentement, ±18 pt) : jamais bloqué.
+        for (a, b) in geo.roadLinks {
+            for i in 0...40 {
+                let t = CGFloat(i) / 40
+                let p = CGPoint(x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t)
+                guard w.isOverworldPassage(p) else { continue }
+                XCTAssertFalse(w.isBlocked(p), "route bloquée en \(p)")
+            }
+        }
+    }
+
     // MARK: - Autres zones
 
     func test_desert_poisAreReachable() {

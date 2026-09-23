@@ -115,7 +115,8 @@ extension WorldBuilder {
                                          east.mountApron, east.ruinsApron, east.blight],
                           in: scene)
 
-        // ── CE QUI SE DRESSE ──
+        // ── CE QUI SE DRESSE ── (et, au-delà de 26 pt, bloque Kael)
+        prepareOverworldPassages(geo)
         plantOverworldForest(geo, in: scene)
         dressOverworldShrine(geo, in: scene)
         dressOverworldMountains(geo, in: scene)
@@ -124,6 +125,7 @@ extension WorldBuilder {
         plantOverworldDesert(geo, in: scene)
         scatterOverworldPlains(geo, in: scene)
         addOverworldPlaces(geo, in: scene)
+        debugDrawObstacles(in: scene)   // --show-obstacles : audit (carte)
     }
 
     /// Détail des plaines : fleurs & cailloux, sobre (jamais sur l'eau).
@@ -155,7 +157,7 @@ extension WorldBuilder {
         // bois. Il sert maintenant à ce pour quoi il est dessiné : le parvis.
         scatterOverworld(["rock_5", "rock_9", "rock_1", "rock_3"],
                          count: 18, in: everywhere, scale: 0.34,
-                         avoiding: [lake], in: scene)
+                         avoiding: [lake], solid: true, in: scene)
     }
 
     /// Lieux (POI d'entrée) — chacun sur sa clairière de terre.

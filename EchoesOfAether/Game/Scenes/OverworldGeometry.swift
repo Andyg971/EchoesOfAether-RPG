@@ -90,6 +90,16 @@ struct OverworldGeometry {
         mountRY = h * 0.17
     }
 
+    /// Les routes du continent, lieu à lieu. Tracées par `addOverworldRoads`
+    /// et gardées libres de tout décor solide (`prepareOverworldPassages`).
+    var roadLinks: [(CGPoint, CGPoint)] {
+        [(village, forest), (forest, shrine), (forest, desert), (shrine, ruins),
+         (shrine, mines), (mines, threshold), (village, ruins)]
+    }
+
+    /// Les lieux où l'on entre, chacun sur sa clairière.
+    var places: [CGPoint] { [village, forest, shrine, ruins, mines, desert, threshold] }
+
     /// Point du massif en coordonnées relatives à son centre.
     func inForest(_ fx: CGFloat, _ fy: CGFloat) -> CGPoint {
         CGPoint(x: forestCenter.x + forestRX * fx, y: forestCenter.y + forestRY * fy)

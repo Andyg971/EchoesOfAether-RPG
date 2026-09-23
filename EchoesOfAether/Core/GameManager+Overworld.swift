@@ -20,7 +20,8 @@ extension GameManager {
             let spot = world.overworldPlaces.first { $0.id == placeID }?.pos
                 ?? world.overworldPlaces.first { $0.id == "village" }?.pos
                 ?? CGPoint(x: world.worldWidth * 0.20, y: world.worldHeight * 0.28)
-            world.kael.position = CGPoint(x: spot.x, y: max(60, spot.y - 90))
+            world.kael.position = world.nearestFreePoint(
+                to: CGPoint(x: spot.x, y: max(60, spot.y - 90)))
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()
@@ -253,8 +254,10 @@ extension GameManager {
             hud.objectiveText = String(localized: "map.title")
             AudioEngine.shared.setMood(.title)
             world.switchToOverworld(in: scene)
-            world.kael.position = overworldReturnPos
-                ?? CGPoint(x: world.worldWidth * 0.2, y: world.worldHeight * 0.3)
+            // La flore est tirée à nouveau à chaque reconstruction : un arbre peut
+            // désormais pousser là où le combat a commencé.
+            world.kael.position = world.nearestFreePoint(to: overworldReturnPos
+                ?? CGPoint(x: world.worldWidth * 0.2, y: world.worldHeight * 0.3))
             world.kael.isHidden = false
             world.refreshKaelDepth()
             world.snapCamera()

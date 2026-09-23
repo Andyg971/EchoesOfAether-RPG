@@ -99,6 +99,7 @@ extension WorldBuilder {
     func clearBackdrop() {
         obstacles.removeAll()
         propRects.removeAll()
+        overworldPassages = nil
         worldWidth = 0               // seule la carte du monde scrolle en X
         villagePlanActive = false    // chaque zone replace Kael elle-même
         snapCameraNextFrame = true   // nouvelle zone : recadrage instantané

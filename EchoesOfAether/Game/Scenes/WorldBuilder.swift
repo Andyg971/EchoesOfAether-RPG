@@ -128,6 +128,10 @@ final class WorldBuilder {
     /// Lieux de la carte du monde : id (pour le voyage) + position MONDE.
     var overworldPlaces: [(id: String, pos: CGPoint, title: String)] = []
 
+    /// Carte du monde : cases où aucun décor solide ne pousse (routes,
+    /// clairières des lieux, coffres). Cf. `WorldBuilder+OverworldSolids`.
+    var overworldPassages: VillageTileMap?
+
     init() {
         kael    = WorldNode.kael()
         lyra    = WorldNode.lyra()

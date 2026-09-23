@@ -14117,6 +14117,23 @@
         }
       }
     },
+    "paywall.status.unavailable" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Can't reach the App Store. Check your connection and try again."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "App Store injoignable. Vérifie ta connexion et réessaie."
+          }
+        }
+      }
+    },
     "paywall.title" : {
       "localizations" : {
         "en" : {

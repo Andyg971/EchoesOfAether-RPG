@@ -91,6 +91,15 @@ extension GameManager {
     /// le joueur possède (ou vient d'acheter) le jeu complet ; sinon le joueur
     /// reste libre dans l'Acte I et pourra racheter depuis le menu Pause.
     func requireFullGame(onUnlocked: @escaping () -> Void) {
+        // Droits pas encore lus (juste après le lancement) : on attend
+        // plutôt que d'ouvrir le mur à un joueur qui a peut-être déjà payé.
+        guard StoreManager.shared.isReady else {
+            Task { [weak self] in
+                await StoreManager.shared.waitUntilReady()
+                self?.requireFullGame(onUnlocked: onUnlocked)
+            }
+            return
+        }
         guard !isFullGameUnlocked else { onUnlocked(); return }
         pendingUnlockAction = onUnlocked
         openPaywall()
@@ -122,6 +131,11 @@ extension GameManager {
                     // le joueur n'a rien fait de mal.
                     paywall.showStatus("")
                 }
+            } catch StoreError.productUnavailable {
+                // Rien n'a été tenté : pas de « tu n'as pas été débité ».
+                paywall.refreshTexts()
+                paywall.showStatus(String(localized: "paywall.status.unavailable"))
+                HapticsEngine.error()
             } catch {
                 paywall.showStatus(String(localized: "paywall.status.failed"))
                 HapticsEngine.error()

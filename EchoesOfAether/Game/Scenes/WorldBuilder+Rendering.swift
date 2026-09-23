@@ -139,6 +139,22 @@ extension WorldBuilder {
                                tint: SKColor? = nil, tintBlend: CGFloat = 0.45,
                                tintJitter: CGFloat = 0, variants: [String] = [],
                                skipping: VillageTileMap? = nil) {
+        // Une tuile = UN sprite, texture partagée par nom. Passer par
+        // `PixelArtSprites.still` enveloppait chaque tuile dans un SKNode vide
+        // et refaisait `UIImage(named:)` + `SKTexture(imageNamed:)` à chaque
+        // cellule : sur la carte du monde, ~5 500 nœuds creux parcourus à
+        // chaque image et des milliers de résolutions du même nom au chargement.
+        var textures: [String: SKTexture?] = [:]
+        func texture(_ name: String) -> SKTexture? {
+            if let cached = textures[name] { return cached }
+            var t: SKTexture?
+            if UIImage(named: name) != nil {
+                t = SKTexture(imageNamed: name)
+                t?.filteringMode = .nearest
+            }
+            textures[name] = t
+            return t
+        }
         for piece in map.pieces() {
             if piece.suffix != nil, edgePrefix == nil { continue }
             if skipping?.matter(piece.col, piece.row) == true { continue }
@@ -146,8 +162,10 @@ extension WorldBuilder {
                 ? fullTile
                 : variants[Self.tileHash(piece.col, piece.row) % variants.count]
             let name = piece.suffix.map { (edgePrefix ?? "") + $0 } ?? full
-            guard let t = PixelArtSprites.still(name: name, scale: 0.5,
-                                                 anchor: .zero) else { continue }
+            guard let tex = texture(name) else { continue }
+            let t = SKSpriteNode(texture: tex)
+            t.anchorPoint = .zero
+            t.setScale(0.5)
             t.position = CGPoint(x: CGFloat(piece.col) * map.tile,
                                   y: CGFloat(piece.row) * map.tile)
             t.zPosition = piece.suffix == nil ? z : z + 0.05
@@ -160,11 +178,8 @@ extension WorldBuilder {
                     let unit = CGFloat(Self.tileHash(piece.col + 7, piece.row + 13) % 1000)
                     return (unit / 1000 - 0.5) * 2 * tintJitter
                 }()
-                let blend = max(0, min(1, tintBlend + jitter))
-                t.forEachDescendantSprite { sprite in
-                    sprite.color = tint
-                    sprite.colorBlendFactor = blend
-                }
+                t.color = tint
+                t.colorBlendFactor = max(0, min(1, tintBlend + jitter))
             }
             add(t, to: scene)
         }

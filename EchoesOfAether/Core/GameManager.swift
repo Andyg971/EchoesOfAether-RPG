@@ -95,6 +95,10 @@ final class GameManager {
     var overworldTarget: String?
     /// Coffre de la carte à portée du bouton A (nil = aucun).
     var overworldChestTarget: String?
+    /// Arguments de lancement lus par les hooks d'audit (`--zone-*`…).
+    /// Injectable : `CommandLine.arguments` n'est plus modifiable en Swift 6,
+    /// et les tests doivent pouvoir simuler un lancement.
+    var launchArguments: [String] = CommandLine.arguments
     /// Vrai pendant une prise au lac (fige le déplacement, capte le bouton A).
     var isFishing = false
     /// Le poisson mord : la fenêtre pour ferrer est ouverte.

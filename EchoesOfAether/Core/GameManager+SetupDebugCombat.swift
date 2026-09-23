@@ -11,9 +11,9 @@ extension GameManager {
         // chargement (à combiner avec --zone-*) pour audit visuel de l'UI.
         // Noms : pause, options, skills, inventory, questlog, lore, tutorial,
         // levelup, death, shop, credits, act2end, bestiary, paywall.
-        if let idx = CommandLine.arguments.firstIndex(of: "--overlay-test"),
-           CommandLine.arguments.indices.contains(idx + 1) {
-            let name = CommandLine.arguments[idx + 1]
+        if let idx = launchArguments.firstIndex(of: "--overlay-test"),
+           launchArguments.indices.contains(idx + 1) {
+            let name = launchArguments[idx + 1]
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) { [weak self] in
                 self?.debugShowOverlay(named: name)
             }
@@ -23,7 +23,7 @@ extension GameManager {
         // trois capstones en combat réel. Les rangs sont posés directement,
         // sans passer par `unlockSkill` : 39 points, donc plus que les 29
         // gagnables en jeu — c'est le seul moyen de voir les trois d'un coup.
-        if CommandLine.arguments.contains("--skills-maxed") {
+        if launchArguments.contains("--skills-maxed") {
             player.level = PlayerState.maxLevel
             player.skillRanks = [
                 "blade.attack": 3, "blade.crit": 3, "blade.slash": 2, "blade.capstone": 1,
@@ -37,7 +37,7 @@ extension GameManager {
         // Debug : --combat-test / --combat-multi / --archivist-test /
         // --boss-test démarrent directement un combat pour capturer le rendu
         // de l'arène (skip wake/save).
-        if CommandLine.arguments.contains("--combat-test") {
+        if launchArguments.contains("--combat-test") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self else { return }
@@ -48,7 +48,7 @@ extension GameManager {
             }
             return true
         }
-        if CommandLine.arguments.contains("--combat-multi") {
+        if launchArguments.contains("--combat-multi") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self else { return }
@@ -61,7 +61,7 @@ extension GameManager {
         // `--archivist-test` : le mini-boss de l'Acte II, qui change de teinte
         // à chaque assaut. Sans ce raccourci il fallait finir l'Acte I puis
         // traverser les Ruines pour voir une seule de ses trois couleurs.
-        if CommandLine.arguments.contains("--archivist-test") {
+        if launchArguments.contains("--archivist-test") {
             hud.goldValue = player.gold
             player.ruinsProgress = 1
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
@@ -72,7 +72,7 @@ extension GameManager {
             }
             return true
         }
-        if CommandLine.arguments.contains("--boss-test") {
+        if launchArguments.contains("--boss-test") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self else { return }
@@ -87,7 +87,7 @@ extension GameManager {
         // de collecte apparaissent en audit. Sans ça `addSideQuestMarkers` ne
         // pose rien — une partie neuve n'a aucune quête en cours — et les
         // points de ramassage de la forêt sont invisibles à l'inspection.
-        if CommandLine.arguments.contains("--quests-active") {
+        if launchArguments.contains("--quests-active") {
             player.questLyraShards = .active
             player.questBramOre    = .active
             player.questSageHerb   = .active

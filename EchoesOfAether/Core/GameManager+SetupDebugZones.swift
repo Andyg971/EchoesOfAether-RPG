@@ -12,16 +12,16 @@ extension GameManager {
         // l'ignoraient tout court : tout ce qui vivait au nord de l'écran
         // d'entrée était invisible à l'inspection.
         func camYFraction(default def: Double) -> Double {
-            if let idx = CommandLine.arguments.firstIndex(of: "--cam-y"),
-               CommandLine.arguments.indices.contains(idx + 1),
-               let f = Double(CommandLine.arguments[idx + 1]) {
+            if let idx = launchArguments.firstIndex(of: "--cam-y"),
+               launchArguments.indices.contains(idx + 1),
+               let f = Double(launchArguments[idx + 1]) {
                 return f
             }
             return def
         }
 
         // Visualisation pure d'une zone (sans combat), pour audit UI.
-        if CommandLine.arguments.contains("--zone-forest") {
+        if launchArguments.contains("--zone-forest") {
             hud.goldValue = player.gold
             phase = .forest
             showForest(in: scene)
@@ -33,7 +33,7 @@ extension GameManager {
             world.refreshKaelDepth()
             return true
         }
-        if CommandLine.arguments.contains("--zone-mines") {
+        if launchArguments.contains("--zone-mines") {
             hud.goldValue = player.gold
             phase = .forest
             inMines = true
@@ -49,12 +49,12 @@ extension GameManager {
             transition(to: .exploration)
             return true
         }
-        if CommandLine.arguments.contains("--zone-cave") {
+        if launchArguments.contains("--zone-cave") {
             hud.goldValue = player.gold
             phase = .forest
             inCave = true
             // --cave-cleared : affiche l'état post-combat (coffre visible)
-            if CommandLine.arguments.contains("--cave-cleared") {
+            if launchArguments.contains("--cave-cleared") {
                 player.caveCleared = true
             }
             hud.objectiveText = String(localized: "hud.objective.cave")
@@ -66,7 +66,7 @@ extension GameManager {
             transition(to: .exploration)
             return true
         }
-        if CommandLine.arguments.contains("--zone-desert") {
+        if launchArguments.contains("--zone-desert") {
             hud.goldValue = player.gold
             phase = .forest
             inDesert = true
@@ -82,7 +82,7 @@ extension GameManager {
             transition(to: .exploration)
             return true
         }
-        if CommandLine.arguments.contains("--zone-overworld") {
+        if launchArguments.contains("--zone-overworld") {
             hud.goldValue = player.gold
             inOverworld = true
             world.switchToOverworld(in: scene)
@@ -92,9 +92,9 @@ extension GameManager {
             // de traverser le continent au joystick.
             var spawn = CGPoint(x: world.worldWidth * 0.20,
                                 y: world.worldHeight * 0.24)
-            if let idx = CommandLine.arguments.firstIndex(of: "--overworld-at"),
-               CommandLine.arguments.indices.contains(idx + 1) {
-                spawn = WorldBuilder.overworldPoint(CommandLine.arguments[idx + 1],
+            if let idx = launchArguments.firstIndex(of: "--overworld-at"),
+               launchArguments.indices.contains(idx + 1) {
+                spawn = WorldBuilder.overworldPoint(launchArguments[idx + 1],
                                                     w: world.worldWidth,
                                                     h: world.worldHeight)
             }
@@ -107,7 +107,7 @@ extension GameManager {
             transition(to: .exploration)
             return true
         }
-        if CommandLine.arguments.contains("--zone-shrine") {
+        if launchArguments.contains("--zone-shrine") {
             hud.goldValue = player.gold
             phase = .shrine
             world.switchToShrine(in: scene)
@@ -116,7 +116,7 @@ extension GameManager {
         }
         // Audit de la cinématique de la mort de Lyra : ruines + compagne,
         // la scène se déclenche seule après une seconde.
-        if CommandLine.arguments.contains("--lyra-death") {
+        if launchArguments.contains("--lyra-death") {
             hud.goldValue = player.gold
             phase = .ruins
             showRuins(in: scene)
@@ -127,7 +127,7 @@ extension GameManager {
             }
             return true
         }
-        if CommandLine.arguments.contains("--zone-ruins") {
+        if launchArguments.contains("--zone-ruins") {
             hud.goldValue = player.gold
             phase = .ruins
             showRuins(in: scene)
@@ -135,9 +135,9 @@ extension GameManager {
             return true
         }
         // Audit visuel des intérieurs : --interior armory|apothecary|inn
-        if let idx = CommandLine.arguments.firstIndex(of: "--interior"),
-           CommandLine.arguments.indices.contains(idx + 1) {
-            let kind: HouseInteriorKind? = switch CommandLine.arguments[idx + 1] {
+        if let idx = launchArguments.firstIndex(of: "--interior"),
+           launchArguments.indices.contains(idx + 1) {
+            let kind: HouseInteriorKind? = switch launchArguments[idx + 1] {
             case "armory": .armory
             case "apothecary": .apothecary
             case "inn": .inn
@@ -150,7 +150,7 @@ extension GameManager {
                 return true
             }
         }
-        if CommandLine.arguments.contains("--combat-trio") {
+        if launchArguments.contains("--combat-trio") {
             hud.goldValue = player.gold
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { [weak self] in
                 guard let self, let scene = self.scene else { return }
@@ -162,14 +162,14 @@ extension GameManager {
             }
             return true
         }
-        if CommandLine.arguments.contains("--zone-voidheart") {
+        if launchArguments.contains("--zone-voidheart") {
             hud.goldValue = player.gold
             phase = .act4
             showVoidHeart(in: scene)
             transition(to: .exploration)
             return true
         }
-        if CommandLine.arguments.contains("--zone-threshold") {
+        if launchArguments.contains("--zone-threshold") {
             hud.goldValue = player.gold
             phase = .act3
             showThreshold(in: scene)
@@ -178,11 +178,11 @@ extension GameManager {
         }
         // Audit visuel du village : --zone-village [--cam-y 0.5] place Kael
         // à la fraction de hauteur demandée (la caméra le suit).
-        if CommandLine.arguments.contains("--zone-village") {
+        if launchArguments.contains("--zone-village") {
             hud.goldValue = player.gold
             phase = .village
             transition(to: .exploration)
-            if CommandLine.arguments.contains("--cam-y") {
+            if launchArguments.contains("--cam-y") {
                 // Différé : le `layout()` initial (GameScene.didMove) replace
                 // Kael sur le plan du village juste après ce handler — le
                 // placement d'audit doit passer en dernier.
@@ -199,7 +199,7 @@ extension GameManager {
         }
         // Debug : place Kael près de Lyra dans le village pour audit
         // immédiat de la bulle d'interaction.
-        if CommandLine.arguments.contains("--bubble-test") {
+        if launchArguments.contains("--bubble-test") {
             hud.goldValue = player.gold
             phase = .village
             transition(to: .exploration)

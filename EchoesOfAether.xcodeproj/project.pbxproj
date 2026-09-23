@@ -247,6 +247,7 @@
 		AA20LEGI000000000000TEST /* OverlayLegibilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10LEGI000000000000TEST /* OverlayLegibilityTests.swift */; };
 		8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B090FF8964809699D851868F /* PlayerStateTests.swift */; };
 		010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */; };
+		8B35A253860CD2997EA47C9E /* FXCleanupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3E98288F57F80265324B4CD /* FXCleanupTests.swift */; };
 		F2C130BE46F7EFB84AA40C08 /* DebugLaunchFlagsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93B4E00A5E07CA66448DA13 /* DebugLaunchFlagsTests.swift */; };
 		5AE3EDF8E06CFCF7FCFA59E8 /* FishingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F9ACC2E08C5EB3690475E53 /* FishingTests.swift */; };
 		1478422D8656CB86FC9F76E5 /* InteractionHintTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */; };
@@ -517,6 +518,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		751088A06F29F125B81C674E /* EchoesOfAetherTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = EchoesOfAetherTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B090FF8964809699D851868F /* PlayerStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlayerStateTests.swift; sourceTree = "<group>"; };
 		42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CombatMathTests.swift"; sourceTree = "<group>"; };
+		C3E98288F57F80265324B4CD /* FXCleanupTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FXCleanupTests.swift"; sourceTree = "<group>"; };
 		B93B4E00A5E07CA66448DA13 /* DebugLaunchFlagsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DebugLaunchFlagsTests.swift"; sourceTree = "<group>"; };
 		0F9ACC2E08C5EB3690475E53 /* FishingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FishingTests.swift"; sourceTree = "<group>"; };
 		A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InteractionHintTests.swift"; sourceTree = "<group>"; };
@@ -872,6 +874,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				B090FF8964809699D851868F /* PlayerStateTests.swift */,
 				42BD391566531C33C6D3C9E5 /* CombatMathTests.swift */,
+				C3E98288F57F80265324B4CD /* FXCleanupTests.swift */,
 				B93B4E00A5E07CA66448DA13 /* DebugLaunchFlagsTests.swift */,
 				0F9ACC2E08C5EB3690475E53 /* FishingTests.swift */,
 				A09F0830F6B8D4B1DFD9C6BF /* InteractionHintTests.swift */,
@@ -1084,6 +1087,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			files = (
 				8C27471627321C74FD05109D /* PlayerStateTests.swift in Sources */,
 				010693DDC8CC59A9574A9E64 /* CombatMathTests.swift in Sources */,
+				8B35A253860CD2997EA47C9E /* FXCleanupTests.swift in Sources */,
 				F2C130BE46F7EFB84AA40C08 /* DebugLaunchFlagsTests.swift in Sources */,
 				5AE3EDF8E06CFCF7FCFA59E8 /* FishingTests.swift in Sources */,
 				1478422D8656CB86FC9F76E5 /* InteractionHintTests.swift in Sources */,

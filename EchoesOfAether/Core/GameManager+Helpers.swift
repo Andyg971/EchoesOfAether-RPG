@@ -135,7 +135,7 @@ extension GameManager {
         let worldPoint = world.worldNode.convert(point, from: scene)
         let worldSize = CGSize(width: scene.size.width, height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)
         // Trajet stoppé au premier obstacle (maison, arbre, eau…)
-        let reachable = world.clampDestination(from: world.kael.position,
+        let reachable = world.clampDestination(from: world.nearestFreePoint(to: world.kael.position),
                                                to: worldPoint)
         movement.move(world.kael, to: reachable, in: worldSize)
         let marker = ParticleFactory.tapMarker(at: reachable)

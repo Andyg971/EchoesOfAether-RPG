@@ -62,7 +62,11 @@ extension WorldBuilder {
     addGroundShadow(under: node, width: height * 0.40, height: height * 0.11)
     add(node, to: scene)
     if blocking {
-        registerFootprint(of: node, widthRatio: 0.58, depthRatio: 0.4, maxDepth: 22)
+        // Arbres : largeur lue dans le feuillage (cf. foliageFootprintRatio).
+        let isTree = name.hasPrefix("atree") || name.hasPrefix("apine")
+        registerFootprint(of: node,
+                          widthRatio: isTree ? Self.foliageFootprintRatio(of: name, minimum: 0.58) : 0.58,
+                          depthRatio: 0.4, maxDepth: 22)
     }
     return node
     }

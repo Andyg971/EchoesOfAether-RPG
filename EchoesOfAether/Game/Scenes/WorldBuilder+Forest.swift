@@ -108,8 +108,11 @@ extension WorldBuilder {
             tree.alpha = dim
             addGroundShadow(under: tree, width: 18 * scaleMult, height: 6)
             add(tree, to: scene)
-            // Tronc infranchissable (la canopée reste traversable derrière)
-            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
+            // Tronc infranchissable (la canopée reste traversable derrière).
+            // Arbre animé : largeur lue dans le feuillage qui touche le sol.
+            let width = animated != nil
+                ? Self.foliageFootprintRatio(of: species.name, minimum: 0.62) : 0.62
+            registerFootprint(of: tree, widthRatio: width, depthRatio: 0.5, maxDepth: 34)
         }
         var yCursor = h * 0.03
         var side = 0
@@ -173,7 +176,9 @@ extension WorldBuilder {
             addGroundShadow(under: tree, width: canopyHeight * 0.30 * s,
                             height: canopyHeight * 0.08 * s)
             add(tree, to: scene)
-            registerFootprint(of: tree, widthRatio: 0.62, depthRatio: 0.5, maxDepth: 34)
+            registerFootprint(of: tree,
+                              widthRatio: Self.foliageFootprintRatio(of: "atree_autumn", minimum: 0.62),
+                              depthRatio: 0.5, maxDepth: 34)
         }
 
         // ── ARBRES MORTS près des zones de danger (teinte Aether) ──

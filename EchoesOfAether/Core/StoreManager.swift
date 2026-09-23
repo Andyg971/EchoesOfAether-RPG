@@ -35,6 +35,14 @@ final class StoreManager {
 
     private init() {}
 
+    #if DEBUG
+    /// Tests uniquement : fixe l'état d'achat. Le singleton survit d'un test à
+    /// l'autre — un test qui passe par `setup` (donc `start()`) le laissait
+    /// « débloqué » pour toute la suite, et les tests du mur d'achat se
+    /// sautaient selon l'ordre d'exécution.
+    func setUnlockedForTesting(_ unlocked: Bool) { isUnlocked = unlocked }
+    #endif
+
     // MARK: - Cycle de vie
 
     /// À appeler une fois au lancement. Ne bloque jamais le jeu : sans réseau,

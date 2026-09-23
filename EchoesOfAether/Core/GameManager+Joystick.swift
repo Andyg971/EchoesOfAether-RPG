@@ -83,25 +83,26 @@ extension GameManager {
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         // Carte du monde : le déplacement s'étend aussi en X (scroll 2D).
         let ww = world.worldWidth > 0 ? world.worldWidth : scene.size.width
-        let current = world.kael.position
+        // Coincé dans une empreinte : dégagé au point libre le plus proche.
+        let current = world.nearestFreePoint(to: world.kael.position)
         var pos = current
         pos.x += padVector.dx * speed * CGFloat(deltaTime)
         pos.y += padVector.dy * speed * CGFloat(deltaTime)
         pos.x = min(max(pos.x, 34), ww - 34)
         pos.y = min(max(pos.y, 86), wh - 44)
 
-        // Collisions : on ne traverse ni maisons ni arbres. Glissement le
-        // long des murs (axe par axe) pour un contrôle agréable.
-        // Si Kael est déjà dans une empreinte (spawn/scénario), on le
-        // laisse sortir librement.
-        if world.isBlocked(pos), !world.isBlocked(current) {
+        // Collisions : on ne traverse ni maisons ni arbres, sans exception.
+        // Glissement le long des murs (axe par axe) pour un contrôle agréable.
+        func blocked(_ p: CGPoint) -> Bool { world.isBlocked(p) }
+        if blocked(pos) {
             let xOnly = CGPoint(x: pos.x, y: current.y)
             let yOnly = CGPoint(x: current.x, y: pos.y)
-            if !world.isBlocked(xOnly) {
+            if !blocked(xOnly) {
                 pos = xOnly
-            } else if !world.isBlocked(yOnly) {
+            } else if !blocked(yOnly) {
                 pos = yOnly
             } else {
+                world.kael.position = current
                 movement.setManualWalk(world.kael, dx: padVector.dx, active: true)
                 return
             }

@@ -19,7 +19,7 @@ final class LiveScene {
         let window = UIApplication.shared.connectedScenes
             .compactMap { $0 as? UIWindowScene }
             .flatMap(\.windows)
-            .first { $0.isKeyWindow } ?? UIApplication.shared.windows.first
+            .first { $0.isKeyWindow }
         view = SKView(frame: CGRect(origin: .zero, size: size))
         view.isHidden = false
         window?.addSubview(view)

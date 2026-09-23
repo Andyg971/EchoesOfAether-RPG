@@ -11,6 +11,35 @@ extension WorldBuilder {
         obstacles.contains { $0.contains(p) }
     }
 
+    /// Point libre le plus proche de `p` (spirale de 4 pt, 120 pt au plus).
+    ///
+    /// Kael peut se retrouver DANS une empreinte : placement de scénario,
+    /// sortie de maison, spawn, empreinte posée après lui. L'ancienne règle
+    /// coupait alors toutes les collisions tant qu'il y restait — il
+    /// traversait les arbres collés aux maisons et les bosquets qui se
+    /// chevauchent. On le DÉGAGE à la place (comme tout moteur de jeu :
+    /// dépénétration), puis les collisions s'appliquent sans exception.
+    func nearestFreePoint(to p: CGPoint) -> CGPoint {
+        guard isBlocked(p) else { return p }
+        let step: CGFloat = 4
+        for ring in 1...30 {
+            let r = CGFloat(ring) * step
+            var best: CGPoint?
+            var bestD = CGFloat.greatestFiniteMagnitude
+            for i in -ring...ring {
+                for q in [CGPoint(x: p.x + CGFloat(i) * step, y: p.y + r),
+                          CGPoint(x: p.x + CGFloat(i) * step, y: p.y - r),
+                          CGPoint(x: p.x + r, y: p.y + CGFloat(i) * step),
+                          CGPoint(x: p.x - r, y: p.y + CGFloat(i) * step)] where !isBlocked(q) {
+                    let d = p.distance(to: q)
+                    if d < bestD { bestD = d; best = q }
+                }
+            }
+            if let best { return best }
+        }
+        return p
+    }
+
     /// Avance de `a` vers `b` et s'arrête juste avant le premier obstacle
     /// (échantillonnage tous les 6 pt). Retourne la destination atteignable.
     func clampDestination(from a: CGPoint, to b: CGPoint) -> CGPoint {
@@ -71,6 +100,50 @@ extension WorldBuilder {
                                 y: node.position.y - 6,
                                 width: f.width, height: f.height + 6))
     }
+
+    /// Largeur bloquante d'un ARBRE ANIMÉ, lue dans son dessin.
+    ///
+    /// Les feuillus ronds (`atree_*`) et les sapins (`apine_*`) ont un
+    /// feuillage qui descend jusqu'au sol : à hauteur de Kael, il occupe
+    /// 86 à 97 % du canevas. Une empreinte au ratio fixe (58–62 %) ne
+    /// couvrait que le tronc — Kael s'avançait dans les branches basses
+    /// par les côtés, et on le voyait DANS l'arbre. Les arbres fixes, eux,
+    /// ont un long tronc nu : leur feuillage passe au-dessus de sa tête.
+    ///
+    /// Mesure : largeur opaque maximale sur le tiers bas de la première
+    /// frame (≈ la hauteur de Kael), × 0,9 pour garder un contact franc
+    /// sans accrocher le bout des branches. Jamais sous `minimum`, le ratio
+    /// d'origine — un arbre à vrai tronc (`atree_leaf`) garde le sien.
+    /// Mis en cache par asset : cinq espèces, une lecture chacune.
+    static func foliageFootprintRatio(of asset: String, minimum: CGFloat) -> CGFloat {
+        if let cached = foliageRatioCache[asset] { return max(minimum, cached) }
+        var ratio: CGFloat = 0
+        if let cg = UIImage(named: "\(asset)_idle_1")?.cgImage,
+           let ctx = CGContext(data: nil, width: cg.width, height: cg.height,
+                               bitsPerComponent: 8, bytesPerRow: cg.width * 4,
+                               space: CGColorSpaceCreateDeviceRGB(),
+                               bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue),
+           cg.width > 0 {
+            ctx.draw(cg, in: CGRect(x: 0, y: 0, width: cg.width, height: cg.height))
+            if let data = ctx.data?.assumingMemoryBound(to: UInt8.self) {
+                let w = cg.width, h = cg.height
+                var widest = 0
+                // Contexte bitmap : la ligne 0 en mémoire est le HAUT de l'image.
+                for row in (h - h / 3)..<h {
+                    var minX = w, maxX = -1
+                    for x in 0..<w where data[(row * w + x) * 4 + 3] > 40 {
+                        minX = min(minX, x); maxX = max(maxX, x)
+                    }
+                    if maxX >= 0 { widest = max(widest, maxX - minX + 1) }
+                }
+                ratio = CGFloat(widest) / CGFloat(w) * 0.9
+            }
+        }
+        foliageRatioCache[asset] = ratio
+        return max(minimum, ratio)
+    }
+
+    private static var foliageRatioCache: [String: CGFloat] = [:]
 
     /// Le décor occupe-t-il ce point à l'écran ? Sert au choix des
     /// destinations de promenade, pas aux collisions de Kael.

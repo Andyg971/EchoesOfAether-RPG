@@ -24,7 +24,7 @@ extension HUDOverlay {
     func setupInventoryButton() {
         let icon = SKNode()
         let pack = SKShapeNode(rectOf: CGSize(width: 20, height: 20))
-        pack.fillColor = SKColor(red: 0.42, green: 0.28, blue: 0.14, alpha: 1)
+        pack.fillColor = Palette.woodBrass
         pack.strokeColor = SKColor(red: 0.90, green: 0.72, blue: 0.38, alpha: 0.9)
         pack.lineWidth = 1.4
         pack.glowWidth = 0
@@ -53,13 +53,13 @@ extension HUDOverlay {
         let icon = SKNode()
         let cover = SKShapeNode(rectOf: CGSize(width: 20, height: 22))
         cover.fillColor = SKColor(red: 0.16, green: 0.20, blue: 0.34, alpha: 1)
-        cover.strokeColor = SKColor(red: 0.55, green: 0.72, blue: 1.0, alpha: 0.9)
+        cover.strokeColor = Palette.frost.withAlphaComponent(0.9)
         cover.lineWidth = 1.4
         cover.glowWidth = 0
         icon.addChild(cover)
 
         let spine = SKShapeNode(rectOf: CGSize(width: 3, height: 22))
-        spine.fillColor = SKColor(red: 0.55, green: 0.72, blue: 1.0, alpha: 0.9)
+        spine.fillColor = Palette.frost.withAlphaComponent(0.9)
         spine.strokeColor = .clear
         spine.position = CGPoint(x: -8.5, y: 0)
         icon.addChild(spine)

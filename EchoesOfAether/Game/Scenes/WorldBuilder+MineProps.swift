@@ -10,7 +10,7 @@ extension WorldBuilder {
         let rails = SKNode()
         rails.zPosition = -7
         let railColor = SKColor(red: 0.28, green: 0.28, blue: 0.33, alpha: 1)
-        let tieColor = SKColor(red: 0.24, green: 0.16, blue: 0.09, alpha: 1)
+        let tieColor = Palette.wood
         let length = horizontal ? abs(to.x - from.x) : abs(to.y - from.y)
         let gauge: CGFloat = 14
 
@@ -152,7 +152,7 @@ extension WorldBuilder {
         node.zPosition = depthLayer(for: pos.y)
 
         let rock = SKShapeNode(rectOf: CGSize(width: 40, height: 26), cornerRadius: 6)
-        rock.fillColor = SKColor(red: 0.14, green: 0.14, blue: 0.17, alpha: 1)
+        rock.fillColor = Palette.nightGrey
         rock.strokeColor = SKColor(red: 0.30, green: 0.30, blue: 0.35, alpha: 0.8)
         rock.lineWidth = 1.5
         node.addChild(rock)
@@ -166,8 +166,8 @@ extension WorldBuilder {
         }
 
         let glow = SKShapeNode(circleOfRadius: 24)
-        glow.fillColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.06)
-        glow.strokeColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.18)
+        glow.fillColor = Palette.gold.withAlphaComponent(0.06)
+        glow.strokeColor = Palette.gold.withAlphaComponent(0.18)
         glow.lineWidth = 1
         node.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.3)

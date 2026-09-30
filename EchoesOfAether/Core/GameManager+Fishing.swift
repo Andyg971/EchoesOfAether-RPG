@@ -49,7 +49,7 @@ extension GameManager {
         AudioEngine.shared.playStep()
         world.worldNode.addChild(ParticleFactory.impactSparks(
             at: CGPoint(x: anchor.x, y: anchor.y - 30),
-            color: SKColor(red: 0.55, green: 0.85, blue: 1.0, alpha: 1), count: 8))
+            color: Palette.skyBlue, count: 8))
     }
 
     /// Bouton A pendant la pêche. `true` = l'appui a été consommé.

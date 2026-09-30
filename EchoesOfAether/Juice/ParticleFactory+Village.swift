@@ -43,9 +43,9 @@ extension ParticleFactory {
         let container = SKNode()
         container.zPosition = 26
         let palette: [SKColor] = [
-            SKColor(red: 0.66, green: 0.42, blue: 0.98, alpha: 1),
+            Palette.aetherViolet,
             SKColor(red: 0.45, green: 0.80, blue: 0.92, alpha: 1),
-            SKColor(red: 0.82, green: 0.66, blue: 1.00, alpha: 1)
+            Palette.aether
         ]
         for _ in 0..<count {
             let side = CGFloat(Int.random(in: 2...4))

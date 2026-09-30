@@ -64,7 +64,7 @@ extension CombatSystem {
 
         // Boss name plate
         let plate = SKShapeNode(rectOf: CGSize(width: 200, height: 28), cornerRadius: 8)
-        plate.fillColor = SKColor(red: 0.12, green: 0.06, blue: 0.18, alpha: 0.8)
+        plate.fillColor = Palette.panelNight.withAlphaComponent(0.8)
         plate.strokeColor = SKColor(red: 0.55, green: 0.20, blue: 0.80, alpha: 0.6)
         plate.lineWidth = 1.5
         plate.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 48)

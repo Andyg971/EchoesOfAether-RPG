@@ -166,8 +166,8 @@ final class SkillTreeOverlay {
 
         let cell = SKShapeNode()
         PixelUI.stylePanel(cell, size: CGSize(width: width, height: 40),
-                           fill: owned ? SKColor(red: 0.10, green: 0.09, blue: 0.16, alpha: 0.97)
-                                       : SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.95),
+                           fill: owned ? Palette.panelNight.withAlphaComponent(0.97)
+                                       : Palette.nightBlack.withAlphaComponent(0.95),
                            accent: locked ? SKColor(white: 0.28, alpha: 1)
                                           : (owned ? accent : accent.withAlphaComponent(0.55)))
         cell.name = "skillNode:\(node.id)"
@@ -228,7 +228,7 @@ final class SkillTreeOverlay {
             respecArmed ? String(localized: "skill.respec.confirm \(cost)")
                         : String(localized: "skill.respec"),
             size: CGSize(width: 168, height: 34),
-            fill: SKColor(red: 0.14, green: 0.07, blue: 0.05, alpha: 1),
+            fill: Palette.shadowWarm,
             accent: respecArmed ? PixelUI.gold
                                 : SKColor(red: 0.60, green: 0.34, blue: 0.22, alpha: 0.9),
             fontSize: 15, name: "skillRespec")
@@ -237,7 +237,7 @@ final class SkillTreeOverlay {
 
         let close = PixelUI.makeButton(String(localized: "skill.close"),
             size: CGSize(width: 128, height: 34),
-            fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
+            fill: Palette.panelNight,
             accent: Palette.panelBorder,
             fontSize: 15, name: "skillClose")
         close.position = CGPoint(x: w / 2 + 92, y: 22)

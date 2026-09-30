@@ -115,7 +115,7 @@ final class MainMenuScene: SKScene {
         // Lueur d'Aether pulsante derrière le titre (halo pixel .nearest).
         let titleGlow = LightingEngine.pointLight(
             radius: landscape ? 150 : 130,
-            color: SKColor(red: 0.62, green: 0.42, blue: 0.98, alpha: 1),
+            color: Palette.aetherViolet,
             intensity: 2.2)
         titleGlow.position = CGPoint(x: columnCenterX, y: contentTop - 18)
         titleGlow.alpha = 0.5

@@ -34,7 +34,7 @@ extension WorldBuilder {
                       tileNames: ["a2_stone"],
                       fallbackColor: SKColor(red: 0.04, green: 0.04, blue: 0.05, alpha: 1),
                       tileScale: 1.0,
-                      tint: SKColor(red: 0.13, green: 0.13, blue: 0.16, alpha: 1),
+                      tint: Palette.nightGrey,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 

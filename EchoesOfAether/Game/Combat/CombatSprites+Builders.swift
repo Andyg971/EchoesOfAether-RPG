@@ -21,7 +21,7 @@ extension CombatSprites {
         // Yeux jaunes glow
         for dx: CGFloat in [-8, 4] {
             let eye = SKShapeNode(circleOfRadius: 3.5)
-            eye.fillColor = SKColor(red: 1, green: 0.85, blue: 0.20, alpha: 1)
+            eye.fillColor = Palette.goldBright
             eye.strokeColor = .clear
             eye.glowWidth = 4
             eye.position = CGPoint(x: -32 + dx, y: 18)
@@ -43,7 +43,7 @@ extension CombatSprites {
         // Pattes
         for dx: CGFloat in [-24, -6, 14, 30] {
             let leg = SKShapeNode(rectOf: CGSize(width: 6, height: 22), cornerRadius: 2)
-            leg.fillColor = SKColor(red: 0.10, green: 0.06, blue: 0.06, alpha: 1)
+            leg.fillColor = Palette.nightBlack
             leg.strokeColor = .clear
             leg.position = CGPoint(x: dx, y: -18)
             root.addChild(leg)
@@ -54,7 +54,7 @@ extension CombatSprites {
 
     static func buildWolf(into root: SKNode) {
         let body = SKShapeNode(ellipseOf: CGSize(width: 86, height: 38))
-        body.fillColor = SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1)
+        body.fillColor = Palette.slate
         body.strokeColor = SKColor(red: 0.35, green: 0.35, blue: 0.42, alpha: 0.6)
         body.lineWidth = 2
         body.position = CGPoint(x: 0, y: 0)
@@ -98,7 +98,7 @@ extension CombatSprites {
         // Pattes
         for dx: CGFloat in [-22, -2, 18, 34] {
             let leg = SKShapeNode(rectOf: CGSize(width: 5, height: 24), cornerRadius: 2)
-            leg.fillColor = SKColor(red: 0.12, green: 0.12, blue: 0.16, alpha: 1)
+            leg.fillColor = Palette.nightGrey
             leg.strokeColor = .clear
             leg.position = CGPoint(x: dx, y: -18)
             root.addChild(leg)
@@ -166,7 +166,7 @@ extension CombatSprites {
 
     static func buildRuinsGuardian(into root: SKNode) {
         let body = SKShapeNode(rectOf: CGSize(width: 56, height: 70), cornerRadius: 8)
-        body.fillColor = SKColor(red: 0.25, green: 0.20, blue: 0.18, alpha: 1)
+        body.fillColor = Palette.wood
         body.strokeColor = SKColor(red: 0.50, green: 0.40, blue: 0.32, alpha: 0.7)
         body.lineWidth = 2
         body.position = CGPoint(x: 0, y: 6)
@@ -222,7 +222,7 @@ extension CombatSprites {
         rp.addLine(to: CGPoint(x: 32, y: -34))
         rp.closeSubpath()
         robe.path = rp
-        robe.fillColor = SKColor(red: 0.08, green: 0.06, blue: 0.14, alpha: 1)
+        robe.fillColor = Palette.panelNight
         robe.strokeColor = SKColor(red: 0.45, green: 0.20, blue: 0.70, alpha: 0.6)
         robe.lineWidth = 2
         root.addChild(robe)

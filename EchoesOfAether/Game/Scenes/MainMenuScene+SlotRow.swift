@@ -11,8 +11,8 @@ extension MainMenuScene {
         let row = SKShapeNode()
         PixelUI.stylePanel(row, size: CGSize(width: width, height: height),
                            fill: hasSave
-                               ? SKColor(red: 0.07, green: 0.12, blue: 0.18, alpha: 0.97)
-                               : SKColor(red: 0.13, green: 0.09, blue: 0.20, alpha: 0.97),
+                               ? Palette.panelNight.withAlphaComponent(0.97)
+                               : Palette.panelNight.withAlphaComponent(0.97),
                            accent: hasSave
                                ? SKColor(red: 0.38, green: 0.68, blue: 0.95, alpha: 0.9)
                                : SKColor(red: 0.62, green: 0.46, blue: 0.92, alpha: 0.85))
@@ -36,7 +36,7 @@ extension MainMenuScene {
             if meta.completed {
                 // Partie terminée : le tap relance en New Game+ (palier suivant).
                 subL.text = String(localized: "menu.slot.newGamePlus \(meta.newGamePlus + 1)")
-                subL.fontColor = SKColor(red: 1.0, green: 0.82, blue: 0.32, alpha: 1)
+                subL.fontColor = Palette.gold
             } else {
                 subL.text = String(localized: "menu.slot.meta \(phaseDisplayName(meta.phase)) \(meta.level) \(meta.gold)")
                 subL.fontColor = SKColor(red: 0.70, green: 0.80, blue: 0.92, alpha: 0.95)

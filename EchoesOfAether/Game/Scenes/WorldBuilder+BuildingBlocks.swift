@@ -29,7 +29,7 @@ extension WorldBuilder {
         bld.addChild(door)
 
         let winL = SKShapeNode(rectOf: CGSize(width: 10, height: 8), cornerRadius: 2)
-        winL.fillColor = SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 0.2)
+        winL.fillColor = Palette.goldDark.withAlphaComponent(0.2)
         winL.strokeColor = SKColor(white: 0.30, alpha: 0.4)
         winL.position = CGPoint(x: -w * 0.28, y: 4)
         bld.addChild(winL)
@@ -80,7 +80,7 @@ extension WorldBuilder {
         addGroundShadow(under: well, width: 42, height: 16)
 
         let base = SKShapeNode(circleOfRadius: 14)
-        base.fillColor = SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1)
+        base.fillColor = Palette.wood
         base.strokeColor = SKColor(white: 0.28, alpha: 0.5)
         base.lineWidth = 2
         well.addChild(base)

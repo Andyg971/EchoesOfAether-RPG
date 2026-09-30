@@ -13,8 +13,8 @@ extension GameManager {
             (world.dorin.position,   SKColor(red: 0.55, green: 0.85, blue: 0.55, alpha: 1)),
             (world.bram.position,    SKColor(red: 1.0,  green: 0.75, blue: 0.3,  alpha: 1)),
             (world.mara.position,    SKColor(red: 1.0,  green: 0.75, blue: 0.3,  alpha: 1)),
-            (world.garen.position,   SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1)),
-            (world.sage.position,    SKColor(red: 0.5,  green: 0.8,  blue: 1.0,  alpha: 1))
+            (world.garen.position,   Palette.skyBlue),
+            (world.sage.position,    Palette.skyBlue)
         ].filter { !$0.position.equalTo(.zero) }
         let worldSize = CGSize(width: scene.size.width,
                                height: world.worldHeight > 0 ? world.worldHeight : scene.size.height)

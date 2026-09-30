@@ -75,7 +75,7 @@ extension CombatSystem {
         // Carrés de couleur retirés : aucune attaque du jeu n'en projette.
         showFloatingText(String(localized: "combat.locks.broken"),
                          at: CGPoint(x: foe.homePosition.x, y: foe.homePosition.y + 96),
-                         color: Palette.goldCombat)
+                         color: Palette.gold)
     }
 
     /// Redessine la rangée de sceaux (un losange par verrou restant).
@@ -113,13 +113,13 @@ extension CombatSystem {
         setBrokenPose(foe, broken: true)
         statusLabel.text = String(localized: "combat.locks.cancelled \(foe.combatant.name)")
         showEffect(String(localized: "combat.locks.cancelledEffect"),
-                   color: Palette.goldCombat)
+                   color: Palette.gold)
         AudioEngine.shared.playQuestComplete()
         HapticsEngine.success()
         JuiceEngine.screenShake(root, intensity: 9, duration: 0.3)
         if let scene = parentScene {
             JuiceEngine.flashOverlay(in: root, size: scene.size,
-                color: SKColor(red: 1.00, green: 0.80, blue: 0.30, alpha: 1),
+                color: Palette.gold,
                 duration: 0.22)
         }
         // Carrés de couleur retirés : aucune attaque du jeu n'en projette.

@@ -89,7 +89,7 @@ extension WorldBuilder {
 
         // Losange pixel doré flottant au-dessus du jouet
         let sparkle = SKShapeNode(rectOf: CGSize(width: 8, height: 8))
-        sparkle.fillColor = Palette.goldWorld
+        sparkle.fillColor = Palette.gold
         sparkle.strokeColor = SKColor(red: 1, green: 0.95, blue: 0.6, alpha: 0.9)
         sparkle.lineWidth = 1
         sparkle.zRotation = .pi / 4

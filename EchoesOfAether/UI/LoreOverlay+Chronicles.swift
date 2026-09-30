@@ -24,7 +24,7 @@ extension LoreOverlay {
         for entry in slice {
             // Losange pixel art (carré tourné) en guise de puce
             let icon = SKShapeNode(rectOf: CGSize(width: 9, height: 9))
-            icon.fillColor = SKColor(red: 0.55, green: 0.75, blue: 1, alpha: 1)
+            icon.fillColor = Palette.frost
             icon.strokeColor = SKColor(red: 0.75, green: 0.88, blue: 1, alpha: 0.8)
             icon.lineWidth = 1
             icon.zRotation = .pi / 4

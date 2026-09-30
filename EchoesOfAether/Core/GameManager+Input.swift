@@ -34,8 +34,8 @@ extension GameManager {
                            fill: SKColor(red: 0.16, green: 0.13, blue: 0.10, alpha: 0.95),
                            accent: PixelUI.gold)
         addPixelBevel(to: actionButton, size: 54,
-                      light: SKColor(red: 0.62, green: 0.50, blue: 0.24, alpha: 0.9),
-                      dark: SKColor(red: 0.05, green: 0.04, blue: 0.02, alpha: 0.95))
+                      light: Palette.goldDark.withAlphaComponent(0.9),
+                      dark: Palette.nightBlack.withAlphaComponent(0.95))
         actionButton.zPosition = 1_950   // au-dessus des panneaux (dialogue 1000+)
         actionButton.isHidden = true
         scene.addChild(actionButton)

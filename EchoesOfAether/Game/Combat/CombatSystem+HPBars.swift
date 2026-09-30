@@ -121,7 +121,7 @@ extension CombatSystem {
         chevron.addLine(to: CGPoint(x: 0, y: 0))
         chevron.addLine(to: CGPoint(x: 9, y: 9))
         targetMarker.path = chevron
-        targetMarker.strokeColor = SKColor(red: 1.00, green: 0.85, blue: 0.30, alpha: 1)
+        targetMarker.strokeColor = Palette.gold
         targetMarker.lineWidth = 4
         targetMarker.lineCap = .butt
         targetMarker.lineJoin = .miter

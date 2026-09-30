@@ -188,7 +188,7 @@ extension WorldBuilder {
         spirit.zPosition = actorLayer(for: anchor.y)
         spirit.alpha = 0.62
         spirit.forEachDescendantSprite { s in
-            s.color = SKColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 1)
+            s.color = Palette.frost
             s.colorBlendFactor = 0.50
         }
         add(spirit, to: scene)

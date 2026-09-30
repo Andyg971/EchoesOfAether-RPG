@@ -16,7 +16,7 @@ extension WorldBuilder {
         // Sol : dalles de pierre teintées rouge-brun (la Source corrompue)
         addTiledFloor(in: scene,
                       tileNames: ["a2_stone"],
-                      fallbackColor: SKColor(red: 0.07, green: 0.04, blue: 0.04, alpha: 1),
+                      fallbackColor: Palette.nightBlack,
                       tileScale: 1.0,
                       tint: SKColor(red: 0.30, green: 0.14, blue: 0.10, alpha: 1),
                       z: -10,
@@ -146,7 +146,7 @@ extension WorldBuilder {
         wall.zPosition = depthLayer(for: pos.y)
 
         let stone = SKShapeNode(rectOf: CGSize(width: 72, height: 55), cornerRadius: 5)
-        stone.fillColor = SKColor(red: 0.14, green: 0.08, blue: 0.10, alpha: 1)
+        stone.fillColor = Palette.shadowWarm
         stone.strokeColor = SKColor(red: 0.60, green: 0.20, blue: 0.18, alpha: 0.7)
         stone.lineWidth = 2
         wall.addChild(stone)
@@ -185,7 +185,7 @@ extension WorldBuilder {
 
         // Pierre plus petite, style griffonné
         let stone = SKShapeNode(rectOf: CGSize(width: 44, height: 34), cornerRadius: 3)
-        stone.fillColor = SKColor(red: 0.10, green: 0.06, blue: 0.08, alpha: 1)
+        stone.fillColor = Palette.shadowWarm
         stone.strokeColor = SKColor(red: 0.35, green: 0.55, blue: 0.80, alpha: 0.5)
         stone.lineWidth = 1.5
         wall.addChild(stone)

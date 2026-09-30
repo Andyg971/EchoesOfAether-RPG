@@ -73,7 +73,7 @@ final class LevelUpOverlay {
         let panelHeight: CGFloat = 220
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
-                           fill: SKColor(red: 0.10, green: 0.06, blue: 0.18, alpha: 0.98),
+                           fill: Palette.panelNight.withAlphaComponent(0.98),
                            accent: SKColor(red: 0.75, green: 0.45, blue: 1, alpha: 1))
         panel.position = CGPoint(x: size.width / 2, y: size.height / 2)
 

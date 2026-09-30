@@ -14,7 +14,7 @@ extension GameManager {
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let spot = CGPoint(x: scene.size.width * 0.28, y: wh * 0.72)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: Palette.goldWorld, count: 12))
+            at: spot, color: Palette.gold, count: 12))
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.medallionFoundDialogue) { [weak self] in
             self?.transition(to: .exploration)
@@ -92,7 +92,7 @@ extension GameManager {
         let wh = world.worldHeight > 0 ? world.worldHeight : scene.size.height
         let spot = CGPoint(x: scene.size.width * 0.78, y: wh * 0.70)
         world.worldNode.addChild(ParticleFactory.impactSparks(
-            at: spot, color: SKColor(red: 0.68, green: 0.45, blue: 1.00, alpha: 1), count: 14))
+            at: spot, color: Palette.aetherViolet, count: 14))
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.lyraCrystalFoundDialogue) { [weak self] in
             self?.transition(to: .exploration)

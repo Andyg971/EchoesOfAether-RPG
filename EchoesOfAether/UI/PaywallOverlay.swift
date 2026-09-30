@@ -68,8 +68,8 @@ final class PaywallOverlay {
         root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
-                           fill: SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.97),
-                           accent: SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1))
+                           fill: Palette.nightBlack.withAlphaComponent(0.97),
+                           accent: Palette.goldDark)
 
         emblem.position = CGPoint(x: 0, y: panelHeight / 2 + 30)
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 26)
@@ -206,7 +206,7 @@ final class PaywallOverlay {
             btn.name = buttonNames[i]
             btn.fillColor = i == 0
                 ? SKColor(red: 0.16, green: 0.12, blue: 0.05, alpha: 1)
-                : SKColor(red: 0.10, green: 0.10, blue: 0.12, alpha: 1)
+                : Palette.nightGrey
             btn.strokeColor = i == 0
                 ? SKColor(red: 0.65, green: 0.50, blue: 0.20, alpha: 0.8)
                 : SKColor(red: 0.40, green: 0.40, blue: 0.45, alpha: 0.7)

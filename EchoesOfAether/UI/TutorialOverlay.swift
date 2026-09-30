@@ -122,7 +122,7 @@ final class TutorialOverlay {
         let nextBtn = PixelUI.makeButton(
             isLast ? String(localized: "tutorial.finish") : String(localized: "tutorial.next"),
             size: CGSize(width: 200, height: 44),
-            fill: SKColor(red: 0.14, green: 0.11, blue: 0.07, alpha: 1),
+            fill: Palette.shadowWarm,
             accent: PixelUI.gold,
             fontSize: 20, name: "tutorialNext")
         // +3/-3 vs l'ancien pas (74/30) : la double bordure du bouton pixel
@@ -135,7 +135,7 @@ final class TutorialOverlay {
             let skipBtn = PixelUI.makeButton(
                 String(localized: "tutorial.skip"),
                 size: CGSize(width: 140, height: 44),
-                fill: SKColor(red: 0.10, green: 0.10, blue: 0.16, alpha: 1),
+                fill: Palette.panelNight,
                 accent: SKColor(red: 0.40, green: 0.35, blue: 0.55, alpha: 0.8),
                 fontSize: 20, name: "tutorialSkip")
             skipBtn.position = CGPoint(x: cx, y: cy - panelH / 2 + 27)
@@ -225,7 +225,7 @@ final class TutorialOverlay {
         ]
         let palette: [Character: SKColor] = [
             "R": SKColor(red: 0.30, green: 0.28, blue: 0.38, alpha: 1),   // socle
-            "K": SKColor(red: 0.62, green: 0.42, blue: 0.96, alpha: 1),   // stick
+            "K": Palette.aetherViolet,   // stick
             "t": SKColor(red: 0.85, green: 0.80, blue: 0.55, alpha: 0.9)  // ticks directionnels
         ]
         return PixelIcons.custom(map: map, palette: palette, pixel: 5)

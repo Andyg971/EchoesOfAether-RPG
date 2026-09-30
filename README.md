@@ -192,7 +192,7 @@ xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
 | iPad (11" / 13") — résolution virtuelle, échelle unique monde + HUD | ✅ Complet |
 | CI GitHub Actions — build + tests iPhone **et** iPad à chaque push | ✅ Complet |
 | Difficulté (Histoire / Normal / Vétéran) | ✅ Complet |
-| Palette — jetons nommés + audit de convergence (`PALETTE.md`) | 🟡 15 jetons posés, 636 valeurs à converger |
+| Palette — jetons nommés + audit de convergence (`PALETTE.md`) | 🟡 24 jetons, passe n°1 faite (653 → 543 valeurs distinctes) |
 | Privacy manifest (`PrivacyInfo.xcprivacy`) | ✅ Complet |
 | Build App Store | 🟡 Screenshots 6.9" + page produit à faire |
 

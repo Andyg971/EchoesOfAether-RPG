@@ -29,7 +29,7 @@ extension DialogueSystem {
             return SKColor(red: 0.45, green: 0.30, blue: 0.85, alpha: 1)
         }
         if key.contains("voix") || key.contains("voice") {
-            return SKColor(red: 0.20, green: 0.20, blue: 0.30, alpha: 1)
+            return Palette.slate
         }
         // Fallback hash → teinte stable
         let hash = abs(speaker.hashValue)
@@ -96,7 +96,7 @@ extension DialogueSystem {
     }
 
     static private let desertMerchantPalette: [Character: SKColor] = [
-        "o": SKColor(red: 0.12, green: 0.10, blue: 0.10, alpha: 1),
+        "o": Palette.shadowWarm,
         "T": SKColor(red: 0.85, green: 0.78, blue: 0.60, alpha: 1),   // turban
         "t": SKColor(red: 0.70, green: 0.62, blue: 0.45, alpha: 1),
         "B": SKColor(red: 0.72, green: 0.36, blue: 0.26, alpha: 1),   // bandeau

@@ -71,7 +71,7 @@ extension OptionsOverlay {
     func makeToggleRow(_ text: String, isOn: Bool, name: String,
                                at pos: CGPoint, width: CGFloat) -> SKShapeNode {
         let row = SKShapeNode(rectOf: CGSize(width: width, height: 30))
-        row.fillColor = SKColor(red: 0.09, green: 0.08, blue: 0.15, alpha: 1)
+        row.fillColor = Palette.panelNight
         row.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.5)
         row.lineWidth = 1
         row.glowWidth = 0
@@ -93,7 +93,7 @@ extension OptionsOverlay {
         pill.glowWidth = 0
         pill.fillColor = isOn
             ? SKColor(red: 0.20, green: 0.55, blue: 0.32, alpha: 1)
-            : SKColor(red: 0.20, green: 0.18, blue: 0.26, alpha: 1)
+            : Palette.slate
         pill.strokeColor = isOn
             ? SKColor(red: 0.40, green: 0.85, blue: 0.55, alpha: 1)
             : SKColor(red: 0.45, green: 0.40, blue: 0.55, alpha: 0.8)
@@ -124,7 +124,7 @@ extension OptionsOverlay {
     func makeCycleRow(_ text: String, value: String, name: String,
                               at pos: CGPoint, width: CGFloat) -> SKShapeNode {
         let row = SKShapeNode(rectOf: CGSize(width: width, height: 30))
-        row.fillColor = SKColor(red: 0.09, green: 0.08, blue: 0.15, alpha: 1)
+        row.fillColor = Palette.panelNight
         row.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.5)
         row.lineWidth = 1
         row.glowWidth = 0

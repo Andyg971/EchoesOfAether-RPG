@@ -103,7 +103,7 @@ final class DeathOverlay {
         let crystalBtn = PixelUI.makeButton(
             String(localized: "death.returnCrystal"),
             size: CGSize(width: 220, height: 50),
-            fill: SKColor(red: 0.06, green: 0.06, blue: 0.18, alpha: 1),
+            fill: Palette.panelNight,
             accent: SKColor(red: 0.30, green: 0.40, blue: 0.80, alpha: 0.9),
             fontSize: 21,
             name: "deathCrystal"
@@ -169,8 +169,8 @@ final class DeathOverlay {
             "mmmmmmmmmmm"
         ]
         let palette: [Character: SKColor] = [
-            "H": SKColor(red: 0.42, green: 0.30, blue: 0.20, alpha: 1),   // cuir
-            "G": SKColor(red: 0.58, green: 0.48, blue: 0.28, alpha: 1),   // garde (or terni)
+            "H": Palette.woodBrass,   // cuir
+            "G": Palette.goldDark,   // garde (or terni)
             "X": SKColor(red: 0.50, green: 0.54, blue: 0.62, alpha: 1),   // acier
             "e": SKColor(red: 0.70, green: 0.74, blue: 0.82, alpha: 1),   // reflet de lame
             "m": SKColor(red: 0.17, green: 0.15, blue: 0.20, alpha: 1)    // terre sombre

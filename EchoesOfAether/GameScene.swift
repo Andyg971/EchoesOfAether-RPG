@@ -13,7 +13,7 @@ final class GameScene: SKScene {
     var newGamePlusSeed: NewGamePlusSeed?
 
     override func didMove(to view: SKView) {
-        backgroundColor = SKColor(red: 0.07, green: 0.09, blue: 0.11, alpha: 1)
+        backgroundColor = Palette.shadowWarm
         HapticsEngine.prepare()
         manager.setup(scene: self, slot: activeSlot, newGamePlusSeed: newGamePlusSeed)
         // Layout initial avec les vrais insets : sans cet appel, le HUD

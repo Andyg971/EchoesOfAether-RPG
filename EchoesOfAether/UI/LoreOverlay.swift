@@ -92,7 +92,7 @@ final class LoreOverlay {
 
         // Titre
         let title = makeLabel(String(localized: "lore.title"),
-                              size: 26, color: SKColor(red: 0.60, green: 0.78, blue: 1, alpha: 1))
+                              size: 26, color: Palette.skyBlue)
         title.position = CGPoint(x: 0, y: panelHeight/2 - 36)
         root.addChild(title)
         entryLabels.append(title)
@@ -139,7 +139,7 @@ final class LoreOverlay {
                 ? SKColor(red: 0.14, green: 0.20, blue: 0.34, alpha: 1)
                 : SKColor(red: 0.06, green: 0.06, blue: 0.11, alpha: 1)
             btn.strokeColor = selected
-                ? SKColor(red: 0.55, green: 0.75, blue: 1, alpha: 0.9)
+                ? Palette.frost.withAlphaComponent(0.9)
                 : SKColor(white: 0.30, alpha: 0.7)
             btn.lineWidth = 2
             btn.glowWidth = 0

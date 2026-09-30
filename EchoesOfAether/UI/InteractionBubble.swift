@@ -100,7 +100,7 @@ final class InteractionBubble {
             // examiner/entrer), encrée en sombre pour ressortir sur la bulle
             // crème — remplace les glyphes texte « … ! ? » d'antan.
             let icon = PixelIcons.node(action.pixelIcon, pixel: 2)
-            let ink = SKColor(red: 0.12, green: 0.10, blue: 0.14, alpha: 1)
+            let ink = Palette.nightGrey
             icon.forEachDescendantSprite { $0.color = ink }
             iconHolder.addChild(icon)
             // Petit pop quand l'action change

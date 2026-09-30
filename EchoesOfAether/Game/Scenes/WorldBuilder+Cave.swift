@@ -31,9 +31,9 @@ extension WorldBuilder {
         let h = scene.size.height
 
         addTiledFloor(in: scene, tileNames: ["a2_stone"],
-                      fallbackColor: SKColor(red: 0.05, green: 0.05, blue: 0.07, alpha: 1),
+                      fallbackColor: Palette.nightBlack,
                       tileScale: 1.0,
-                      tint: SKColor(red: 0.12, green: 0.13, blue: 0.18, alpha: 1),
+                      tint: Palette.nightGrey,
                       z: -10,
                       overrideSize: CGSize(width: w + 96, height: h + 96))
 
@@ -102,8 +102,8 @@ extension WorldBuilder {
 
         // Halo de sortie (sud) — retour à la forêt
         let exit = SKShapeNode(circleOfRadius: 30)
-        exit.fillColor = SKColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 0.10)
-        exit.strokeColor = SKColor(red: 0.55, green: 0.70, blue: 0.95, alpha: 0.22)
+        exit.fillColor = Palette.frost.withAlphaComponent(0.10)
+        exit.strokeColor = Palette.frost.withAlphaComponent(0.22)
         exit.lineWidth = 1
         exit.position = CGPoint(x: w * 0.50, y: h * 0.08)
         exit.zPosition = -1
@@ -133,9 +133,9 @@ extension WorldBuilder {
         let chest = SKNode()
         chest.name = name
         chest.zPosition = actorLayer(for: pos.y)
-        let wood = SKColor(red: 0.42, green: 0.28, blue: 0.14, alpha: 1)
+        let wood = Palette.woodBrass
         let dark = SKColor(red: 0.24, green: 0.15, blue: 0.07, alpha: 1)
-        let gold = SKColor(red: 0.95, green: 0.78, blue: 0.30, alpha: 1)
+        let gold = Palette.gold
         // Corps
         let body = SKSpriteNode(color: wood, size: CGSize(width: 40, height: 26))
         body.position = CGPoint(x: 0, y: 13)

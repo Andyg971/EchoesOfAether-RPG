@@ -49,7 +49,7 @@ enum CombatElement: Hashable {
         case .physical: return SKColor(white: 0.90, alpha: 1)
         case .fire: return SKColor(red: 1.00, green: 0.36, blue: 0.16, alpha: 1)
         case .ice: return SKColor(red: 0.45, green: 0.85, blue: 1.00, alpha: 1)
-        case .lightning: return SKColor(red: 1.00, green: 0.82, blue: 0.22, alpha: 1)
+        case .lightning: return Palette.goldBright
         case .aether: return Palette.aetherDeep
         }
     }

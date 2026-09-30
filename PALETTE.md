@@ -30,6 +30,16 @@ modifiée, seulement nommée. Après migration, plus aucun littéral n'est rép�
 Ce que ça change concrètement : ces 55 points sont désormais reliés. Changer
 l'or du jeu est devenu une ligne au lieu d'une chasse dans 28 700 lignes.
 
+## Passe de convergence n°1 (écart RVB ≤ 0,06)
+
+136 littéraux quasi identiques à un jeton ont été ramenés à celui-ci (l'alpha
+d'origine est conservé via `withAlphaComponent`) : **653 → 543 valeurs
+distinctes**. 9 jetons ont été ajoutés (`nightBlack`, `nightGrey`, `slate`,
+`skyBlue`, `iceBlue`, `woodBrass`, `aetherViolet`, `goldBright`, `goldDark`)
+et les ors `goldWorld` / `goldCombat` (écart < 0,04) sont fusionnés dans `gold`.
+Écart maximal par littéral : ~15/255 — à valider à l'œil en jeu. Une seconde
+passe à un seuil plus large reste possible, avec un risque visuel croissant.
+
 ## Ce qui reste à trancher — et pourquoi ce n'est pas du refactoring
 
 Il reste **636 valeurs pour 698 usages**. Les faire converger n'est pas une

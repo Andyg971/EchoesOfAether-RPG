@@ -200,8 +200,8 @@ extension WorldBuilder {
         }
 
         let glow = SKShapeNode(circleOfRadius: 26)
-        glow.fillColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.06)
-        glow.strokeColor = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 0.18)
+        glow.fillColor = Palette.gold.withAlphaComponent(0.06)
+        glow.strokeColor = Palette.gold.withAlphaComponent(0.18)
         glow.lineWidth = 1
         node.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.3)

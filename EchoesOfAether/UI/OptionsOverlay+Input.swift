@@ -148,7 +148,7 @@ extension OptionsOverlay {
             btn.strokeColor = SKColor(red: 0.70, green: 0.58, blue: 1.0, alpha: 1)
             btn.lineWidth = 2
         } else {
-            btn.fillColor = SKColor(red: 0.10, green: 0.08, blue: 0.16, alpha: 1)
+            btn.fillColor = Palette.panelNight
             btn.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.60, alpha: 0.7)
             btn.lineWidth = 1.5
         }

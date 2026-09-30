@@ -107,6 +107,9 @@ extension GameManager {
             if lyraInParty {
                 if world.lyra.isHidden { world.showLyraCompanion() }
                 world.updateLyraFollow(deltaTime: deltaTime)
+            } else if lyraFollowsOnMap {
+                if world.lyra.isHidden { world.showLyraCompanion() }
+                world.updateLyraFollow(deltaTime: deltaTime)
             } else if phase == .act3 || phase == .act4 {
                 if player.act3EchoJoined {
                     world.updateLyraFollow(deltaTime: deltaTime)

@@ -55,6 +55,13 @@ final class GameManager {
         [.forest, .shrine, .ruins].contains(phase) && !player.lyraDeceased && !inMines
     }
 
+    /// Sur la carte du monde après l'Acte I, Lyra ne combat pas (les rôdeurs
+    /// se jouent sans elle) mais marche derrière Kael, cycle de marche compris.
+    /// Distinct de `lyraInParty` : ne touche pas aux groupes de combat.
+    var lyraFollowsOnMap: Bool {
+        inOverworld && [.complete, .act2].contains(phase) && !player.lyraDeceased
+    }
+
     /// Trio de l'Acte III : l'Écho de Lyra puis Eran rejoignent Kael.
     var act3Party: [CombatAllyKind] {
         var kinds: [CombatAllyKind] = []

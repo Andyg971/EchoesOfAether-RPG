@@ -78,7 +78,7 @@ final class HUDOverlay {
             xpBarFill.fillColor = SKColor(red: 0.95, green: 0.75, blue: 0.25, alpha: 1)
         } else {
             xpLabel.text = String(localized: "hud.xp \(xp) \(xpToNext)")
-            xpBarFill.fillColor = SKColor(red: 0.55, green: 0.80, blue: 1, alpha: 1)
+            xpBarFill.fillColor = Palette.skyBlue
         }
         xpBarFill.xScale = max(0.02, min(1, isMax ? 1 : progress))
         refreshShadows()
@@ -154,7 +154,7 @@ final class HUDOverlay {
         root.addChild(xpBarBack)
 
         xpBarFill.path = xpPath
-        xpBarFill.fillColor = SKColor(red: 0.55, green: 0.80, blue: 1, alpha: 1)
+        xpBarFill.fillColor = Palette.skyBlue
         xpBarFill.strokeColor = .clear
         xpBarFill.xScale = 0.02
         root.addChild(xpBarFill)

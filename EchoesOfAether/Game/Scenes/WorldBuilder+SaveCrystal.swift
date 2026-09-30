@@ -65,7 +65,7 @@ extension WorldBuilder {
             "........",
             "..#..#.."
         ], palette: [
-            "#": SKColor(red: 0.55, green: 0.85, blue: 1.0, alpha: 0.55)
+            "#": Palette.skyBlue.withAlphaComponent(0.55)
         ], pixel: 3)
         halo.position = CGPoint(x: 0, y: 6)
         halo.zPosition = -0.5

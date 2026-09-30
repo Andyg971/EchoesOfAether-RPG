@@ -27,8 +27,11 @@ while IFS= read -r fichier; do
 
   # Xcode met le chemin entre guillemets dès qu'il contient un caractère
   # spécial — c'est le cas de toutes les extensions « GameManager+Act2.swift ».
+  # Un fichier dans un sous-dossier (Support/LiveScene.swift) est référencé
+  # avec son chemin relatif : on accepte aussi « path = …/nom ».
   if ! grep -qF "path = $nom;" "$PROJECT" \
-     && ! grep -qF "path = \"$nom\";" "$PROJECT"; then
+     && ! grep -qF "path = \"$nom\";" "$PROJECT" \
+     && ! grep -qE "path = \"?[^\";]*/$(printf '%s' "$nom" | sed 's/[.+]/\\&/g')\"?;" "$PROJECT"; then
     echo "✗ $fichier — absent de project.pbxproj (aucun PBXFileReference)"
     manquants=$((manquants + 1))
     continue

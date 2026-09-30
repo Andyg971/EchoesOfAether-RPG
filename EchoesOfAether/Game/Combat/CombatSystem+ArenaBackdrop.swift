@@ -105,7 +105,7 @@ extension CombatSystem {
                 haloColor: SKColor(red: 0.18, green: 0.30, blue: 0.22, alpha: 0.35),
                 horizonColor: SKColor(red: 0.30, green: 0.55, blue: 0.38, alpha: 0.4),
                 stageColor: SKColor(red: 0.13, green: 0.19, blue: 0.15, alpha: 1),
-                stageEdgeColor: SKColor(red: 0.06, green: 0.10, blue: 0.08, alpha: 1),
+                stageEdgeColor: Palette.shadowWarm,
                 stageStrokeColor: SKColor(red: 0.25, green: 0.45, blue: 0.30, alpha: 0.5),
                 decorColor: SKColor(red: 0.04, green: 0.08, blue: 0.05, alpha: 1)
             )
@@ -118,7 +118,7 @@ extension CombatSystem {
                 stageColor: SKColor(red: 0.18, green: 0.12, blue: 0.28, alpha: 1),
                 stageEdgeColor: SKColor(red: 0.08, green: 0.05, blue: 0.13, alpha: 1),
                 stageStrokeColor: SKColor(red: 0.55, green: 0.25, blue: 0.85, alpha: 0.6),
-                decorColor: SKColor(red: 0.08, green: 0.05, blue: 0.14, alpha: 1)
+                decorColor: Palette.panelNight
             )
         case .ruinsGuardian, .archivist:
             // Ruines de la Source : marron-rouge délavé
@@ -128,9 +128,9 @@ extension CombatSystem {
                 haloColor: SKColor(red: 0.45, green: 0.18, blue: 0.15, alpha: 0.4),
                 horizonColor: SKColor(red: 0.80, green: 0.35, blue: 0.20, alpha: 0.45),
                 stageColor: SKColor(red: 0.20, green: 0.13, blue: 0.11, alpha: 1),
-                stageEdgeColor: SKColor(red: 0.09, green: 0.05, blue: 0.05, alpha: 1),
+                stageEdgeColor: Palette.nightBlack,
                 stageStrokeColor: SKColor(red: 0.60, green: 0.28, blue: 0.18, alpha: 0.55),
-                decorColor: SKColor(red: 0.10, green: 0.06, blue: 0.05, alpha: 1)
+                decorColor: Palette.nightBlack
             )
         }
     }

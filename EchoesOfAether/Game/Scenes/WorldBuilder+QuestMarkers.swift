@@ -19,7 +19,7 @@ extension WorldBuilder {
                                              anchor: CGPoint(x: 0.5, y: 0.0)) {
             marker.addChild(cross)
         }
-        let glow = SKSpriteNode(color: SKColor(red: 1, green: 0.85, blue: 0.35, alpha: 0.30),
+        let glow = SKSpriteNode(color: Palette.gold.withAlphaComponent(0.30),
                                 size: CGSize(width: 30, height: 30))
         glow.zRotation = .pi / 4
         glow.position = CGPoint(x: 0, y: 10)
@@ -69,8 +69,8 @@ extension WorldBuilder {
             ".RrrrRrrrrR.",
             "..RRRRRRRR.."
         ], palette: [
-            "R": SKColor(red: 0.10, green: 0.09, blue: 0.14, alpha: 1),
-            "r": SKColor(red: 0.20, green: 0.18, blue: 0.26, alpha: 1),
+            "R": Palette.panelNight,
+            "r": Palette.slate,
             "v": SKColor(red: 0.55, green: 0.30, blue: 0.85, alpha: 1)
         ], pixel: 1.8)
         marker.addChild(rock)
@@ -254,7 +254,7 @@ extension WorldBuilder {
         mark.name = markName
         mark.text = "!"
         mark.fontSize = 20
-        mark.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.25, alpha: 1)
+        mark.fontColor = Palette.goldBright
         mark.position = CGPoint(x: 0, y: 40)
         mark.zPosition = 5
         npc.addChild(mark)

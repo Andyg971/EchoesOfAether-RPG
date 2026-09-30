@@ -39,7 +39,7 @@ extension CombatSystem {
         if !weaknesses.isEmpty || foe.shieldMax > 0 {
             let plate = SKShapeNode()
             PixelUI.stylePanel(plate, size: CGSize(width: totalW + 16, height: 20),
-                               fill: SKColor(red: 0.05, green: 0.04, blue: 0.07, alpha: 0.92),
+                               fill: Palette.nightBlack.withAlphaComponent(0.92),
                                accent: SKColor(white: 0.34, alpha: 0.85))
             plate.zPosition = -1
             targetInfoRow.addChild(plate)
@@ -133,7 +133,7 @@ extension CombatSystem {
                 let t = healTargets[healIdx]
                 targetMarker.position = CGPoint(x: t.home.x, y: t.home.y + 64)
             } else {
-                targetMarker.strokeColor = SKColor(red: 1.00, green: 0.85, blue: 0.30, alpha: 1)
+                targetMarker.strokeColor = Palette.gold
                 let markerVisible = enemies.count > 1 && c.isAlive && phase != .finished
                 targetMarker.isHidden = !markerVisible
                 if markerVisible {

@@ -97,8 +97,8 @@ extension WorldBuilder {
         // Résidentiel sud — la maison de Kael en premier plan
         addVillageBuilding(asset: "mv_chalet", scale: 0.44,
                             fallbackW: 62, fallbackH: 50,
-                            wallColor: SKColor(red: 0.18, green: 0.16, blue: 0.12, alpha: 1),
-                            roofColor: SKColor(red: 0.35, green: 0.28, blue: 0.18, alpha: 1),
+                            wallColor: Palette.wood,
+                            roofColor: Palette.woodBrass,
                             label: nil, at: CGPoint(x: w * 0.32, y: h * 0.075), in: scene,
                             tint: oldWood)
         addVillageBuilding(asset: "mv_chalet", scale: 0.40,
@@ -109,7 +109,7 @@ extension WorldBuilder {
                             tint: plaster, flipped: true)
         addVillageBuilding(asset: "mv_chalet", scale: 0.42,
                             fallbackW: 76, fallbackH: 58,
-                            wallColor: SKColor(red: 0.18, green: 0.18, blue: 0.22, alpha: 1),
+                            wallColor: Palette.slate,
                             roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.80, y: h * 0.16), in: scene,
                             tint: ochre)
@@ -129,7 +129,7 @@ extension WorldBuilder {
                             tint: SKColor(red: 0.50, green: 0.44, blue: 0.42, alpha: 1))
         addVillageBuilding(asset: "mv_chalet", scale: 0.52,
                             fallbackW: 88, fallbackH: 62,
-                            wallColor: SKColor(red: 0.20, green: 0.14, blue: 0.10, alpha: 1),
+                            wallColor: Palette.wood,
                             roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.78, y: h * 0.58), in: scene,
                             tint: ochre, flipped: true)   // l'auberge, la plus grande
@@ -137,7 +137,7 @@ extension WorldBuilder {
         // Quartier haut — le manoir du chef et la chapelle ferment le village
         addVillageBuilding(asset: "village_house_haunted", scale: 0.19,
                             fallbackW: 70, fallbackH: 55,
-                            wallColor: SKColor(red: 0.20, green: 0.16, blue: 0.12, alpha: 1),
+                            wallColor: Palette.wood,
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.17, y: h * 0.78), in: scene)
         addVillageBuilding(asset: "gy_chapel", scale: 0.44,

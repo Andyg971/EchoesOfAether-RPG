@@ -218,7 +218,7 @@ extension WorldBuilder {
 
         // Seuil du sanctuaire (sortie nord)
         let deepPath = SKShapeNode(rectOf: CGSize(width: 64, height: 32), cornerRadius: 8)
-        deepPath.fillColor = SKColor(red: 0.12, green: 0.05, blue: 0.18, alpha: 0.18)
+        deepPath.fillColor = Palette.panelNight.withAlphaComponent(0.18)
         deepPath.strokeColor = SKColor(red: 0.50, green: 0.25, blue: 0.75, alpha: 0.35)
         deepPath.lineWidth = 1.5
         deepPath.position = CGPoint(x: w * 0.55, y: h * 0.90)

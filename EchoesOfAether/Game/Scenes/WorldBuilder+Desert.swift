@@ -12,7 +12,7 @@ extension WorldBuilder {
         worldHeight = scene.size.height
         worldNode.position = .zero
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = true }
-        scene.backgroundColor = SKColor(red: 0.42, green: 0.32, blue: 0.16, alpha: 1)
+        scene.backgroundColor = Palette.woodGold
         buildDesert(in: scene, progress: progress, chestTaken: chestTaken)
     }
 
@@ -49,7 +49,7 @@ extension WorldBuilder {
         let zoneLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         zoneLabel.text = String(localized: "world.desert.title")
         zoneLabel.fontSize = 14
-        zoneLabel.fontColor = SKColor(red: 0.45, green: 0.32, blue: 0.14, alpha: 0.8)
+        zoneLabel.fontColor = Palette.woodGold.withAlphaComponent(0.8)
         zoneLabel.position = CGPoint(x: w * 0.50, y: h * 0.045)
         zoneLabel.zPosition = -1
         add(zoneLabel, to: scene)
@@ -100,7 +100,7 @@ extension WorldBuilder {
         let exitLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         exitLabel.text = String(localized: "world.desert.exit")
         exitLabel.fontSize = 12
-        exitLabel.fontColor = SKColor(red: 0.40, green: 0.28, blue: 0.12, alpha: 0.85)
+        exitLabel.fontColor = Palette.woodGold.withAlphaComponent(0.85)
         exitLabel.position = CGPoint(x: w * 0.50, y: h * DesertPOI.exitY + 42)
         add(exitLabel, to: scene)
 

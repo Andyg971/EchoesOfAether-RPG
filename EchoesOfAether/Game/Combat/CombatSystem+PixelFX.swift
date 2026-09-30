@@ -71,7 +71,7 @@ extension CombatSystem {
 
     /// CRITIQUE : dégâts dorés en gros, éclat d'étincelles, punch caméra.
     func playCritEffect(at position: CGPoint, damage: Int) {
-    let gold = SKColor(red: 1.00, green: 0.84, blue: 0.25, alpha: 1)
+    let gold = Palette.goldBright
     showEffect(String(localized: "combat.effect.crit"), color: gold)
     // Gerbe d'éclats retirée : le mot CRITIQUE, le coup de zoom et le gros
     // chiffre doré disent déjà le critique, sans carrés projetés.
@@ -97,9 +97,9 @@ extension CombatSystem {
     /// ESQUIVE : pas de côté vif du sprite, aucun dégât.
     func playDodgeEffect(sprite: SKNode?, home: CGPoint) {
     showEffect(String(localized: "combat.effect.dodge"),
-               color: SKColor(red: 0.65, green: 0.95, blue: 1.00, alpha: 1))
+               color: Palette.iceBlue)
     showFloatingText(String(localized: "combat.effect.dodge"), at: home,
-                     color: SKColor(red: 0.65, green: 0.95, blue: 1.00, alpha: 1))
+                     color: Palette.iceBlue)
     guard let sprite else { return }
     let dash = SKAction.sequence([
         .moveBy(x: -30, y: 0, duration: 0.08),
@@ -197,7 +197,7 @@ extension CombatSystem {
 
     func setupComboAndStatusUI(scene: SKScene) {
     comboLabel.fontSize = 24
-    comboLabel.fontColor = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
+    comboLabel.fontColor = Palette.goldBright
     comboLabel.position = CGPoint(x: scene.size.width / 2, y: scene.size.height * 0.56)
     comboLabel.zPosition = 920
     comboLabel.alpha = 0

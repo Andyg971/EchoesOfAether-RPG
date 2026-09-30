@@ -77,7 +77,7 @@ final class PauseOverlay {
 
         let saveBtn = PixelUI.makeButton(String(localized: "pause.save"),
             size: CGSize(width: 200, height: 48),
-            fill: SKColor(red: 0.06, green: 0.06, blue: 0.18, alpha: 1),
+            fill: Palette.panelNight,
             accent: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
             fontSize: 20, name: "pauseSave")
         saveBtn.position = CGPoint(x: centerX, y: centerY + 32)
@@ -86,7 +86,7 @@ final class PauseOverlay {
 
         let optionsBtn = PixelUI.makeButton(String(localized: "pause.options"),
             size: CGSize(width: 200, height: 48),
-            fill: SKColor(red: 0.08, green: 0.08, blue: 0.14, alpha: 1),
+            fill: Palette.panelNight,
             accent: Palette.panelBorder,
             fontSize: 20, name: "pauseOptions")
         optionsBtn.position = CGPoint(x: centerX, y: centerY - 84)
@@ -96,7 +96,7 @@ final class PauseOverlay {
         // Arbre de l'Aether — pastille dorée quand des points dorment.
         let skillsBtn = PixelUI.makeButton(String(localized: "pause.skills"),
             size: CGSize(width: 200, height: 48),
-            fill: SKColor(red: 0.10, green: 0.07, blue: 0.18, alpha: 1),
+            fill: Palette.panelNight,
             accent: Palette.aether,
             fontSize: 20, name: "pauseSkills")
         skillsBtn.position = CGPoint(x: centerX, y: centerY - 26)
@@ -120,7 +120,7 @@ final class PauseOverlay {
 
         let menuBtn = PixelUI.makeButton(String(localized: "pause.mainMenu"),
             size: CGSize(width: 200, height: 48),
-            fill: SKColor(red: 0.12, green: 0.06, blue: 0.06, alpha: 1),
+            fill: Palette.nightBlack,
             accent: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
             fontSize: 20, name: "pauseMenu")
         menuBtn.position = CGPoint(x: centerX, y: centerY - 142)

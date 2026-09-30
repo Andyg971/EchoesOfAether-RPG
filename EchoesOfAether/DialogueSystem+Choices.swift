@@ -80,7 +80,7 @@ extension DialogueSystem {
             let button = SKShapeNode()
             PixelUI.stylePanel(button,
                                size: CGSize(width: buttonWidth, height: buttonHeight),
-                               fill: SKColor(red: 0.11, green: 0.09, blue: 0.14, alpha: 1),
+                               fill: Palette.panelNight,
                                accent: SKColor(red: 0.62, green: 0.48, blue: 0.90, alpha: 1))
             button.userData = [
                 "title": option.title,
@@ -91,7 +91,7 @@ extension DialogueSystem {
 
             // Puce en losange pixel (carré tourné) — plus de cercle ni de
             // glow, cohérent avec le reste de l'UI rétro.
-            let bullet = SKSpriteNode(color: SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1),
+            let bullet = SKSpriteNode(color: Palette.aetherViolet,
                                       size: CGSize(width: 5, height: 5))
             bullet.zRotation = .pi / 4
             bullet.position = CGPoint(x: -buttonWidth / 2 + 12, y: 0)

@@ -114,7 +114,7 @@ final class QuestLogOverlay {
                 // Puce d'état pixel (petit carré coloré) à côté de la vignette.
                 let bullet = SKSpriteNode(
                     color: done ? SKColor(red: 0.45, green: 0.85, blue: 0.50, alpha: 1)
-                                : SKColor(red: 1.0, green: 0.82, blue: 0.28, alpha: 1),
+                                : Palette.gold,
                     size: CGSize(width: 5, height: 5))
                 bullet.position = CGPoint(x: -panelWidth / 2 + 40, y: y + 6)
                 root.addChild(bullet)
@@ -131,7 +131,7 @@ final class QuestLogOverlay {
                                         : String(localized: "questlog.state.active"),
                                    size: 12,
                                    color: done ? SKColor(red: 0.45, green: 0.85, blue: 0.50, alpha: 1)
-                                               : SKColor(red: 1.0, green: 0.82, blue: 0.28, alpha: 1))
+                                               : Palette.gold)
                 stateL.horizontalAlignmentMode = .right
                 stateL.position = CGPoint(x: panelWidth / 2 - 22, y: y)
                 root.addChild(stateL)

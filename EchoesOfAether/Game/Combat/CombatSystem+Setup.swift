@@ -26,7 +26,7 @@ extension CombatSystem {
     func setupTurnUI(scene: SKScene) {
         PixelUI.stylePanel(turnBanner, size: CGSize(width: 240, height: 30),
                            fill: SKColor(red: 0.05, green: 0.04, blue: 0.10, alpha: 0.92),
-                           accent: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 0.9))
+                           accent: Palette.skyBlue.withAlphaComponent(0.9))
         turnBanner.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 26)
         turnBanner.zPosition = 940
         turnBanner.alpha = 0
@@ -101,7 +101,7 @@ extension CombatSystem {
     let panelY: CGFloat = 62
 
     PixelUI.stylePanel(actionPanel, size: CGSize(width: panelWidth, height: panelHeight),
-                       fill: SKColor(red: 0.045, green: 0.038, blue: 0.045, alpha: 0.96),
+                       fill: Palette.nightBlack.withAlphaComponent(0.96),
                        accent: PixelUI.goldDim)
     actionPanel.position = CGPoint(x: scene.size.width / 2, y: panelY)
     actionPanel.zPosition = 850
@@ -120,7 +120,7 @@ extension CombatSystem {
     // Création des 6 boutons (positions posées par layoutActionMenu)
     let buttonH: CGFloat = 32
     addButton(attackButton, title: String(localized: "combat.button.attack"), at: .zero, width: 80, height: buttonH,
-              fill: SKColor(red: 0.13, green: 0.13, blue: 0.16, alpha: 1), stroke: SKColor(white: 0.62, alpha: 1), fontSize: 12,
+              fill: Palette.nightGrey, stroke: SKColor(white: 0.62, alpha: 1), fontSize: 12,
               chip: CombatElement.physical.color)
     addButton(fireButton, title: String(localized: "combat.button.fire"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.26, green: 0.07, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.85, green: 0.38, blue: 0.18, alpha: 1), fontSize: 12,
@@ -147,7 +147,7 @@ extension CombatSystem {
               chip: SKColor(red: 0.60, green: 0.85, blue: 1.00, alpha: 1))
     // Techniques d'Eran : acier pour la bourrasque, braise pour la lame ardente.
     addButton(windButton, title: String(localized: "combat.button.windBlade"), at: .zero, width: 80, height: buttonH,
-              fill: SKColor(red: 0.14, green: 0.16, blue: 0.14, alpha: 1), stroke: SKColor(red: 0.72, green: 0.80, blue: 0.68, alpha: 1), fontSize: 12,
+              fill: Palette.nightGrey, stroke: SKColor(red: 0.72, green: 0.80, blue: 0.68, alpha: 1), fontSize: 12,
               chip: SKColor(red: 0.85, green: 0.92, blue: 0.80, alpha: 1))
     addButton(emberButton, title: String(localized: "combat.button.emberStrike"), at: .zero, width: 80, height: buttonH,
               fill: SKColor(red: 0.24, green: 0.09, blue: 0.03, alpha: 1), stroke: SKColor(red: 0.90, green: 0.45, blue: 0.20, alpha: 1), fontSize: 12,

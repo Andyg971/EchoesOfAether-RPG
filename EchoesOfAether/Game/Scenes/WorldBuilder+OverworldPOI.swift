@@ -210,7 +210,7 @@ extension WorldBuilder {
     func switchToVillage(in scene: SKScene) {
         clearBackdrop()
         worldNode.position = .zero
-        scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
+        scene.backgroundColor = Palette.shadowWarm
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
         buildVillage(in: scene)
         villagePlanActive = true

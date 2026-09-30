@@ -65,22 +65,20 @@ enum Palette {
 
     // MARK: - Or
     //
-    // Quatre valeurs pour une seule couleur voulue, réparties par fichier
-    // plutôt que par intention : le monde et le combat ont chacun redéfini
-    // « l'or » de leur côté. Elles DEVRAIENT converger vers `gold`. Tant que
-    // ce n'est pas tranché, elles sont nommées — la dérive est visible dans le
-    // code au lieu d'être noyée dans 753 littéraux.
+    // L'or du monde (`goldWorld`) et celui du combat (`goldCombat`) différaient
+    // de moins de 0,04 en RVB : fusionnés dans `gold`. L'accent vif, plus
+    // saturé, reste distinct (`goldBright`).
 
-    /// Or de référence — le plus employé (monde, POI, coffres).
+    /// Or de référence — monde, POI, coffres, combat.
     static let gold = SKColor(red: 0.98, green: 0.82, blue: 0.32, alpha: 1)
 
-    /// Variante « monde » (`WorldBuilder`, `GameManager`). À converger.
-    static let goldWorld = SKColor(red: 1, green: 0.85, blue: 0.3, alpha: 1)
+    /// Or vif — accents, éclats, titres (#FFD833).
+    static let goldBright = SKColor(red: 1.0, green: 0.85, blue: 0.20, alpha: 1)
 
-    /// Variante « combat » (`CombatSystem`). À converger.
-    static let goldCombat = SKColor(red: 1.00, green: 0.82, blue: 0.35, alpha: 1)
+    /// Or sombre — bordures, ferrures, reliefs (#997F3F).
+    static let goldDark = SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1)
 
-    /// Variante « combat, accent vif » (`CombatSystem`). À converger.
+    /// Or d'accent de combat, plus saturé que `gold`.
     static let goldCombatBright = SKColor(red: 1.00, green: 0.80, blue: 0.20, alpha: 1)
 
     // MARK: - Éléments
@@ -99,4 +97,31 @@ enum Palette {
 
     /// Vert vitalité atténué — barres et libellés secondaires.
     static let vitalityDim = SKColor(red: 0.40, green: 0.95, blue: 0.60, alpha: 1)
+
+    // MARK: - Convergence (grappes issues de l'audit, cf. PALETTE.md)
+    //
+    // Chaque jeton ci-dessous est le centre d'une grappe de littéraux quasi
+    // identiques (écart RVB ≤ 0,06, soit ~15/255) : les appels proches ont été
+    // ramenés ici, l'alpha d'origine étant conservé via `withAlphaComponent`.
+
+    /// Noir chaud (#190F0C) — fonds sombres, voiles.
+    static let nightBlack = SKColor(red: 0.098, green: 0.059, blue: 0.047, alpha: 1)
+
+    /// Gris nuit (#212128) — fonds neutres, barres.
+    static let nightGrey = SKColor(red: 0.129, green: 0.129, blue: 0.157, alpha: 1)
+
+    /// Violet ardoise (#332D42) — panneaux secondaires.
+    static let slate = SKColor(red: 0.20, green: 0.176, blue: 0.259, alpha: 1)
+
+    /// Bleu clair (#8CCCFF) — eau, ciel, sorts de glace.
+    static let skyBlue = SKColor(red: 0.549, green: 0.8, blue: 1.0, alpha: 1)
+
+    /// Bleu glace (#B2EAFF) — éclats et reflets froids.
+    static let iceBlue = SKColor(red: 0.698, green: 0.918, blue: 1.0, alpha: 1)
+
+    /// Brun doré (#664C2D) — cadres et ferrures de bois.
+    static let woodBrass = SKColor(red: 0.4, green: 0.298, blue: 0.176, alpha: 1)
+
+    /// Violet Aether vif (#A572FF) — magie, corruption.
+    static let aetherViolet = SKColor(red: 0.647, green: 0.447, blue: 1.0, alpha: 1)
 }

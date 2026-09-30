@@ -169,7 +169,7 @@ final class OptionsOverlay {
 
         let tutorialBtn = PixelUI.makeButton(String(localized: "options.replayTutorial"),
             size: CGSize(width: largeurBouton, height: 46),
-            fill: SKColor(red: 0.08, green: 0.12, blue: 0.18, alpha: 1),
+            fill: Palette.panelNight,
             accent: SKColor(red: 0.35, green: 0.55, blue: 0.85, alpha: 0.85),
             fontSize: 18, name: "optionsTutorial")
         tutorialBtn.position = CGPoint(x: cx - pas, y: y)
@@ -185,7 +185,7 @@ final class OptionsOverlay {
 
         let closeBtn = PixelUI.makeButton(String(localized: "options.close"),
             size: CGSize(width: largeurBouton, height: 46),
-            fill: SKColor(red: 0.10, green: 0.10, blue: 0.18, alpha: 1),
+            fill: Palette.panelNight,
             accent: Palette.panelBorder,
             fontSize: 18, name: "optionsClose")
         closeBtn.position = CGPoint(x: cx + pas, y: y)

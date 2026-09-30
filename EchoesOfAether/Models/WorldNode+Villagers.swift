@@ -11,7 +11,7 @@ extension WorldNode {
         root.name = "dorin"
 
         let armor = SKShapeNode(rectOf: CGSize(width: 40, height: 48), cornerRadius: 6)
-        armor.fillColor = SKColor(red: 0.42, green: 0.35, blue: 0.18, alpha: 1)
+        armor.fillColor = Palette.woodGold
         armor.strokeColor = SKColor(red: 0.72, green: 0.58, blue: 0.32, alpha: 0.8)
         armor.lineWidth = 2
         root.addChild(armor)
@@ -67,8 +67,8 @@ extension WorldNode {
         root.addChild(body)
 
         let apron = SKShapeNode(rectOf: CGSize(width: 36, height: 30), cornerRadius: 3)
-        apron.fillColor = SKColor(red: 0.25, green: 0.18, blue: 0.10, alpha: 1)
-        apron.strokeColor = SKColor(red: 0.45, green: 0.30, blue: 0.15, alpha: 0.4)
+        apron.fillColor = Palette.wood
+        apron.strokeColor = Palette.woodGold.withAlphaComponent(0.4)
         apron.position = CGPoint(x: 0, y: -8)
         root.addChild(apron)
 
@@ -174,14 +174,14 @@ extension WorldNode {
         root.addChild(helmet)
 
         let visor = SKShapeNode(rectOf: CGSize(width: 16, height: 4), cornerRadius: 1)
-        visor.fillColor = SKColor(red: 0.20, green: 0.20, blue: 0.25, alpha: 1)
+        visor.fillColor = Palette.slate
         visor.strokeColor = .clear
         visor.position = CGPoint(x: 0, y: 36)
         root.addChild(visor)
 
         let spear = SKNode()
         let shaft = SKShapeNode(rectOf: CGSize(width: 3, height: 80), cornerRadius: 1)
-        shaft.fillColor = SKColor(red: 0.40, green: 0.30, blue: 0.18, alpha: 1)
+        shaft.fillColor = Palette.woodBrass
         shaft.strokeColor = .clear
         spear.addChild(shaft)
         let tip = SKShapeNode()

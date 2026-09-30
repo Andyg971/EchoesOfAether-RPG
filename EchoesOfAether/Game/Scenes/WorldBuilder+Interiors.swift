@@ -46,7 +46,7 @@ extension WorldBuilder {
         let previous = activeInterior
         activeInterior = nil
         clearBackdrop()
-        scene.backgroundColor = SKColor(red: 0.05, green: 0.06, blue: 0.08, alpha: 1)
+        scene.backgroundColor = Palette.shadowWarm
         [lyra, dorin, bram, mara, garen, sage, child, villager].forEach { $0.isHidden = false }
         buildVillage(in: scene)
         layout(in: scene.size)
@@ -193,8 +193,8 @@ extension WorldBuilder {
 
         let mat = SKShapeNode()
         PixelUI.stylePanel(mat, size: CGSize(width: 66, height: 20),
-                           fill: SKColor(red: 0.11, green: 0.075, blue: 0.045, alpha: 0.90),
-                           accent: SKColor(red: 0.60, green: 0.46, blue: 0.26, alpha: 0.9))
+                           fill: Palette.shadowWarm.withAlphaComponent(0.90),
+                           accent: Palette.goldDark.withAlphaComponent(0.9))
         exit.addChild(mat)
 
         let icon = SKLabelNode(fontNamed: PixelUI.uiFont)

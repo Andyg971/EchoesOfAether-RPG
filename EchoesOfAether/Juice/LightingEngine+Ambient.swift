@@ -130,7 +130,7 @@ extension LightingEngine {
 
         // Nappe de lumière qui respire
         let sheen = SKSpriteNode(texture: haloTexture(color:
-            SKColor(red: 0.70, green: 0.92, blue: 1.0, alpha: 1)))
+            Palette.iceBlue))
         sheen.size = CGSize(width: radiusX * 1.6, height: radiusY * 1.6)
         sheen.blendMode = .add
         sheen.alpha = 0.07

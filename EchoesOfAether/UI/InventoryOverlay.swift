@@ -242,7 +242,7 @@ final class InventoryOverlay {
     // MARK: - Private
 
     private func setupCloseButton() {
-        closeButton.fillColor = SKColor(red: 0.12, green: 0.10, blue: 0.07, alpha: 1)
+        closeButton.fillColor = Palette.shadowWarm
         closeButton.strokeColor = PixelUI.goldDim
         closeButton.lineWidth = 2
         closeButton.glowWidth = 0

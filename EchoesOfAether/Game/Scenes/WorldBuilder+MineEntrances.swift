@@ -25,7 +25,7 @@ extension WorldBuilder {
         // Poutres de soutènement en bois
         for (x, rot) in [(-24, 0.06), (24, -0.06)] {
             let beam = SKShapeNode(rectOf: CGSize(width: 7, height: 46), cornerRadius: 2)
-            beam.fillColor = SKColor(red: 0.38, green: 0.26, blue: 0.14, alpha: 1)
+            beam.fillColor = Palette.woodBrass
             beam.strokeColor = SKColor(red: 0.22, green: 0.14, blue: 0.08, alpha: 1)
             beam.lineWidth = 1
             beam.position = CGPoint(x: CGFloat(x), y: 22)

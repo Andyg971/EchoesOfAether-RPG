@@ -69,7 +69,7 @@ final class MinimapOverlay {
         root.addChild(mapBg)
 
         // Losange pixel pour Kael (carré tourné à 45°).
-        kaelDot.fillColor = SKColor(red: 0.65, green: 0.45, blue: 1, alpha: 1)
+        kaelDot.fillColor = Palette.aetherViolet
         kaelDot.strokeColor = .white
         kaelDot.lineWidth = 1
         kaelDot.glowWidth = 0

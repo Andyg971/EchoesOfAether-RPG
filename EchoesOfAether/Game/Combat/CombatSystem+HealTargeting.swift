@@ -93,7 +93,7 @@ extension CombatSystem {
     PixelUI.stylePanel(actionPanel,
                        size: CGSize(width: listW + 14, height: rowH * count + 14),
                        fill: SKColor(red: 0.05, green: 0.05, blue: 0.09, alpha: 0.96),
-                       accent: SKColor(red: 0.58, green: 0.50, blue: 0.30, alpha: 1))
+                       accent: Palette.goldDark)
     actionPanel.position = CGPoint(x: listX, y: bottomY + rowH * (count - 1) / 2)
     actionPanel.zPosition = 850
     _ = scene

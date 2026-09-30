@@ -125,7 +125,7 @@ extension CombatSystem {
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "combat.block.success")
         label.fontSize = 16
-        label.fontColor = SKColor(red: 0.70, green: 0.92, blue: 1.00, alpha: 1)
+        label.fontColor = Palette.iceBlue
         label.position = CGPoint(x: pos.x, y: pos.y + 52)
         label.zPosition = 900
         root.addChild(label)

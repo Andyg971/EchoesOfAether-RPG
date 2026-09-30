@@ -58,8 +58,8 @@ final class ShopOverlay {
 
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
-                           fill: SKColor(red: 0.05, green: 0.05, blue: 0.08, alpha: 0.97),
-                           accent: SKColor(red: 0.60, green: 0.50, blue: 0.25, alpha: 1))
+                           fill: Palette.nightBlack.withAlphaComponent(0.97),
+                           accent: Palette.goldDark)
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 24)
         goldLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 42)
@@ -209,8 +209,8 @@ final class ShopOverlay {
         let row = SKShapeNode(rectOf: CGSize(width: panelWidth - 24, height: 40))
         let affordable = player.gold >= item.price && item.canBuy(player)
         row.fillColor = affordable
-            ? SKColor(red: 0.12, green: 0.10, blue: 0.05, alpha: 1)
-            : SKColor(red: 0.08, green: 0.08, blue: 0.08, alpha: 1)
+            ? Palette.shadowWarm
+            : Palette.shadowWarm
         row.strokeColor = affordable
             ? SKColor(red: 0.65, green: 0.50, blue: 0.20, alpha: 0.7)
             : SKColor(white: 0.25, alpha: 0.5)

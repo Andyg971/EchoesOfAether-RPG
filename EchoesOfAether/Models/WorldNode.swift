@@ -98,7 +98,7 @@ enum WorldNode {
         root.addChild(eyes)
 
         let staff = SKShapeNode(rectOf: CGSize(width: 3, height: 56), cornerRadius: 1)
-        staff.fillColor = SKColor(red: 0.40, green: 0.30, blue: 0.18, alpha: 1)
+        staff.fillColor = Palette.woodBrass
         staff.strokeColor = .clear
         staff.position = CGPoint(x: -18, y: 4)
         root.addChild(staff)
@@ -123,7 +123,7 @@ enum WorldNode {
         root.name = "sage"
 
         let robe = SKShapeNode(rectOf: CGSize(width: 32, height: 44), cornerRadius: 12)
-        robe.fillColor = SKColor(red: 0.18, green: 0.15, blue: 0.25, alpha: 1)
+        robe.fillColor = Palette.slate
         robe.strokeColor = SKColor(red: 0.40, green: 0.35, blue: 0.55, alpha: 0.4)
         robe.lineWidth = 1
         root.addChild(robe)

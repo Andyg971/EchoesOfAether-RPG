@@ -30,7 +30,7 @@ extension CombatSystem {
     // partir.
     statusLabel.text = ""
     showTurnBanner(String(localized: "combat.turn.player"),
-                   color: SKColor(red: 0.55, green: 0.80, blue: 1.00, alpha: 1))
+                   color: Palette.skyBlue)
     refreshTurnOrder(currentEnemyIndex: nil)
     layoutActionMenu()
     menuRow = 0

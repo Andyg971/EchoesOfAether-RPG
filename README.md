@@ -82,7 +82,7 @@ EchoesOfAether/
 │                                  curseur de menu, statuts, boss
 ├── PrototypeContent.swift       — Tous les dialogues (clés xcstrings FR/EN)
 ├── Marketing/                   — Trailer 39 s (gameplay réel + cartes titre pixel)
-└── Localizable.xcstrings        — 1011 clés, FR (base) + EN. Zéro string hard-codée.
+└── Localizable.xcstrings        — 1067 clés, FR (base) + EN. Zéro string hard-codée.
 ```
 
 ### Machine d'états
@@ -127,7 +127,7 @@ GamePhase:
 
 ## Localisation
 
-**100 % localisé** — FR (base) + EN, 1011 clés, 0 sans traduction. Zéro string hard-codée.
+**100 % localisé** — FR (base) + EN, 1067 clés, 0 sans traduction. Zéro string hard-codée.
 Dialogues, HUD, combat, boutique, quêtes, bestiaire, tutoriel, hints boutons (« A · Parler »).
 
 Pour tester en anglais : `Scheme → Edit Scheme → Run → Options → App Language → English`
@@ -186,7 +186,7 @@ xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
 | Menu principal (art de l'icône) / Pause / Options / Mort | ✅ Complet |
 | HUD safe-areas Dynamic Island, sans plaques | ✅ Complet |
 | GameCenter (auth + achievements) | ✅ Câblé |
-| Localisation FR + EN | ✅ 1011 clés, 0 manquante |
+| Localisation FR + EN | ✅ 1067 clés, 0 manquante |
 | Trailer marketing (39 s, 1920×886) | ✅ `Marketing/` |
 | Sprites overworld Kael/Lyra/Eran (packs de combat) | ✅ Intégrés (`BattleSprites.worldNode`) |
 | iPad (11" / 13") — résolution virtuelle, échelle unique monde + HUD | ✅ Complet |
@@ -202,7 +202,7 @@ xcodebuild test -project EchoesOfAether.xcodeproj -scheme EchoesOfAether \
 
 - [ ] **Sprites top-down dédiés** — frames overworld 4 directions pour Kael/Lyra/Eran (le combat sert de sprite en attendant)
 - [x] **Accessibilité (overlays + combat)** — annonces VoiceOver à l'ouverture, au curseur et aux tours
-- [ ] **Audit EN complet** — run intégral en anglais
+- [ ] **Audit EN complet** — run intégral en anglais *(audit statique fait : 1067/1067 clés traduites, 0 écart de format, 0 clé manquante, 0 chaîne en dur ; reste à jouer la partie en EN pour juger débordements et rendu)*
 - [x] **Support iPad** — résolution virtuelle (`Viewport`) : le monde ET le HUD sont mis à l'échelle ensemble
 - [ ] **App Store** — screenshots 6.9", page produit FR/EN, TestFlight
 

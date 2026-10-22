@@ -7,7 +7,16 @@ final class GameViewController: UIViewController {
     private var lastApplied: (size: CGSize, insets: UIEdgeInsets)?
 
     override func loadView() {
-        let skView = SKView(frame: UIScreen.main.bounds)
+        // Frame nul volontaire : `UIWindow` cale la vue racine du contrôleur
+        // sur ses propres bornes et lui pose un `autoresizingMask` souple, donc
+        // la SKView remplit la fenêtre sans qu'on lui donne de taille ici. On
+        // évite ainsi `UIScreen.main.bounds`, déprécié et surtout FAUX sur iPad :
+        // il renvoie l'écran physique entier, pas la fenêtre — un écran externe,
+        // ou (si `UIRequiresFullScreen` était un jour levé) une fenêtre Stage
+        // Manager, partiraient à la mauvaise taille. La géométrie réelle arrive
+        // de toute façon dans `viewDidLayoutSubviews`, seule source de vérité.
+        let skView = SKView(frame: .zero)
+        skView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         skView.backgroundColor = .black
         skView.ignoresSiblingOrder = true
         skView.preferredFramesPerSecond = 60

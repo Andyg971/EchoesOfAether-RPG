@@ -122,7 +122,8 @@ Thank you for listening to the Void.
 Formats requis (App Store Connect) — **captures en PAYSAGE** :
 - iPhone 6,9" (1320 × 2868 ou 2868 × 1320) — iPhone 16/17 Pro Max — **obligatoire**
 - iPhone 6,5" (1242 × 2688 / 2688 × 1242) — recommandé
-- iPad 13" si build iPad soumise
+- iPad 13" (2064 × 2752 / 2752 × 2064) — **obligatoire** : la build cible iPhone ET iPad
+  (`TARGETED_DEVICE_FAMILY = "1,2"`), donc Apple exige au moins une capture iPad
 
 Écrans à capturer (5–8 par langue, FR + EN) :
 1. Menu principal (art de Kael + titre)
@@ -135,15 +136,17 @@ Formats requis (App Store Connect) — **captures en PAYSAGE** :
 
 Astuce capture simulateur (le jeu est en paysage) :
 ```bash
-xcrun simctl io "iPhone 16 Pro Max" screenshot out.png
+xcrun simctl io "iPhone 16 Pro Max" screenshot out_iphone.png
+xcrun simctl io "iPad Pro 13-inch (M4)" screenshot out_ipad.png
 ```
 (le device doit être en orientation paysage pour un cadrage correct)
 
 ## ✅ Checklist pré-soumission
 - [x] Privacy manifest (`PrivacyInfo.xcprivacy`) — pas de tracking, pas de collecte, UserDefaults déclaré
-- [x] Localisation FR + EN complète (959 clés, 0 manquante)
+- [x] Localisation FR + EN complète (1067 clés, 0 manquante, 0 écart de format)
 - [ ] Bump `MARKETING_VERSION` / `CURRENT_PROJECT_VERSION` avant l'archive (release)
 - [ ] Screenshots 6,9" FR + EN
+- [ ] Screenshots iPad 13" FR + EN (build universelle)
 - [ ] Privacy labels App Store Connect : « Data Not Collected »
 - [ ] Catégorie : Jeux → Jeu de rôle
 - [ ] Classement d'âge : renseigner (violence fantastique légère)

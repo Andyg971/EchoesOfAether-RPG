@@ -3768,13 +3768,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "This data... the Aether shards you helped me collect. They carried imprints."
+            "value" : "These readings... the Aether shards you helped me gather. They carried imprints."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ces données... les éclats d'Aether que tu m'as aidé à collecter. Ils portaient des empreintes."
+            "value" : "Ces relevés... les éclats d'Aether que tu m'as aidée à ramasser. Ils portaient des empreintes."
           }
         }
       }
@@ -4024,13 +4024,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I recorded data at the shrine. I need time to analyze it."
+            "value" : "I took Aether imprints at the shrine. I need time to read them."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "J'ai enregistré des données au sanctuaire. J'ai besoin de temps pour analyser ça."
+            "value" : "J'ai relevé des empreintes d'Aether au sanctuaire. Il me faut du temps pour les lire."
           }
         }
       }
@@ -4456,13 +4456,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The rest of Kael's story is coming soon."
+            "value" : "It was only the beginning. Beneath it, something beats."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La suite de l'histoire d'Echoes of Aether arrive bientôt."
+            "value" : "Ce n'était que le début. En dessous, quelque chose bat."
           }
         }
       }
@@ -5890,13 +5890,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No one returns from the shrine. What walks toward Solis, empty-handed and at peace, only remembers having been Kael."
+            "value" : "No one returns from the Heart. What walks toward Solis, empty-handed and at peace, only remembers having been Kael."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Personne ne revient du sanctuaire. Ce qui marche vers Solis, les mains vides et le cœur en paix, se souvient seulement d'avoir été Kael."
+            "value" : "Personne ne revient du Cœur. Ce qui marche vers Solis, les mains vides et le cœur en paix, se souvient seulement d'avoir été Kael."
           }
         }
       }
@@ -7263,6 +7263,22 @@
         }
       }
     },
+    "dialogue.cave.enter.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Those aren't voices, Kael. It's Aether remembering. Don't answer any of them."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ce ne sont pas des voix, Kael. C'est de l'Aether qui se souvient. Ne réponds à aucune."
+          }
+        }
+      }
+    },
     "dialogue.child.choice1" : {
       "localizations" : {
         "en" : {
@@ -7602,6 +7618,22 @@
         }
       }
     },
+    "dialogue.desert.boss.postLyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "You see? Your mark can do this, too. Get people home."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tu vois ? Ta marque peut aussi servir à ça. À ce que des gens rentrent chez eux."
+          }
+        }
+      }
+    },
     "dialogue.desert.boss.pre1" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -7700,6 +7732,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Des traces de pillards dans le sable. Je ne suis pas seul ici."
+          }
+        }
+      }
+    },
+    "dialogue.desert.enter.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "None of my herbs grow out here. If you bleed, Kael, we do it the old way: a bandage and my bad temper."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucune de mes herbes ne pousse ici. Si tu saignes, Kael, ce sera à l'ancienne : un bandage et ma mauvaise humeur."
           }
         }
       }

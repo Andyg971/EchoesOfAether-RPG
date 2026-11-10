@@ -52,6 +52,22 @@ extension PrototypeContent {
     // MARK: - Désert d'Ossara (voyage via la carte du monde)
 
     /// Première arrivée : le soleil, le sable, les traces.
+    // MARK: - Lyra en excursion
+
+    // Lyra suit Kael au désert et dans la caverne, mais leurs dialogues
+    // étaient des monologues : elle marchait derrière lui sans un mot. Ces
+    // répliques s'AJOUTENT quand elle est du voyage (`lyraInParty`) ; seul,
+    // Kael garde ses constats.
+    static let desertEnterLyraLines: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.desert.enter.lyra1"))
+    ]
+    static let caveEnterLyraLines: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.cave.enter.lyra1"))
+    ]
+    static let desertBossPostLyraLines: [DialogueStep] = [
+        .line(speaker: "Lyra", text: String(localized: "dialogue.desert.boss.postLyra1"))
+    ]
+
     static let desertEnterDialogue: [DialogueStep] = [
         .line(speaker: "Kael", text: String(localized: "dialogue.desert.enter.kael1")),
         .line(speaker: "Kael", text: String(localized: "dialogue.desert.enter.kael2"))

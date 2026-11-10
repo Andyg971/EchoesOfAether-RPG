@@ -26,7 +26,8 @@ extension GameManager {
             // vaincu). One-shot, jamais enchaîné.
             if !player.caveCleared {
                 transition(to: .dialogue)
-                dialogue.start(PrototypeContent.caveEnterDialogue) { [weak self] in
+                dialogue.start(PrototypeContent.caveEnterDialogue
+                               + (lyraInParty ? PrototypeContent.caveEnterLyraLines : [])) { [weak self] in
                     self?.transition(to: .exploration)
                 }
             } else {

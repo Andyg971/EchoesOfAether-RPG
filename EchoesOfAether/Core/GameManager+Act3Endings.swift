@@ -45,7 +45,9 @@ extension GameManager {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.act3TrueEndingDialogue) { [weak self] in
             guard let self else { return }
-            // « Ce n'était que le début » — la Voix annonce l'Acte IV.
+            // « Ce n'était que le début » — la Voix annonce l'Acte IV. (Le
+            // texte disait « la suite arrive bientôt », reste de l'époque où
+            // le jeu s'arrêtait ici : il s'affichait juste avant la suite.)
             dialogue.start(PrototypeContent.act3EndingTransitionDialogue) { [weak self] in
                 self?.beginAct4()
             }

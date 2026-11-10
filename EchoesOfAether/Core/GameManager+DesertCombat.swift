@@ -116,7 +116,8 @@ extension GameManager {
             hud.objectiveText = String(localized: "hud.objective.desert")
             refreshDesertBackdrop()
             transition(to: .dialogue)
-            dialogue.start(PrototypeContent.desertBossPostDialogue) { [weak self] in
+            dialogue.start(PrototypeContent.desertBossPostDialogue
+                           + (lyraInParty ? PrototypeContent.desertBossPostLyraLines : [])) { [weak self] in
                 self?.transition(to: .exploration)
             }
         }

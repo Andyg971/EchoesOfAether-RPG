@@ -140,7 +140,8 @@ extension GameManager {
                 player.questDesert = .active
                 hud.questText = String(localized: "quest.desert.hud")
                 transition(to: .dialogue)
-                dialogue.start(PrototypeContent.desertEnterDialogue) { [weak self] in
+                dialogue.start(PrototypeContent.desertEnterDialogue
+                               + (lyraInParty ? PrototypeContent.desertEnterLyraLines : [])) { [weak self] in
                     self?.transition(to: .exploration)
                 }
             } else if id == "desert", player.desertProgress >= 1,

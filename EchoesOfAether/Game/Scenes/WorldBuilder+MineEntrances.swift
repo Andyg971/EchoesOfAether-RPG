@@ -15,8 +15,7 @@ extension WorldBuilder {
         entrance.zPosition = depthLayer(for: entrance.position.y)
 
         // Ouverture sombre (bouche de galerie)
-        let mouth = SKShapeNode(rect: CGRect(x: -26, y: 0, width: 52, height: 40),
-                                cornerRadius: 14)
+        let mouth = SKShapeNode(rect: CGRect(x: -26, y: 0, width: 52, height: 40))
         mouth.fillColor = SKColor(red: 0.03, green: 0.02, blue: 0.04, alpha: 1)
         mouth.strokeColor = SKColor(red: 0.18, green: 0.14, blue: 0.10, alpha: 1)
         mouth.lineWidth = 3
@@ -24,15 +23,15 @@ extension WorldBuilder {
 
         // Poutres de soutènement en bois
         for (x, rot) in [(-24, 0.06), (24, -0.06)] {
-            let beam = SKShapeNode(rectOf: CGSize(width: 7, height: 46), cornerRadius: 2)
+            let beam = SKShapeNode(rectOf: CGSize(width: 7, height: 46))
             beam.fillColor = Palette.woodBrass
             beam.strokeColor = SKColor(red: 0.22, green: 0.14, blue: 0.08, alpha: 1)
             beam.lineWidth = 1
             beam.position = CGPoint(x: CGFloat(x), y: 22)
-            beam.zRotation = CGFloat(rot)
+            _ = rot   // poutres d'aplomb : une rotation lisse les bords
             entrance.addChild(beam)
         }
-        let lintel = SKShapeNode(rectOf: CGSize(width: 62, height: 8), cornerRadius: 2)
+        let lintel = SKShapeNode(rectOf: CGSize(width: 62, height: 8))
         lintel.fillColor = SKColor(red: 0.34, green: 0.23, blue: 0.12, alpha: 1)
         lintel.strokeColor = SKColor(red: 0.20, green: 0.13, blue: 0.07, alpha: 1)
         lintel.lineWidth = 1
@@ -40,9 +39,8 @@ extension WorldBuilder {
         entrance.addChild(lintel)
 
         // Lueur de lanterne faible pour attirer l'oeil
-        let glow = SKShapeNode(circleOfRadius: 8)
-        glow.fillColor = SKColor(red: 1.0, green: 0.72, blue: 0.30, alpha: 0.35)
-        glow.strokeColor = .clear
+        let glow = PixelShape.disc(
+            radius: 8, fill: SKColor(red: 1.0, green: 0.72, blue: 0.30, alpha: 0.40), pixel: 2)
         glow.position = CGPoint(x: 30, y: 40)
         entrance.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.4)

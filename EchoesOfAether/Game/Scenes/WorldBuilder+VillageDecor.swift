@@ -30,10 +30,10 @@ extension WorldBuilder {
            ("me_flower_white", -0.065, 0.002, 0.42)],
           at: CGPoint(x: w * 0.32, y: h * 0.075))
 
-    // ═══ COUR COUNTRY SUD (0.14/0.16) ═══
+    // ═══ COUR SUD-OUEST (0.10/0.19) ═══
     group([("me_mailbox_1", 0.075, 0.002, 0.42), ("me_hanging_flowers", -0.055, -0.004, 0.42),
            ("me_flower_pink", -0.075, 0.004, 0.42), ("me_birdhouse_brown", 0.10, 0.018, 0.40)],
-          at: CGPoint(x: w * 0.14, y: h * 0.16))
+          at: CGPoint(x: w * 0.10, y: h * 0.19))
 
     // ═══ COUR MODERNE (0.80/0.16) ═══
     group([("me_mailbox_1", -0.085, 0.002, 0.42), ("me_garden_bench", 0.085, 0.006, 0.42),
@@ -97,14 +97,14 @@ extension WorldBuilder {
     addPixelProp("me_sign_1", in: scene, at: CGPoint(x: w * 0.73, y: h * 0.575), scale: 0.50)
 
     // ═══ QUARTIER HAUT — parc civique entre les villas ═══
-    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.790), scale: 0.42)
-    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.57, y: h * 0.790), scale: 0.42)
-    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.765), scale: 0.40)
-    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.57, y: h * 0.765), scale: 0.40)
-    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.775), scale: 0.45)
-    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.775), scale: 0.45)
-    addPixelProp("me_vase_sunflower", in: scene, at: CGPoint(x: w * 0.46, y: h * 0.800), scale: 0.42)
-    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.54, y: h * 0.800), scale: 0.42)
+    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.845), scale: 0.42)
+    addPixelProp("me_statue_putto", in: scene, at: CGPoint(x: w * 0.57, y: h * 0.845), scale: 0.42)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.43, y: h * 0.820), scale: 0.40)
+    addPixelProp("me_lamp_3", in: scene, at: CGPoint(x: w * 0.57, y: h * 0.820), scale: 0.40)
+    addPixelProp("me_garden_bench", in: scene, at: CGPoint(x: w * 0.40, y: h * 0.830), scale: 0.45)
+    addPixelProp("me_bench_1", in: scene, at: CGPoint(x: w * 0.60, y: h * 0.830), scale: 0.45)
+    addPixelProp("me_vase_sunflower", in: scene, at: CGPoint(x: w * 0.46, y: h * 0.855), scale: 0.42)
+    addPixelProp("me_vase_red", in: scene, at: CGPoint(x: w * 0.54, y: h * 0.855), scale: 0.42)
     group([("me_mailbox_1", 0.075, 0.002, 0.42), ("me_hanging_flowers", -0.055, -0.004, 0.42),
            ("me_flower_red", -0.075, 0.006, 0.42)],
           at: CGPoint(x: w * 0.17, y: h * 0.78))

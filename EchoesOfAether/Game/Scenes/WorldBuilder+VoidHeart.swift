@@ -54,14 +54,19 @@ extension WorldBuilder {
 
         // ── LE CŒUR : orbe géant au sommet de l'escalier final ──
         addPixelProp("me_stairs", in: scene, at: plan.stairsBase, scale: 0.60)
-        let heart = SKShapeNode(circleOfRadius: bossDefeated ? 34 : 46)
         let heartColor: SKColor = bossDefeated
             ? SKColor(red: 0.40, green: 0.85, blue: 0.95, alpha: 1)   // apaisé : cyan
             : SKColor(red: 0.85, green: 0.25, blue: 0.95, alpha: 1)   // actif : pourpre
-        heart.fillColor = heartColor.withAlphaComponent(0.16)
-        heart.strokeColor = heartColor.withAlphaComponent(0.55)
-        heart.lineWidth = 2
-        heart.glowWidth = 10
+        // Orbe tramé : couronne pâle + noyau, au lieu d'un cercle lissé à
+        // `glowWidth: 10` (un halo flou, hors charte pixel).
+        let heartRadius: CGFloat = bossDefeated ? 34 : 46
+        let heart = PixelShape.disc(radius: heartRadius + 12,
+                                    fill: heartColor.withAlphaComponent(0.10), pixel: 6)
+        let heartCore = PixelShape.disc(radius: heartRadius,
+                                        fill: heartColor.withAlphaComponent(0.22),
+                                        stroke: heartColor.withAlphaComponent(0.70),
+                                        pixel: 4)
+        heart.addChild(heartCore)
         heart.name = "voidHeartCore"
         heart.position = plan.heart
         heart.zPosition = -2

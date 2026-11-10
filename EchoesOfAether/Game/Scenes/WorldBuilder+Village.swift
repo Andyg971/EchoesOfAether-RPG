@@ -67,8 +67,6 @@ extension WorldBuilder {
                                         radiusX: w * 0.058, radiusY: h * 0.027),
             to: scene)
 
-        decorateVillage(in: scene)
-
         // ═══════════ MAISONS (échelle perso : porte ≈ taille de Kael) ═══════════
         buildNorthGate(at: CGPoint(x: w * 0.50, y: h * 0.96), width: 90, in: scene)
 
@@ -81,79 +79,57 @@ extension WorldBuilder {
         // Le village de départ d'un RPG médiéval comptait donc un garage, une
         // villa de verre, une maison japonaise et un immeuble haussmannien.
         //
-        // `mv_chalet` est le seul vrai corps de ferme en bois du catalogue :
-        // il porte le village entier, décliné en TEINTES — un hameau se
-        // distingue par ses bois et ses enduits, pas par huit architectures.
-        // Deux exceptions qui font les repères : le manoir gothique du chef et
-        // la chapelle.
+        // Les maisons étaient `mv_chalet` : un RECADRAGE de la villa du pack
+        // (240×384 sur 432×624) — le quart haut-gauche du bâtiment. Toit
+        // tranché net à droite, pas de rez-de-chaussée, pas de porte : six
+        // demi-façades posées sur l'herbe. `me_villa_*` est la villa
+        // entière, perron et porte compris, déclinée par la couleur du toit
+        // (les quatre teintes viennent du pack, plus besoin de teinter).
         //
-        // Les positions ne bougent PAS : `houseDoorPosition` cale les entrées
-        // d'intérieur dessus.
-        let plaster = SKColor(red: 0.92, green: 0.86, blue: 0.72, alpha: 1)
-        let oldWood = SKColor(red: 0.56, green: 0.38, blue: 0.24, alpha: 1)
-        let mossRoof = SKColor(red: 0.52, green: 0.58, blue: 0.44, alpha: 1)
-        let ochre = SKColor(red: 0.84, green: 0.64, blue: 0.38, alpha: 1)
+        // Chaque maison est posée PAR SA PORTE (cf. `addVilla`) : les points
+        // ci-dessous sont les seuils, ceux que visent `houseDoorPosition`,
+        // les sentiers (`villageBranches`) et les cours.
 
         // Résidentiel sud — la maison de Kael en premier plan
-        addVillageBuilding(asset: "mv_chalet", scale: 0.44,
-                            fallbackW: 62, fallbackH: 50,
-                            wallColor: Palette.wood,
-                            roofColor: Palette.woodBrass,
-                            label: nil, at: CGPoint(x: w * 0.32, y: h * 0.075), in: scene,
-                            tint: oldWood)
-        addVillageBuilding(asset: "mv_chalet", scale: 0.40,
-                            fallbackW: 76, fallbackH: 58,
-                            wallColor: Palette.wood,
-                            roofColor: Palette.woodGold,
-                            label: nil, at: CGPoint(x: w * 0.14, y: h * 0.16), in: scene,
-                            tint: plaster, flipped: true)
-        addVillageBuilding(asset: "mv_chalet", scale: 0.42,
-                            fallbackW: 76, fallbackH: 58,
-                            wallColor: Palette.slate,
-                            roofColor: SKColor(red: 0.30, green: 0.30, blue: 0.40, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.80, y: h * 0.16), in: scene,
-                            tint: ochre)
+        addVilla("orange", doorAt: CGPoint(x: w * 0.32, y: h * 0.075),
+                 flipped: true, in: scene)
+        addVilla("brown", doorAt: CGPoint(x: w * 0.10, y: h * 0.19),
+                 flipped: false, in: scene)
+        addVilla("plum", doorAt: CGPoint(x: w * 0.80, y: h * 0.16),
+                 flipped: false, in: scene)
 
-        // Commerces — portes alignées sur houseDoorPosition (NE PAS déplacer)
-        addVillageBuilding(asset: "mv_chalet", scale: 0.42,
-                            fallbackW: 62, fallbackH: 50,
-                            wallColor: SKColor(red: 0.14, green: 0.22, blue: 0.14, alpha: 1),
-                            roofColor: SKColor(red: 0.22, green: 0.40, blue: 0.22, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.22, y: h * 0.58), in: scene,
-                            tint: mossRoof)          // l'herboriste, sous la mousse
-        addVillageBuilding(asset: "mv_chalet", scale: 0.50,
-                            fallbackW: 76, fallbackH: 58,
-                            wallColor: Palette.wood,
-                            roofColor: Palette.woodGold,
-                            label: nil, at: CGPoint(x: w * 0.50, y: h * 0.63), in: scene,
-                            tint: SKColor(red: 0.50, green: 0.44, blue: 0.42, alpha: 1))
-        addVillageBuilding(asset: "mv_chalet", scale: 0.52,
-                            fallbackW: 88, fallbackH: 62,
-                            wallColor: Palette.wood,
-                            roofColor: SKColor(red: 0.45, green: 0.25, blue: 0.12, alpha: 1),
-                            label: nil, at: CGPoint(x: w * 0.78, y: h * 0.58), in: scene,
-                            tint: ochre, flipped: true)   // l'auberge, la plus grande
+        // Commerces — seuils alignés sur houseDoorPosition (NE PAS déplacer)
+        let herbalist = addVilla("plum", doorAt: CGPoint(x: w * 0.22, y: h * 0.58),
+                                 flipped: true, in: scene)
+        let armory = addVilla("brown", doorAt: CGPoint(x: w * 0.50, y: h * 0.63),
+                              flipped: false, in: scene)
+        let inn = addVilla("red", doorAt: CGPoint(x: w * 0.78, y: h * 0.58),
+                           flipped: false, in: scene)   // l'auberge, toit rouge
 
         // Quartier haut — le manoir du chef et la chapelle ferment le village
-        addVillageBuilding(asset: "village_house_haunted", scale: 0.19,
+        addVillageBuilding(asset: "village_house_haunted", scale: 0.25,
                             fallbackW: 70, fallbackH: 55,
                             wallColor: Palette.wood,
                             roofColor: SKColor(red: 0.30, green: 0.50, blue: 0.35, alpha: 1),
                             label: nil, at: CGPoint(x: w * 0.17, y: h * 0.78), in: scene)
-        addVillageBuilding(asset: "gy_chapel", scale: 0.44,
+        addVillageBuilding(asset: "gy_chapel", scale: 0.56,
                             fallbackW: 76, fallbackH: 58,
                             wallColor: Palette.wood,
                             roofColor: Palette.woodGold,
                             label: nil, at: CGPoint(x: w * 0.82, y: h * 0.78), in: scene)
 
+        // Le décor vient APRÈS le bâti : `isCluttered` écarte tout prop dont le
+        // pied tomberait sous une maison déjà posée.
+        decorateVillage(in: scene)
+
         // Crystal save proche auberge (UX : safe spot évident)
         addSaveCrystal(at: CGPoint(x: w * 0.88, y: h * 0.52), in: scene)
 
         // Village vivant : fumées de cheminée sur les maisons habitées
-        for (x, y, dy) in [(0.78, 0.58, 84.0), (0.50, 0.63, 82.0),
-                           (0.22, 0.58, 74.0), (0.17, 0.78, 64.0)] {
+        for chimney in [herbalist, armory, inn,
+                        CGPoint(x: w * 0.17 + 18, y: h * 0.78 + 84)] {
             let smoke = ParticleFactory.chimneySmoke()
-            smoke.position = CGPoint(x: w * CGFloat(x) + 14, y: h * CGFloat(y) + CGFloat(dy))
+            smoke.position = chimney
             add(smoke, to: scene)
         }
 
@@ -191,7 +167,7 @@ extension WorldBuilder {
     /// (fractions de w/h — alignées sur les pieds de maisons).
     static let villageBranches: [(x: CGFloat, y: CGFloat)] = [
         (0.32, 0.075),   // maison de Kael
-        (0.14, 0.16),    // maison country sud
+        (0.10, 0.19),    // maison sud-ouest
         (0.80, 0.16),    // maison moderne
         (0.22, 0.58),    // herboriste
         (0.78, 0.58),    // auberge

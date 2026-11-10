@@ -34,6 +34,10 @@ final class CombatSystem {
     let turnBanner = SKShapeNode(rectOf: CGSize(width: 240, height: 30), cornerRadius: 15)
     let turnBannerLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     let turnPipsRoot = SKNode()
+    /// Thème de décor imposé par le LIEU du combat (désert, mines…). `nil` =
+    /// décor déduit de l'espèce de l'ennemi. Branché une fois par le
+    /// GameManager, relu à chaque ouverture de combat.
+    var arenaThemeProvider: (() -> ArenaTheme?)?
 
     // Buttons
 let attackButton = SKShapeNode(rectOf: CGSize(width: 150, height: 54), cornerRadius: 16)

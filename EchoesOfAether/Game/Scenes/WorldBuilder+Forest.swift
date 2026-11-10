@@ -217,7 +217,7 @@ extension WorldBuilder {
         addPixelProp("me_statue_grey", in: scene, at: CGPoint(x: w * 0.49, y: h * 0.875), scale: 0.26)
 
         // Seuil du sanctuaire (sortie nord)
-        let deepPath = SKShapeNode(rectOf: CGSize(width: 64, height: 32), cornerRadius: 8)
+        let deepPath = SKShapeNode(rectOf: CGSize(width: 64, height: 32))
         deepPath.fillColor = Palette.panelNight.withAlphaComponent(0.18)
         deepPath.strokeColor = SKColor(red: 0.50, green: 0.25, blue: 0.75, alpha: 0.35)
         deepPath.lineWidth = 1.5

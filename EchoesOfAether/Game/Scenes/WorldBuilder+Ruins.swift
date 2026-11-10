@@ -119,23 +119,21 @@ extension WorldBuilder {
         let crack = SKNode()
         crack.zPosition = -8
 
-        let path = CGMutablePath()
-        path.move(to: start)
-        let midX = (start.x + end.x) / 2 + CGFloat.random(in: -10...10)
-        let midY = (start.y + end.y) / 2 + CGFloat.random(in: -8...8)
-        path.addLine(to: CGPoint(x: midX, y: midY))
-        path.addLine(to: end)
+        // Fissure en escalier : trois tronçons brisés, tramés en carrés.
+        // L'ancien tracé était un `CGPath` lissé avec `glowWidth` — un trait
+        // vectoriel rouge en travers d'un décor pixel.
+        let third = CGPoint(x: start.x + (end.x - start.x) / 3 + CGFloat.random(in: -14...14),
+                            y: start.y + (end.y - start.y) / 3 + CGFloat.random(in: -10...10))
+        let twoThirds = CGPoint(x: start.x + (end.x - start.x) * 2 / 3 + CGFloat.random(in: -14...14),
+                                y: start.y + (end.y - start.y) * 2 / 3 + CGFloat.random(in: -10...10))
+        let points = [start, third, twoThirds, end]
 
-        let line = SKShapeNode(path: path)
-        line.strokeColor = SKColor(red: 0.70, green: 0.15, blue: 0.10, alpha: 0.45)
-        line.lineWidth = 1.5
-        line.glowWidth = 2
+        let halo = PixelShape.polyline(
+            points, color: SKColor(red: 0.90, green: 0.25, blue: 0.15, alpha: 0.10), pixel: 9)
+        crack.addChild(halo)
+        let line = PixelShape.polyline(
+            points, color: SKColor(red: 0.70, green: 0.15, blue: 0.10, alpha: 0.55), pixel: 3)
         crack.addChild(line)
-
-        let glowLine = SKShapeNode(path: path)
-        glowLine.strokeColor = SKColor(red: 0.90, green: 0.25, blue: 0.15, alpha: 0.08)
-        glowLine.lineWidth = 5
-        crack.addChild(glowLine)
 
         return crack
     }
@@ -145,13 +143,13 @@ extension WorldBuilder {
         wall.position = pos
         wall.zPosition = depthLayer(for: pos.y)
 
-        let stone = SKShapeNode(rectOf: CGSize(width: 72, height: 55), cornerRadius: 5)
+        let stone = SKShapeNode(rectOf: CGSize(width: 72, height: 55))
         stone.fillColor = Palette.shadowWarm
         stone.strokeColor = SKColor(red: 0.60, green: 0.20, blue: 0.18, alpha: 0.7)
         stone.lineWidth = 2
         wall.addChild(stone)
 
-        let glow = SKShapeNode(rectOf: CGSize(width: 80, height: 63), cornerRadius: 8)
+        let glow = SKShapeNode(rectOf: CGSize(width: 80, height: 63))
         glow.fillColor = .clear
         glow.strokeColor = SKColor(red: 0.80, green: 0.25, blue: 0.15, alpha: 0.12)
         glow.lineWidth = 4
@@ -160,7 +158,7 @@ extension WorldBuilder {
 
         let runeLines: [(CGFloat, CGFloat, CGFloat)] = [(-16, 14, 32), (0, 2, 40), (0, -10, 28), (0, -22, 36)]
         for (x, y, width) in runeLines {
-            let rune = SKShapeNode(rectOf: CGSize(width: width, height: 2), cornerRadius: 1)
+            let rune = SKShapeNode(rectOf: CGSize(width: width, height: 2))
             rune.fillColor = SKColor(red: 0.70, green: 0.20, blue: 0.15, alpha: 0.6)
             rune.strokeColor = .clear
             rune.position = CGPoint(x: x, y: y)
@@ -184,13 +182,13 @@ extension WorldBuilder {
         wall.zPosition = depthLayer(for: pos.y)
 
         // Pierre plus petite, style griffonné
-        let stone = SKShapeNode(rectOf: CGSize(width: 44, height: 34), cornerRadius: 3)
+        let stone = SKShapeNode(rectOf: CGSize(width: 44, height: 34))
         stone.fillColor = Palette.shadowWarm
         stone.strokeColor = SKColor(red: 0.35, green: 0.55, blue: 0.80, alpha: 0.5)
         stone.lineWidth = 1.5
         wall.addChild(stone)
 
-        let glow = SKShapeNode(rectOf: CGSize(width: 52, height: 42), cornerRadius: 6)
+        let glow = SKShapeNode(rectOf: CGSize(width: 52, height: 42))
         glow.fillColor = .clear
         glow.strokeColor = SKColor(red: 0.40, green: 0.60, blue: 0.90, alpha: 0.08)
         glow.lineWidth = 3
@@ -200,7 +198,7 @@ extension WorldBuilder {
         // Lignes griffonnées (style main, irrégulières)
         let lineData: [(CGFloat, CGFloat, CGFloat)] = [(-8, 10, 22), (0, 2, 30), (0, -6, 18)]
         for (x, y, w2) in lineData {
-            let line = SKShapeNode(rectOf: CGSize(width: w2, height: 1.5), cornerRadius: 0.5)
+            let line = SKShapeNode(rectOf: CGSize(width: w2, height: 2))
             line.fillColor = SKColor(red: 0.45, green: 0.65, blue: 0.90, alpha: 0.5)
             line.strokeColor = .clear
             line.position = CGPoint(x: x, y: y)
@@ -223,17 +221,20 @@ extension WorldBuilder {
         pool.position = pos
         pool.zPosition = -6
 
-        let water = SKShapeNode(circleOfRadius: 10)
-        water.fillColor = SKColor(red: 0.15, green: 0.02, blue: 0.05, alpha: 0.9)
-        water.strokeColor = SKColor(red: 0.60, green: 0.15, blue: 0.10, alpha: 0.4)
-        water.lineWidth = 1
-        pool.addChild(water)
-
-        let glow = SKShapeNode(circleOfRadius: 16)
-        glow.fillColor = SKColor(red: 0.50, green: 0.08, blue: 0.05, alpha: 0.06)
-        glow.strokeColor = .clear
+        // Flaque vue du dessus : ellipse aplatie, tramée, liseré rouge sombre.
+        let glow = PixelShape.ellipse(
+            size: CGSize(width: 42, height: 24),
+            fill: SKColor(red: 0.50, green: 0.08, blue: 0.05, alpha: 0.14))
         pool.addChild(glow)
-        JuiceEngine.pulse(glow, scale: 1.5)
+        glow.run(.repeatForever(.sequence([
+            .fadeAlpha(to: 0.35, duration: 0.9), .fadeAlpha(to: 1.0, duration: 0.9)
+        ])))
+
+        let water = PixelShape.ellipse(
+            size: CGSize(width: 27, height: 15),
+            fill: SKColor(red: 0.15, green: 0.02, blue: 0.05, alpha: 0.9),
+            stroke: SKColor(red: 0.45, green: 0.10, blue: 0.08, alpha: 0.9))
+        pool.addChild(water)
 
         return pool
     }

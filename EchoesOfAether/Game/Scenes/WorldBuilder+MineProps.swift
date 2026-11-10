@@ -66,9 +66,9 @@ extension WorldBuilder {
 
     /// Lanterne de mineur : sprite + nappe de lumière chaude au sol.
     func addMineLantern(in scene: SKScene, at pos: CGPoint) {
-        let pool = SKShapeNode(ellipseOf: CGSize(width: 110, height: 54))
-        pool.fillColor = SKColor(red: 0.95, green: 0.70, blue: 0.30, alpha: 0.07)
-        pool.strokeColor = .clear
+        let pool = PixelShape.ellipse(
+            size: CGSize(width: 110, height: 54),
+            fill: SKColor(red: 0.95, green: 0.70, blue: 0.30, alpha: 0.08), pixel: 6)
         pool.position = CGPoint(x: pos.x, y: pos.y + 4)
         pool.zPosition = -5
         add(pool, to: scene)
@@ -151,7 +151,7 @@ extension WorldBuilder {
         node.position = pos
         node.zPosition = depthLayer(for: pos.y)
 
-        let rock = SKShapeNode(rectOf: CGSize(width: 40, height: 26), cornerRadius: 6)
+        let rock = SKShapeNode(rectOf: CGSize(width: 40, height: 26))
         rock.fillColor = Palette.nightGrey
         rock.strokeColor = SKColor(red: 0.30, green: 0.30, blue: 0.35, alpha: 0.8)
         rock.lineWidth = 1.5
@@ -165,10 +165,9 @@ extension WorldBuilder {
             node.addChild(fleck)
         }
 
-        let glow = SKShapeNode(circleOfRadius: 24)
-        glow.fillColor = Palette.gold.withAlphaComponent(0.06)
-        glow.strokeColor = Palette.gold.withAlphaComponent(0.18)
-        glow.lineWidth = 1
+        let glow = PixelShape.disc(radius: 24,
+                                   fill: Palette.gold.withAlphaComponent(0.07),
+                                   stroke: Palette.gold.withAlphaComponent(0.24))
         node.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.3)
         return node

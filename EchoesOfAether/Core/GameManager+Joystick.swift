@@ -29,14 +29,8 @@ extension GameManager {
               Self.padCaptureZone(in: scene.size).contains(point),
               !hudPrioritaire else { return false }
         if padBase.parent == nil {
-            padBase.fillColor = SKColor(white: 0.9, alpha: 0.10)
-            padBase.strokeColor = PixelUI.gold.withAlphaComponent(0.55)
-            padBase.lineWidth = 2
             padBase.zPosition = 950
             scene.addChild(padBase)
-            padKnob.fillColor = PixelUI.gold.withAlphaComponent(0.55)
-            padKnob.strokeColor = PixelUI.gold
-            padKnob.lineWidth = 1.5
             padKnob.zPosition = 951
             scene.addChild(padKnob)
         }

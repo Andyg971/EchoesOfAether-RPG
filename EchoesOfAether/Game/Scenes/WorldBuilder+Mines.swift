@@ -217,10 +217,10 @@ extension WorldBuilder {
         }
 
         // Sortie au sud : halo de lumière du jour
-        let exitGlow = SKShapeNode(circleOfRadius: 34)
-        exitGlow.fillColor = SKColor(red: 0.55, green: 0.65, blue: 0.75, alpha: 0.10)
-        exitGlow.strokeColor = SKColor(red: 0.70, green: 0.80, blue: 0.90, alpha: 0.25)
-        exitGlow.lineWidth = 1.5
+        let exitGlow = PixelShape.ellipse(
+            size: CGSize(width: 72, height: 42),
+            fill: SKColor(red: 0.55, green: 0.65, blue: 0.75, alpha: 0.12),
+            stroke: SKColor(red: 0.70, green: 0.80, blue: 0.90, alpha: 0.32))
         exitGlow.position = CGPoint(x: w * 0.50, y: h * MinesPOI.exitY)
         add(exitGlow, to: scene)
         JuiceEngine.pulse(exitGlow, scale: 1.15)

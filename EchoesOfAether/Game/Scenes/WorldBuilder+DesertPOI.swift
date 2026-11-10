@@ -199,10 +199,9 @@ extension WorldBuilder {
             node.addChild(band)
         }
 
-        let glow = SKShapeNode(circleOfRadius: 26)
-        glow.fillColor = Palette.gold.withAlphaComponent(0.06)
-        glow.strokeColor = Palette.gold.withAlphaComponent(0.18)
-        glow.lineWidth = 1
+        let glow = PixelShape.disc(radius: 26,
+                                   fill: Palette.gold.withAlphaComponent(0.07),
+                                   stroke: Palette.gold.withAlphaComponent(0.24))
         node.addChild(glow)
         JuiceEngine.pulse(glow, scale: 1.3)
         return node

@@ -98,10 +98,10 @@ extension WorldBuilder {
         addSaveCrystal(at: CGPoint(x: w * 0.18, y: h * 0.20), in: scene)
 
         // Sortie ouest : retour vers la forêt (halo + panneau)
-        let exitGlow = SKShapeNode(circleOfRadius: 30)
-        exitGlow.fillColor = SKColor(red: 0.45, green: 0.75, blue: 0.55, alpha: 0.12)
-        exitGlow.strokeColor = SKColor(red: 0.55, green: 0.85, blue: 0.60, alpha: 0.28)
-        exitGlow.lineWidth = 1
+        let exitGlow = PixelShape.ellipse(
+            size: CGSize(width: 66, height: 39),
+            fill: SKColor(red: 0.45, green: 0.75, blue: 0.55, alpha: 0.14),
+            stroke: SKColor(red: 0.55, green: 0.85, blue: 0.60, alpha: 0.34))
         exitGlow.position = CGPoint(x: w * 0.06, y: h * 0.46)
         exitGlow.zPosition = -1
         add(exitGlow, to: scene)

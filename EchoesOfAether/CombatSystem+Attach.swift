@@ -117,13 +117,19 @@ self.phase = .intro
         scene.addChild(root)
 
         let isBoss = bossConfig != nil
+        // Fond opaque, DERRIÈRE l'arène.
+        //
+        // C'était un voile à 88 % posé à z = 0, alors que le sol de l'arène
+        // et tout son décor vivent en z négatif : le voile passait donc
+        // DEVANT eux. Chaque combat se jouait derrière une vitre noire — d'où
+        // des arènes illisibles quelle que soit la palette — et, n'étant pas
+        // opaque, il laissait deviner le monde (cactus, chemins) par-dessous.
         let scrimColor = isBoss
-            ? SKColor(red: 0.04, green: 0.02, blue: 0.06, alpha: 0.92)
-            : SKColor(red: 0.02, green: 0.025, blue: 0.035, alpha: 0.88)
-        let scrim = SKShapeNode(rectOf: scene.size)
-        scrim.fillColor = scrimColor
-        scrim.strokeColor = .clear
+            ? SKColor(red: 0.04, green: 0.02, blue: 0.06, alpha: 1)
+            : SKColor(red: 0.02, green: 0.025, blue: 0.035, alpha: 1)
+        let scrim = SKSpriteNode(color: scrimColor, size: scene.size)
         scrim.position = CGPoint(x: scene.size.width / 2, y: scene.size.height / 2)
+        scrim.zPosition = -100
         root.addChild(scrim)
 
         setupArenaFloor(scene: scene, enemyKind: enemies[0].kind, isBoss: isBoss)

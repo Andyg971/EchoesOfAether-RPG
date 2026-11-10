@@ -66,9 +66,9 @@ extension WorldBuilder {
         // Nappes de lumière froide (échos de l'Aether) : rendent visibles
         // les points d'intérêt dans le noir sans casser l'ambiance.
         for (x, y, rad) in [(0.50, 0.80, 130.0), (0.50, 0.55, 100.0), (0.50, 0.68, 90.0)] {
-            let pool = SKShapeNode(ellipseOf: CGSize(width: rad, height: rad * 0.55))
-            pool.fillColor = SKColor(red: 0.40, green: 0.70, blue: 0.85, alpha: 0.06)
-            pool.strokeColor = .clear
+            let pool = PixelShape.ellipse(
+                size: CGSize(width: rad, height: rad * 0.55),
+                fill: SKColor(red: 0.40, green: 0.70, blue: 0.85, alpha: 0.07), pixel: 6)
             pool.position = CGPoint(x: w * CGFloat(x), y: h * CGFloat(y))
             pool.zPosition = -5
             add(pool, to: scene)
@@ -101,10 +101,10 @@ extension WorldBuilder {
         }
 
         // Halo de sortie (sud) — retour à la forêt
-        let exit = SKShapeNode(circleOfRadius: 30)
-        exit.fillColor = Palette.frost.withAlphaComponent(0.10)
-        exit.strokeColor = Palette.frost.withAlphaComponent(0.22)
-        exit.lineWidth = 1
+        let exit = PixelShape.ellipse(
+            size: CGSize(width: 66, height: 39),
+            fill: Palette.frost.withAlphaComponent(0.12),
+            stroke: Palette.frost.withAlphaComponent(0.30))
         exit.position = CGPoint(x: w * 0.50, y: h * 0.08)
         exit.zPosition = -1
         add(exit, to: scene)

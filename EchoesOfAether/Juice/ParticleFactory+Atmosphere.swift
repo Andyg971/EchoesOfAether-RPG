@@ -4,14 +4,21 @@ import SpriteKit
 extension ParticleFactory {
     // MARK: - Atmospheric
 
+    /// Grain de particule : un carré net, côté entier. Les anciennes
+    /// particules étaient des `SKShapeNode(circleOfRadius:)` avec
+    /// `glowWidth` — des points flous lissés, hors charte pixel.
+    static func mote(side: ClosedRange<Int>) -> SKSpriteNode {
+        let s = CGFloat(Int.random(in: side))
+        return SKSpriteNode(color: .white, size: CGSize(width: s, height: s))
+    }
+
     static func ambientDust(in size: CGSize) -> SKNode {
         let container = SKNode()
         container.zPosition = 5
 
         for _ in 0..<20 {
-            let dust = SKShapeNode(circleOfRadius: CGFloat.random(in: 1...2))
-            dust.fillColor = SKColor(white: 0.35, alpha: CGFloat.random(in: 0.1...0.25))
-            dust.strokeColor = .clear
+            let dust = mote(side: 2...3)
+            dust.color = SKColor(white: 0.35, alpha: CGFloat.random(in: 0.1...0.25))
             dust.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: 0...size.height)
@@ -73,9 +80,14 @@ extension ParticleFactory {
         container.zPosition = 5
 
         for _ in 0..<15 {
-            let fog = SKShapeNode(circleOfRadius: CGFloat.random(in: 20...50))
-            fog.fillColor = SKColor(red: 0.15, green: 0.25, blue: 0.15, alpha: CGFloat.random(in: 0.03...0.08))
-            fog.strokeColor = .clear
+            // Paliers discrets : `PixelShape` met ses textures en cache par
+            // taille et couleur, un rayon/alpha continu en créerait une par nappe.
+            let fog = PixelShape.ellipse(
+                size: CGSize(width: CGFloat(Int.random(in: 5...12)) * 8,
+                             height: CGFloat(Int.random(in: 3...6)) * 8),
+                fill: SKColor(red: 0.15, green: 0.25, blue: 0.15,
+                              alpha: CGFloat(Int.random(in: 3...8)) / 100),
+                pixel: 8)
             fog.position = CGPoint(
                 x: CGFloat.random(in: -50...size.width + 50),
                 y: CGFloat.random(in: 0...size.height * 0.5)
@@ -91,10 +103,8 @@ extension ParticleFactory {
         }
 
         for _ in 0..<8 {
-            let wisp = SKShapeNode(circleOfRadius: CGFloat.random(in: 2...4))
-            wisp.fillColor = SKColor(red: 0.20, green: 0.55, blue: 0.30, alpha: 0.4)
-            wisp.strokeColor = .clear
-            wisp.glowWidth = 3
+            let wisp = mote(side: 3...6)
+            wisp.color = SKColor(red: 0.20, green: 0.55, blue: 0.30, alpha: 0.4)
             wisp.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: size.height * 0.3...size.height * 0.7)
@@ -114,10 +124,8 @@ extension ParticleFactory {
         container.zPosition = 5
 
         for _ in 0..<12 {
-            let rune = SKShapeNode(circleOfRadius: CGFloat.random(in: 2...5))
-            rune.fillColor = SKColor(red: 0.50, green: 0.20, blue: 0.85, alpha: CGFloat.random(in: 0.2...0.5))
-            rune.strokeColor = .clear
-            rune.glowWidth = 4
+            let rune = mote(side: 3...8)
+            rune.color = SKColor(red: 0.50, green: 0.20, blue: 0.85, alpha: CGFloat.random(in: 0.2...0.5))
             rune.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: 0...size.height)
@@ -133,17 +141,18 @@ extension ParticleFactory {
         }
 
         for i in 0..<3 {
-            let vortex = SKShapeNode(circleOfRadius: CGFloat(8 + i * 12))
-            vortex.fillColor = .clear
-            vortex.strokeColor = SKColor(red: 0.40, green: 0.15, blue: 0.70, alpha: 0.08)
-            vortex.lineWidth = 1
+            let vortex = PixelShape.disc(
+                radius: CGFloat(8 + i * 12), fill: .clear,
+                stroke: SKColor(red: 0.40, green: 0.15, blue: 0.70, alpha: 0.12), pixel: 2)
             vortex.position = CGPoint(x: size.width * 0.70, y: size.height * 0.55)
             vortex.zPosition = 4
             container.addChild(vortex)
 
-            let rotate = SKAction.rotate(byAngle: .pi * 2, duration: TimeInterval(8 + i * 4))
-            let scale = SKAction.sequence([.scale(to: 1.3, duration: 3), .scale(to: 0.8, duration: 3)])
-            vortex.run(.repeatForever(.group([rotate, scale])))
+            // Pas de rotation : un anneau tramé qui tourne lisse ses marches.
+            let breathe = TimeInterval(3 + i)
+            vortex.run(.repeatForever(.sequence([
+                .scale(to: 1.3, duration: breathe), .scale(to: 0.8, duration: breathe)
+            ])))
         }
 
         return container
@@ -154,17 +163,13 @@ extension ParticleFactory {
         container.zPosition = 5
 
         for _ in 0..<18 {
-            let ash = SKShapeNode(rectOf: CGSize(
-                width: CGFloat.random(in: 1.5...3.5),
-                height: CGFloat.random(in: 1.5...3.5)
-            ), cornerRadius: 0.5)
-            ash.fillColor = SKColor(
+            let ash = mote(side: 2...3)
+            ash.color = SKColor(
                 red: CGFloat.random(in: 0.25...0.45),
                 green: 0.05,
                 blue: CGFloat.random(in: 0.04...0.10),
                 alpha: CGFloat.random(in: 0.15...0.40)
             )
-            ash.strokeColor = .clear
             ash.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: 0...size.height)
@@ -184,10 +189,8 @@ extension ParticleFactory {
         }
 
         for _ in 0..<6 {
-            let ember = SKShapeNode(circleOfRadius: CGFloat.random(in: 1.5...3))
-            ember.fillColor = SKColor(red: 0.75, green: 0.20, blue: 0.10, alpha: 0.5)
-            ember.strokeColor = .clear
-            ember.glowWidth = 3
+            let ember = mote(side: 2...4)
+            ember.color = SKColor(red: 0.75, green: 0.20, blue: 0.10, alpha: 0.5)
             ember.position = CGPoint(
                 x: CGFloat.random(in: 0...size.width),
                 y: CGFloat.random(in: 0...size.height * 0.6)

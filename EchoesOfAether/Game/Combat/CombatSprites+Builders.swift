@@ -119,7 +119,7 @@ extension CombatSprites {
     /// l'Aether noir — pixel art teinté + cœur violet + yeux corrompus.
     static func buildGuardian(into root: SKNode) {
         guard let statue = PixelArtSprites.still(name: "me_statue_angel",
-                                                 scale: 0.50,
+                                                 scale: 0.40,
                                                  anchor: CGPoint(x: 0.5, y: 0.0)) else {
             buildGuardianFallback(into: root)
             return

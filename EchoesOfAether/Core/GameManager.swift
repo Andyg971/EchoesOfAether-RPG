@@ -72,8 +72,12 @@ final class GameManager {
     var prologueNode: SKNode?              // cinématique d'ouverture
     var prologueCompletion: (() -> Void)?
     // Joystick virtuel flottant
-    let padBase = SKShapeNode(circleOfRadius: 34)
-    let padKnob = SKShapeNode(circleOfRadius: 15)
+    // Joystick tramé (cf. `PixelShape`) : l'anneau et le pommeau étaient
+    // deux cercles vectoriels lissés posés sur un monde en pixel art.
+    let padBase = PixelShape.disc(radius: 34, fill: SKColor(white: 0.9, alpha: 0.10),
+                                  stroke: PixelUI.gold.withAlphaComponent(0.55), pixel: 4)
+    let padKnob = PixelShape.disc(radius: 14, fill: PixelUI.gold.withAlphaComponent(0.55),
+                                  stroke: PixelUI.gold, pixel: 4)
     // Bouton d'action « A » (bas-droite) : déclenche l'interaction à portée.
     // Plus fiable que taper précisément sur le PNJ/POI.
     let actionButton = SKShapeNode()

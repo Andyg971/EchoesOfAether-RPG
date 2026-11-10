@@ -13,6 +13,7 @@ extension GameManager {
         self.pendingNewGamePlusSeed = newGamePlusSeed
         attachOverlays(to: scene)
         wireOverlayCallbacks()
+        combat.arenaThemeProvider = { [weak self] in self?.arenaTheme }
 
         if applyDebugCombatArguments(scene: scene) { return }
         if applyDebugZoneArguments(scene: scene) { return }
@@ -136,5 +137,18 @@ extension GameManager {
             self?.player.currentHP = self?.player.currentMaxHP ?? 280
             self?.onReturnToMenu?()
         }
+    }
+}
+
+extension GameManager {
+    /// Décor d'arène imposé par le lieu où se trouve Kael. `nil` quand le
+    /// lieu n'a pas de thème propre : le décor se déduit alors de l'ennemi
+    /// (forêt, sanctuaire, ruines).
+    var arenaTheme: CombatSystem.ArenaTheme? {
+        if inDesert { return .desert }
+        if inMines { return .mines }
+        if inCave { return .cave }
+        if phase == .act3 || phase == .act4 { return .void }
+        return nil
     }
 }

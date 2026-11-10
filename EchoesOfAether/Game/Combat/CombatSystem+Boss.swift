@@ -62,22 +62,8 @@ extension CombatSystem {
         enrageLabel.alpha = 0
         root.addChild(enrageLabel)
 
-        // Boss name plate
-        let plate = SKShapeNode(rectOf: CGSize(width: 200, height: 28), cornerRadius: 8)
-        plate.fillColor = Palette.panelNight.withAlphaComponent(0.8)
-        plate.strokeColor = SKColor(red: 0.55, green: 0.20, blue: 0.80, alpha: 0.6)
-        plate.lineWidth = 1.5
-        plate.position = CGPoint(x: scene.size.width / 2, y: scene.size.height - 48)
-        plate.zPosition = 910
-        root.addChild(plate)
-
-        let bossTitle = SKLabelNode(fontNamed: PixelUI.uiFont)
-        bossTitle.text = enemies.first?.combatant.name ?? ""
-        bossTitle.fontSize = 17
-        bossTitle.fontColor = SKColor(red: 0.80, green: 0.55, blue: 1, alpha: 1)
-        bossTitle.verticalAlignmentMode = .center
-        bossTitle.position = plate.position
-        bossTitle.zPosition = 911
-        root.addChild(bossTitle)
+        // Plaque de nom du boss retirée : coins arrondis hors charte, posée
+        // SOUS le bandeau de tour (les deux se chevauchaient) et redondante
+        // avec le nom déjà affiché au-dessus de sa barre de PV.
     }
 }

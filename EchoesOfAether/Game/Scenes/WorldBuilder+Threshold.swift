@@ -64,11 +64,11 @@ extension WorldBuilder {
         // ── LE SEUIL : escalier + portail au bout du couloir ──
         addPixelProp("me_stairs", in: scene, at: plan.stairsBase, scale: 0.60)
         addPixelProp("gy_gate_big", in: scene, at: plan.portal, scale: 0.55)
-        let voidGlow = SKShapeNode(circleOfRadius: 52)
-        voidGlow.fillColor = SKColor(red: 0.30, green: 0.08, blue: 0.45, alpha: 0.10)
-        voidGlow.strokeColor = SKColor(red: 0.55, green: 0.20, blue: 0.85, alpha: 0.30)
-        voidGlow.lineWidth = 1.5
-        voidGlow.glowWidth = 8
+        let voidGlow = PixelShape.disc(
+            radius: 52,
+            fill: SKColor(red: 0.30, green: 0.08, blue: 0.45, alpha: 0.12),
+            stroke: SKColor(red: 0.55, green: 0.20, blue: 0.85, alpha: 0.38),
+            pixel: 4)
         voidGlow.position = CGPoint(x: plan.portal.x, y: plan.portal.y + h * 0.025)
         voidGlow.zPosition = -2
         add(voidGlow, to: scene)

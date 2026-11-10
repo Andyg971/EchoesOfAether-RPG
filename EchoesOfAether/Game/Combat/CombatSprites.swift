@@ -276,9 +276,8 @@ enum CombatSprites {
     }
 
     private static func addShadow(to root: SKNode, width: CGFloat) {
-        let shadow = SKShapeNode(ellipseOf: CGSize(width: width, height: 12))
-        shadow.fillColor = SKColor(white: 0, alpha: 0.45)
-        shadow.strokeColor = .clear
+        let shadow = PixelShape.ellipse(size: CGSize(width: width, height: 12),
+                                        fill: SKColor(white: 0, alpha: 0.45))
         shadow.position = CGPoint(x: 0, y: -34)
         shadow.zPosition = -2
         root.addChild(shadow)

@@ -24,9 +24,8 @@ extension BattleSprites {
         sprite.zPosition = 1
         root.addChild(sprite)
 
-        let shadow = SKShapeNode(ellipseOf: CGSize(width: 24, height: 7))
-        shadow.fillColor = SKColor(white: 0, alpha: 0.25)
-        shadow.strokeColor = .clear
+        let shadow = PixelShape.ellipse(size: CGSize(width: 24, height: 8),
+                                        fill: SKColor(white: 0, alpha: 0.25), pixel: 2)
         shadow.position = CGPoint(x: 0, y: -15)
         shadow.zPosition = -1
         root.addChild(shadow)

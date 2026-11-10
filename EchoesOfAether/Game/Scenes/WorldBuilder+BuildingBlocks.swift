@@ -153,9 +153,8 @@ extension WorldBuilder {
     }
 
     func addGroundShadow(under node: SKNode, width: CGFloat, height: CGFloat) {
-        let shadow = SKShapeNode(ellipseOf: CGSize(width: width, height: height))
-        shadow.fillColor = SKColor.black.withAlphaComponent(0.22)
-        shadow.strokeColor = .clear
+        let shadow = PixelShape.ellipse(size: CGSize(width: width, height: height),
+                                        fill: SKColor.black.withAlphaComponent(0.22))
         shadow.position = CGPoint(x: 0, y: 3)
         shadow.zPosition = -0.5
         node.addChild(shadow)

@@ -89,9 +89,10 @@ final class MovementController {
         let dust = SKAction.repeatForever(.sequence([
             .run { [weak node] in
                 guard let node, let parent = node.parent else { return }
-                let puff = SKShapeNode(circleOfRadius: CGFloat.random(in: 2.5...4))
-                puff.fillColor = SKColor(red: 0.62, green: 0.54, blue: 0.42, alpha: 0.35)
-                puff.strokeColor = .clear
+                let side = CGFloat(Int.random(in: 2...3))
+                let puff = SKSpriteNode(
+                    color: SKColor(red: 0.62, green: 0.54, blue: 0.42, alpha: 0.45),
+                    size: CGSize(width: side, height: side))
                 puff.position = CGPoint(x: node.position.x + .random(in: -6...6),
                                         y: node.position.y + .random(in: -2...2))
                 puff.zPosition = node.zPosition - 0.1

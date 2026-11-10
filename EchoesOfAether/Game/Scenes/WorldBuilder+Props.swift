@@ -181,10 +181,37 @@ extension WorldBuilder {
                           depthRatio: 0.96, maxDepth: 400)
     }
 
+    /// Pose une villa du pack (`me_villa_<toit>`, 432×624) PAR SA PORTE.
+    ///
+    /// La porte n'est pas au milieu de la façade : elle s'ouvre à 122 px du
+    /// bord gauche, soit 94 px à gauche de l'axe. Poser le sprite par son
+    /// centre mettait donc le seuil — et le sentier qui y mène — sous une
+    /// fenêtre. `flipped` retourne la maison : porte à droite de l'axe.
+    ///
+    /// Renvoie le sommet du faîtage, où accrocher la fumée de cheminée.
+    @discardableResult
+    func addVilla(_ roof: String, doorAt door: CGPoint, flipped: Bool,
+                  scale: CGFloat = 0.46, in scene: SKScene) -> CGPoint {
+        let doorOffset: CGFloat = 94 * scale
+        let center = CGPoint(x: door.x + (flipped ? -doorOffset : doorOffset), y: door.y)
+        guard let node = PixelArtSprites.still(name: "me_villa_\(roof)", scale: scale,
+                                               anchor: CGPoint(x: 0.5, y: 0.0)) else {
+            return center
+        }
+        if flipped { node.forEachDescendantSprite { $0.xScale = -abs($0.xScale) } }
+        addGroundShadow(to: node, width: 432 * scale * 0.96, height: 30 * scale, y: 2)
+        node.position = center
+        node.zPosition = propLayer(for: center.y, in: scene.size.height)
+        add(node, to: scene)
+        // Bâtiment entièrement infranchissable (cf. `addVillageBuilding`).
+        registerFootprint(of: node, widthRatio: 0.94,
+                          depthRatio: 0.96, maxDepth: 400)
+        return CGPoint(x: center.x, y: center.y + 624 * scale - 6)
+    }
+
     func addGroundShadow(to node: SKNode, width: CGFloat, height: CGFloat, y: CGFloat) {
-        let shadow = SKShapeNode(ellipseOf: CGSize(width: width, height: height))
-        shadow.fillColor = SKColor(white: 0.0, alpha: 0.24)
-        shadow.strokeColor = .clear
+        let shadow = PixelShape.ellipse(size: CGSize(width: width, height: height),
+                                        fill: SKColor(white: 0.0, alpha: 0.24))
         shadow.position = CGPoint(x: 0, y: y)
         shadow.zPosition = -2
         node.addChild(shadow)

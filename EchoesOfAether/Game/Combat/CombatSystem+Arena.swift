@@ -11,7 +11,10 @@ extension CombatSystem {
         floor.zPosition = -5
 
         let size = scene.size
-        let palette = arenaPalette(for: enemyKind, isBoss: isBoss)
+        // Le lieu du combat prime sur l'espèce (cf. `ArenaTheme`).
+        let theme = arenaThemeProvider?()
+        let palette = theme.map { arenaPalette(for: $0) }
+            ?? arenaPalette(for: enemyKind, isBoss: isBoss)
         let floorY = size.height * 0.40
 
         // Ciel/voûte : bande pleine en haut, teinte de zone. Elle reste
@@ -26,13 +29,18 @@ extension CombatSystem {
         sky.zPosition = -20
         floor.addChild(sky)
 
-        addArenaBackdrop(to: floor, size: size, kind: enemyKind,
-                         palette: palette, floorY: floorY)
+        if let theme {
+            addThemedBackdrop(to: floor, size: size, theme: theme,
+                              palette: palette, floorY: floorY)
+        } else {
+            addArenaBackdrop(to: floor, size: size, kind: enemyKind,
+                             palette: palette, floorY: floorY)
+        }
 
-        // Halo central — concentre le regard sur les combattants
-        let halo = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.4, height: 360))
-        halo.fillColor = palette.haloColor
-        halo.strokeColor = .clear
+        // Halo central — concentre le regard sur les combattants. Tramé gros
+        // (cf. `PixelShape`) : l'ellipse vectorielle lissée jurait avec le décor.
+        let halo = PixelShape.ellipse(size: CGSize(width: size.width * 1.4, height: 360),
+                                      fill: palette.haloColor, pixel: 12)
         halo.position = CGPoint(x: size.width / 2, y: floorY + 20)
         halo.alpha = 0.55
         floor.addChild(halo)
@@ -41,7 +49,9 @@ extension CombatSystem {
         // couche qui dérive lentement (parallaxe subtile).
         let decorLayer = SKNode()
         floor.addChild(decorLayer)
-        addBackgroundDecor(to: decorLayer, size: size, kind: enemyKind, palette: palette)
+        if theme == nil {
+            addBackgroundDecor(to: decorLayer, size: size, kind: enemyKind, palette: palette)
+        }
         let drift = SKAction.sequence([
             .moveBy(x: 6, y: 0, duration: 7.0),
             .moveBy(x: -6, y: 0, duration: 7.0)
@@ -68,17 +78,27 @@ extension CombatSystem {
         horizon.position = CGPoint(x: size.width / 2, y: floorY + 30)
         floor.addChild(horizon)
 
+        // Sol sous l'estrade : sans lui, les coins bas de l'écran restaient
+        // noirs sous la courbe de l'ellipse.
+        let ground = SKSpriteNode(color: palette.stageEdgeColor,
+                                  size: CGSize(width: size.width, height: floorY - 30))
+        ground.anchorPoint = CGPoint(x: 0.5, y: 0)
+        ground.position = CGPoint(x: size.width / 2, y: 0)
+        floor.addChild(ground)
+
         // Plateforme circulaire : ombre principale + bord lumineux
-        let stageOuter = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.15, height: 150))
-        stageOuter.fillColor = palette.stageEdgeColor
-        stageOuter.strokeColor = .clear
+        let stageOuter = PixelShape.ellipse(
+            size: CGSize(width: size.width * 1.15, height: 150),
+            fill: palette.stageEdgeColor, pixel: 6)
         stageOuter.position = CGPoint(x: size.width / 2, y: floorY - 32)
         floor.addChild(stageOuter)
 
-        let stage = SKShapeNode(ellipseOf: CGSize(width: size.width * 1.05, height: 130))
-        stage.fillColor = palette.stageColor
-        stage.strokeColor = palette.stageStrokeColor
-        stage.lineWidth = 2
+        let stage = PixelShape.ellipse(
+            size: CGSize(width: size.width * 1.05, height: 130),
+            fill: palette.stageColor,
+            stroke: palette.stageStrokeColor.withAlphaComponent(1)
+                .blendedOver(palette.stageColor, palette.stageStrokeColor.cgColor.alpha),
+            pixel: 6)
         stage.position = CGPoint(x: size.width / 2, y: floorY - 28)
         floor.addChild(stage)
 

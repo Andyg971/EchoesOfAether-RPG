@@ -49,7 +49,7 @@ final class EncounterBalanceTests: XCTestCase {
     /// jamais.
     func testEnrageThresholdsLeaveRoomForAPhase() {
         let thresholds: [(String, CGFloat)] = [
-            ("Gardien fêlé", EncounterBalance.Guardian.enrageThreshold),
+            ("Sentinelle fêlée", EncounterBalance.Guardian.enrageThreshold),
             ("Archiviste", EncounterBalance.Archivist.enrageThreshold),
             ("Gardien du Seuil", EncounterBalance.ThresholdGuardian.enrageThreshold),
             ("Avatar du Vide", EncounterBalance.VoidAvatar.enrageThreshold)
@@ -67,7 +67,7 @@ final class EncounterBalanceTests: XCTestCase {
     /// fatal transforme le combat en loterie.
     func testBossSpecialNeverOneShotsKaelAtExpectedLevel() {
         let cases: [(String, Int, Int)] = [
-            ("Gardien fêlé", EncounterBalance.Guardian.specialDamage, 3),
+            ("Sentinelle fêlée", EncounterBalance.Guardian.specialDamage, 3),
             ("Archiviste", EncounterBalance.Archivist.specialDamage, 10),
             ("Gardien du Seuil", EncounterBalance.ThresholdGuardian.specialDamage, 20),
             ("Avatar du Vide", EncounterBalance.VoidAvatar.specialDamage, 28)

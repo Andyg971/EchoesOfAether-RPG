@@ -37,7 +37,7 @@ enum EncounterBalance {
 
     // MARK: - Boss majeurs (un par acte)
 
-    /// Acte I — le Gardien fêlé, au Sanctuaire.
+    /// Acte I — la Sentinelle fêlée, au Sanctuaire.
     enum Guardian {
         static let hp = 860
         static let enrageThreshold: CGFloat = 0.55

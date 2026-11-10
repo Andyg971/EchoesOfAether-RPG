@@ -92,7 +92,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sentinelle fissurée du Sanctuaire de l'Aether."
+            "value" : "Sentinelle fêlée du Sanctuaire de l'Aether."
           }
         }
       }
@@ -262,13 +262,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Guardian enters rage!"
+            "value" : "The enemy flies into a rage!"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le Gardien entre en rage !"
+            "value" : "L'ennemi entre en rage !"
           }
         }
       }
@@ -955,13 +955,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bone Guardian"
+            "value" : "Bone Sentinel"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gardien d'ossements"
+            "value" : "Sentinelle d'ossements"
           }
         }
       }
@@ -987,13 +987,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cracked Guardian"
+            "value" : "Cracked Sentinel"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gardien fêlé"
+            "value" : "Sentinelle fêlée"
           }
         }
       }
@@ -1019,13 +1019,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ruins Guardian"
+            "value" : "Ruins Sentinel"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gardien des Ruines"
+            "value" : "Sentinelle des Ruines"
           }
         }
       }
@@ -2712,13 +2712,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kael. They say you brought down the shrine's Guardian. …Is it true, what they say about your eyes?"
+            "value" : "Kael. They say you brought down the shrine's Sentinel. …Is it true, what they say about your eyes?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Kael. On raconte que t'as terrassé le Gardien du sanctuaire. …C'est vrai, ce qu'on dit sur tes yeux ?"
+            "value" : "Kael. On raconte que t'as terrassé la Sentinelle du sanctuaire. …C'est vrai, ce qu'on dit sur tes yeux ?"
           }
         }
       }
@@ -4046,7 +4046,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ils protègent quelque chose. Continue à avancer."
+            "value" : "Elles protègent quelque chose. Continue à avancer."
           }
         }
       }
@@ -4056,13 +4056,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Corrupted Guardians. The black Aether still controls them."
+            "value" : "Corrupted Sentinels. The black Aether still controls them."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Des Gardiens corrompus. L'Aether noir les contrôle encore."
+            "value" : "Des Sentinelles corrompues. L'Aether noir les contrôle encore."
           }
         }
       }
@@ -5016,13 +5016,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Go home, kid. Solis needs a living guardian. Not one more martyr."
+            "value" : "Go home, kid. Solis needs a living Guardian. Not one more martyr."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rentre, gamin. Solis a besoin d'un gardien vivant. Pas d'un martyr de plus."
+            "value" : "Rentre, gamin. Solis a besoin d'un Gardien vivant. Pas d'un martyr de plus."
           }
         }
       }
@@ -5576,7 +5576,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Fusionner. Devenir le gardien."
+            "value" : "Fusionner. Devenir le veilleur."
           }
         }
       }
@@ -6222,7 +6222,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le Vide a besoin d'un gardien. Quelqu'un qui se souvient de chaque visage. Ce sera moi."
+            "value" : "Le Vide a besoin d'un veilleur. Quelqu'un qui se souvient de chaque visage. Ce sera moi."
           }
         }
       }
@@ -6270,7 +6270,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alors je reste avec toi. Un écho auprès du gardien. Personne ne veille seul."
+            "value" : "Alors je reste avec toi. Un écho auprès du veilleur. Personne ne veille seul."
           }
         }
       }
@@ -6948,13 +6948,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cracked Guardian"
+            "value" : "Cracked Sentinel"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gardien fêlé"
+            "value" : "Sentinelle fêlée"
           }
         }
       }
@@ -7076,13 +7076,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "How do you respond to the Guardian?"
+            "value" : "How do you respond to the Sentinel?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Comment répondre au Gardien ?"
+            "value" : "Comment répondre à la Sentinelle ?"
           }
         }
       }
@@ -10363,13 +10363,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I failed. The shrine's Guardian broke me, and the gate stood unwatched."
+            "value" : "I failed. The shrine's Sentinel broke me, and the gate stood unwatched."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "J'ai failli. Le Gardien du sanctuaire m'a brisé, et la porte est restée sans veille."
+            "value" : "J'ai failli. La Sentinelle du sanctuaire m'a brisé, et la porte est restée sans veille."
           }
         }
       }
@@ -10395,13 +10395,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Guardian lies cracked and beaten. Your watch is over, soldier."
+            "value" : "The Sentinel has fallen, cracked clean through. Your watch is over, soldier."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Le Gardien est fêlé, vaincu. Ta veille est terminée, soldat."
+            "value" : "La Sentinelle est tombée, fêlée de part en part. Ta veille est terminée, soldat."
           }
         }
       }
@@ -11637,13 +11637,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Defeat the Aether Guardian"
+            "value" : "Defeat the Shrine Sentinel"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vaincre le Gardien de l'Aether"
+            "value" : "Vaincre la Sentinelle du sanctuaire"
           }
         }
       }
@@ -12907,13 +12907,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Three souls clung to the Threshold, each held back by a regret: Oswin, a Cendreval miner and Lyra's father, worried for his fellow diggers, a mother from Solis who never got to tuck in her son, a guard broken by the Sanctuary's Guardian. The Threshold holds onto those who haven't finished leaving — by hearing them out, Kael finally let them lay down their burden."
+            "value" : "Three souls clung to the Threshold, each held back by a regret: Oswin, a Cendreval miner and Lyra's father, worried for his fellow diggers, a mother from Solis who never got to tuck in her son, a guard broken by the Shrine's Sentinel. The Threshold holds onto those who haven't finished leaving — by hearing them out, Kael finally let them lay down their burden."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trois âmes s'accrochaient au Seuil, chacune retenue par un regret : Oswin, mineur de Cendreval et père de Lyra, inquiet pour ses compagnons, une mère de Solis qui n'a pas eu le temps de border son fils, un garde brisé par le Gardien du sanctuaire. Le Seuil retient ceux qui n'ont pas fini de partir — en les écoutant, Kael les a enfin laissés déposer les armes."
+            "value" : "Trois âmes s'accrochaient au Seuil, chacune retenue par un regret : Oswin, mineur de Cendreval et père de Lyra, inquiet pour ses compagnons, une mère de Solis qui n'a pas eu le temps de border son fils, un garde brisé par la Sentinelle du sanctuaire. Le Seuil retient ceux qui n'ont pas fini de partir — en les écoutant, Kael les a enfin laissés déposer les armes."
           }
         }
       }

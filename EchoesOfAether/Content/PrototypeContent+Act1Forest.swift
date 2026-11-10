@@ -1,6 +1,6 @@
 import Foundation
 
-// Acte I — forêt d'Ébène et Gardien fêlé.
+// Acte I — forêt d'Ébène et Sentinelle fêlée.
 // Extrait de PrototypeContent.swift (découpage du monolithe).
 extension PrototypeContent {
     // MARK: - Forêt — après combat bosquet

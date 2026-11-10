@@ -71,8 +71,15 @@ extension GameManager {
         player.lyraDeceased = true
         // `facing` : direction de Kael VERS Lyra (+1 = droite).
         let facing: CGFloat = lyra.position.x < kael.position.x ? -1 : 1
-        kael.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
-        lyra.forEachDescendantSprite { $0.xScale = -facing * abs($0.xScale) }
+        // Par `BattleSprites.face` : retourner `xScale` à la main faisait
+        // bondir Kael d'une centaine de points (corps décalé dans le canevas
+        // du pack) juste avant la frappe — et noyait tout geste joué ensuite.
+        if !BattleSprites.face(.kael, on: kael, left: facing < 0) {
+            kael.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
+        }
+        if !BattleSprites.face(.lyra, on: lyra, left: facing > 0) {
+            lyra.forEachDescendantSprite { $0.xScale = -facing * abs($0.xScale) }
+        }
 
         // Complice : un pas de recul, la charge, la frappe.
         // Refus : Kael RECULE et ne charge pas — la Tempête part de lui sans

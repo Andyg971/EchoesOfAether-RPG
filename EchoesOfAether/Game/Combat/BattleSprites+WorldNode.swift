@@ -37,20 +37,31 @@ extension BattleSprites {
     /// Met à jour la marche d'un node monde : `velocity` nul → idle.
     /// Ne fait rien si le node n'a pas de corps (silhouette de secours).
     static func updateWalk(_ hero: Hero, on root: SKNode, velocity: CGVector) {
-        guard let body = root.childNode(withName: "body") as? SKSpriteNode else { return }
+        guard root.childNode(withName: "body") is SKSpriteNode else { return }
         let moving = abs(velocity.dx) > 0.5 || abs(velocity.dy) > 0.5
         loop(moving ? .move : .idle, hero: hero, on: root)
         // Orientation : seul un déplacement horizontal franc la change.
         if abs(velocity.dx) > 0.5 {
-            let mag = abs(body.xScale == 0 ? hero.worldScale : body.xScale)
-            let facingLeft = velocity.dx < 0
-            body.xScale = facingLeft ? -mag : mag
-            // Le miroir se fait autour du centre du CANEVAS ; comme le corps y
-            // est décalé, il faut retourner le décalage avec lui — sinon le
-            // personnage saute de côté à chaque demi-tour.
-            let dx = hero.spriteOffset(scale: hero.worldScale, groundY: 0).x
-            body.position.x = facingLeft ? -dx : dx
+            face(hero, on: root, left: velocity.dx < 0)
         }
+    }
+
+    /// Tourne un node monde vers la gauche ou la droite, SANS le déplacer.
+    ///
+    /// Le miroir se fait autour du centre du CANEVAS ; comme le corps y est
+    /// décalé, il faut retourner le décalage avec lui — sinon le personnage
+    /// saute de côté à chaque demi-tour. Les cinématiques qui retournaient
+    /// les sprites à la main (`xScale` seul) le faisaient bondir d'une
+    /// centaine de points : c'est par ici qu'elles doivent passer.
+    /// Renvoie `false` si le node n'a pas de corps de pack (repli à la main).
+    @discardableResult
+    static func face(_ hero: Hero, on root: SKNode, left: Bool) -> Bool {
+        guard let body = root.childNode(withName: "body") as? SKSpriteNode else { return false }
+        let mag = abs(body.xScale == 0 ? hero.worldScale : body.xScale)
+        body.xScale = left ? -mag : mag
+        let dx = hero.spriteOffset(scale: hero.worldScale, groundY: 0).x
+        body.position.x = left ? -dx : dx
+        return true
     }
 
     /// Joue un clip une fois puis revient à l'idle. `completion` est appelée

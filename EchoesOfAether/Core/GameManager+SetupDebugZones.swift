@@ -116,11 +116,32 @@ extension GameManager {
         }
         // Audit de la cinématique de la mort de Lyra : ruines + compagne,
         // la scène se déclenche seule après une seconde.
+        // Audit des textes : --play-dialogue <nom> [--dialogue-line N] joue
+        // un dialogue nommé au village, à partir de la ligne N (0 par défaut).
+        if let idx = launchArguments.firstIndex(of: "--play-dialogue"),
+           launchArguments.indices.contains(idx + 1),
+           let steps = Self.auditDialogues[launchArguments[idx + 1]] {
+            let from = launchArguments.firstIndex(of: "--dialogue-line")
+                .flatMap { launchArguments.indices.contains($0 + 1) ? Int(launchArguments[$0 + 1]) : nil } ?? 0
+            hud.goldValue = player.gold
+            phase = .village
+            transition(to: .exploration)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
+                guard let self else { return }
+                transition(to: .dialogue)
+                dialogue.start(Array(steps.dropFirst(min(from, steps.count - 1)))) { [weak self] in
+                    self?.transition(to: .exploration)
+                }
+            }
+            return true
+        }
         if launchArguments.contains("--lyra-death") {
             hud.goldValue = player.gold
             phase = .ruins
             showRuins(in: scene)
             world.showLyraCompanion()
+            // --complice : Kael a saisi le pouvoir. Sans le flag, il a refusé.
+            player.kaelChoseCorruption = launchArguments.contains("--complice")
             transition(to: .exploration)
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [weak self] in
                 self?.triggerLyraDeath()
@@ -239,5 +260,35 @@ extension GameManager {
         let band = bands.first { f >= $0.y0 && f < $0.y1 } ?? bands[0]
         world.kael.position = CGPoint(x: size.width * (band.left + band.right) / 2,
                                       y: world.worldHeight * f)
+    }
+}
+
+extension GameManager {
+    /// Dialogues jouables par `--play-dialogue <nom>` (audit des textes à
+    /// l'écran : débordements, coupures, portraits).
+    static var auditDialogues: [String: [DialogueStep]] {
+        typealias C = PrototypeContent
+        return [
+            "wake": C.wakeDialogue,
+            "dorin": C.dorinDialogue,
+            "garen": C.garenFirstDialogue,
+            "villagerQuest": C.villagerQuestOfferDialogue,
+            "vision": C.act2Vision1Dialogue,
+            "eranInscription": C.act2EranInscriptionDialogue,
+            "discovery": C.act2DiscoveryDialogue,
+            "deathResisted": C.act2LyraDeathResistedDialogue,
+            "eranMeet": C.act3EranMeetDialogue,
+            "guardianPost": C.act3GuardianPostDialogue,
+            "act3End": C.act3EndingTransitionDialogue,
+            "spiritMiner": C.spiritMinerDialogue,
+            "spiritGuard": C.spiritGuardDialogue,
+            "minesEnter": C.minesEnterDialogue,
+            "minesPlaque": C.minesInscriptionDialogue,
+            "desertEnter": C.desertEnterDialogue + C.desertEnterLyraLines,
+            "caveEnter": C.caveEnterDialogue + C.caveEnterLyraLines,
+            "desertBossPost": C.desertBossPostDialogue + C.desertBossPostLyraLines,
+            "act4Prologue": C.act4PrologueDialogue,
+            "mergeEnding": C.act4MergeEndingDialogue
+        ]
     }
 }

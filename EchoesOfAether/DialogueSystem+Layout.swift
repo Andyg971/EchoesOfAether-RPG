@@ -40,7 +40,13 @@ extension DialogueSystem {
         let textX = showPortrait
             ? portraitX + portraitSide / 2 + 12
             : -panelWidth / 2 + 14
-        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - 18
+        // Marge droite = la place du bouton A. Il est posé PAR-DESSUS le coin
+        // droit du panneau (54 pt, z au-dessus des dialogues) : avec 18 pt de
+        // marge, la fin des deux premières lignes passait dessous — « sept
+        // des nôtres, dispa[rus] », un mot entier avalé chez Lyra. Les
+        // répliques courtes ne l'atteignaient pas, d'où un bug resté discret.
+        let rightInset: CGFloat = 66
+        bodyLabel.preferredMaxLayoutWidth = panelWidth - (textX + panelWidth / 2) - rightInset
 
         let bodyHeight = max(16, bodyLabel.frame.height)
         let panelHeight = hasChoices
@@ -70,12 +76,13 @@ extension DialogueSystem {
         let sepY = panelHeight / 2 - 26
         let sepPath = CGMutablePath()
         sepPath.move(to: CGPoint(x: textX, y: sepY))
-        sepPath.addLine(to: CGPoint(x: panelWidth / 2 - 22, y: sepY))
+        sepPath.addLine(to: CGPoint(x: panelWidth / 2 - rightInset, y: sepY))
         separator.path = sepPath
 
         bodyLabel.position = CGPoint(x: textX, y: sepY - 6)
 
-        continueIndicator.position = CGPoint(x: panelWidth / 2 - 18, y: -panelHeight / 2 + 16)
+        continueIndicator.position = CGPoint(x: panelWidth / 2 - rightInset - 4,
+                                             y: -panelHeight / 2 + 16)
 
         layoutChoices(panelWidth: panelWidth, panelHeight: panelHeight)
     }

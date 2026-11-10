@@ -17,7 +17,8 @@ final class DebugLaunchFlagsTests: XCTestCase {
     /// Drapeaux qui MODIFIENT un lancement sans le déclencher : ils
     /// s'utilisent avec un `--zone-*` et n'ont pas à être dans le menu.
     private let modifiers: Set<String> = ["--cam-y", "--cave-cleared", "--quests-active",
-                                          "--skills-maxed", "--overlay-test", "--overworld-at"]
+                                          "--skills-maxed", "--overlay-test", "--overworld-at",
+                                          "--dialogue-line", "--complice"]
 
     private var repoRoot: URL? {
         let root = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent()

@@ -53,6 +53,7 @@ final class ContentLocalizationTests: XCTestCase {
         ("act2DiscoveryDialogue", PrototypeContent.act2DiscoveryDialogue),
         ("act2CorruptionChoiceDialogue", PrototypeContent.act2CorruptionChoiceDialogue),
         ("act2LyraDeathDialogue", PrototypeContent.act2LyraDeathDialogue),
+        ("act2LyraDeathResistedDialogue", PrototypeContent.act2LyraDeathResistedDialogue),
         ("act2KaelAloneDialogue", PrototypeContent.act2KaelAloneDialogue),
         ("act2KaelAloneResistedDialogue", PrototypeContent.act2KaelAloneResistedDialogue),
         ("act2DorinBlockDialogue", PrototypeContent.act2DorinBlockDialogue),

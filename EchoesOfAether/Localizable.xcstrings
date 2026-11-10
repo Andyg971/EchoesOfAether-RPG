@@ -3011,6 +3011,54 @@
         }
       }
     },
+    "dialogue.act2.deathResisted.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lyra — no. No, no. That wasn't me. Stay with me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lyra — non. Non, non. Ce n'était pas moi. Reste avec moi."
+          }
+        }
+      }
+    },
+    "dialogue.act2.deathResisted.lyra1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I know… I saw your hand pull back. You fought it, Kael."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je sais… J'ai vu ta main reculer. Tu as lutté, Kael."
+          }
+        }
+      }
+    },
+    "dialogue.act2.deathResisted.lyra2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Don't give it… the rest of you…"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ne lui donne pas… le reste de toi…"
+          }
+        }
+      }
+    },
     "dialogue.act2.discovery.choice1" : {
       "localizations" : {
         "en" : {
@@ -9686,6 +9734,22 @@
         }
       }
     },
+    "dialogue.pact.10" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I didn't ask you to."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne te l'ai pas demandé."
+          }
+        }
+      }
+    },
     "dialogue.pact.2" : {
       "localizations" : {
         "en" : {
@@ -9810,22 +9874,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Je ne te protègerai pas."
-          }
-        }
-      }
-    },
-    "dialogue.pact.10" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I didn't ask you to."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }

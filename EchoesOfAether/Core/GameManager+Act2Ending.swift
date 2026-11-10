@@ -41,7 +41,9 @@ extension GameManager {
     /// La Voix offre à Kael le dernier pas. Les DEUX options tuent Lyra (la
     /// Tempête éclate quoi qu'il arrive) — mais le choix décide s'il est
     /// COMPLICE (index 0 → `kaelChoseCorruption = true`) ou dépassé par son
-    /// pouvoir (index 1). Le flag colore l'après (dissolveLyraAndEndAct2).
+    /// pouvoir (index 1). Le refus se voit TOUT DE SUITE : Kael recule au
+    /// lieu de charger, Lyra meurt en sachant qu'il a lutté, et la corruption
+    /// reflue d'un cran. Le flag colore aussi l'après (dissolveLyraAndEndAct2).
     func playCorruptionChoiceThenDeath() {
         transition(to: .dialogue)
         dialogue.start(PrototypeContent.act2CorruptionChoiceDialogue) { [weak self] in
@@ -72,12 +74,22 @@ extension GameManager {
         kael.forEachDescendantSprite { $0.xScale = facing * abs($0.xScale) }
         lyra.forEachDescendantSprite { $0.xScale = -facing * abs($0.xScale) }
 
-        // L'élan : un pas de recul, la charge, la frappe.
-        kael.run(.sequence([
-            .moveBy(x: -facing * 8, y: 0, duration: 0.22),
-            .wait(forDuration: 0.12),
-            .moveBy(x: facing * 14, y: 0, duration: 0.10)
-        ]))
+        // Complice : un pas de recul, la charge, la frappe.
+        // Refus : Kael RECULE et ne charge pas — la Tempête part de lui sans
+        // lui. C'est ce geste que Lyra dit avoir vu dans ses derniers mots.
+        if player.kaelChoseCorruption {
+            kael.run(.sequence([
+                .moveBy(x: -facing * 8, y: 0, duration: 0.22),
+                .wait(forDuration: 0.12),
+                .moveBy(x: facing * 14, y: 0, duration: 0.10)
+            ]))
+        } else {
+            kael.run(.sequence([
+                .moveBy(x: -facing * 10, y: 0, duration: 0.20),
+                .wait(forDuration: 0.10),
+                .moveBy(x: -facing * 8, y: 0, duration: 0.14)
+            ]))
+        }
 
         scene.run(.sequence([
             .wait(forDuration: 0.50),
@@ -130,8 +142,18 @@ extension GameManager {
         transition(to: .dialogue)
         let startDeath: () -> Void = { [weak self] in
             guard let self else { return }
-            dialogue.start(PrototypeContent.act2LyraDeathDialogue) { [weak self] in
-                self?.dissolveLyraAndEndAct2()
+            let lastWords = player.kaelChoseCorruption
+                ? PrototypeContent.act2LyraDeathDialogue
+                : PrototypeContent.act2LyraDeathResistedDialogue
+            dialogue.start(lastWords) { [weak self] in
+                guard let self else { return }
+                // Refus : la corruption reflue d'un cran (les yeux rouges
+                // s'éteignent). Kael a tenu quelque chose — ça se voit sur lui.
+                if !player.kaelChoseCorruption {
+                    player.kaelCorruptionLevel = 2
+                    world.applyKaelCorruption(level: 2)
+                }
+                dissolveLyraAndEndAct2()
             }
         }
         if player.act2EranFound {

@@ -175,8 +175,14 @@ final class StoryActsFlowTests: XCTestCase {
         XCTAssertTrue(gm.player.lyraDeceased, "la Tempête éclate quoi qu'il arrive")
         XCTAssertEqual(gm.state, .transition, "la scène de la frappe se joue")
         waitForDialogue()   // élan, frappe, chute (~2,5 s)
-        assertDialogueOpen(PrototypeContent.act2LyraDeathDialogue, "derniers mots")
+        // Les derniers mots dépendent du choix : complice ou dépassé.
+        assertDialogueOpen(corruptionChoice == 0
+                               ? PrototypeContent.act2LyraDeathDialogue
+                               : PrototypeContent.act2LyraDeathResistedDialogue,
+                           "derniers mots")
         finishDialogue(dialogue)
+        XCTAssertEqual(gm.player.kaelCorruptionLevel, corruptionChoice == 0 ? 3 : 2,
+                       "le refus fait refluer la corruption d'un cran")
         waitForDialogue()   // dissolution (~1,5 s)
     }
 

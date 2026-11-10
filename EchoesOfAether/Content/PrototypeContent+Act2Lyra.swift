@@ -10,6 +10,16 @@ extension PrototypeContent {
         .line(speaker: "Lyra", text: String(localized: "dialogue.act2.death.lyra2"))
     ]
 
+    /// Derniers mots quand Kael a REFUSÉ le pouvoir. La Tempête part quand
+    /// même, mais Lyra l'a vu reculer : elle meurt en le sachant, et le lui
+    /// dit. La version complice (« Je ne t'entends plus, Lyra. ») était jouée
+    /// dans les deux cas — le joueur qui refusait voyait son choix annulé.
+    static let act2LyraDeathResistedDialogue: [DialogueStep] = [
+        .line(speaker: "Kael", text: String(localized: "dialogue.act2.deathResisted.kael1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.deathResisted.lyra1")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.act2.deathResisted.lyra2"))
+    ]
+
     // MARK: - Acte II — Kael seul (La Voix)
 
     static let act2KaelAloneDialogue: [DialogueStep] = [

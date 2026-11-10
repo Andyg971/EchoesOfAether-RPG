@@ -71,6 +71,7 @@ final class StoryFlowTests: XCTestCase {
             ("act2ReturnVillageDialogue", PrototypeContent.act2ReturnVillageDialogue),
             ("act2CorruptionChoiceDialogue", PrototypeContent.act2CorruptionChoiceDialogue),
             ("act2LyraDeathDialogue", PrototypeContent.act2LyraDeathDialogue),
+            ("act2LyraDeathResistedDialogue", PrototypeContent.act2LyraDeathResistedDialogue),
             ("act2KaelAloneDialogue", PrototypeContent.act2KaelAloneDialogue),
             ("act2KaelAloneResistedDialogue", PrototypeContent.act2KaelAloneResistedDialogue),
             ("act3PrologueDialogue", PrototypeContent.act3PrologueDialogue),

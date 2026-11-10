@@ -41,7 +41,7 @@ extension PrototypeContent {
                 ),
                 DialogueChoice(
                     title: String(localized: "dialogue.act3.eranChoice2"),
-                    responseSpeaker: "Kael",
+                    responseSpeaker: "Eran",   // c'est Eran qui juge, pas Kael qui se répond
                     response: String(localized: "dialogue.act3.eranResponse2")
                 )
             ]

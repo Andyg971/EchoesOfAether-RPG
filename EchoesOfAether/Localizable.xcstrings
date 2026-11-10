@@ -2760,13 +2760,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mom says I'm not allowed to talk to you anymore. You're not the same, Kael. Your eyes… they're scary."
+            "value" : "Dad says I'm not allowed to talk to you anymore. You're not the same, Kael. Your eyes… they're scary."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maman dit que je dois plus te parler. T'es plus pareil, Kael. Tes yeux… ils font peur."
+            "value" : "Papa dit que je dois plus te parler. T'es plus pareil, Kael. Tes yeux… ils font peur."
           }
         }
       }
@@ -3934,7 +3934,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ce Noyau d'Aether... cette énergie noire. Elle résonne encore en moi."
+            "value" : "Ce Cœur d'Aether... cette énergie noire. Elle résonne encore en moi."
           }
         }
       }
@@ -6906,7 +6906,7 @@
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gardien fissuré"
+            "value" : "Gardien fêlé"
           }
         }
       }
@@ -7444,13 +7444,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mom says I'm not supposed to talk to you."
+            "value" : "Dad says I'm not supposed to talk to you."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Maman dit que je dois pas te parler."
+            "value" : "Papa dit que je dois pas te parler."
           }
         }
       }
@@ -8858,13 +8858,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "An untouched crystal, driven into the dead earth. It resonates with your mark — the same note, an octave lower."
+            "value" : "An untouched crystal, driven into the dead earth. It resonates with my mark — the same note, an octave lower."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Un cristal intact, planté dans la terre morte. Il résonne avec ta marque — le même son, une octave plus bas."
+            "value" : "Un cristal intact, planté dans la terre morte. Il résonne avec ma marque — le même son, une octave plus bas."
           }
         }
       }
@@ -9669,6 +9669,22 @@
         }
       }
     },
+    "dialogue.pact.10" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I didn't ask you to."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne te l'ai pas demandé."
+          }
+        }
+      }
+    },
     "dialogue.pact.2" : {
       "localizations" : {
         "en" : {
@@ -9793,22 +9809,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Je ne te protègerai pas."
-          }
-        }
-      }
-    },
-    "dialogue.pact.10" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I didn't ask you to."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -10458,13 +10458,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The child of Solis still laughs by the fountain. He wears your medallion."
+            "value" : "The child of Solis still laughs by the fountain. He still hugs his wooden bear tight."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "L'enfant de Solis rit encore près de la fontaine. Il porte votre médaillon."
+            "value" : "L'enfant de Solis rit encore près de la fontaine. Il serre encore son ours en bois contre lui."
           }
         }
       }
@@ -14716,6 +14716,22 @@
         }
       }
     },
+    "quest.medallion.declineReply" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…I understand. If you ever come across it, think of me."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…Je comprends. Si jamais vous la voyez, pensez à moi."
+          }
+        }
+      }
+    },
     "quest.medallion.done1" : {
       "localizations" : {
         "en" : {
@@ -14808,6 +14824,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Il a dû la perdre en traversant la forêt. Si vous la retrouvez... rapportez-la-moi. C'est tout ce qui me reste de lui."
+          }
+        }
+      }
+    },
+    "quest.medallion.prompt" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Look for the wooden cross?"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Chercher la croix de bois ?"
           }
         }
       }

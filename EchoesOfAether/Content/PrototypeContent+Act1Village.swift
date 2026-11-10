@@ -7,13 +7,15 @@ extension PrototypeContent {
 
     static let wakeDialogue: [DialogueStep] = [
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra1")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra2")),
-        .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael1")),
-        .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael2")),
+        // La question du nom n'est posée qu'UNE fois, juste avant le choix.
+        // Kael y répondait d'abord tout seul (« Kael. Je crois. »), puis le
+        // joueur devait y re-répondre — dont « Si je le savais… », dix
+        // secondes après l'avoir dit. La main qui brille était, elle aussi,
+        // racontée deux fois de suite.
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra3")),
         .line(speaker: "Kael", text: String(localized: "dialogue.wake.real.kael3")),
         .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra4")),
-        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.lyra2")),
+        .line(speaker: "Lyra", text: String(localized: "dialogue.wake.real.lyra2")),
         .choice(
             prompt: String(localized: "dialogue.wake.prompt"),
             options: [
@@ -171,7 +173,9 @@ extension PrototypeContent {
     // MARK: - Garen (garde de la porte)
 
     static let garenFirstDialogue: [DialogueStep] = [
-        .line(speaker: "Garen", text: String(localized: "dialogue.garen.real.1")),
+        // Ligne d'ouverture retirée (« On ne vous retient pas… ») : reprise du
+        // garde d'un ancien brouillon, elle vouvoyait Kael et le laissait
+        // passer, juste avant « Halte. La porte nord est fermée ».
         .line(speaker: "Garen", text: String(localized: "dialogue.garen.first1")),
         .line(speaker: "Garen", text: String(localized: "dialogue.garen.first2")),
         .choice(

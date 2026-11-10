@@ -40,8 +40,9 @@ extension PrototypeContent {
     static let villagerQuestOfferDialogue: [DialogueStep] = [
         .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "dialogue.oldwoman.1")),
         .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "quest.medallion.offer1")),
+        .line(speaker: String(localized: "dialogue.villager.name"), text: String(localized: "quest.medallion.offer2")),
         .choice(
-            prompt: String(localized: "quest.medallion.offer2"),
+            prompt: String(localized: "quest.medallion.prompt"),
             options: [
                 DialogueChoice(
                     title: String(localized: "quest.medallion.accept"),
@@ -51,7 +52,7 @@ extension PrototypeContent {
                 DialogueChoice(
                     title: String(localized: "quest.medallion.decline"),
                     responseSpeaker: String(localized: "dialogue.villager.name"),
-                    response: String(localized: "quest.medallion.offer2")
+                    response: String(localized: "quest.medallion.declineReply")
                 )
             ]
         )

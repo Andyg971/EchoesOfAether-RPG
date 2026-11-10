@@ -82,6 +82,7 @@
 		8D055F9FE3F2D8ECF0B1C5AA /* WorldBuilder+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9725FF5F7822ABDE3FEAADE5 /* WorldBuilder+Helpers.swift */; };
 		36F86E65A5ECB697EF5489DF /* WorldBuilder+Props.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E6FBEFD3BEA2948C5299F2B /* WorldBuilder+Props.swift */; };
 		8A1509FC9F6BE6103B666232 /* WorldBuilder+ForestBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F675571CEF65855B17479DF /* WorldBuilder+ForestBlocks.swift */; };
+		7887B13FD15B6A312FA347B4 /* WorldBuilder+CorridorDressing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1200CB03082CD82A4CAC6653 /* WorldBuilder+CorridorDressing.swift */; };
 		526F36BE3B0ED830E0D2F329 /* WorldBuilder+Forest.swift in Sources */ = {isa = PBXBuildFile; fileRef = B56E6FCA7DC8FEB292029C53 /* WorldBuilder+Forest.swift */; };
 		8E957C7EFE110699B70FEBE8 /* WorldBuilder+ForestProps.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE89042CC561CAA9853B0601 /* WorldBuilder+ForestProps.swift */; };
 		2DFDD65904F5E7B56FDDD11D /* WorldBuilder+DesertPOI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 051C57F9F0440B3B9A57ECBD /* WorldBuilder+DesertPOI.swift */; };
@@ -368,6 +369,7 @@
 		9725FF5F7822ABDE3FEAADE5 /* WorldBuilder+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Helpers.swift"; sourceTree = "<group>"; };
 		1E6FBEFD3BEA2948C5299F2B /* WorldBuilder+Props.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Props.swift"; sourceTree = "<group>"; };
 		3F675571CEF65855B17479DF /* WorldBuilder+ForestBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+ForestBlocks.swift"; sourceTree = "<group>"; };
+		1200CB03082CD82A4CAC6653 /* WorldBuilder+CorridorDressing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+CorridorDressing.swift"; sourceTree = "<group>"; };
 		B56E6FCA7DC8FEB292029C53 /* WorldBuilder+Forest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+Forest.swift"; sourceTree = "<group>"; };
 		FE89042CC561CAA9853B0601 /* WorldBuilder+ForestProps.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+ForestProps.swift"; sourceTree = "<group>"; };
 		051C57F9F0440B3B9A57ECBD /* WorldBuilder+DesertPOI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldBuilder+DesertPOI.swift"; sourceTree = "<group>"; };
@@ -815,6 +817,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				9725FF5F7822ABDE3FEAADE5 /* WorldBuilder+Helpers.swift */,
 				1E6FBEFD3BEA2948C5299F2B /* WorldBuilder+Props.swift */,
 				3F675571CEF65855B17479DF /* WorldBuilder+ForestBlocks.swift */,
+				1200CB03082CD82A4CAC6653 /* WorldBuilder+CorridorDressing.swift */,
 				B56E6FCA7DC8FEB292029C53 /* WorldBuilder+Forest.swift */,
 				FE89042CC561CAA9853B0601 /* WorldBuilder+ForestProps.swift */,
 				051C57F9F0440B3B9A57ECBD /* WorldBuilder+DesertPOI.swift */,
@@ -1224,6 +1227,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				8D055F9FE3F2D8ECF0B1C5AA /* WorldBuilder+Helpers.swift in Sources */,
 				36F86E65A5ECB697EF5489DF /* WorldBuilder+Props.swift in Sources */,
 				8A1509FC9F6BE6103B666232 /* WorldBuilder+ForestBlocks.swift in Sources */,
+				7887B13FD15B6A312FA347B4 /* WorldBuilder+CorridorDressing.swift in Sources */,
 				526F36BE3B0ED830E0D2F329 /* WorldBuilder+Forest.swift in Sources */,
 				8E957C7EFE110699B70FEBE8 /* WorldBuilder+ForestProps.swift in Sources */,
 				2DFDD65904F5E7B56FDDD11D /* WorldBuilder+DesertPOI.swift in Sources */,

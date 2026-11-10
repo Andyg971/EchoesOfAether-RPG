@@ -36,6 +36,9 @@ extension WorldBuilder {
                                             width: w * (1 - band.right), height: height))
         }
 
+        addWallFaces(bands: plan.corridorBands, w: w, h: h,
+                     tint: SKColor(red: 0.62, green: 0.38, blue: 0.32, alpha: 1), in: scene)
+
         // Fissures d'Aether rouge : elles rampent le long des salles.
         for (fy, fy2) in [(CGFloat(0.10), CGFloat(0.18)), (0.42, 0.52), (0.66, 0.74)] {
             guard let b = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
@@ -107,8 +110,16 @@ extension WorldBuilder {
         // Cristal de sauvegarde, dans le hall d'entrée.
         addSaveCrystal(at: plan.saveCrystal, in: scene)
 
+        // Mobilier funéraire le long des parois — après les props posés à la
+        // main, qui gardent la priorité (`isCluttered`).
+        dressCorridor(bands: plan.corridorBands, w: w, h: h,
+                      avoid: [plan.saveCrystal, plan.eranInscription, plan.discoveryWall,
+                              CGPoint(x: w * 0.50, y: h * 0.335),
+                              CGPoint(x: w * 0.50, y: h * 0.955)],
+                      in: scene)
+
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
-        setZoneVignette(in: scene, alpha: 0.45)
+        setZoneVignette(in: scene, alpha: 0.32)
         LightingEngine.applyGrade(.ruins, in: scene)
         AudioEngine.shared.setAmbience(.none)   // la musique porte l'ambiance
         debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois

@@ -83,8 +83,13 @@ extension WorldBuilder {
         for fy in [CGFloat(0.30), 0.50, 0.68] {
             guard let band = plan.corridorBands.first(where: { fy >= $0.y0 && fy < $0.y1 })
             else { continue }
-            add(makeCrack(from: CGPoint(x: w * (band.left + band.right) / 2, y: h * fy),
-                          to: CGPoint(x: plan.heart.x, y: h * 0.76)), to: scene)
+            // Fissure LOCALE, tirée vers le Cœur. Elle visait le Cœur lui-même :
+            // un trait de plusieurs écrans de long, droit comme un laser, qui
+            // traversait parois et recoins.
+            let start = CGPoint(x: w * (band.left + band.right) / 2, y: h * fy)
+            let toward: CGFloat = plan.heart.x >= start.x ? 1 : -1
+            add(makeCrack(from: start,
+                          to: CGPoint(x: start.x + toward * 70, y: start.y + 96)), to: scene)
         }
         for m in plan.memories.prefix(2) {
             add(makeRedAetherPool(at: CGPoint(x: m.pos.x, y: m.pos.y - h * 0.03)), to: scene)
@@ -112,8 +117,16 @@ extension WorldBuilder {
         // Cristal de sauvegarde au vestibule — dernier répit.
         addSaveCrystal(at: plan.saveCrystal, in: scene)
 
+        addWallFaces(bands: plan.corridorBands, w: w, h: h,
+                     tint: SKColor(red: 0.56, green: 0.34, blue: 0.70, alpha: 1), in: scene)
+        dressCorridor(bands: plan.corridorBands, w: w, h: h,
+                      avoid: plan.memories.map(\.pos) + plan.reflections.map(\.pos)
+                          + [plan.saveCrystal, plan.voiceConfront, plan.heart,
+                             plan.stairsBase],
+                      in: scene)
+
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
-        setZoneVignette(in: scene, alpha: 0.50)
+        setZoneVignette(in: scene, alpha: 0.36)
         LightingEngine.applyGrade(.voidheart, in: scene)
         AudioEngine.shared.setAmbience(.none)
         debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois

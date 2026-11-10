@@ -61,6 +61,9 @@ extension WorldBuilder {
                                             width: w * (1 - band.right), height: height))
         }
 
+        addWallFaces(bands: plan.corridorBands, w: w, h: h,
+                     tint: SKColor(red: 0.46, green: 0.42, blue: 0.74, alpha: 1), in: scene)
+
         // ── LE SEUIL : escalier + portail au bout du couloir ──
         addPixelProp("me_stairs", in: scene, at: plan.stairsBase, scale: 0.60)
         addPixelProp("gy_gate_big", in: scene, at: plan.portal, scale: 0.55)
@@ -145,10 +148,17 @@ extension WorldBuilder {
         // Cristal de sauvegarde, à l'entrée — dernier répit avant la montée.
         addSaveCrystal(at: plan.saveCrystal, in: scene)
 
+        dressCorridor(bands: plan.corridorBands, w: w, h: h,
+                      avoid: plan.steles.map(\.pos) + plan.spirits.map(\.pos)
+                          + [plan.saveCrystal, plan.echoMeet, plan.eran,
+                             plan.stairsBase, plan.portal,
+                             CGPoint(x: w * 0.50, y: h * 0.295)],
+                      in: scene)
+
         debugDrawObstacles(in: scene)   // --show-obstacles : audit des parois
 
         addAtmosphere(ParticleFactory.ruinsAsh(in: scene.size), to: scene)
-        setZoneVignette(in: scene, alpha: 0.45)
+        setZoneVignette(in: scene, alpha: 0.32)
         LightingEngine.applyGrade(.threshold, in: scene)
         AudioEngine.shared.setAmbience(.none)
     }

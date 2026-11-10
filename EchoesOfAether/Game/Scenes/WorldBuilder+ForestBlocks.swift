@@ -71,11 +71,10 @@ extension WorldBuilder {
         // Arête éclairée côté couloir : sans elle, la roche et le sol se
         // confondent dans le noir et le couloir cesse d'être lisible.
         let onLeftSide = rect.minX < 1
-        let edge = SKShapeNode(rect: CGRect(
-            x: onLeftSide ? rect.maxX - 3 : rect.minX,
-            y: rect.minY, width: 3, height: rect.height))
-        edge.fillColor = SKColor(red: 0.34, green: 0.28, blue: 0.52, alpha: 1)
-        edge.strokeColor = .clear
+        let edge = SKSpriteNode(color: SKColor(red: 0.34, green: 0.28, blue: 0.52, alpha: 1),
+                                size: CGSize(width: 4, height: rect.height))
+        edge.anchorPoint = .zero
+        edge.position = CGPoint(x: onLeftSide ? rect.maxX - 4 : rect.minX, y: rect.minY)
         edge.zPosition = -7
         add(edge, to: scene)
 

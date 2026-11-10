@@ -131,6 +131,7 @@ extension GameManager {
             hud.goldValue = player.gold
             phase = .ruins
             showRuins(in: scene)
+            placeKaelForAudit(in: scene)
             transition(to: .exploration)
             return true
         }
@@ -166,6 +167,7 @@ extension GameManager {
             hud.goldValue = player.gold
             phase = .act4
             showVoidHeart(in: scene)
+            placeKaelForAudit(in: scene)
             transition(to: .exploration)
             return true
         }
@@ -173,6 +175,7 @@ extension GameManager {
             hud.goldValue = player.gold
             phase = .act3
             showThreshold(in: scene)
+            placeKaelForAudit(in: scene)
             transition(to: .exploration)
             return true
         }
@@ -213,5 +216,28 @@ extension GameManager {
             return true
         }
         return false
+    }
+}
+
+extension GameManager {
+    /// `--cam-y <0..1>` dans une zone-couloir : pose Kael à cette fraction de
+    /// la hauteur du monde, au milieu du couloir à cette hauteur. Sans ça,
+    /// l'audit des Ruines, du Seuil et du Cœur ne montrait que leur entrée.
+    func placeKaelForAudit(in scene: SKScene) {
+        guard let idx = launchArguments.firstIndex(of: "--cam-y"),
+              launchArguments.indices.contains(idx + 1),
+              let frac = Double(launchArguments[idx + 1]) else { return }
+        let size = scene.size
+        let bands: [WorldBuilder.CorridorBand]
+        switch phase {
+        case .ruins: bands = RuinsLayout(sceneSize: size).corridorBands
+        case .act3:  bands = ThresholdLayout(sceneSize: size).corridorBands
+        case .act4:  bands = VoidHeartLayout(sceneSize: size).corridorBands
+        default:     return
+        }
+        let f = CGFloat(min(max(frac, 0.02), 0.98))
+        let band = bands.first { f >= $0.y0 && f < $0.y1 } ?? bands[0]
+        world.kael.position = CGPoint(x: size.width * (band.left + band.right) / 2,
+                                      y: world.worldHeight * f)
     }
 }

@@ -36,6 +36,11 @@ extension PrototypeContent {
               text: String(localized: "dialogue.mines.inscription.1")),
         .line(speaker: String(localized: "dialogue.mines.plaqueName"),
               text: String(localized: "dialogue.mines.inscription.2")),
+        // Le père de Lyra. Elle pose sa disparition comme sa raison d'agir
+        // dès l'Acte I ; rien ne disait ce qu'il était devenu. Il clôt ici
+        // le relevé de son équipe — et son esprit attend au Seuil.
+        .line(speaker: String(localized: "dialogue.mines.plaqueName"),
+              text: String(localized: "dialogue.mines.inscription.3")),
         .line(speaker: "Kael", text: String(localized: "dialogue.mines.inscription.kael1"))
     ]
 

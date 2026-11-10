@@ -3368,13 +3368,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "E... Eran. He was here."
+            "value" : "E… I know this hand. Without knowing from where."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "E... Eran. Il a été ici."
+            "value" : "E… Cette main, je la connais. Sans savoir d'où."
           }
         }
       }
@@ -3432,13 +3432,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eran Solace? The missing researcher? But... that's impossible."
+            "value" : "E… Eran Solace? The First Guardian? He vanished twenty years ago. That's impossible."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Eran Solace ? Le chercheur disparu ? Mais... c'est impossible."
+            "value" : "E… Eran Solace ? Le Premier Gardien ? Il a disparu il y a vingt ans. C'est impossible."
           }
         }
       }
@@ -4568,13 +4568,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "That is what my master said too. Before the end."
+            "value" : "That is what I used to say, too. Before the Threshold."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "C'est ce que disait mon maître, aussi. Avant la fin."
+            "value" : "C'est ce que je disais, moi aussi. Avant le Seuil."
           }
         }
       }
@@ -5906,13 +5906,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Twenty years I searched for this hall. It is more terrible than in my dreams."
+            "value" : "Twenty years I held its door without ever seeing it. It is more terrible than in my dreams."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Vingt ans que je cherche cette salle. Elle est plus terrible que dans mes rêves."
+            "value" : "Vingt ans que je tiens sa porte sans l'avoir jamais vue. Elle est plus terrible que dans mes rêves."
           }
         }
       }
@@ -6200,13 +6200,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No, Eran. You sought power. I keep watch. It is different — I choose to believe it."
+            "value" : "No, Eran. You bargained. I keep watch. It is different — I choose to believe it."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Non, Eran. Toi, tu voulais le pouvoir. Moi, je veille. C'est différent — je veux le croire."
+            "value" : "Non, Eran. Toi, tu as marchandé. Moi, je veille. C'est différent — je veux le croire."
           }
         }
       }
@@ -8170,13 +8170,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You're... stronger than I thought. Or more desperate."
+            "value" : "It has fallen. Twenty years I heard it scratching behind the seal."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu es... plus fort que je ne pensais. Ou plus désespéré."
+            "value" : "Elle est tombée. Vingt ans que je l'entendais gratter derrière le sceau."
           }
         }
       }
@@ -8202,13 +8202,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I was waiting for you. I hoped you'd return with your memory. That you could... replace the seal."
+            "value" : "I bargained with the Source, as you did. It took my name — and left me here, guarding its door."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je t'attendais. J'espérais que tu reviendrais avec ta mémoire. Que tu pourrais... remplacer le sceau."
+            "value" : "J'ai marchandé avec la Source, comme toi. Elle a pris mon nom — et m'a laissé ici, à garder sa porte."
           }
         }
       }
@@ -8218,13 +8218,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You don't need your memories. The blood of the Guardians knows. Lay your hand on the crystal. Your Aether will do the rest."
+            "value" : "You don't need your memories. The mark knows. Lay your hand on the crystal. Your Aether will do the rest."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu n'as pas besoin de tes souvenirs. Le sang des Gardiens sait. Pose ta main sur le cristal. Ton Aether fera le reste."
+            "value" : "Tu n'as pas besoin de tes souvenirs. La marque sait. Pose ta main sur le cristal. Ton Aether fera le reste."
           }
         }
       }
@@ -8234,13 +8234,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Why didn't you run too? Why stay here, burning yourself away?"
+            "value" : "Why did you stay? You could have left the way you came."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Pourquoi tu n'as pas fui toi aussi ? Pourquoi rester ici à te consumer ?"
+            "value" : "Pourquoi être resté ? Tu aurais pu repartir par où tu étais venu."
           }
         }
       }
@@ -8646,6 +8646,7 @@
       }
     },
     "dialogue.garen.real.1" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -9514,13 +9515,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Promise. Let's see what silences the picks."
+            "value" : "Promise. If there is any trace of him left, I'll find it."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Promis. Voyons ce qui fait taire les pioches."
+            "value" : "Promis. S'il reste une trace de lui, je la trouverai."
           }
         }
       }
@@ -9530,13 +9531,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I'll watch the entrance. If it goes wrong, you shout. Promise?"
+            "value" : "My father went down this gallery two years ago. If I go in, I won't come out without him. I'll watch the entrance — look for me. Promise?"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je garde l'entrée. Si ça tourne mal, tu cries. Promis ?"
+            "value" : "Mon père est descendu par cette galerie il y a deux ans. Si j'entre, je ne ressors pas sans lui. Je garde l'entrée — regarde pour moi. Promis ?"
           }
         }
       }
@@ -9589,18 +9590,34 @@
         }
       }
     },
-    "dialogue.mines.inscription.kael1" : {
+    "dialogue.mines.inscription.3" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "They dug all the way to the Source. Nobody warned them."
+            "value" : "\"Oswin, foreman of Crew 7. If my Lyra asks: tell her the vein was singing. And that she must never come down.\""
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ils ont creusé jusqu'à la Source. Personne ne les avait prévenus."
+            "value" : "«Oswin, chef de l'équipe 7. Si ma Lyra demande : dites-lui que la veine chantait. Et qu'elle ne descende jamais.»"
+          }
+        }
+      }
+    },
+    "dialogue.mines.inscription.kael1" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oswin. Lyra's father. They dug all the way to the Source — and he understood before anyone else."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Oswin. Le père de Lyra. Ils ont creusé jusqu'à la Source — et il l'a compris avant tout le monde."
           }
         }
       }
@@ -9665,22 +9682,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dorin t'a parlé des disparitions."
-          }
-        }
-      }
-    },
-    "dialogue.pact.10" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "I didn't ask you to."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -9809,6 +9810,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Je ne te protègerai pas."
+          }
+        }
+      }
+    },
+    "dialogue.pact.10" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I didn't ask you to."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Je ne te l'ai pas demandé."
           }
         }
       }
@@ -10389,6 +10406,22 @@
         }
       }
     },
+    "dialogue.spirit.miner3" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "And my daughter? Lyra. I promised her I'd be back up before winter."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Et ma fille ? Lyra. Je lui avais promis de remonter avant l'hiver."
+          }
+        }
+      }
+    },
     "dialogue.spirit.minerKael" : {
       "localizations" : {
         "en" : {
@@ -10401,6 +10434,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Les mines de Cendreval sont silencieuses. Le golem est tombé. Ils reposent en paix."
+          }
+        }
+      }
+    },
+    "dialogue.spirit.minerKael2" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…She looked for you for two years, Oswin. To the very end. She never gave up."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "…Elle vous a cherché deux ans, Oswin. Jusqu'au bout. Elle n'a jamais renoncé."
           }
         }
       }
@@ -10491,13 +10540,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "\\u201cHere knelt Eran, first of the Watchers, who believed the Void could be bargained with.\\u201d"
+            "value" : "\\u201cHere knelt Eran, first of the Guardians, who believed the Void could be bargained with.\\u201d"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "« Ici s'agenouilla Eran, premier des Veilleurs, qui crut pouvoir marchander avec le Vide. »"
+            "value" : "« Ici s'agenouilla Eran, premier des Gardiens, qui crut pouvoir marchander avec le Vide. »"
           }
         }
       }
@@ -10589,13 +10638,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "You must seal your memory, Kael."
+            "value" : "Kneel, Kael. Tell me what you want."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tu dois sceller ta mémoire, Kael."
+            "value" : "Agenouille-toi, Kael. Dis-moi ce que tu veux."
           }
         }
       }
@@ -10605,13 +10654,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "It's the only way to protect you."
+            "value" : "Strength? Then give me what you were."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "C'est le seul moyen de te protéger."
+            "value" : "La force ? Alors donne-moi ce que tu étais."
           }
         }
       }
@@ -10697,6 +10746,7 @@
       }
     },
     "dialogue.wake.lyra2" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -10777,6 +10827,7 @@
       }
     },
     "dialogue.wake.real.kael1" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -10793,6 +10844,7 @@
       }
     },
     "dialogue.wake.real.kael2" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -12741,13 +12793,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Three steles mark the place where Eran, first of the Watchers, believed he could bargain with the Void. But the Void does not take — it exchanges: a memory for a power, a name for an eternity. What Eran truly gave up that day remains unanswered."
+            "value" : "Three steles mark the place where Eran, first of the Guardians, believed he could bargain with the Void. But the Void does not take — it exchanges: a memory for a power, a name for an eternity. What Eran truly gave up that day remains unanswered."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trois stèles marquent l'endroit où Eran, premier des Veilleurs, crut pouvoir marchander avec le Vide. Mais le Vide ne prend pas — il échange : un souvenir contre un pouvoir, un nom contre une éternité. Ce qu'Eran a vraiment cédé ce jour-là reste sans réponse."
+            "value" : "Trois stèles marquent l'endroit où Eran, premier des Gardiens, crut pouvoir marchander avec le Vide. Mais le Vide ne prend pas — il échange : un souvenir contre un pouvoir, un nom contre une éternité. Ce qu'Eran a vraiment cédé ce jour-là reste sans réponse."
           }
         }
       }
@@ -12807,13 +12859,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Three souls clung to the Threshold, each held back by a regret: a Cendreval miner worried for his fellow diggers, a mother from Solis who never got to tuck in her son, a guard broken by the Sanctuary's Guardian. The Threshold holds onto those who haven't finished leaving — by hearing them out, Kael finally let them lay down their burden."
+            "value" : "Three souls clung to the Threshold, each held back by a regret: Oswin, a Cendreval miner and Lyra's father, worried for his fellow diggers, a mother from Solis who never got to tuck in her son, a guard broken by the Sanctuary's Guardian. The Threshold holds onto those who haven't finished leaving — by hearing them out, Kael finally let them lay down their burden."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trois âmes s'accrochaient au Seuil, chacune retenue par un regret : un mineur de Cendreval inquiet pour ses compagnons, une mère de Solis qui n'a pas eu le temps de border son fils, un garde brisé par le Gardien du sanctuaire. Le Seuil retient ceux qui n'ont pas fini de partir — en les écoutant, Kael les a enfin laissés déposer les armes."
+            "value" : "Trois âmes s'accrochaient au Seuil, chacune retenue par un regret : Oswin, mineur de Cendreval et père de Lyra, inquiet pour ses compagnons, une mère de Solis qui n'a pas eu le temps de border son fils, un garde brisé par le Gardien du sanctuaire. Le Seuil retient ceux qui n'ont pas fini de partir — en les écoutant, Kael les a enfin laissés déposer les armes."
           }
         }
       }
@@ -12857,13 +12909,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Source grants no power: it trades. Every bearer leaves part of themselves on the altar, and the Void keeps it.\n\nEran Solace, first of the Watchers, gave his NAME — the steles hold its echo; he does not.\n\nKael gave his MEMORY. The night of the pact at the sanctuary, he asked for strength; the Source took his past and laid him down, blank, at the edge of the Ebony Forest. The amnesia was never a wound — it was the invoice.\n\nWhich is why he remembered neither the nights in Solis, nor the seven souls."
+            "value" : "The Source grants no power: it trades. Every bearer leaves part of themselves on the altar, and the Void keeps it.\n\nEran Solace, first of the Guardians, gave his NAME — the steles hold its echo; he does not.\n\nKael gave his MEMORY. The night of the pact at the sanctuary, he asked for strength; the Source took his past and laid him down, blank, at the edge of the Forest of Echoes. The amnesia was never a wound — it was the invoice.\n\nWhich is why he remembered neither the nights in Solis, nor the seven souls."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La Source n'accorde aucun pouvoir : elle échange. Chaque porteur laisse une part de lui-même sur l'autel, et le Vide la garde.\n\nEran Solace, premier des Veilleurs, a donné son NOM — les stèles en gardent l'écho, lui non.\n\nKael a donné sa MÉMOIRE. Le soir du pacte au sanctuaire, il a demandé la force ; la Source a pris son passé et l'a déposé, vierge, à la lisière de la Forêt d'Ébène. L'amnésie n'était pas une blessure : c'était la facture.\n\nCe qui explique pourquoi il ne se souvenait ni des nuits à Solis, ni des sept âmes."
+            "value" : "La Source n'accorde aucun pouvoir : elle échange. Chaque porteur laisse une part de lui-même sur l'autel, et le Vide la garde.\n\nEran Solace, premier des Gardiens, a donné son NOM — les stèles en gardent l'écho, lui non.\n\nKael a donné sa MÉMOIRE. Le soir du pacte au sanctuaire, il a demandé la force ; la Source a pris son passé et l'a déposé, vierge, à la lisière de la Forêt des Échos. L'amnésie n'était pas une blessure : c'était la facture.\n\nCe qui explique pourquoi il ne se souvenait ni des nuits à Solis, ni des sept âmes."
           }
         }
       }

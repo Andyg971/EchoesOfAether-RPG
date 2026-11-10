@@ -150,6 +150,12 @@ extension PrototypeContent {
               text: String(localized: "dialogue.spirit.miner1")),
         .line(speaker: "Kael",
               text: String(localized: "dialogue.spirit.minerKael")),
+        // Le mineur est Oswin, le père de Lyra (cf. la plaque des mines).
+        // Kael lui répond en sachant ce qu'il a fait d'elle.
+        .line(speaker: String(localized: "dialogue.spirit.minerName"),
+              text: String(localized: "dialogue.spirit.miner3")),
+        .line(speaker: "Kael",
+              text: String(localized: "dialogue.spirit.minerKael2")),
         .line(speaker: String(localized: "dialogue.spirit.minerName"),
               text: String(localized: "dialogue.spirit.miner2"))
     ]

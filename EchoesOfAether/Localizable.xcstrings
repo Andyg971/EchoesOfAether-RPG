@@ -3080,13 +3080,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Wait. This inscription... it's different from the others."
+            "value" : "Wait. This inscription... this one isn't centuries old. The cut is fresh. A few weeks, no more."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Attends. Cette inscription... elle est différente des autres."
+            "value" : "Attends. Cette inscription... elle n'a pas des siècles, elle. La taille est fraîche. Quelques semaines, pas plus."
           }
         }
       }
@@ -3176,13 +3176,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "I can read just fine. And it matches everything. The nights you disappeared. The people who vanished."
+            "value" : "I can read just fine. And it matches everything. Seven gone in five nights. And on the sixth morning, you, at the forest's edge, the mark still warm."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Je lis très bien. Ça correspond à tout. Les nuits où tu disparaissais. Les gens qui se volatilisaient."
+            "value" : "Je lis très bien. Ça correspond à tout. Sept disparus en cinq nuits. Et au matin de la sixième, toi, à la lisière, la marque encore chaude."
           }
         }
       }
@@ -5048,13 +5048,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Seasons passed. The Forest of Echoes grew green again, slowly, scar after scar."
+            "value" : "Seasons passed. The Ebonwood Forest grew green again, slowly, scar after scar."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Des saisons passèrent. La Forêt des Échos reverdit, lentement, cicatrice après cicatrice."
+            "value" : "Des saisons passèrent. La Forêt d'Ébène reverdit, lentement, cicatrice après cicatrice."
           }
         }
       }
@@ -8026,13 +8026,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Things have been coming from the north for weeks. Corrupted animals. Dead trees. The Cendreval mines have gone silent. People are disappearing."
+            "value" : "Things have been coming from the north for weeks. Corrupted animals. Dead trees. The Cendreval mines have gone silent. And right here in Solis: seven of our own, gone from their beds in five nights."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Il y a des choses qui viennent du nord depuis des semaines. Des animaux corrompus. Des arbres morts. Les mines de Cendreval ne répondent plus. Les gens disparaissent."
+            "value" : "Il y a des choses qui viennent du nord depuis des semaines. Des animaux corrompus. Des arbres morts. Les mines de Cendreval ne répondent plus. Et ici même, à Solis : sept des nôtres, disparus de leurs lits en cinq nuits."
           }
         }
       }
@@ -10783,13 +10783,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The whole village is talking about you. About your hand. People have vanished to the north, and you show up with a mark nobody recognizes."
+            "value" : "The whole village is talking about you. About your hand. Seven people vanished in five nights — and on the sixth morning, you turn up at the forest's edge with a mark nobody recognizes."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tout le village parle de toi. De ta main. Des gens ont disparu au nord, et toi tu arrives avec une marque que personne ne reconnaît."
+            "value" : "Tout le village parle de toi. De ta main. Sept personnes ont disparu en cinq nuits — et au matin de la sixième, on te trouve à la lisière, avec une marque que personne ne reconnaît."
           }
         }
       }
@@ -11137,13 +11137,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Forest of Echoes is cleansed"
+            "value" : "The Ebonwood Forest is cleansed"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La Forêt des Échos est purifiée"
+            "value" : "La Forêt d'Ébène est purifiée"
           }
         }
       }
@@ -12909,13 +12909,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The Source grants no power: it trades. Every bearer leaves part of themselves on the altar, and the Void keeps it.\n\nEran Solace, first of the Guardians, gave his NAME — the steles hold its echo; he does not.\n\nKael gave his MEMORY. The night of the pact at the sanctuary, he asked for strength; the Source took his past and laid him down, blank, at the edge of the Forest of Echoes. The amnesia was never a wound — it was the invoice.\n\nWhich is why he remembered neither the nights in Solis, nor the seven souls."
+            "value" : "The Source grants no power: it trades. Every bearer leaves part of themselves on the altar, and the Void keeps it.\n\nEran Solace, first of the Guardians, gave his NAME — the steles hold its echo; he does not.\n\nKael gave his MEMORY. The night of the pact at the sanctuary, he asked for strength; the Source took his past and laid him down, blank, at the edge of the Ebonwood Forest. The amnesia was never a wound — it was the invoice.\n\nWhich is why he remembered neither the nights in Solis, nor the seven souls."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La Source n'accorde aucun pouvoir : elle échange. Chaque porteur laisse une part de lui-même sur l'autel, et le Vide la garde.\n\nEran Solace, premier des Gardiens, a donné son NOM — les stèles en gardent l'écho, lui non.\n\nKael a donné sa MÉMOIRE. Le soir du pacte au sanctuaire, il a demandé la force ; la Source a pris son passé et l'a déposé, vierge, à la lisière de la Forêt des Échos. L'amnésie n'était pas une blessure : c'était la facture.\n\nCe qui explique pourquoi il ne se souvenait ni des nuits à Solis, ni des sept âmes."
+            "value" : "La Source n'accorde aucun pouvoir : elle échange. Chaque porteur laisse une part de lui-même sur l'autel, et le Vide la garde.\n\nEran Solace, premier des Gardiens, a donné son NOM — les stèles en gardent l'écho, lui non.\n\nKael a donné sa MÉMOIRE. Le soir du pacte au sanctuaire, il a demandé la force ; la Source a pris son passé et l'a déposé, vierge, à la lisière de la Forêt d'Ébène. L'amnésie n'était pas une blessure : c'était la facture.\n\nCe qui explique pourquoi il ne se souvenait ni des nuits à Solis, ni des sept âmes."
           }
         }
       }
@@ -15222,7 +15222,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Bram needs corrupted iron to forge a rare steel. A dark vein surfaces on the west trail of the Ebony Forest."
+            "value" : "Bram needs corrupted iron to forge a rare steel. A dark vein surfaces on the west trail of the Ebonwood Forest."
           }
         },
         "fr" : {
@@ -15356,13 +15356,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomm, Garen's scout, vanished in the Ebony Forest. Find his trail, or his badge."
+            "value" : "Tomm, Garen's scout, vanished in the Ebonwood Forest. Find his trail, or his badge."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tomm, éclaireur de Garen, a disparu dans la forêt d'Ébène. Retrouver sa trace, ou son insigne."
+            "value" : "Tomm, éclaireur de Garen, a disparu dans la Forêt d'Ébène. Retrouver sa trace, ou son insigne."
           }
         }
       }
@@ -15458,7 +15458,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sage needs moonherb for her teas. It glows faintly between the roots, in the west of the Ebony Forest."
+            "value" : "Sage needs moonherb for her teas. It glows faintly between the roots, in the west of the Ebonwood Forest."
           }
         },
         "fr" : {

@@ -92,6 +92,8 @@ final class GameManager {
     var padActive = false
     var padOrigin = CGPoint.zero
     var padVector = CGVector.zero
+    /// Vrai quand `padVector` vient d'une manette physique et non du pouce.
+    var controllerDriving = false
     var hintUpdateTimer: TimeInterval = 0
     var minimapTimer: TimeInterval = 0
     var corruptionCinematicShown = false

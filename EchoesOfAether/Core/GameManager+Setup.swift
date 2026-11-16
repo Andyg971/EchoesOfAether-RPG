@@ -88,6 +88,7 @@ extension GameManager {
         hud.onQuestLogTap  = { [weak self] in self?.openQuestLog() }
         hud.onMapTap       = { [weak self] in self?.openWorldMap() }
         hud.mapButton.isHidden = true
+        setupControllerInput()
 
         // Voyage rapide : saut DIRECT dans le lieu découvert choisi.
         worldMap.onTravel = { [weak self] id in self?.enterZoneFromMap(id) }

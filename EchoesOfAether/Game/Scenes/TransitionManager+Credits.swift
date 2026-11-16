@@ -109,4 +109,22 @@ extension TransitionManager {
         closure?()
         return true
     }
+
+    /// Valide à la manette l'écran de fin ou les crédits affichés : retombe
+    /// sur le tap du bouton de l'overlay actif. Faux s'il n'y en a aucun.
+    static func confirmActiveEndOverlay(in scene: SKScene) -> Bool {
+        let candidates: [(SKShapeNode?, String)] = [
+            (creditsOverlayRef, "creditsClose"),
+            (endOverlay, "continueBtn")
+        ]
+        for (overlay, name) in candidates {
+            guard let overlay, let btn = overlay.childNode(withName: name) else { continue }
+            let center = scene.convert(btn.position, from: overlay)
+            if name == "creditsClose" {
+                return handleCreditsTap(at: center, in: scene)
+            }
+            return handleEndScreenTap(at: center, in: scene)
+        }
+        return false
+    }
 }

@@ -11,6 +11,9 @@ final class MainMenuScene: SKScene {
     weak var highlightedButton: SKShapeNode?
     /// Slot en attente de confirmation de suppression (nil = aucun).
     var confirmDeleteSlot: Int?
+    /// Slot (1…slotCount) sélectionné à la manette.
+    var controllerSlot = 1
+    var controllerNavLatched = false
 
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.035, green: 0.030, blue: 0.055, alpha: 1)
@@ -22,6 +25,7 @@ final class MainMenuScene: SKScene {
         // iCloud : rapatrie les saves plus récentes d'un autre appareil.
         SaveManager.syncFromCloudIfNewer()
         buildUI()
+        setupControllerNavigation()
 
         // Auto-tap pour test E2E si lancé avec --auto-tap
         if CommandLine.arguments.contains("--auto-tap") {
@@ -189,6 +193,10 @@ final class MainMenuScene: SKScene {
             addChild(row)
             JuiceEngine.popIn(row, delay: 0.1 + Double(i) * 0.08)
         }
+
+        run(.sequence([.wait(forDuration: 0.8),
+                       .run { [weak self] in self?.refreshControllerSelection() }]),
+            withKey: "controllerSelection")
 
         let version = SKLabelNode(fontNamed: PixelUI.uiFont)
         version.text = String(localized: "menu.version")

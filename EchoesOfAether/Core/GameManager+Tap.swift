@@ -49,41 +49,7 @@ extension GameManager {
         // (fermeture par son bouton, un lieu voyageable, ou B ci-dessus).
         if worldMap.isActive, worldMap.handleTap(at: point, in: scene) { return }
         if !actionButton.isHidden, point.distance(to: actionButton.position) < 42 {
-            actionButton.run(.sequence([
-                .scale(to: 0.90, duration: 0.06),
-                .scale(to: 1.0, duration: 0.10)
-            ]))
-            // En combat, A pare le coup ennemi en cours s'il y en a un :
-            // c'est la seule action possible pendant le tour adverse, et
-            // elle prime sur tout le reste.
-            if state == .combat, combat.attemptBlock() {
-                return
-            }
-            // Frappe au timing : pendant l'élan d'une action offensive, A
-            // décuple le coup au lieu de piloter le menu.
-            if state == .combat, combat.attemptStrike() {
-                return
-            }
-            // Pêche : A ferre le poisson (prioritaire sur tout le reste).
-            if attemptHook() { return }
-            if paywall.isActive {
-                paywall.confirmSelection()
-            } else if skills.isActive {
-                skills.confirmSelection()
-            } else if pause.isActive {
-                pause.confirmSelection()
-            } else if shop.isActive {
-                shop.confirmSelection()
-                syncGold()
-            } else if state == .combat {
-                combat.menuConfirm()
-            } else if dialogue.isActive {
-                dialogue.advance()
-            } else if state == .inventory {
-                inventory.useSelectedPotion()
-            } else if state == .exploration {
-                triggerNearbyAction(in: scene)
-            }
+            handleAPress(in: scene)
             return
         }
         if state == .inventory, inventory.handleTap(at: point, in: scene) { return }
@@ -101,6 +67,45 @@ extension GameManager {
                 triggerNearbyAction(in: scene)
                 return
             }
+        }
+    }
+
+    /// Bouton A : même logique pour le tap sur le bouton et la manette.
+    func handleAPress(in scene: SKScene) {
+        actionButton.run(.sequence([
+            .scale(to: 0.90, duration: 0.06),
+            .scale(to: 1.0, duration: 0.10)
+        ]))
+        // En combat, A pare le coup ennemi en cours s'il y en a un :
+        // c'est la seule action possible pendant le tour adverse, et
+        // elle prime sur tout le reste.
+        if state == .combat, combat.attemptBlock() {
+            return
+        }
+        // Frappe au timing : pendant l'élan d'une action offensive, A
+        // décuple le coup au lieu de piloter le menu.
+        if state == .combat, combat.attemptStrike() {
+            return
+        }
+        // Pêche : A ferre le poisson (prioritaire sur tout le reste).
+        if attemptHook() { return }
+        if paywall.isActive {
+            paywall.confirmSelection()
+        } else if skills.isActive {
+            skills.confirmSelection()
+        } else if pause.isActive {
+            pause.confirmSelection()
+        } else if shop.isActive {
+            shop.confirmSelection()
+            syncGold()
+        } else if state == .combat {
+            combat.menuConfirm()
+        } else if dialogue.isActive {
+            dialogue.advance()
+        } else if state == .inventory {
+            inventory.useSelectedPotion()
+        } else if state == .exploration {
+            triggerNearbyAction(in: scene)
         }
     }
 }

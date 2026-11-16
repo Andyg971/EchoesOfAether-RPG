@@ -91,6 +91,8 @@ extension GameManager {
             hud.mapButton.isHidden = !showMap
         }
 
+        applyControllerStick()
+
         // Déplacement continu au joystick virtuel (exploration)
         // La mort et le tutoriel passent par-dessus l'exploration : le
         // joystick y navigue le curseur au lieu de déplacer Kael.

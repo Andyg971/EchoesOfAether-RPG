@@ -30,25 +30,14 @@ extension MainMenuScene {
             return
         }
         resetDeleteConfirmIfNeeded()
-        HapticsEngine.light()
-        // Partie terminée (une fin choisie) → relance en New Game+ : acquis
-        // conservés, histoire rejouée, difficulté relevée.
-        if let meta = SaveManager.metadata(slot: slot), meta.completed,
-           let data = SaveManager.load(slot: slot) {
-            transitionToGame(slot: slot, newGame: true,
-                             seed: NewGamePlusSeed(from: data))
-        } else if SaveManager.hasSave(slot: slot) {
-            transitionToGame(slot: slot, newGame: false)
-        } else {
-            transitionToGame(slot: slot, newGame: true)
-        }
+        launchSlot(slot)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         clearHighlight()
     }
 
-    private func handleDeleteTap(slot: Int) {
+    func handleDeleteTap(slot: Int) {
         HapticsEngine.heavy()
         if confirmDeleteSlot == slot {
             // Deuxième tap : suppression effective.
@@ -62,7 +51,7 @@ extension MainMenuScene {
         }
     }
 
-    private func resetDeleteConfirmIfNeeded() {
+    func resetDeleteConfirmIfNeeded() {
         guard confirmDeleteSlot != nil else { return }
         confirmDeleteSlot = nil
         rebuild()
@@ -105,6 +94,22 @@ extension MainMenuScene {
             }
         }
         return nil
+    }
+
+    /// Lance (ou reprend) la partie du slot, au tap comme à la manette.
+    func launchSlot(_ slot: Int) {
+        HapticsEngine.light()
+        // Partie terminée (une fin choisie) → relance en New Game+ : acquis
+        // conservés, histoire rejouée, difficulté relevée.
+        if let meta = SaveManager.metadata(slot: slot), meta.completed,
+           let data = SaveManager.load(slot: slot) {
+            transitionToGame(slot: slot, newGame: true,
+                             seed: NewGamePlusSeed(from: data))
+        } else if SaveManager.hasSave(slot: slot) {
+            transitionToGame(slot: slot, newGame: false)
+        } else {
+            transitionToGame(slot: slot, newGame: true)
+        }
     }
 
     private func clearHighlight() {

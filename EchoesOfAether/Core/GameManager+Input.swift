@@ -96,6 +96,12 @@ extension GameManager {
             || worldMap.isActive
     }
 
+    /// Un panneau de menu est-il ouvert par-dessus l'exploration ? Le stick
+    /// y pilote le curseur au lieu de déplacer Kael.
+    var menuOverlayActive: Bool {
+        dismissableOverlayActive || skills.isActive || paywall.isActive
+    }
+
     /// Bouton B : annule / passe / ferme selon le contexte.
     /// Petit enfoncement du bouton A (retour tactile de touche de manette).
     func popActionButton() {
@@ -193,7 +199,8 @@ extension GameManager {
     func routeMenuNav(dx: Int, dy: Int) {
         if death.isActive { death.moveSelection(dy); return }
         if paywall.isActive { paywall.moveSelection(dy); return }
-        if options.isActive { return }              // sliders : tactile assumé
+        if options.isActive, let scene { options.moveCursor(dx: dx, dy: dy, in: scene); return }
+        if worldMap.isActive { worldMap.moveCursor(dx: dx, dy: dy); return }
         // Arbre : dx change de voie, dy monte/descend dans la voie.
         if skills.isActive { skills.moveSelection(dx: dx, dy: dy); return }
         if pause.isActive { pause.moveSelection(dy); return }

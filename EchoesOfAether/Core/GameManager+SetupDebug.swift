@@ -96,7 +96,8 @@ extension GameManager {
         // Déplacement continu au joystick virtuel (exploration)
         // La mort et le tutoriel passent par-dessus l'exploration : le
         // joystick y navigue le curseur au lieu de déplacer Kael.
-        if state == .exploration && !death.isActive && !tutorial.isActive && !isFishing {
+        if state == .exploration && !death.isActive && !tutorial.isActive && !isFishing
+            && !menuOverlayActive {
             updatePadMovement(deltaTime: deltaTime)
             updateRoamers(deltaTime: deltaTime)
         } else {

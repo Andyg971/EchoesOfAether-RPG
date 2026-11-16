@@ -68,9 +68,9 @@ extension GameManager {
         if prologueNode != nil { endPrologue(); return }
         // Panneaux sans sélection au curseur : A ne doit pas déclencher
         // l'interaction du monde cachée derrière eux.
-        if options.isActive || lore.isActive || questLog.isActive || worldMap.isActive {
-            return
-        }
+        if options.isActive { options.confirmCursor(in: scene); return }
+        if worldMap.isActive { worldMap.confirmCursor(in: scene); return }
+        if lore.isActive || questLog.isActive { return }
         handleAPress(in: scene)
     }
 }

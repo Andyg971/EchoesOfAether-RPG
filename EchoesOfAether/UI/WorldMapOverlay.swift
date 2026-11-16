@@ -26,6 +26,8 @@ final class WorldMapOverlay {
     var panelWidth: CGFloat = 340
     var panelHeight: CGFloat = 470
     var places: [WorldMapPlace] = []
+    /// Lieu visé par le curseur manette.
+    var cursorID: String?
 
     /// Liaisons dessinées entre lieux (id → id), style pointillé pixel.
     let roads: [(String, String)] = [
@@ -56,6 +58,7 @@ final class WorldMapOverlay {
         onClose = completion
         root.isHidden = false
         buildContent()
+        resetCursor()
         AudioEngine.shared.playShopOpen()
         AccessibilitySettings.announce(String(localized: "map.title"))
     }

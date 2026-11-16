@@ -26,6 +26,9 @@ final class OptionsOverlay {
     var sfxLabel: SKLabelNode?
     var musicLabel: SKLabelNode?
     var confirmDelete = false
+    /// Curseur manette : ligne et colonne dans la grille de boutons.
+    var cursorRow = 0
+    var cursorColumn = 0
 
     var onClose: (() -> Void)?
     var onDeleteSave: (() -> Void)?
@@ -207,6 +210,7 @@ final class OptionsOverlay {
         root.position = CGPoint(x: w / 2 * (1 - s), y: h / 2 * (1 - s))
         scrim.setScale(1 / s)
         AccessibilitySettings.announce(String(localized: "options.title"))
+        refreshCursor()
     }
 
     private func addSeparator(width: CGFloat, at pos: CGPoint) {
@@ -221,6 +225,8 @@ final class OptionsOverlay {
         root.isHidden = true
         root.removeAllChildren()
         confirmDelete = false
+        cursorRow = 0
+        cursorColumn = 0
     }
 
     /// Bouton B : retour (équivalent du bouton Fermer).

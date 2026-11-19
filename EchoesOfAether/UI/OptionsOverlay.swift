@@ -26,6 +26,9 @@ final class OptionsOverlay {
     var sfxLabel: SKLabelNode?
     var musicLabel: SKLabelNode?
     var confirmDelete = false
+    /// Bande horizontale libre (points de scène) : posée par le GameManager
+    /// pour éviter les boutons A/B. nil = tout l'écran.
+    var contentRange: ClosedRange<CGFloat>?
     /// Curseur manette : ligne et colonne dans la grille de boutons.
     var cursorRow = 0
     var cursorColumn = 0
@@ -66,16 +69,21 @@ final class OptionsOverlay {
         scrim.position = CGPoint(x: w / 2, y: h / 2)
         root.addChild(scrim)
 
-        let panelW = Self.panelSize.width, panelH = Self.panelSize.height
+        // Le panneau s'arrête avant la colonne des boutons A/B (cf.
+        // `contentRange`) au lieu de passer dessous.
+        let range = contentRange ?? 0...w
+        let fit = UIScale.fittingFactor(for: scene.size, contentHeight: Self.panelSize.height + 16)
+        let panelW = min(Self.panelSize.width, (range.upperBound - range.lowerBound) / fit)
+        let panelH = Self.panelSize.height
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
                            fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.97),
                            accent: SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.8))
-        panel.position = CGPoint(x: w/2, y: h/2)
+        panel.position = CGPoint(x: (range.lowerBound + range.upperBound) / 2, y: h / 2)
         root.addChild(panel)
 
-        let cx = w / 2
+        let cx = panel.position.x
         let top = h / 2 + panelH / 2   // bord haut du panneau en coords écran
 
         // Titre

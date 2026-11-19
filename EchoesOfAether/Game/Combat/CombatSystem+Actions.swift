@@ -50,14 +50,15 @@ extension CombatSystem {
         let enemyCenter = foe.homePosition
         // Stats par acteur : alliés = attaque plus faible, sorts plus forts.
         let level = _player?.level ?? 1
-        let atkDmg = actingAlly?.kind.attackDamage(level: level)
+        let atkDmg = actingAlly.map { $0.kind.attackDamage(level: level) + $0.weaponBonus.attack }
             ?? (_player?.attackDamage ?? 42)
         let slashDmg = actingAlly != nil
             ? Int(CGFloat(_player?.blackSlashDamage ?? 92) * 0.85)
             : (_player?.blackSlashDamage ?? 92)
         // La voie de l'Aether ne booste que les sorts DE KAEL : c'est son arbre,
         // pas celui du groupe — les alliés gardent leur multiplicateur d'espèce.
-        let spellMult: CGFloat = actingAlly.map { $0.kind.spellMultiplier }
+        // Le bâton de l'allié s'ajoute à son multiplicateur d'espèce.
+        let spellMult: CGFloat = actingAlly.map { $0.kind.spellMultiplier + CGFloat($0.weaponBonus.spellPower) }
             ?? (_player?.spellPowerMultiplier ?? 1.0)
 
         let ctx = ActionContext(scene: scene, foe: foe, boost: boost,

@@ -214,6 +214,14 @@ struct EnemySpec {
 enum CombatAllyKind {
     case lyra, lyraEcho, eran
 
+    /// Héros dont l'arme équipe cet allié : l'Écho garde le bâton de Lyra.
+    var hero: Hero {
+        switch self {
+        case .lyra, .lyraEcho: .lyra
+        case .eran: .eran
+        }
+    }
+
     var displayName: String {
         switch self {
         case .lyra: return "Lyra"
@@ -232,8 +240,10 @@ enum CombatAllyKind {
 
     /// Réserve de Magie. Elle dit qui est qui : Lyra vit dans le sacré et
     /// en a le plus ; l'Écho n'est plus qu'un souffle, mais un souffle de
-    /// magie pure ; Eran est un guerrier — sa lame s'embrase, il ne canalise
-    /// pas. Ses techniques coûtent d'ailleurs deux fois moins cher.
+    /// magie pure ; Eran frappe de son bâton de sorcier et canalise peu.
+    /// Ses techniques coûtent d'ailleurs deux fois moins cher.
+    /// (Canon armes : Lyra bâton de prêtresse, Eran bâton de sorcier — les
+    /// bonus de bâton s'ajoutent à ces bases, cf. `AllyState.weaponBonus`.)
     func maxMP(level: Int) -> Int {
         switch self {
         case .lyra:     return 42 + (level - 1) * 5

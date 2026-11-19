@@ -67,10 +67,18 @@ final class InventoryOverlay {
         picker.onEquip = { [weak self] in self?.rebuild() }
     }
 
-    func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        panelWidth = min(Self.panelSize.width, max(300, size.width - 48))
+    /// `contentRange` : bande horizontale libre (en points de scène). Les
+    /// boutons A/B vivent à droite, hors des marges système : le panneau
+    /// s'arrête avant eux au lieu de passer dessous — le bouton B masquait la
+    /// fin de la colonne des quêtes (« Non démarrée »).
+    func layout(in size: CGSize, safeBottom: CGFloat = 0,
+                contentRange: ClosedRange<CGFloat>? = nil) {
+        let range = contentRange ?? 24...(size.width - 24)
+        let scale = UIScale.fittingFactor(for: size, contentHeight: Self.panelSize.height + 12)
+        panelWidth = min(Self.panelSize.width, max(300, (range.upperBound - range.lowerBound) / scale))
         panelHeight = Self.panelSize.height
-        root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
+        root.position = CGPoint(x: (range.lowerBound + range.upperBound) / 2,
+                                y: (size.height + safeBottom) / 2)
 
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
         PixelUI.stylePanel(panel, size: CGSize(width: panelWidth, height: panelHeight),
@@ -84,7 +92,8 @@ final class InventoryOverlay {
         // Filet de sécurité : réduirait le panneau s'il ne tenait pas en
         // hauteur. Depuis le passage en deux colonnes, il tient partout et ce
         // facteur vaut 1 (root déjà centré → simple échelle).
-        root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
+        root.setScale(scale)
+        if isActive { rebuild() }
     }
 
     func open(player: PlayerState, completion: @escaping () -> Void) {
@@ -204,11 +213,11 @@ final class InventoryOverlay {
         }
     }
 
-    /// Arme portée : nom, puis le style (couleur du style) à droite — les
-    /// dégâts eux-mêmes sont dans la colonne des statistiques.
+    /// Arme de Kael (il se bat aux poings) : nom, puis le style (couleur du
+    /// style) à droite — les dégâts sont dans la colonne des statistiques.
     private func addWeaponRow(player: PlayerState, y: CGFloat) -> CGFloat {
         guard let weapon = player.equippedWeapon else {
-            return addRow(icon: .sword, label: String(localized: "inventory.weapon.fists"),
+            return addRow(icon: .fist, label: String(localized: "inventory.weapon.fists"),
                           detail: "", y: y, lineH: lineH)
         }
         return addRow(icon: .weapon(weapon.style), label: String(localized: weapon.nameKey),

@@ -2,10 +2,10 @@ import SpriteKit
 
 /// Sélecteur d'arme ou d'accessoire, ouvert par-dessus l'inventaire.
 ///
-/// Une ligne par pièce possédée (la meilleure de chaque style d'arme), le
-/// badge ÉQUIPÉ sur celle que porte Kael, et en pied la comparaison de ses
-/// stats si l'on équipait la ligne du curseur. Même cadre pixel que
-/// l'inventaire : coins carrés, double bordure, zéro glow.
+/// Armes : un onglet par héros (Kael aux poings, Lyra au bâton de
+/// prêtresse, Eran au bâton de sorcier), une ligne par style possédé, le
+/// badge ÉQUIPÉ sur la pièce portée et, en pied, la comparaison des stats si
+/// l'on équipait la ligne du curseur. Même cadre pixel que l'inventaire.
 @MainActor
 final class EquipmentPicker {
     enum Mode { case weapons, accessories }
@@ -19,22 +19,29 @@ final class EquipmentPicker {
         let icon: PixelIcons.Kind
     }
 
-    static let panelSize = CGSize(width: 580, height: 296)
+    static let panelSize = CGSize(width: 580, height: 320)
     static let rowHeight: CGFloat = 44
 
     let root = SKNode()
     private var nodes: [SKNode] = []
     private var rows: [SKShapeNode] = []
+    private(set) var tabs: [(hero: Hero, node: SKShapeNode)] = []
     private(set) var mode: Mode = .weapons
+    /// Héros affichés (onglets) et héros courant.
+    private(set) var heroes: [Hero] = [.kael]
+    private(set) var hero: Hero = .kael
     private(set) var entries: [Entry] = []
     private(set) var selection = 0
-    private var player: PlayerState?
-    private var inventorySize = InventoryOverlay.panelSize
+    private(set) var player: PlayerState?
+    var inventorySize = InventoryOverlay.panelSize
 
     /// Appelé après chaque changement d'équipement (l'inventaire se redessine).
     var onEquip: (() -> Void)?
 
     var isOpen: Bool { root.parent != nil && !root.isHidden }
+    var panelSize: CGSize {
+        CGSize(width: min(Self.panelSize.width, inventorySize.width - 40), height: Self.panelSize.height)
+    }
 
     func attach(to parent: SKNode) {
         root.zPosition = 60
@@ -50,8 +57,12 @@ final class EquipmentPicker {
     func open(_ mode: Mode, player: PlayerState) {
         self.mode = mode
         self.player = player
-        entries = Self.entries(for: mode, player: player)
-        selection = entries.firstIndex { isEquipped($0.id) } ?? 0
+        heroes = mode == .weapons
+            ? Hero.allCases.filter { !player.arsenal(for: $0).isEmpty }
+            : [.kael]
+        if heroes.isEmpty { heroes = [.kael] }
+        hero = heroes[0]
+        reloadEntries()
         root.isHidden = false
         AudioEngine.shared.playShopOpen()
         build()
@@ -73,7 +84,19 @@ final class EquipmentPicker {
         AccessibilitySettings.announce("\(entry.name). \(entry.summary)")
     }
 
-    /// Bouton A : porte la pièce du curseur.
+    /// Gauche / droite (ou L1 / R1) : héros précédent / suivant.
+    func switchHero(_ step: Int) {
+        guard isOpen, heroes.count > 1, step != 0,
+              let index = heroes.firstIndex(of: hero) else { return }
+        hero = heroes[(index + step + heroes.count) % heroes.count]
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        reloadEntries()
+        build()
+        AccessibilitySettings.announce(hero.displayName)
+    }
+
+    /// Bouton A : le héros courant porte la pièce du curseur.
     func confirmSelection() {
         guard isOpen, entries.indices.contains(selection), let player else { return }
         let id = entries[selection].id
@@ -87,24 +110,29 @@ final class EquipmentPicker {
         AudioEngine.shared.playSelect()
         onEquip?()
         build()
-        if rows.indices.contains(selection) {
-            JuiceEngine.popIn(rows[selection].childNode(withName: "badge") ?? rows[selection])
+        if rows.indices.contains(selection), let badge = rows[selection].childNode(withName: "badge") {
+            JuiceEngine.popIn(badge)
         }
         AccessibilitySettings.announce(String(localized: "equipment.equipped"))
     }
 
-    /// Toucher une ligne l'équipe ; toucher hors du cadre ferme le sélecteur.
-    /// `local` est en coordonnées de l'inventaire (même repère que `root`).
+    /// Toucher un onglet change de héros, toucher une ligne l'équipe,
+    /// toucher hors du cadre ferme le sélecteur. `local` est en coordonnées
+    /// de l'inventaire (même repère que `root`).
     func handleTap(at local: CGPoint) {
         guard isOpen else { return }
+        if let tab = tabs.first(where: { $0.node.contains(local) }), tab.hero != hero,
+           let current = heroes.firstIndex(of: hero), let target = heroes.firstIndex(of: tab.hero) {
+            switchHero(target - current)
+            return
+        }
         if let index = rows.firstIndex(where: { $0.contains(local) }) {
             selection = index
             refreshSelection()
             confirmSelection()
             return
         }
-        let half = CGSize(width: Self.panelSize.width / 2, height: Self.panelSize.height / 2)
-        if abs(local.x) > half.width || abs(local.y) > half.height {
+        if abs(local.x) > panelSize.width / 2 || abs(local.y) > panelSize.height / 2 {
             HapticsEngine.light()
             close()
         }
@@ -119,13 +147,21 @@ final class EquipmentPicker {
     }
 
     func isEquipped(_ id: String) -> Bool {
-        mode == .weapons ? player?.equippedWeaponID == id : player?.equippedAccessory == id
+        mode == .weapons
+            ? player?.equippedWeapon(for: hero)?.id == id
+            : player?.equippedAccessory == id
     }
 
-    static func entries(for mode: Mode, player: PlayerState) -> [Entry] {
+    private func reloadEntries() {
+        guard let player else { return }
+        entries = Self.entries(for: mode, hero: hero, player: player)
+        selection = entries.firstIndex { isEquipped($0.id) } ?? 0
+    }
+
+    static func entries(for mode: Mode, hero: Hero, player: PlayerState) -> [Entry] {
         switch mode {
         case .weapons:
-            return player.arsenal.map { weapon in
+            return player.arsenal(for: hero).map { weapon in
                 Entry(id: weapon.id, name: String(localized: weapon.nameKey),
                       tag: String(localized: weapon.style.nameKey),
                       tagColor: EquipmentText.color(for: weapon.style),
@@ -142,15 +178,16 @@ final class EquipmentPicker {
         }
     }
 
-    /// Stats de Kael si la ligne du curseur était portée, face à la tenue actuelle.
+    /// Stats du héros si la ligne du curseur était portée, face à la tenue actuelle.
     func comparison() -> [(text: String, trend: Int)] {
         guard let player, entries.indices.contains(selection) else { return [] }
         let id = entries[selection].id
-        let worn = player.preview(weaponID: player.equippedWeaponID,
+        let wornWeapon = player.equippedWeapon(for: hero)?.id
+        let worn = player.preview(hero: hero, weaponID: wornWeapon,
                                   accessoryID: player.equippedAccessory)
         let candidate = mode == .weapons
-            ? player.preview(weaponID: id, accessoryID: player.equippedAccessory)
-            : player.preview(weaponID: player.equippedWeaponID, accessoryID: id)
+            ? player.preview(hero: hero, weaponID: id, accessoryID: player.equippedAccessory)
+            : player.preview(hero: .kael, weaponID: wornWeapon, accessoryID: id)
         return EquipmentText.comparisons(from: worn, to: candidate)
     }
 
@@ -166,8 +203,10 @@ final class EquipmentPicker {
         nodes.forEach { $0.removeFromParent() }
         nodes.removeAll()
         rows.removeAll()
+        tabs.removeAll()
     }
 
     func register(row: SKShapeNode) { rows.append(row) }
+    func register(tab: SKShapeNode, hero: Hero) { tabs.append((hero, tab)) }
     var rowNodes: [SKShapeNode] { rows }
 }

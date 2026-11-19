@@ -80,6 +80,8 @@ final class PlayerState {
     /// (PlayerState+Equipment).
     var ownedWeapons: Set<String> = []
     var equippedWeaponID: String? = nil
+    /// Arme portée par chaque allié (clé `Hero.rawValue` : lyra, eran).
+    var equippedAllyWeapons: [String: String] = [:]
     var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
     var potions: Int = 0          // max 3
     var aetherShards: Int = 0     // Éclats d'Aether (quête de Lyra, boutique)

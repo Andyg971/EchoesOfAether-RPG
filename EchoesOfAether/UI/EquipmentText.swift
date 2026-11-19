@@ -16,13 +16,17 @@ enum EquipmentText {
         if dodge > 0 { parts.append(String(localized: "equipment.stat.dodgeUp \(dodge)")) }
         if dodge < 0 { parts.append(String(localized: "equipment.stat.dodgeDown \(-dodge)")) }
         if bonus.mpRegen != 0 { parts.append(String(localized: "equipment.stat.mpRegen \(bonus.mpRegen)")) }
+        let spell = percent(bonus.spellPower)
+        if spell != 0 { parts.append(String(localized: "equipment.stat.spellPower \(spell)")) }
+        if bonus.maxMP != 0 { parts.append(String(localized: "equipment.stat.maxMP \(bonus.maxMP)")) }
         return parts.joined(separator: String(localized: "equipment.stat.separator"))
     }
 
-    /// « Rapide · ATQ +17 · … » : style puis bonus (ligne de boutique).
+    /// « Lyra · Sacrée · Sorts +8 % · … » : héros, style puis bonus (boutique).
     static func weaponLine(_ weapon: Weapon) -> String {
-        String(localized: weapon.style.nameKey)
-            + String(localized: "equipment.stat.separator")
+        let separator = String(localized: "equipment.stat.separator")
+        return weapon.hero.displayName + separator
+            + String(localized: weapon.style.nameKey) + separator
             + summary(weapon.bonus)
     }
 
@@ -49,16 +53,23 @@ enum EquipmentText {
             String(localized: "equipment.compare.dodge \(old.dodgePercent) \(new.dodgePercent)"))
         add(old.mpRegen, new.mpRegen,
             String(localized: "equipment.compare.mpRegen \(old.mpRegen) \(new.mpRegen)"))
+        add(old.spellPercent, new.spellPercent,
+            String(localized: "equipment.compare.spellPower \(old.spellPercent) \(new.spellPercent)"))
+        add(old.maxMP, new.maxMP,
+            String(localized: "equipment.compare.maxMP \(old.maxMP) \(new.maxMP)"))
         return out
     }
 
     /// Couleur d'accent du style (étiquette de la ligne).
     static func color(for style: WeaponStyle) -> SKColor {
         switch style {
-        case .blade:      SKColor(red: 0.82, green: 0.85, blue: 0.92, alpha: 1)
-        case .rapier:     Palette.iceBlue
-        case .greatsword: SKColor(red: 0.98, green: 0.55, blue: 0.20, alpha: 1)
-        case .echo:       SKColor(red: 0.74, green: 0.58, blue: 1.00, alpha: 1)
+        case .gauntlets:   SKColor(red: 0.82, green: 0.85, blue: 0.92, alpha: 1)
+        case .wraps:       Palette.iceBlue
+        case .knuckles:    SKColor(red: 0.98, green: 0.55, blue: 0.20, alpha: 1)
+        case .gloves, .arcaneStaff: SKColor(red: 0.74, green: 0.58, blue: 1.00, alpha: 1)
+        case .sacredStaff: SKColor(red: 1.00, green: 0.88, blue: 0.55, alpha: 1)
+        case .crook:       SKColor(red: 0.55, green: 0.90, blue: 0.70, alpha: 1)
+        case .battleStaff: SKColor(red: 0.90, green: 0.62, blue: 0.45, alpha: 1)
         }
     }
 

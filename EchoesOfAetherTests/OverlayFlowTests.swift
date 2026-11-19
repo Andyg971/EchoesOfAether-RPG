@@ -148,14 +148,14 @@ final class OverlayFlowTests: XCTestCase {
         shop.open(title: "Bram", items: gm.bramItems(), player: gm.player) { closed = true }
         XCTAssertTrue(shop.isActive)
 
-        shop.confirmSelection()   // lame de fer, 80 or
+        shop.confirmSelection()   // gantelets de fer, 80 or
         XCTAssertEqual(gm.player.weaponLevel, 1, "l'arme monte d'un cran")
         XCTAssertEqual(gm.player.gold, 20)
 
-        shop.moveSelection(-1)    // rapière de fer, 90 or
+        shop.moveSelection(-1)    // bandelettes de cuir, 90 or
         shop.confirmSelection()
-        XCTAssertFalse(gm.player.ownedWeapons.contains("rapier1"), "trop pauvre : rien n'est vendu")
-        XCTAssertEqual(gm.player.equippedWeaponID, "blade1")
+        XCTAssertFalse(gm.player.ownedWeapons.contains("wraps1"), "trop pauvre : rien n'est vendu")
+        XCTAssertEqual(gm.player.equippedWeaponID, "gauntlets1")
         XCTAssertEqual(gm.player.gold, 20)
 
         shop.dismiss()
@@ -227,8 +227,8 @@ final class OverlayFlowTests: XCTestCase {
         prepare()
         defer { cleanup() }
         let player = PlayerState()
-        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "rapier1")))
-        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "blade1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "wraps1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "gauntlets1")))
         let inventory = InventoryOverlay()
         inventory.attach(to: scene)
         var closed = false
@@ -238,11 +238,11 @@ final class OverlayFlowTests: XCTestCase {
         XCTAssertEqual(inventory.cursor, .weapon)
         inventory.confirmSelection()
         XCTAssertTrue(inventory.picker.isOpen)
-        XCTAssertEqual(inventory.picker.entries.map(\.id), ["blade1", "rapier1"])
+        XCTAssertEqual(inventory.picker.entries.map(\.id), ["gauntlets1", "wraps1"])
 
-        inventory.moveSelection(-1)
+        inventory.moveSelection(dy: -1)
         inventory.confirmSelection()
-        XCTAssertEqual(player.equippedWeaponID, "rapier1")
+        XCTAssertEqual(player.equippedWeaponID, "wraps1")
 
         inventory.back()
         XCTAssertFalse(inventory.picker.isOpen, "B ferme d'abord le sélecteur")
@@ -251,11 +251,50 @@ final class OverlayFlowTests: XCTestCase {
         XCTAssertTrue(closed)
     }
 
+    func test_inventory_pickerTabsSwitchHero() throws {
+        prepare()
+        defer { cleanup() }
+        let player = PlayerState()
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "gauntlets1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "sacred1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "crook1")))
+        let inventory = InventoryOverlay()
+        inventory.attach(to: scene)
+        inventory.open(player: player) {}
+        inventory.confirmSelection()
+        XCTAssertEqual(inventory.picker.heroes, [.kael, .lyra])
+        XCTAssertEqual(inventory.picker.hero, .kael)
+
+        inventory.moveSelection(dx: 1, dy: 0)
+        XCTAssertEqual(inventory.picker.hero, .lyra)
+        XCTAssertEqual(inventory.picker.entries.map(\.id), ["sacred1", "crook1"])
+        inventory.moveSelection(dy: -1)
+        inventory.confirmSelection()
+        XCTAssertEqual(player.equippedWeapon(for: .lyra)?.id, "sacred1")
+        XCTAssertEqual(player.equippedWeaponID, "gauntlets1", "Kael garde ses poings")
+    }
+
+    func test_bigOverlays_stopBeforeTheABButtons() {
+        let size = CGSize(width: 852, height: 393)
+        let range = GameManager.overlayContentRange(in: size, safeLeft: 59, safeRight: 59)
+        let buttonsLeft = size.width - 59 - 58 - 27
+        XCTAssertLessThan(range.upperBound, buttonsLeft, "le bouton A/B reste hors du panneau")
+
+        prepare()
+        defer { cleanup() }
+        let inventory = InventoryOverlay()
+        inventory.attach(to: scene)
+        inventory.layout(in: size, contentRange: range)
+        let half = inventory.panelWidth / 2 * inventory.root.xScale
+        XCTAssertLessThanOrEqual(inventory.root.position.x + half, range.upperBound + 0.5)
+        XCTAssertGreaterThanOrEqual(inventory.root.position.x - half, range.lowerBound - 0.5)
+    }
+
     func test_inventory_singleWeapon_offersNoPicker() throws {
         prepare()
         defer { cleanup() }
         let player = PlayerState()
-        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "blade1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "gauntlets1")))
         let inventory = InventoryOverlay()
         inventory.attach(to: scene)
         inventory.open(player: player) {}

@@ -24,11 +24,12 @@ extension InventoryOverlay {
     /// Le bouton A a-t-il quelque chose à faire ?
     var canConfirm: Bool { isActive && (picker.isOpen || cursor != nil) }
 
-    /// Une ligne n'est actionnable que si elle offre un vrai choix : deux
-    /// armes au moins, deux accessoires au moins, une potion buvable.
+    /// Une ligne n'est actionnable que si elle offre quelque chose : deux
+    /// armes au moins dans le groupe (poings de Kael, bâtons de Lyra et
+    /// d'Eran), deux accessoires au moins, une potion buvable.
     func installActions(player: PlayerState, rowY: [InventoryAction: CGFloat]) {
         actions = []
-        if player.arsenal.count >= 2 { actions.append(.weapon) }
+        if player.hasWeaponChoice { actions.append(.weapon) }
         if player.ownedAccessoryList.count >= 2 { actions.append(.accessory) }
         if potionUsable { actions.append(.potion) }
 
@@ -102,13 +103,15 @@ extension InventoryOverlay {
 
     // MARK: - Curseur
 
-    /// Joystick haut/bas : parcourt les lignes actionnables (ou le sélecteur).
-    func moveSelection(_ dy: Int) {
-        guard isActive, dy != 0 else { return }
+    /// Joystick : haut/bas parcourt les lignes actionnables (ou le
+    /// sélecteur) ; gauche/droite change de héros dans le sélecteur.
+    func moveSelection(dx: Int = 0, dy: Int) {
+        guard isActive else { return }
         if picker.isOpen {
-            picker.moveSelection(dy)
+            if dx != 0 { picker.switchHero(dx) } else { picker.moveSelection(dy) }
             return
         }
+        guard dy != 0 else { return }
         guard !actions.isEmpty else { return }
         let index = cursor.flatMap { actions.firstIndex(of: $0) } ?? 0
         cursor = actions[(index - dy + actions.count) % actions.count]

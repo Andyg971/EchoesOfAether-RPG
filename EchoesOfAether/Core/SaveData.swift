@@ -19,6 +19,7 @@ struct NewGamePlusSeed {
     /// Arsenal et accessoires : achetés une fois, gardés en New Game+.
     let ownedWeapons: [String]?
     let equippedWeapon: String?
+    let equippedAllyWeapons: [String: String]
     let ownedAccessories: [String]
     let equippedAccessory: String?
 
@@ -35,6 +36,7 @@ struct NewGamePlusSeed {
         skillRanks = data.skillRanks ?? [:]
         ownedWeapons = data.ownedWeapons
         equippedWeapon = data.equippedWeapon
+        equippedAllyWeapons = data.equippedAllyWeapons ?? [:]
         ownedAccessories = data.ownedAccessories ?? []
         equippedAccessory = data.equippedAccessory
     }
@@ -45,7 +47,7 @@ struct NewGamePlusSeed {
         weaponLevel = 2; armorLevel = 2; potions = 3; aetherShards = 5
         newGamePlus = max(1, tier)
         skillRanks = [:]
-        ownedWeapons = nil; equippedWeapon = nil
+        ownedWeapons = nil; equippedWeapon = nil; equippedAllyWeapons = [:]
         ownedAccessories = []; equippedAccessory = nil
     }
 }
@@ -94,6 +96,8 @@ struct SaveData: Codable {
     // `weaponLevel` donne alors la lame portée.
     let ownedWeapons: [String]?
     let equippedWeapon: String?
+    /// Bâton porté par Lyra et par Eran (clé : lyra, eran).
+    let equippedAllyWeapons: [String: String]?
     let ownedAccessories: [String]?
     let talkedToSage: Bool
     let talkedToChild: Bool

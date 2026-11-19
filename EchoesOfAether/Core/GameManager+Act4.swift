@@ -165,6 +165,7 @@ extension GameManager {
                 resonanceTotal += resonance
                 player.gold += gold
                 player.act4DevourersDefeated = true
+                announceStoryWeapons(player.grantStoryWeapons())
                 syncGold()
                 AudioEngine.shared.playGoldGain()
                 hud.resonanceValue = resonanceTotal

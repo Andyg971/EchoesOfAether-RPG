@@ -1,29 +1,30 @@
 import SpriteKit
 
-// EquipmentPicker — cadre, lignes, badge ÉQUIPÉ et pied de comparaison.
+// EquipmentPicker — cadre, onglets des héros, lignes, badge ÉQUIPÉ et pied
+// de comparaison.
 extension EquipmentPicker {
 
-    private var panelTop: CGFloat { Self.panelSize.height / 2 }
-    private var rowWidth: CGFloat { Self.panelSize.width - 32 }
-    private var firstRowY: CGFloat { panelTop - 72 }
+    private var panelTop: CGFloat { panelSize.height / 2 }
+    private var rowWidth: CGFloat { panelSize.width - 32 }
+    private var showsTabs: Bool { mode == .weapons && heroes.count > 1 }
+    private var firstRowY: CGFloat { panelTop - (showsTabs ? 104 : 76) }
+    private static let violetEdge = SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 1)
 
     func build() {
         clear()
         track(scrim())
 
         let panel = SKShapeNode()
-        PixelUI.stylePanel(panel, size: Self.panelSize,
+        PixelUI.stylePanel(panel, size: panelSize,
                            fill: SKColor(red: 0.05, green: 0.04, blue: 0.09, alpha: 0.98),
-                           accent: SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 1))
+                           accent: Self.violetEdge)
         track(panel)
 
-        let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-        titleLabel.text = title
-        titleLabel.fontSize = 24
-        titleLabel.fontColor = Palette.aether
-        titleLabel.horizontalAlignmentMode = .center
-        titleLabel.position = CGPoint(x: 0, y: panelTop - 34)
+        let titleLabel = label(title, size: 24, color: Palette.aether,
+                               align: .center, at: CGPoint(x: 0, y: panelTop - 28))
         track(titleLabel)
+
+        if showsTabs { buildTabs() }
 
         for (index, entry) in entries.enumerated() {
             let row = makeRow(entry)
@@ -32,14 +33,10 @@ extension EquipmentPicker {
             register(row: row)
         }
 
-        let hint = SKLabelNode(fontNamed: PixelUI.uiFont)
-        hint.text = String(localized: "equipment.picker.hint")
-        hint.fontSize = 15
-        hint.fontColor = PixelUI.gold
-        hint.horizontalAlignmentMode = .center
-        hint.verticalAlignmentMode = .center
-        hint.position = CGPoint(x: 0, y: -panelTop + 20)
-        track(hint)
+        let hintKey: LocalizedStringResource = showsTabs
+            ? "equipment.picker.hintHeroes" : "equipment.picker.hint"
+        track(label(String(localized: hintKey), size: 15, color: PixelUI.gold,
+                    align: .center, at: CGPoint(x: 0, y: -panelTop + 20)))
 
         refreshSelection()
     }
@@ -47,10 +44,32 @@ extension EquipmentPicker {
     /// Voile sombre sur tout l'inventaire : le sélecteur prend le focus.
     private func scrim() -> SKNode {
         let veil = SKSpriteNode(color: SKColor(red: 0.01, green: 0.01, blue: 0.03, alpha: 0.72),
-                                size: CGSize(width: InventoryOverlay.panelSize.width + 8,
-                                             height: InventoryOverlay.panelSize.height + 8))
+                                size: CGSize(width: inventorySize.width + 8,
+                                             height: inventorySize.height + 8))
         veil.zPosition = -1
         return veil
+    }
+
+    /// Un onglet pixel par héros ; celui affiché est doré.
+    private func buildTabs() {
+        let size = CGSize(width: 108, height: 28)
+        let spacing: CGFloat = 12
+        let total = CGFloat(heroes.count) * size.width + CGFloat(heroes.count - 1) * spacing
+        for (index, tabHero) in heroes.enumerated() {
+            let selected = tabHero == hero
+            let tab = SKShapeNode()
+            PixelUI.stylePanel(tab, size: size,
+                               fill: selected ? Palette.shadowWarm
+                                   : SKColor(red: 0.07, green: 0.06, blue: 0.11, alpha: 1),
+                               accent: selected ? PixelUI.gold : Self.violetEdge.withAlphaComponent(0.6))
+            tab.position = CGPoint(x: -total / 2 + size.width / 2 + CGFloat(index) * (size.width + spacing),
+                                   y: panelTop - 62)
+            tab.addChild(label(tabHero.displayName, size: 17,
+                               color: selected ? .white : SKColor(white: 0.55, alpha: 1),
+                               align: .center, at: .zero))
+            track(tab)
+            register(tab: tab, hero: tabHero)
+        }
     }
 
     private func makeRow(_ entry: Entry) -> SKShapeNode {
@@ -86,7 +105,7 @@ extension EquipmentPicker {
     func refreshSelection() {
         for (index, row) in rowNodes.enumerated() {
             let selected = index == selection
-            row.strokeColor = selected ? PixelUI.gold : SKColor(red: 0.45, green: 0.35, blue: 0.75, alpha: 0.6)
+            row.strokeColor = selected ? PixelUI.gold : Self.violetEdge.withAlphaComponent(0.6)
             row.lineWidth = selected ? 2.5 : 1.5
         }
         root.childNode(withName: "comparison")?.removeFromParent()
@@ -97,9 +116,8 @@ extension EquipmentPicker {
 
         let changes = comparison()
         guard !changes.isEmpty else {
-            let worn = String(localized: "equipment.picker.worn")
-            footer.addChild(label(worn, size: 16, color: SKColor(white: 0.55, alpha: 1),
-                                  align: .center, at: .zero))
+            footer.addChild(label(String(localized: "equipment.picker.worn"), size: 16,
+                                  color: SKColor(white: 0.55, alpha: 1), align: .center, at: .zero))
             return
         }
         let labels = changes.map { change in

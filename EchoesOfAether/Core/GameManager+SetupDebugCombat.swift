@@ -11,7 +11,7 @@ extension GameManager {
         // chargement (à combiner avec --zone-*) pour audit visuel de l'UI.
         // Noms : pause, options, skills, inventory, questlog, lore, tutorial,
         // levelup, death, shop, credits, act2end, bestiary, paywall,
-        // equipment, accessories, arsenal.
+        // equipment, accessories, arsenal, staffs.
         if let idx = launchArguments.firstIndex(of: "--overlay-test"),
            launchArguments.indices.contains(idx + 1) {
             let name = launchArguments[idx + 1]

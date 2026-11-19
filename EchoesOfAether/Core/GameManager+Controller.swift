@@ -56,6 +56,7 @@ extension GameManager {
 
     private func shiftControllerTab(_ step: Int) {
         if lore.isActive { lore.navigateTabs(step) }
+        if inventory.picker.isOpen { inventory.picker.switchHero(step) }
     }
 
     /// A : prioritaire sur les couches qui n'ont qu'un geste tactile, puis

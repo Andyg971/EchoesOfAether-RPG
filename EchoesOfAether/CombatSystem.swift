@@ -69,6 +69,9 @@ let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     final class AllyState {
         var combatant: Combatant
         let kind: CombatAllyKind
+        /// Bonus du bâton porté (Lyra : bâton de prêtresse, Eran : bâton de
+        /// sorcier). Appliqué à l'attaque, aux sorts et à la réserve de Magie.
+        let weaponBonus: EquipmentBonus
         var sprite: SKNode?
         var home: CGPoint = .zero
         let hpBack = SKShapeNode()
@@ -79,13 +82,14 @@ let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
         let mpFill = SKShapeNode()
         let mpLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
 
-        init(kind: CombatAllyKind, level: Int) {
+        init(kind: CombatAllyKind, level: Int, weaponBonus: EquipmentBonus = EquipmentBonus()) {
             self.kind = kind
+            self.weaponBonus = weaponBonus
             let hp = kind.maxHP(level: level)
             // Les alliés ont leur propre réserve de Magie. Elle dépend de ce
             // qu'ils sont : Lyra canalise le sacré à longueur de journée,
-            // Eran est un homme d'acier — sa magie tient dans sa lame.
-            let mp = kind.maxMP(level: level)
+            // Eran est un homme d'acier — sa magie tient dans son bâton.
+            let mp = kind.maxMP(level: level) + weaponBonus.maxMP
             self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp,
                                        mp: mp, maxMP: mp)
         }

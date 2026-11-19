@@ -11308,6 +11308,22 @@
         }
       }
     },
+    "equipment.compare.maxMP %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max MP %1$lld → %2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magie max %1$lld → %2$lld"
+          }
+        }
+      }
+    },
     "equipment.compare.mpRegen %lld %lld" : {
       "localizations" : {
         "en" : {
@@ -11336,6 +11352,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Entaille %1$lld → %2$lld"
+          }
+        }
+      }
+    },
+    "equipment.compare.spellPower %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spells %1$lld%% → %2$lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sorts %1$lld %% → %2$lld %%"
           }
         }
       }
@@ -11388,6 +11420,22 @@
         }
       }
     },
+    "equipment.picker.hintHeroes" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Equip    ← → · Heroes    B · Back"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Équiper    ← → · Héros    B · Retour"
+          }
+        }
+      }
+    },
     "equipment.picker.weapons" : {
       "localizations" : {
         "en" : {
@@ -11416,6 +11464,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Déjà équipé"
+          }
+        }
+      }
+    },
+    "equipment.reward.eran %@" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eran's staffs: %@"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bâtons d'Eran : %@"
           }
         }
       }
@@ -11500,6 +11564,22 @@
         }
       }
     },
+    "equipment.stat.maxMP %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max MP +%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magie max +%lld"
+          }
+        }
+      }
+    },
     "equipment.stat.mpRegen %lld" : {
       "localizations" : {
         "en" : {
@@ -11548,7 +11628,39 @@
         }
       }
     },
-    "equipment.style.blade" : {
+    "equipment.stat.spellPower %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Spells +%lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sorts +%lld %%"
+          }
+        }
+      }
+    },
+    "equipment.style.arcane" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arcane"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arcane"
+          }
+        }
+      }
+    },
+    "equipment.style.balanced" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -11564,23 +11676,23 @@
         }
       }
     },
-    "equipment.style.echo" : {
+    "equipment.style.enduring" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arcane"
+            "value" : "Enduring"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Arcane"
+            "value" : "Endurante"
           }
         }
       }
     },
-    "equipment.style.greatsword" : {
+    "equipment.style.heavy" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -11596,7 +11708,39 @@
         }
       }
     },
-    "equipment.style.rapier" : {
+    "equipment.style.holy" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Holy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sacrée"
+          }
+        }
+      }
+    },
+    "equipment.style.martial" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Martial"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Martiale"
+          }
+        }
+      }
+    },
+    "equipment.style.swift" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -17257,194 +17401,386 @@
         }
       }
     },
-    "weapon.blade1.name" : {
+    "weapon.arcane1.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iron Blade"
+            "value" : "Sorcerer's Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame de fer"
+            "value" : "Bâton de sorcier"
           }
         }
       }
     },
-    "weapon.blade2.name" : {
+    "weapon.arcane2.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runic Blade"
+            "value" : "Arcane Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame runique"
+            "value" : "Bâton des arcanes"
           }
         }
       }
     },
-    "weapon.blade3.name" : {
+    "weapon.arcane3.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aetherite Blade"
+            "value" : "Threshold Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame d'Aetherite"
+            "value" : "Bâton du Seuil"
           }
         }
       }
     },
-    "weapon.echo1.name" : {
+    "weapon.battle1.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Whispering Blade"
+            "value" : "Iron-Shod Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame des Murmures"
+            "value" : "Bâton ferré"
           }
         }
       }
     },
-    "weapon.echo2.name" : {
+    "weapon.battle2.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Echoing Blade"
+            "value" : "Runic Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame des Échos"
+            "value" : "Bâton runique"
           }
         }
       }
     },
-    "weapon.echo3.name" : {
+    "weapon.battle3.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blade of Memories"
+            "value" : "Aetherite Staff"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame des Souvenirs"
+            "value" : "Bâton d'Aetherite"
           }
         }
       }
     },
-    "weapon.greatsword1.name" : {
+    "weapon.crook1.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iron Greatsword"
+            "value" : "Pilgrim's Crook"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Espadon de fer"
+            "value" : "Crosse de pèlerin"
           }
         }
       }
     },
-    "weapon.greatsword2.name" : {
+    "weapon.crook2.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runic Greatsword"
+            "value" : "Runic Crook"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Espadon runique"
+            "value" : "Crosse runique"
           }
         }
       }
     },
-    "weapon.greatsword3.name" : {
+    "weapon.crook3.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aetherite Greatsword"
+            "value" : "Aetherite Crook"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Espadon d'Aetherite"
+            "value" : "Crosse d'Aetherite"
           }
         }
       }
     },
-    "weapon.rapier1.name" : {
+    "weapon.gauntlets1.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Iron Rapier"
+            "value" : "Iron Gauntlets"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapière de fer"
+            "value" : "Gantelets de fer"
           }
         }
       }
     },
-    "weapon.rapier2.name" : {
+    "weapon.gauntlets2.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runic Rapier"
+            "value" : "Runic Gauntlets"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapière runique"
+            "value" : "Gantelets runiques"
           }
         }
       }
     },
-    "weapon.rapier3.name" : {
+    "weapon.gauntlets3.name" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aetherite Rapier"
+            "value" : "Aetherite Gauntlets"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Rapière d'Aetherite"
+            "value" : "Gantelets d'Aetherite"
+          }
+        }
+      }
+    },
+    "weapon.gloves1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whispering Gloves"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gants des Murmures"
+          }
+        }
+      }
+    },
+    "weapon.gloves2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echoing Gloves"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gants des Échos"
+          }
+        }
+      }
+    },
+    "weapon.gloves3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gloves of Memories"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gants des Souvenirs"
+          }
+        }
+      }
+    },
+    "weapon.knuckles1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron Knuckles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poings de fer"
+          }
+        }
+      }
+    },
+    "weapon.knuckles2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Knuckles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poings runiques"
+          }
+        }
+      }
+    },
+    "weapon.knuckles3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aetherite Knuckles"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Poings d'Aetherite"
+          }
+        }
+      }
+    },
+    "weapon.sacred1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Priestess Staff"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bâton de prêtresse"
+          }
+        }
+      }
+    },
+    "weapon.sacred2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blessed Staff"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bâton béni"
+          }
+        }
+      }
+    },
+    "weapon.sacred3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dawn Staff"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bâton de l'Aube"
+          }
+        }
+      }
+    },
+    "weapon.wraps1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leather Wraps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandelettes de cuir"
+          }
+        }
+      }
+    },
+    "weapon.wraps2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Wraps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandelettes runiques"
+          }
+        }
+      }
+    },
+    "weapon.wraps3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aetherite Wraps"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Bandelettes d'Aetherite"
           }
         }
       }

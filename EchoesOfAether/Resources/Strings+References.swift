@@ -44,6 +44,11 @@ private enum _StringsReferences {
     static let compareCrit:        LocalizedStringResource = "equipment.compare.crit %lld %lld"
     static let compareDodge:       LocalizedStringResource = "equipment.compare.dodge %lld %lld"
     static let compareMPRegen:     LocalizedStringResource = "equipment.compare.mpRegen %lld %lld"
+    static let compareSpell:       LocalizedStringResource = "equipment.compare.spellPower %lld %lld"
+    static let compareMaxMP:       LocalizedStringResource = "equipment.compare.maxMP %lld %lld"
+    static let statSpellPower:     LocalizedStringResource = "equipment.stat.spellPower %lld"
+    static let statMaxMP:          LocalizedStringResource = "equipment.stat.maxMP %lld"
+    static let rewardEran:         LocalizedStringResource = "equipment.reward.eran %@"
 
     // Combat — combos
     static let comboHit:           LocalizedStringResource = "combat.combo.hit %lld"

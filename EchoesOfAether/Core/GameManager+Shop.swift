@@ -7,13 +7,18 @@ extension GameManager {
     // MARK: - Shop Items
 
     /// Forge de Bram : pour chaque style d'arme, seul le PALIER SUIVANT est
-    /// en vitrine (l'étal reste lisible et la progression claire). Acheter
-    /// une arme la range dans l'arsenal et la fait porter aussitôt ; on en
-    /// change ensuite depuis l'inventaire. Palier 3 (Aetherite) : gold sink.
+    /// en vitrine (l'étal reste lisible et la progression claire). Armes de
+    /// poing pour Kael ; bâtons de prêtresse pour Lyra tant qu'elle vit. Les
+    /// bâtons d'Eran ne se vendent pas : il les apporte (Acte III).
+    /// Acheter une arme la fait porter aussitôt ; on en change ensuite depuis
+    /// l'inventaire. Palier 3 (Aetherite) : gold sink.
     func bramItems() -> [ShopItem] {
-        var items = WeaponStyle.allCases
+        var heroes: [Hero] = [.kael]
+        if !player.lyraDeceased { heroes.append(.lyra) }
+        var items = heroes
+            .flatMap { EquipmentCatalog.styles(for: $0) }
             .compactMap { player.nextWeapon(for: $0) }
-            .sorted { $0.tier < $1.tier }
+            .filter(\.isSold)
             .map(weaponItem)
 
         let armors: [(name: LocalizedStringResource, price: Int)] = [

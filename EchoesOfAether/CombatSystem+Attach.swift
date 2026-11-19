@@ -76,7 +76,9 @@ let startHP = min(player.currentHP, player.currentMaxHP)
         // Alliés : Lyra via withLyra (compat), composition explicite sinon.
         var kinds = allyKinds
         if kinds.isEmpty, withLyra { kinds = [.lyra] }
-        self.allies = kinds.prefix(2).map { AllyState(kind: $0, level: player.level) }
+        self.allies = kinds.prefix(2).map {
+            AllyState(kind: $0, level: player.level, weaponBonus: player.weaponBonus(for: $0.hero))
+        }
         self.actingAllyIndex = nil
 self.resonance = 0
 self.playerBP = 0

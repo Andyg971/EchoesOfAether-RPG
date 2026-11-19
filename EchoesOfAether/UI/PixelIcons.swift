@@ -9,8 +9,9 @@ enum PixelIcons {
     enum Kind {
         case sword, shield, potion, gem, heart, bolt, darkMoon, coin
         case chat, bag, magnifier, door, skull
-        // Arsenal : un dessin par style d'arme, un par accessoire.
-        case rapier, greatsword, echoBlade
+        // Arsenal : poings de Kael, bâtons de Lyra et d'Eran, accessoires.
+        case fist, gauntlets, wraps, knuckles, echoGloves
+        case priestStaff, crook, sorcererStaff, battleStaff
         case emberTalisman, shadeAmulet, resonanceSeal
     }
 
@@ -212,7 +213,8 @@ enum PixelIcons {
                 "........",
             ], ["W": bone, "D": ironDark])
 
-        case .rapier, .greatsword, .echoBlade,
+        case .fist, .gauntlets, .wraps, .knuckles, .echoGloves,
+             .priestStaff, .crook, .sorcererStaff, .battleStaff,
              .emberTalisman, .shadeAmulet, .resonanceSeal:
             return arsenalSpec(for: kind)
         }
@@ -235,5 +237,10 @@ enum PixelIcons {
     static let violet    = SKColor(red: 0.60, green: 0.40, blue: 0.90, alpha: 1)
     static let violetLight = SKColor(red: 0.82, green: 0.70, blue: 1.00, alpha: 1)
     static let ember     = SKColor(red: 0.98, green: 0.55, blue: 0.20, alpha: 1)
+    static let skin      = SKColor(red: 0.93, green: 0.74, blue: 0.58, alpha: 1)
+    static let skinShade = SKColor(red: 0.70, green: 0.48, blue: 0.36, alpha: 1)
+    static let linen     = SKColor(red: 0.95, green: 0.93, blue: 0.86, alpha: 1)
+    static let ivory     = SKColor(red: 0.96, green: 0.92, blue: 0.80, alpha: 1)
+    static let darkWood  = SKColor(red: 0.30, green: 0.20, blue: 0.14, alpha: 1)
     static let bone      = SKColor(red: 0.92, green: 0.90, blue: 0.82, alpha: 1)
 }

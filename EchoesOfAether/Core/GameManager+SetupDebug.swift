@@ -13,7 +13,9 @@ extension GameManager {
         layoutActionButtons(in: size, safeBottom: safeBottom, safeRight: safeRight)
         dialogue.layout(in: size, safeBottom: safeBottom)
         shop.layout(in: size, safeBottom: safeBottom)
-        inventory.layout(in: size, safeBottom: safeBottom)
+        let contentRange = Self.overlayContentRange(in: size, safeLeft: safeLeft, safeRight: safeRight)
+        inventory.layout(in: size, safeBottom: safeBottom, contentRange: contentRange)
+        options.contentRange = contentRange
         lore.layout(in: size)
         questLog.layout(in: size)
         minimap.layout(in: size, safeBottom: safeBottom, safeLeft: safeLeft)

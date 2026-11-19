@@ -54,20 +54,23 @@ extension GameManager {
                 self?.skills.moveSelection(dx: 0, dy: -1)
             }
         case "inventory": openInventory()
-        case "equipment", "accessories", "arsenal":
-            // Audit : arsenal complet (un palier par style) et les trois
-            // accessoires, sélecteur ouvert sur l'arme ou l'accessoire.
+        case "equipment", "accessories", "arsenal", "staffs":
+            // Audit : arsenal du groupe (poings de Kael, bâtons de Lyra et
+            // d'Eran) et les trois accessoires, sélecteur ouvert.
             player.restoreEquipment(weaponLevel: 0,
-                                    ownedWeapons: ["blade3", "rapier2", "greatsword1", "echo2"],
-                                    equippedWeapon: "blade3",
+                                    ownedWeapons: ["gauntlets3", "wraps2", "knuckles1", "gloves2",
+                                                   "sacred2", "crook1", "arcane1", "battle1"],
+                                    equippedWeapon: "gauntlets3",
+                                    equippedAllyWeapons: ["lyra": "sacred2", "eran": "arcane1"],
                                     ownedAccessories: ["ember", "shade", "resonance"],
                                     equippedAccessory: "ember")
             player.potions = 2
             player.currentHP = player.currentMaxHP / 2
             openInventory()
             guard name != "arsenal" else { break }
-            inventory.perform(name == "equipment" ? .weapon : .accessory)
-            if name == "equipment" { inventory.moveSelection(-1) }
+            inventory.perform(name == "accessories" ? .accessory : .weapon)
+            if name == "equipment" { inventory.moveSelection(dy: -1) }
+            if name == "staffs" { inventory.moveSelection(dx: 1, dy: 0); inventory.moveSelection(dy: -1) }
         case "questlog":  openQuestLog()
         case "lore":      openLore()
         // « tutorial » ou « tutorial:2 » pour ouvrir droit sur un panneau.

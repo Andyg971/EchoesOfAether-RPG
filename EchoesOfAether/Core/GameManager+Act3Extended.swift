@@ -115,6 +115,7 @@ extension GameManager {
                 resonanceTotal += resonance
                 player.gold += gold
                 player.act3ShadesDefeated = true
+                announceStoryWeapons(player.grantStoryWeapons())
                 syncGold()
                 AudioEngine.shared.playGoldGain()
                 hud.resonanceValue = resonanceTotal
@@ -180,6 +181,8 @@ extension GameManager {
                 dialogue.start(PrototypeContent.act3EranJoinDialogue) { [weak self] in
                     guard let self else { return }
                     AudioEngine.shared.playQuestComplete()
+                    // Eran combat avec ses propres bâtons de sorcier.
+                    announceStoryWeapons(player.grantStoryWeapons())
                     saveGame()
                     transition(to: .exploration)
                 }

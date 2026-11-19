@@ -89,6 +89,17 @@ extension GameManager {
         bButton.position = CGPoint(x: x, y: safeBottom + 128)
     }
 
+    /// Bande horizontale où un grand panneau (inventaire, options) peut
+    /// s'étendre sans passer sous les boutons A/B, placés hors des marges
+    /// système à droite (cf. `layoutActionButtons`). Le bouton A, le plus
+    /// large (54 pt), fixe le bord.
+    static func overlayContentRange(in size: CGSize, safeLeft: CGFloat,
+                                    safeRight: CGFloat) -> ClosedRange<CGFloat> {
+        let lower = safeLeft + 8
+        let buttonsLeft = size.width - safeRight - 58 - 27
+        return lower...max(lower + 300, buttonsLeft - 8)
+    }
+
     /// Un overlay fermable par B est-il ouvert ?
     var dismissableOverlayActive: Bool {
         inventory.isActive || shop.isActive || lore.isActive
@@ -205,7 +216,7 @@ extension GameManager {
         if skills.isActive { skills.moveSelection(dx: dx, dy: dy); return }
         if pause.isActive { pause.moveSelection(dy); return }
         if shop.isActive { shop.moveSelection(dy); return }
-        if inventory.isActive { inventory.moveSelection(dy); return }
+        if inventory.isActive { inventory.moveSelection(dx: dx, dy: dy); return }
         if lore.isActive {
             if dx != 0 { lore.navigateTabs(dx) } else { lore.scroll(dy) }
             return

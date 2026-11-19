@@ -29,6 +29,7 @@ extension PlayerState {
             equippedAccessory: equippedAccessory,
             ownedWeapons: ownedWeapons.sorted(),
             equippedWeapon: equippedWeaponID,
+            equippedAllyWeapons: equippedAllyWeapons,
             ownedAccessories: ownedAccessories.sorted(),
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
@@ -70,6 +71,7 @@ extension PlayerState {
         restoreEquipment(weaponLevel: data.weaponLevel,
                          ownedWeapons: data.ownedWeapons,
                          equippedWeapon: data.equippedWeapon,
+                         equippedAllyWeapons: data.equippedAllyWeapons,
                          ownedAccessories: data.ownedAccessories,
                          equippedAccessory: data.equippedAccessory)
         armorLevel = data.armorLevel
@@ -138,6 +140,8 @@ extension PlayerState {
         act4BossDefeated = data.act4BossDefeated ?? false
         act4EndingChoice = data.act4EndingChoice
         newGamePlus = data.newGamePlus ?? 0
+        // Sauvegardes d'avant les bâtons d'Eran : il les récupère au chargement.
+        grantStoryWeapons()
         currentHP = currentMaxHP   // toujours plein au chargement
     }
 
@@ -151,6 +155,7 @@ extension PlayerState {
         restoreEquipment(weaponLevel: seed.weaponLevel,
                          ownedWeapons: seed.ownedWeapons,
                          equippedWeapon: seed.equippedWeapon,
+                         equippedAllyWeapons: seed.equippedAllyWeapons,
                          ownedAccessories: seed.ownedAccessories,
                          equippedAccessory: seed.equippedAccessory)
         armorLevel = seed.armorLevel

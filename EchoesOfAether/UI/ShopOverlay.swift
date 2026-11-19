@@ -2,33 +2,57 @@ import SpriteKit
 
 struct ShopItem {
     let nameKey: LocalizedStringResource
-    let descKey: LocalizedStringResource
+    /// Ligne sous le nom (description localisée)…
+    var descKey: LocalizedStringResource? = nil
     let price: Int
     /// Vignette pixel art affichée à gauche de la ligne (arme, potion…).
     var icon: PixelIcons.Kind = .bag
+    /// …ou texte déjà composé (stats générées du catalogue), prioritaire.
+    var detail: String? = nil
     let canBuy: (PlayerState) -> Bool
     let onBuy: (PlayerState) -> Void
+
+    var descriptionText: String {
+        if let detail { return detail }
+        if let descKey { return String(localized: descKey) }
+        return ""
+    }
 }
 
 @MainActor
 final class ShopOverlay {
-    private let root = SKNode()
+    /// Panneau PAYSAGE : assez large pour une ligne de stats complète sous
+    /// chaque article. L'ancien 260 pt laissait les descriptions déborder
+    /// du cadre et la cinquième ligne passer sous le bouton Fermer.
+    static let panelSize = CGSize(width: 520, height: 330)
+    static let rowHeight: CGFloat = 46
+    /// Haut de la liste sous le titre et l'or, et place réservée au bouton.
+    static let listTopInset: CGFloat = 72
+    static let listBottomInset: CGFloat = 58
+
+    let root = SKNode()
     private let panel = SKShapeNode()
     private let titleLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
     private let goldLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-    private let closeButton = SKShapeNode(rectOf: CGSize(width: 72, height: 28))
-    private var itemNodes: [SKNode] = []
+    let closeButton = SKShapeNode(rectOf: CGSize(width: 100, height: 32))
+    var itemNodes: [SKNode] = []
 
-    private var items: [ShopItem] = []
-    private var selection = 0          // curseur (contrôles classiques)
-    private var playerState: PlayerState?
+    var items: [ShopItem] = []
+    var selection = 0          // curseur (contrôles classiques)
+    /// Premier article visible : la liste défile quand le curseur sort.
+    var scrollOffset = 0
+    var playerState: PlayerState?
     private var completion: (() -> Void)?
 
-    private var panelWidth: CGFloat = 240
-    private var panelHeight: CGFloat = 300
-    private var safeBottom: CGFloat = 0
+    var panelWidth: CGFloat = ShopOverlay.panelSize.width
+    var panelHeight: CGFloat = ShopOverlay.panelSize.height
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
+
+    /// Nombre de lignes qui tiennent entre l'en-tête et le bouton Fermer.
+    var visibleRowCount: Int {
+        max(1, Int((panelHeight - Self.listTopInset - Self.listBottomInset) / Self.rowHeight))
+    }
 
     func attach(to scene: SKScene) {
         root.zPosition = 1_100
@@ -37,12 +61,12 @@ final class ShopOverlay {
 
         root.addChild(panel)
 
-        titleLabel.fontSize = 18
+        titleLabel.fontSize = 24
         titleLabel.fontColor = SKColor(red: 0.90, green: 0.75, blue: 0.35, alpha: 1)
         titleLabel.horizontalAlignmentMode = .center
         root.addChild(titleLabel)
 
-        goldLabel.fontSize = 13
+        goldLabel.fontSize = 16
         goldLabel.fontColor = SKColor(red: 0.90, green: 0.80, blue: 0.30, alpha: 1)
         goldLabel.horizontalAlignmentMode = .center
         root.addChild(goldLabel)
@@ -51,9 +75,8 @@ final class ShopOverlay {
     }
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
-        self.safeBottom = safeBottom
-        panelWidth = min(260, max(200, size.width * 0.35))
-        panelHeight = min(320, max(220, size.height * 0.65))
+        panelWidth = min(Self.panelSize.width, max(320, size.width - 160))
+        panelHeight = Self.panelSize.height
         root.position = CGPoint(x: size.width / 2, y: (size.height + safeBottom) / 2)
 
         // Cadre pixel SNES : coins carrés, double bordure, zéro glow.
@@ -61,12 +84,13 @@ final class ShopOverlay {
                            fill: Palette.nightBlack.withAlphaComponent(0.97),
                            accent: Palette.goldDark)
 
-        titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 24)
-        goldLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 42)
-        closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 22)
+        titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 30)
+        goldLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 52)
+        closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 28)
 
-        // iPad : agrandit l'overlay (root déjà centré → simple mise à l'échelle).
-        UIScale.scaleCentered(root, sceneSize: size)
+        // Réduit le panneau s'il ne tient pas en hauteur, l'agrandit sur iPad.
+        root.setScale(UIScale.fittingFactor(for: size, contentHeight: panelHeight + 12))
+        if isActive { refresh() }
     }
 
     func open(title: String, items: [ShopItem], player: PlayerState, completion: @escaping () -> Void) {
@@ -75,6 +99,7 @@ final class ShopOverlay {
         self.completion = completion
         titleLabel.text = title
         selection = 0
+        scrollOffset = 0
         root.isHidden = false
         AudioEngine.shared.playShopOpen()
         refresh()
@@ -85,20 +110,7 @@ final class ShopOverlay {
     /// Joystick haut/bas : déplace le curseur sur les articles.
     func moveSelection(_ dy: Int) {
         guard isActive, !items.isEmpty else { return }
-        selection = (selection - dy + items.count) % items.count
-        HapticsEngine.light()
-        AudioEngine.shared.playStep()
-        refreshSelectionHighlight()
-        announceSelection()
-    }
-
-    /// VoiceOver : annonce l'article sous le curseur (nom + prix).
-    private func announceSelection() {
-        guard items.indices.contains(selection) else { return }
-        let item = items[selection]
-        let name = String(localized: item.nameKey)
-        let price = String(localized: "shop.price \(item.price)")
-        AccessibilitySettings.announce("\(name). \(price)")
+        select((selection - dy + items.count) % items.count)
     }
 
     /// Bouton A : achète l'article sélectionné (si achetable).
@@ -118,147 +130,89 @@ final class ShopOverlay {
         showPurchaseToast()
     }
 
-    /// Toast « Acheté ! » vert, bref, après un achat réussi.
-    private func showPurchaseToast() {
-        root.childNode(withName: "purchaseToast")?.removeFromParent()
-        let toast = SKLabelNode(fontNamed: PixelUI.uiFont)
-        toast.name = "purchaseToast"
-        toast.text = String(localized: "shop.purchased")
-        toast.fontSize = 16
-        toast.fontColor = SKColor(red: 0.55, green: 0.92, blue: 0.58, alpha: 1)
-        toast.verticalAlignmentMode = .center
-        toast.horizontalAlignmentMode = .center
-        toast.position = CGPoint(x: 0, y: panelHeight / 2 - 58)
-        toast.zPosition = 20
-        toast.setScale(0.6)
-        toast.alpha = 0
-        root.addChild(toast)
-        toast.run(.sequence([
-            .group([.fadeIn(withDuration: 0.12),
-                    .scale(to: 1.0, duration: 0.16)]),
-            .wait(forDuration: 0.7),
-            .group([.fadeOut(withDuration: 0.3),
-                    .moveBy(x: 0, y: 10, duration: 0.3)]),
-            .removeFromParent()
-        ]))
-    }
-
-    private func refreshSelectionHighlight() {
-        for node in itemNodes {
-            guard let row = node as? SKShapeNode,
-                  let idx = row.userData?["index"] as? Int else { continue }
-            let selected = idx == selection
-            row.lineWidth = selected ? 2.5 : 1.5
-            if selected {
-                row.strokeColor = PixelUI.gold
-                row.setScale(1.02)
-            } else {
-                row.setScale(1.0)
-            }
-        }
-    }
-
-    /// Contrôles classiques : le panneau absorbe le tap. Navigation au
-    /// joystick, achat au bouton A, fermeture au bouton B.
+    /// Toucher une ligne la sélectionne ; toucher la ligne déjà sélectionnée
+    /// l'achète. Le bouton Fermer ferme. Le panneau absorbe tous les taps.
     func handleTap(at point: CGPoint, in scene: SKScene) -> Bool {
-        isActive
+        guard isActive else { return false }
+        let local = root.convert(point, from: scene)
+        if closeButton.contains(local) {
+            HapticsEngine.light()
+            close()
+            return true
+        }
+        for node in itemNodes {
+            guard let row = node as? SKShapeNode, row.contains(local),
+                  let index = row.userData?["index"] as? Int else { continue }
+            if index == selection {
+                confirmSelection()
+            } else {
+                select(index)
+            }
+            return true
+        }
+        return true
     }
+
+    /// Bouton B : fermeture programmée (contrôles classiques).
+    func dismiss() { close() }
 
     // MARK: - Private
 
+    private func select(_ index: Int) {
+        selection = index
+        HapticsEngine.light()
+        AudioEngine.shared.playStep()
+        if scrollToSelection() {
+            refresh()
+        } else {
+            refreshSelectionHighlight()
+        }
+        announceSelection()
+    }
+
+    /// Fait défiler la liste pour garder le curseur visible. Vrai si la
+    /// fenêtre a bougé (il faut alors reconstruire les lignes).
+    @discardableResult
+    func scrollToSelection() -> Bool {
+        let previous = scrollOffset
+        let visible = visibleRowCount
+        if selection < scrollOffset { scrollOffset = selection }
+        if selection >= scrollOffset + visible { scrollOffset = selection - visible + 1 }
+        scrollOffset = min(max(0, scrollOffset), max(0, items.count - visible))
+        return scrollOffset != previous
+    }
+
+    /// VoiceOver : annonce l'article sous le curseur (nom + prix).
+    private func announceSelection() {
+        guard items.indices.contains(selection) else { return }
+        let item = items[selection]
+        let name = String(localized: item.nameKey)
+        let price = String(localized: "shop.price \(item.price)")
+        AccessibilitySettings.announce("\(name). \(price)")
+    }
+
     private func setupCloseButton() {
-        closeButton.fillColor = SKColor(red: 0.20, green: 0.12, blue: 0.08, alpha: 1)
-        closeButton.strokeColor = SKColor(red: 0.60, green: 0.45, blue: 0.20, alpha: 0.8)
-        closeButton.lineWidth = 2
-        closeButton.glowWidth = 0
+        PixelUI.stylePanel(closeButton, size: CGSize(width: 100, height: 32),
+                           fill: SKColor(red: 0.20, green: 0.12, blue: 0.08, alpha: 1),
+                           accent: SKColor(red: 0.60, green: 0.45, blue: 0.20, alpha: 0.8))
 
         let label = SKLabelNode(fontNamed: PixelUI.uiFont)
         label.text = String(localized: "shop.close")
-        label.fontSize = 13
+        label.fontSize = 17
         label.fontColor = .white
         label.verticalAlignmentMode = .center
         closeButton.addChild(label)
         root.addChild(closeButton)
     }
 
-    private func refresh() {
+    func refresh() {
         guard let player = playerState else { return }
         goldLabel.text = String(localized: "shop.gold \(player.gold)")
-        buildItemList(player: player)
         selection = min(selection, max(0, items.count - 1))
+        scrollToSelection()
+        buildItemList(player: player)
         refreshSelectionHighlight()
     }
-
-    private func buildItemList(player: PlayerState) {
-        itemNodes.forEach { $0.removeFromParent() }
-        itemNodes.removeAll()
-
-        let startY: CGFloat = panelHeight / 2 - 68
-        let rowH: CGFloat = 50
-
-        for (i, item) in items.enumerated() {
-            let row = makeItemRow(item: item, index: i, player: player)
-            row.position = CGPoint(x: 0, y: startY - CGFloat(i) * rowH)
-            root.addChild(row)
-            itemNodes.append(row)
-            JuiceEngine.popIn(row, delay: Double(i) * 0.05)
-        }
-    }
-
-    private func makeItemRow(item: ShopItem, index: Int, player: PlayerState) -> SKNode {
-        let row = SKShapeNode(rectOf: CGSize(width: panelWidth - 24, height: 40))
-        let affordable = player.gold >= item.price && item.canBuy(player)
-        row.fillColor = affordable
-            ? Palette.shadowWarm
-            : Palette.shadowWarm
-        row.strokeColor = affordable
-            ? SKColor(red: 0.65, green: 0.50, blue: 0.20, alpha: 0.7)
-            : SKColor(white: 0.25, alpha: 0.5)
-        row.lineWidth = 1.5
-        row.glowWidth = 0
-        row.userData = ["index": index]
-
-        let rowW = panelWidth - 24
-        // Vignette pixel art de l'article (grisée si non achetable).
-        let icon = PixelIcons.node(item.icon, pixel: 2)
-        icon.position = CGPoint(x: -rowW / 2 + 16, y: 0)
-        if !affordable {
-            icon.forEachDescendantSprite { $0.color = SKColor(white: 0.32, alpha: 1) }
-        }
-        row.addChild(icon)
-
-        let textX = -rowW / 2 + 34
-        let nameLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-        nameLabel.text = String(localized: item.nameKey)
-        nameLabel.fontSize = 13
-        nameLabel.fontColor = affordable ? .white : SKColor(white: 0.4, alpha: 1)
-        nameLabel.horizontalAlignmentMode = .left
-        nameLabel.position = CGPoint(x: textX, y: 6)
-        row.addChild(nameLabel)
-
-        let descLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-        descLabel.text = String(localized: item.descKey)
-        descLabel.fontSize = 10
-        descLabel.fontColor = SKColor(white: 0.55, alpha: 1)
-        descLabel.horizontalAlignmentMode = .left
-        descLabel.position = CGPoint(x: textX, y: -8)
-        row.addChild(descLabel)
-
-        let priceLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
-        priceLabel.text = String(localized: "shop.price \(item.price)")
-        priceLabel.fontSize = 13
-        priceLabel.fontColor = affordable
-            ? SKColor(red: 0.90, green: 0.75, blue: 0.25, alpha: 1)
-            : SKColor(red: 0.60, green: 0.30, blue: 0.20, alpha: 1)
-        priceLabel.horizontalAlignmentMode = .right
-        priceLabel.position = CGPoint(x: (panelWidth - 24) / 2 - 10, y: 0)
-        row.addChild(priceLabel)
-
-        return row
-    }
-
-    /// Bouton B : fermeture programmée (contrôles classiques).
-    func dismiss() { close() }
 
     private func close() {
         root.isHidden = true

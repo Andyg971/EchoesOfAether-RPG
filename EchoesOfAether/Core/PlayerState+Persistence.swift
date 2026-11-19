@@ -27,6 +27,9 @@ extension PlayerState {
             caveChestTaken: caveChestTaken,
             overworldChestsTaken: Array(overworldChestsTaken),
             equippedAccessory: equippedAccessory,
+            ownedWeapons: ownedWeapons.sorted(),
+            equippedWeapon: equippedWeaponID,
+            ownedAccessories: ownedAccessories.sorted(),
             talkedToSage: talkedToSage, talkedToChild: talkedToChild,
             talkedToVillager: talkedToVillager, innRested: innRested,
             forestProgress: forestProgress, bossDefeated: bossDefeated,
@@ -64,7 +67,11 @@ extension PlayerState {
     func load(from data: SaveData) {
         gold = data.gold
         maxHP = data.maxHP
-        weaponLevel = data.weaponLevel
+        restoreEquipment(weaponLevel: data.weaponLevel,
+                         ownedWeapons: data.ownedWeapons,
+                         equippedWeapon: data.equippedWeapon,
+                         ownedAccessories: data.ownedAccessories,
+                         equippedAccessory: data.equippedAccessory)
         armorLevel = data.armorLevel
         potions = data.potions
         aetherShards = data.aetherShards
@@ -96,7 +103,6 @@ extension PlayerState {
         caveCleared = data.caveCleared ?? false
         caveChestTaken = data.caveChestTaken ?? false
         overworldChestsTaken = Set(data.overworldChestsTaken ?? [])
-        equippedAccessory = data.equippedAccessory
         talkedToSage = data.talkedToSage
         talkedToChild = data.talkedToChild
         talkedToVillager = data.talkedToVillager
@@ -142,7 +148,11 @@ extension PlayerState {
         level = max(1, min(Self.maxLevel, seed.level))
         xp = max(0, seed.xp)
         gold = seed.gold
-        weaponLevel = seed.weaponLevel
+        restoreEquipment(weaponLevel: seed.weaponLevel,
+                         ownedWeapons: seed.ownedWeapons,
+                         equippedWeapon: seed.equippedWeapon,
+                         ownedAccessories: seed.ownedAccessories,
+                         equippedAccessory: seed.equippedAccessory)
         armorLevel = seed.armorLevel
         potions = seed.potions
         aetherShards = seed.aetherShards

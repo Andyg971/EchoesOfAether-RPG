@@ -20,26 +20,33 @@ final class InventoryOverlay {
     private let closeButton = SKShapeNode(rectOf: CGSize(width: 100, height: 40))
 
     var statLabels: [SKNode] = []
-    private var playerState: PlayerState?
+    var playerState: PlayerState?
     private var completion: (() -> Void)?
 
     /// Renvoie true si une potion a bien été bue (fiole dispo + PV non pleins).
     var onUsePotion: (() -> Bool)?
-    private var potionUsable = false
-    private let lineH: CGFloat = 26
+    var potionUsable = false
+    let lineH: CGFloat = 26
     /// Colonne courante pendant `buildContent` : centre et largeur.
     /// Les constructeurs de lignes s'y calent au lieu du panneau entier,
     /// ce qui rend la mise en deux colonnes transparente pour eux.
-    private var centreColonne: CGFloat = 0
+    var centreColonne: CGFloat = 0
     var largeurColonne: CGFloat = 0
     /// Bord gauche de la colonne courante.
     var bordGauche: CGFloat { centreColonne - largeurColonne / 2 }
 
-    /// Le bouton A n'apparaît en inventaire que s'il y a une potion à boire.
+    /// Lignes sur lesquelles A (ou un toucher) agit, de haut en bas, et la
+    /// ligne sous le curseur.
+    var actions: [InventoryAction] = []
+    var cursor: InventoryAction?
+    /// Sélecteur d'arme / d'accessoire, ouvert par-dessus l'inventaire.
+    let picker = EquipmentPicker()
+
+    /// Une potion est buvable (fiole dispo, PV non pleins).
     var canUsePotion: Bool { isActive && potionUsable }
 
-    private var panelWidth: CGFloat = 320
-    private var panelHeight: CGFloat = 580
+    var panelWidth: CGFloat = 320
+    var panelHeight: CGFloat = 580
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
@@ -56,6 +63,8 @@ final class InventoryOverlay {
         root.addChild(titleLabel)
 
         setupCloseButton()
+        picker.attach(to: root)
+        picker.onEquip = { [weak self] in self?.rebuild() }
     }
 
     func layout(in size: CGSize, safeBottom: CGFloat = 0) {
@@ -70,6 +79,7 @@ final class InventoryOverlay {
 
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 36)
         closeButton.position = CGPoint(x: 0, y: -panelHeight / 2 + 34)
+        picker.layout(inventorySize: CGSize(width: panelWidth, height: panelHeight))
 
         // Filet de sécurité : réduirait le panneau s'il ne tenait pas en
         // hauteur. Depuis le passage en deux colonnes, il tient partout et ce
@@ -82,6 +92,8 @@ final class InventoryOverlay {
         self.completion = completion
         titleLabel.text = String(localized: "inventory.title")
         root.isHidden = false
+        cursor = nil
+        picker.close()
         AudioEngine.shared.playShopOpen()
         buildContent(player: player)
         AccessibilitySettings.announce(String(localized: "inventory.title"))
@@ -91,17 +103,39 @@ final class InventoryOverlay {
         guard isActive else { return false }
         let local = root.convert(point, from: scene)
 
+        if picker.isOpen {
+            picker.handleTap(at: local)
+            return true
+        }
         if closeButton.contains(local) {
             close()
             return true
         }
-        if let hit = root.childNode(withName: "potionUse") as? SKShapeNode,
-           hit.contains(local) {
-            useSelectedPotion()
-            return true
+        if let action = action(at: local) {
+            cursor = action
+            perform(action)
         }
-
         return true // absorb taps
+    }
+
+    /// Bouton B : ferme le sélecteur s'il est ouvert, sinon l'inventaire.
+    func back() {
+        if picker.isOpen {
+            picker.close()
+            refreshCursor()
+        } else {
+            close()
+        }
+    }
+
+    /// Fermeture programmée de tout l'inventaire.
+    func dismiss() {
+        picker.close()
+        close()
+    }
+
+    func rebuild() {
+        if let player = playerState { buildContent(player: player) }
     }
 
     // MARK: - Build Content
@@ -116,30 +150,31 @@ final class InventoryOverlay {
         // ── Colonne gauche : ce qu'on porte et ce qu'on consomme ─────────
         centreColonne = -panelWidth / 4
         var y = startY
+        var rowY: [InventoryAction: CGFloat] = [:]
 
         y = addSection(String(localized: "inventory.section.equipment"), y: y)
-        y = addRow(icon: .sword, label: weaponName(player.weaponLevel),
-                   detail: String(localized: "inventory.attack \(player.attackDamage)"), y: y, lineH: lineH)
+        rowY[.weapon] = y
+        y = addWeaponRow(player: player, y: y)
         y = addRow(icon: .shield, label: armorName(player.armorLevel),
-                   detail: String(localized: "inventory.defense \(player.armorLevel * 50)"), y: y, lineH: lineH)
+                   detail: String(localized: "inventory.defense \(player.armorLevel * PlayerState.armorHPPerLevel)"),
+                   y: y, lineH: lineH)
+        rowY[.accessory] = y
+        y = addAccessoryRow(player: player, y: y)
 
         y -= 6 // spacer
 
         y = addSection(String(localized: "inventory.section.items"), y: y)
-        // La ligne « Potions » est actionnable : bouton A ou toucher = en boire.
         potionUsable = player.potions > 0 && player.currentHP < player.currentMaxHP
-        let potionRowY = y
+        rowY[.potion] = y
         y = addRow(icon: .potion, label: String(localized: "inventory.potions"),
-                   detail: "\(player.potions)/3", y: y, lineH: lineH)
-        addPotionAction(at: potionRowY)
+                   detail: String(localized: "inventory.potionCount \(player.potions)"), y: y, lineH: lineH)
         y = addRow(icon: .gem, label: String(localized: "inventory.shards"),
                    detail: "\(player.aetherShards)", y: y, lineH: lineH)
-
-        y -= 6
-
         y = addRow(icon: .coin, label: String(localized: "inventory.gold"),
                    detail: "\(player.gold)", y: y, lineH: lineH,
                    color: SKColor(red: 0.90, green: 0.78, blue: 0.30, alpha: 1))
+
+        installActions(player: player, rowY: rowY)
 
         // ── Colonne droite : ce qu'on vaut et ce qu'on doit ──────────────
         centreColonne = panelWidth / 4
@@ -165,69 +200,44 @@ final class InventoryOverlay {
 
         // Animate
         for (i, label) in statLabels.enumerated() {
-            JuiceEngine.popIn(label, delay: Double(i) * 0.03)
+            JuiceEngine.popIn(label, delay: Double(i) * 0.02)
         }
     }
 
-    /// Zone tactile sur la ligne des potions + indice « A · Boire » quand
-    /// une fiole est disponible et que les PV ne sont pas pleins.
-    private func addPotionAction(at rowY: CGFloat) {
-        // Rien de tappable si aucune fiole ou PV déjà pleins : la ligne reste
-        // une simple stat (pas de buzz d'erreur sur un tap anodin).
-        guard potionUsable else { return }
-
-        let hit = SKShapeNode(rectOf: CGSize(width: largeurColonne - 32, height: lineH))
-        hit.fillColor = .clear
-        hit.strokeColor = .clear
-        hit.name = "potionUse"
-        hit.position = CGPoint(x: centreColonne, y: rowY - 2)
-        root.addChild(hit)
-        statLabels.append(hit)
-
-        // Léger surlignage doré de la ligne buvable.
-        let glow = SKShapeNode(rectOf: CGSize(width: largeurColonne - 36, height: lineH))
-        glow.fillColor = PixelUI.gold.withAlphaComponent(0.10)
-        glow.strokeColor = PixelUI.goldDim
-        glow.lineWidth = 1
-        glow.glowWidth = 0
-        glow.position = CGPoint(x: 0, y: rowY - 2)
-        glow.zPosition = -0.5
-        root.addChild(glow)
-        statLabels.append(glow)
-
-        let hint = SKLabelNode(fontNamed: PixelUI.uiFont)
-        hint.text = String(localized: "inventory.potionHint")
-        hint.fontSize = 13
-        hint.fontColor = PixelUI.gold
-        hint.horizontalAlignmentMode = .center
-        hint.verticalAlignmentMode = .center
-        hint.position = CGPoint(x: 0, y: -panelHeight / 2 + 62)
-        root.addChild(hint)
-        statLabels.append(hint)
+    /// Arme portée : nom, puis le style (couleur du style) à droite — les
+    /// dégâts eux-mêmes sont dans la colonne des statistiques.
+    private func addWeaponRow(player: PlayerState, y: CGFloat) -> CGFloat {
+        guard let weapon = player.equippedWeapon else {
+            return addRow(icon: .sword, label: String(localized: "inventory.weapon.fists"),
+                          detail: "", y: y, lineH: lineH)
+        }
+        return addRow(icon: .weapon(weapon.style), label: String(localized: weapon.nameKey),
+                      detail: String(localized: weapon.style.nameKey), y: y, lineH: lineH,
+                      color: EquipmentText.color(for: weapon.style))
     }
 
-    /// Bouton A / toucher la ligne : boit une potion. Erreur haptique si
-    /// impossible (aucune fiole ou PV déjà pleins).
-    func useSelectedPotion() {
-        // A n'est visible et la ligne n'est tappable que si buvable : un échec
-        // ici (PV redevenus pleins entre-temps) reste silencieux.
-        guard potionUsable, onUsePotion?() == true else { return }
-        HapticsEngine.success()
-        showHealToast()
-        if let player = playerState { buildContent(player: player) }
+    private func addAccessoryRow(player: PlayerState, y: CGFloat) -> CGFloat {
+        guard let accessory = player.equippedAccessoryItem else {
+            return addRow(icon: .gem, label: String(localized: "inventory.accessory.none"),
+                          detail: "", y: y, lineH: lineH)
+        }
+        return addRow(icon: .accessory(id: accessory.id), label: String(localized: accessory.nameKey),
+                      detail: EquipmentText.summary(accessory.bonus), y: y, lineH: lineH,
+                      color: SKColor(white: 0.70, alpha: 1))
     }
 
-    private func showHealToast() {
-        root.childNode(withName: "healToast")?.removeFromParent()
+    /// Toast vert bref au centre haut du panneau (soin, équipement).
+    func showToast(_ text: String) {
+        root.childNode(withName: "inventoryToast")?.removeFromParent()
         let toast = SKLabelNode(fontNamed: PixelUI.uiFont)
-        toast.name = "healToast"
-        toast.text = String(localized: "inventory.healed")
+        toast.name = "inventoryToast"
+        toast.text = text
         toast.fontSize = 20
-        toast.fontColor = SKColor(red: 0.55, green: 0.92, blue: 0.58, alpha: 1)
+        toast.fontColor = EquipmentText.gain
         toast.verticalAlignmentMode = .center
         toast.horizontalAlignmentMode = .center
         toast.position = CGPoint(x: 0, y: panelHeight / 2 - 68)
-        toast.zPosition = 30
+        toast.zPosition = 80
         toast.setScale(0.6)
         toast.alpha = 0
         root.addChild(toast)
@@ -255,9 +265,6 @@ final class InventoryOverlay {
         closeButton.addChild(label)
         root.addChild(closeButton)
     }
-
-    /// Bouton B : fermeture programmée (contrôles classiques).
-    func dismiss() { close() }
 
     private func close() {
         root.isHidden = true

@@ -75,7 +75,11 @@ final class PlayerState {
     var gold: Int = 20
     var maxHP: Int = 280
     var currentHP: Int = 280      // PV actuels — non sauvegardé, reset sur load
-    var weaponLevel: Int = 0      // 0=poings, 1=lame fer, 2=lame runique
+    /// Armes possédées (ids de `EquipmentCatalog`) et arme portée (nil =
+    /// poings nus). Le palier porté s'expose via `weaponLevel`
+    /// (PlayerState+Equipment).
+    var ownedWeapons: Set<String> = []
+    var equippedWeaponID: String? = nil
     var armorLevel: Int = 0       // 0=aucune, 1=cotte mailles, 2=armure renforcée
     var potions: Int = 0          // max 3
     var aetherShards: Int = 0     // Éclats d'Aether (quête de Lyra, boutique)
@@ -90,22 +94,25 @@ final class PlayerState {
     /// ACCESSOIRE ÉQUIPÉ (un seul à la fois — c'est ce qui en fait un choix
     /// de build et non une accumulation). nil = aucun.
     /// `ember` = critiques, `shade` = esquive, `resonance` = régénération de MP.
+    /// Les accessoires achetés restent dans le sac : on en change depuis
+    /// l'inventaire sans les racheter.
     var equippedAccessory: String? = nil
+    var ownedAccessories: Set<String> = []
 
-    /// Chance de coup critique : l'accessoire de braise la double, la voie
-    /// de la Lame s'ajoute par-dessus.
+    /// Chance de coup critique : arme et accessoire (Talisman de Braise),
+    /// puis la voie de la Lame par-dessus.
     var critChance: Double {
-        (equippedAccessory == "ember" ? 0.25 : 0.12) + skillCritBonus
+        0.12 + equipmentBonus.crit + skillCritBonus
     }
-    /// Chance d'esquiver un coup normal : l'amulette d'ombre la relève, la
-    /// voie du Souffle s'ajoute par-dessus.
+    /// Chance d'esquiver un coup normal : l'espadon la réduit, la rapière et
+    /// l'Amulette d'Ombre la relèvent, la voie du Souffle s'ajoute.
     var dodgeChance: Double {
-        (equippedAccessory == "shade" ? 0.25 : 0.10) + skillDodgeBonus
+        max(0, 0.10 + equipmentBonus.dodge + skillDodgeBonus)
     }
-    /// Magie régénérée par une attaque physique : le sceau la triple, et
-    /// permet de tenir une rotation de sorts bien plus longtemps.
+    /// Magie régénérée par une attaque physique : la lame d'écho et le Sceau
+    /// de Résonance l'augmentent pour tenir une rotation de sorts.
     var attackMPRegen: Int {
-        (equippedAccessory == "resonance" ? 16 : 6) + skillMPRegenBonus
+        6 + equipmentBonus.mpRegen + skillMPRegenBonus
     }
 
     var questDelivery: QuestState = .inactive   // livrer colis de Mara à Garen
@@ -177,9 +184,11 @@ final class PlayerState {
     // HP 280→628, ATK 42→100, Black Slash 92→208 (avant équipement).
     // Les bonus `skill*` viennent de l'Arbre de l'Aether (SkillTree.swift) :
     // le niveau donne la courbe de base, l'arbre la personnalise.
-    var attackDamage: Int      { 42 + weaponLevel * 22 + (level - 1) * 2 + skillAttackBonus }
-    var blackSlashDamage: Int  { 92 + weaponLevel * 35 + (level - 1) * 4 + skillSlashBonus }
-    var currentMaxHP: Int      { maxHP + armorLevel * 50 + (level - 1) * 12 + skillMaxHPBonus }
+    var attackDamage: Int      { 42 + equipmentBonus.attack + (level - 1) * 2 + skillAttackBonus }
+    var blackSlashDamage: Int  { 92 + equipmentBonus.slash + (level - 1) * 4 + skillSlashBonus }
+    /// PV max apportés par chaque palier d'armure.
+    static let armorHPPerLevel = 50
+    var currentMaxHP: Int      { maxHP + armorLevel * Self.armorHPPerLevel + (level - 1) * 12 + skillMaxHPBonus }
     /// Points de Magie : réserve qui alimente les sorts et l'Entaille noire.
     /// Kael est mage : il porte trois éléments et doit pouvoir les enchaîner,
     /// d'où la réserve la plus large du groupe (L1 = 46, L30 = 191). Lyra la

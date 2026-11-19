@@ -103,7 +103,7 @@ extension GameManager {
         } else if dialogue.isActive {
             dialogue.advance()
         } else if state == .inventory {
-            inventory.useSelectedPotion()
+            inventory.confirmSelection()
         } else if state == .exploration {
             triggerNearbyAction(in: scene)
         }

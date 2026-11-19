@@ -28,8 +28,22 @@ private enum _StringsReferences {
     static let endscreenResonance: LocalizedStringResource = "endscreen.resonance %lld"
 
     // Inventory
-    static let inventoryAttack:    LocalizedStringResource = "inventory.attack %lld"
     static let inventoryDefense:   LocalizedStringResource = "inventory.defense %lld"
+    static let inventoryPotions:   LocalizedStringResource = "inventory.potionCount %lld"
+
+    // Équipement — lignes de stats et comparaison
+    static let statAttack:         LocalizedStringResource = "equipment.stat.attack %lld"
+    static let statSlash:          LocalizedStringResource = "equipment.stat.slash %lld"
+    static let statCrit:           LocalizedStringResource = "equipment.stat.crit %lld"
+    static let statDodgeUp:        LocalizedStringResource = "equipment.stat.dodgeUp %lld"
+    static let statDodgeDown:      LocalizedStringResource = "equipment.stat.dodgeDown %lld"
+    static let statMPRegen:        LocalizedStringResource = "equipment.stat.mpRegen %lld"
+    static let statMaxHP:          LocalizedStringResource = "equipment.stat.maxHP %lld"
+    static let compareAttack:      LocalizedStringResource = "equipment.compare.attack %lld %lld"
+    static let compareSlash:       LocalizedStringResource = "equipment.compare.slash %lld %lld"
+    static let compareCrit:        LocalizedStringResource = "equipment.compare.crit %lld %lld"
+    static let compareDodge:       LocalizedStringResource = "equipment.compare.dodge %lld %lld"
+    static let compareMPRegen:     LocalizedStringResource = "equipment.compare.mpRegen %lld %lld"
 
     // Combat — combos
     static let comboHit:           LocalizedStringResource = "combat.combo.hit %lld"

@@ -6,58 +6,55 @@ import SpriteKit
 extension GameManager {
     // MARK: - Shop Items
 
-    /// Forge de Bram : seul le PALIER SUIVANT de chaque catégorie est en
-    /// vitrine (l'étal reste court et la progression lisible).
-    /// Palier 3 (Aetherite) : gold sink de fin de partie.
+    /// Forge de Bram : pour chaque style d'arme, seul le PALIER SUIVANT est
+    /// en vitrine (l'étal reste lisible et la progression claire). Acheter
+    /// une arme la range dans l'arsenal et la fait porter aussitôt ; on en
+    /// change ensuite depuis l'inventaire. Palier 3 (Aetherite) : gold sink.
     func bramItems() -> [ShopItem] {
-        let weapons: [(name: LocalizedStringResource, desc: LocalizedStringResource, price: Int)] = [
-            ("shop.bram.ironBlade.name", "shop.bram.ironBlade.desc", 80),
-            ("shop.bram.runicBlade.name", "shop.bram.runicBlade.desc", 180),
-            ("shop.bram.aetheriteBlade.name", "shop.bram.aetheriteBlade.desc", 420)
-        ]
-        let armors: [(name: LocalizedStringResource, desc: LocalizedStringResource, price: Int)] = [
-            ("shop.bram.chainMail.name", "shop.bram.chainMail.desc", 60),
-            ("shop.bram.reinforced.name", "shop.bram.reinforced.desc", 150),
-            ("shop.bram.aetheritePlate.name", "shop.bram.aetheritePlate.desc", 380)
-        ]
+        var items = WeaponStyle.allCases
+            .compactMap { player.nextWeapon(for: $0) }
+            .sorted { $0.tier < $1.tier }
+            .map(weaponItem)
 
-        var items: [ShopItem] = []
-        if player.weaponLevel < weapons.count {
-            let next = weapons[player.weaponLevel]
-            let targetLevel = player.weaponLevel + 1
-            items.append(ShopItem(
-                nameKey: next.name, descKey: next.desc, price: next.price, icon: .sword,
-                canBuy: { [weak self] _ in (self?.player.weaponLevel ?? 3) < targetLevel },
-                onBuy: { [weak self] _ in self?.player.weaponLevel = targetLevel }
-            ))
-        }
+        let armors: [(name: LocalizedStringResource, price: Int)] = [
+            ("shop.bram.chainMail.name", 60),
+            ("shop.bram.reinforced.name", 150),
+            ("shop.bram.aetheritePlate.name", 380)
+        ]
         if player.armorLevel < armors.count {
             let next = armors[player.armorLevel]
             let targetLevel = player.armorLevel + 1
             items.append(ShopItem(
-                nameKey: next.name, descKey: next.desc, price: next.price, icon: .shield,
+                nameKey: next.name, price: next.price, icon: .shield,
+                detail: EquipmentText.armorSummary(maxHP: targetLevel * PlayerState.armorHPPerLevel),
                 canBuy: { [weak self] _ in (self?.player.armorLevel ?? 3) < targetLevel },
                 onBuy: { [weak self] _ in self?.player.armorLevel = targetLevel }
             ))
         }
-        // ACCESSOIRES : un seul se porte à la fois. En acheter un remplace le
-        // précédent — c'est un ARBITRAGE (frapper fort / encaisser / soutenir),
-        // pas une accumulation. La vitrine reste lisible : on ne propose que
-        // ceux qu'on ne porte pas.
-        let accessories: [(id: String, name: LocalizedStringResource,
-                           desc: LocalizedStringResource, price: Int)] = [
-            ("ember",     "shop.acc.ember.name",     "shop.acc.ember.desc",     140),
-            ("shade",     "shop.acc.shade.name",     "shop.acc.shade.desc",     160),
-            ("resonance", "shop.acc.resonance.name", "shop.acc.resonance.desc", 180)
-        ]
-        for acc in accessories where player.equippedAccessory != acc.id {
+        // ACCESSOIRES : un seul se porte à la fois — un ARBITRAGE (frapper
+        // fort / encaisser / soutenir). Ceux déjà achetés restent dans le sac
+        // et se changent depuis l'inventaire : la vitrine ne les repropose pas.
+        for accessory in EquipmentCatalog.accessories
+        where !player.ownedAccessories.contains(accessory.id) {
             items.append(ShopItem(
-                nameKey: acc.name, descKey: acc.desc, price: acc.price, icon: .gem,
-                canBuy: { [weak self] _ in self?.player.equippedAccessory != acc.id },
-                onBuy: { [weak self] _ in self?.player.equippedAccessory = acc.id }
+                nameKey: accessory.nameKey, price: accessory.price,
+                icon: .accessory(id: accessory.id),
+                detail: EquipmentText.summary(accessory.bonus),
+                canBuy: { [weak self] _ in self?.player.ownedAccessories.contains(accessory.id) == false },
+                onBuy: { [weak self] _ in self?.player.acquire(accessory) }
             ))
         }
         return items
+    }
+
+    private func weaponItem(_ weapon: Weapon) -> ShopItem {
+        ShopItem(
+            nameKey: weapon.nameKey, price: weapon.price,
+            icon: .weapon(weapon.style),
+            detail: EquipmentText.weaponLine(weapon),
+            canBuy: { [weak self] _ in self?.player.ownedWeapons.contains(weapon.id) == false },
+            onBuy: { [weak self] _ in self?.player.acquire(weapon) }
+        )
     }
 
     func maraItems() -> [ShopItem] {

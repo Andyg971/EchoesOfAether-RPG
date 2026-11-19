@@ -61,6 +61,12 @@ extension InventoryOverlay {
         root.addChild(detailLabel)
         statLabels.append(detailLabel)
 
+        // Noms d'armes longs (« Espadon d'Aetherite ») : le libellé rétrécit
+        // plutôt que de chevaucher la valeur de droite.
+        while nameLabel.frame.maxX + 10 > detailLabel.frame.minX, nameLabel.fontSize > 13 {
+            nameLabel.fontSize -= 1
+        }
+
         return y - lineH
     }
 
@@ -93,15 +99,6 @@ extension InventoryOverlay {
     }
 
     // MARK: - Equipment Names
-
-    func weaponName(_ level: Int) -> String {
-        switch level {
-        case 0: return String(localized: "inventory.weapon.fists")
-        case 1: return String(localized: "inventory.weapon.ironBlade")
-        case 2: return String(localized: "inventory.weapon.runicBlade")
-        default: return String(localized: "inventory.weapon.aetheriteBlade")
-        }
-    }
 
     func armorName(_ level: Int) -> String {
         switch level {

@@ -130,7 +130,7 @@ extension GameManager {
         if shop.isActive { shop.dismiss(); syncGold(); return }
         if lore.isActive { lore.dismiss(); return }
         if questLog.isActive { questLog.dismiss(); return }
-        if inventory.isActive { inventory.dismiss(); return }
+        if inventory.isActive { inventory.back(); return }
         if dialogue.isActive { dialogue.skipToEnd(); return }
     }
 
@@ -205,6 +205,7 @@ extension GameManager {
         if skills.isActive { skills.moveSelection(dx: dx, dy: dy); return }
         if pause.isActive { pause.moveSelection(dy); return }
         if shop.isActive { shop.moveSelection(dy); return }
+        if inventory.isActive { inventory.moveSelection(dy); return }
         if lore.isActive {
             if dx != 0 { lore.navigateTabs(dx) } else { lore.scroll(dy) }
             return

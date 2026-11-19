@@ -30,6 +30,7 @@
 		57FE36C5B9B54850291E5B82 /* PrototypeContent+Act1Forest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 119DDB7DF9B7B2BAB2E54C5B /* PrototypeContent+Act1Forest.swift */; };
 		6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E2001B8A741B0A0000001 /* GameState.swift */; };
 		91EB5C10A89EED346C0665AD /* PlayerState+Persistence.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92F929FDD5849CADDBD047CF /* PlayerState+Persistence.swift */; };
+		BB066348A2B791A67CCC435C /* PlayerState+Equipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6888D61114318A760B4F97F1 /* PlayerState+Equipment.swift */; };
 		914EACD4AED37FF3ED1CC602 /* SaveData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4495200A6C76193A38DC378F /* SaveData.swift */; };
 		6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFF0001B8A741B0A0000001 /* Viewport.swift */; };
 		6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6DFE0001B8A741B0A0000001 /* Difficulty.swift */; };
@@ -147,6 +148,8 @@
 		6D7E201AB8A741B0A0000001 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */; };
 		6DAAFB02B8A741B0A0000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */; };
 		6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */; };
+		33F9C0C2DEA7CDED283F3F99 /* EquipmentText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F81B9B2EB90FA5573161C32 /* EquipmentText.swift */; };
+		02D682B3E2C65356E10DBB8D /* ShopOverlay+Rows.swift in Sources */ = {isa = PBXBuildFile; fileRef = A84F4A57CB959BB03421DF39 /* ShopOverlay+Rows.swift */; };
 		6D7E4001B8A741B0A0000001 /* SaveManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E4002B8A741B0A0000001 /* SaveManager.swift */; };
 		6D7EFB02B8A741B0A0000888 /* EncounterBalance.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFB01B8A741B0A0000888 /* EncounterBalance.swift */; };
 		6D7EBB02B8A741B0A0000101 /* SkillTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB01B8A741B0A0000101 /* SkillTree.swift */; };
@@ -155,6 +158,9 @@
 		EFA352B75C4426F6E6C2B3E7 /* AudioEngine+Playback.swift in Sources */ = {isa = PBXBuildFile; fileRef = CA2A6AB10A4B1C06C6A172C4 /* AudioEngine+Playback.swift */; };
 		FFEAF6B6780ADCA503F4F7E6 /* AudioEngine+Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C62C4427860BE8A8E0B9D06 /* AudioEngine+Catalog.swift */; };
 		6D7E6001B8A741B0A0000001 /* InventoryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */; };
+		AB9962070F19C68D772DFFBB /* InventoryOverlay+Actions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9581BCDF312D7B565A29170C /* InventoryOverlay+Actions.swift */; };
+		668944DAE5605C689C81F886 /* EquipmentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3B29D238F6CA4719F81CDDDD /* EquipmentPicker.swift */; };
+		F9171548BEF36FDD43C6623A /* EquipmentPicker+Build.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DD74803D41CFA4E4E3E8CC1 /* EquipmentPicker+Build.swift */; };
 		64B2754DDB94E2674A5C9FAA /* InventoryOverlay+Rows.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED2C1A36CDFE0B7E125266A /* InventoryOverlay+Rows.swift */; };
 		6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */; };
 		7D83114ECC9EE7140C07F1F6 /* MainMenuScene+Backdrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = D87116356C62288F4AEF50D5 /* MainMenuScene+Backdrop.swift */; };
@@ -176,6 +182,7 @@
 		F42F91EBFB71DC67569F2867 /* LoreOverlay+Bestiary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6188427530326291F73AB918 /* LoreOverlay+Bestiary.swift */; };
 		6D7EBB06B8A741B0A0000101 /* QuestLogOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */; };
 		AA10C0DE0000000000000002 /* PixelIcons.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10C0DE0000000000000001 /* PixelIcons.swift */; };
+		02EF0FD6792911FEE4111C2F /* PixelIcons+Arsenal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 330CC89E861BF548006801D0 /* PixelIcons+Arsenal.swift */; };
 		6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */; };
 		6D7EBB22B8A741B0A0000001 /* WorldMapOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EBB21B8A741B0A0000001 /* WorldMapOverlay.swift */; };
 		71D4A2FB0F7F215626E8B512 /* WorldMapOverlay+Build.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA7AB39C7DD9B9DB753422D5 /* WorldMapOverlay+Build.swift */; };
@@ -217,6 +224,7 @@
 		6D7ECC21B8A741B0A0000001 /* LevelUpOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */; };
 		6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */; };
 		BDE5A889F335998FB3D5EEA5 /* PixelUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 822A6808C3949DA510FEDB6A /* PixelUI.swift */; };
+		661D67546E1DF66D05769CBB /* Equipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = D910532AA616EF2877CF875E /* Equipment.swift */; };
 		F3EF7FDC597B85E755A6FA25 /* PixelShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8C47CD8C1EEB528502CDCF7 /* PixelShape.swift */; };
 		C5BD3B3CCB842BDB4274AC47 /* PixelArtSprites+Floors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C131F9D2F1E15B78F384627 /* PixelArtSprites+Floors.swift */; };
 		6D7ECC41B8A741B0A0000001 /* InteractionBubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */; };
@@ -248,6 +256,7 @@
 		6DAA0602B8A741B0A0000001 /* music_title.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 6DAA0601B8A741B0A0000001 /* music_title.m4a */; };
 		6D7EFF01B8A741B0A0000001 /* Strings+References.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D7EFF02B8A741B0A0000001 /* Strings+References.swift */; };
 		71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */; };
+		3AF54E76EB2FAFBDB292B82E /* EquipmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 142358BFAFED1627E2B79647 /* EquipmentTests.swift */; };
 		BB20STORY00000000000TEST /* StoryFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB10STORY00000000000TEST /* StoryFlowTests.swift */; };
 		AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10FLOW000000000000TEST /* DialogueFlowTests.swift */; };
 		AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10SPRT000000000000TEST /* BattleSpritesTests.swift */; };
@@ -291,6 +300,7 @@
 
 /* Begin PBXFileReference section */
 		4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SaveDataTests.swift; sourceTree = "<group>"; };
+		142358BFAFED1627E2B79647 /* EquipmentTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EquipmentTests.swift; sourceTree = "<group>"; };
 		BB10STORY00000000000TEST /* StoryFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoryFlowTests.swift; sourceTree = "<group>"; };
 		AA10FLOW000000000000TEST /* DialogueFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DialogueFlowTests.swift; sourceTree = "<group>"; };
 		AA10SPRT000000000000TEST /* BattleSpritesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BattleSpritesTests.swift; sourceTree = "<group>"; };
@@ -322,6 +332,7 @@
 		6D7E1010B8A741B0A0000001 /* EchoesOfAether.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EchoesOfAether.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6D7E2001B8A741B0A0000001 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		92F929FDD5849CADDBD047CF /* PlayerState+Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlayerState+Persistence.swift"; sourceTree = "<group>"; };
+		6888D61114318A760B4F97F1 /* PlayerState+Equipment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PlayerState+Equipment.swift"; sourceTree = "<group>"; };
 		4495200A6C76193A38DC378F /* SaveData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SaveData.swift"; sourceTree = "<group>"; };
 		6DFF0001B8A741B0A0000001 /* Viewport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Viewport.swift; sourceTree = "<group>"; };
 		6DFE0001B8A741B0A0000001 /* Difficulty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Difficulty.swift; sourceTree = "<group>"; };
@@ -439,6 +450,8 @@
 		6D7E2019B8A741B0A0000001 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		6DAAFB01B8A741B0A0000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShopOverlay.swift; sourceTree = "<group>"; };
+		1F81B9B2EB90FA5573161C32 /* EquipmentText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentText.swift; sourceTree = "<group>"; };
+		A84F4A57CB959BB03421DF39 /* ShopOverlay+Rows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ShopOverlay+Rows.swift"; sourceTree = "<group>"; };
 		6D7E4002B8A741B0A0000001 /* SaveManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveManager.swift; sourceTree = "<group>"; };
 		6D7EFB01B8A741B0A0000888 /* EncounterBalance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncounterBalance.swift; sourceTree = "<group>"; };
 		6D7EBB01B8A741B0A0000101 /* SkillTree.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillTree.swift; sourceTree = "<group>"; };
@@ -447,6 +460,9 @@
 		CA2A6AB10A4B1C06C6A172C4 /* AudioEngine+Playback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioEngine+Playback.swift"; sourceTree = "<group>"; };
 		3C62C4427860BE8A8E0B9D06 /* AudioEngine+Catalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AudioEngine+Catalog.swift"; sourceTree = "<group>"; };
 		6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryOverlay.swift; sourceTree = "<group>"; };
+		9581BCDF312D7B565A29170C /* InventoryOverlay+Actions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InventoryOverlay+Actions.swift"; sourceTree = "<group>"; };
+		3B29D238F6CA4719F81CDDDD /* EquipmentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquipmentPicker.swift; sourceTree = "<group>"; };
+		7DD74803D41CFA4E4E3E8CC1 /* EquipmentPicker+Build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EquipmentPicker+Build.swift"; sourceTree = "<group>"; };
 		0ED2C1A36CDFE0B7E125266A /* InventoryOverlay+Rows.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "InventoryOverlay+Rows.swift"; sourceTree = "<group>"; };
 		6D7EAA01B8A741B0A0000001 /* MainMenuScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMenuScene.swift; sourceTree = "<group>"; };
 		D87116356C62288F4AEF50D5 /* MainMenuScene+Backdrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MainMenuScene+Backdrop.swift"; sourceTree = "<group>"; };
@@ -468,6 +484,7 @@
 		6188427530326291F73AB918 /* LoreOverlay+Bestiary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "LoreOverlay+Bestiary.swift"; sourceTree = "<group>"; };
 		6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestLogOverlay.swift; sourceTree = "<group>"; };
 AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelIcons.swift; sourceTree = "<group>"; };
+330CC89E861BF548006801D0 /* PixelIcons+Arsenal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PixelIcons+Arsenal.swift"; sourceTree = "<group>"; };
 		6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MinimapOverlay.swift; sourceTree = "<group>"; };
 		6D7EBB21B8A741B0A0000001 /* WorldMapOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorldMapOverlay.swift; sourceTree = "<group>"; };
 		FA7AB39C7DD9B9DB753422D5 /* WorldMapOverlay+Build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WorldMapOverlay+Build.swift"; sourceTree = "<group>"; };
@@ -510,6 +527,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 		6D7ECC20B8A741B0A0000001 /* LevelUpOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelUpOverlay.swift; sourceTree = "<group>"; };
 		6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelArtSprites.swift; sourceTree = "<group>"; };
 		822A6808C3949DA510FEDB6A /* PixelUI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PixelUI.swift"; sourceTree = "<group>"; };
+		D910532AA616EF2877CF875E /* Equipment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Equipment.swift"; sourceTree = "<group>"; };
 		C8C47CD8C1EEB528502CDCF7 /* PixelShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PixelShape.swift"; sourceTree = "<group>"; };
 		0C131F9D2F1E15B78F384627 /* PixelArtSprites+Floors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PixelArtSprites+Floors.swift"; sourceTree = "<group>"; };
 		6D7ECC40B8A741B0A0000001 /* InteractionBubble.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionBubble.swift; sourceTree = "<group>"; };
@@ -665,6 +683,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 			children = (
 				6D7E2001B8A741B0A0000001 /* GameState.swift */,
 				92F929FDD5849CADDBD047CF /* PlayerState+Persistence.swift */,
+				6888D61114318A760B4F97F1 /* PlayerState+Equipment.swift */,
 				4495200A6C76193A38DC378F /* SaveData.swift */,
 				6DFF0001B8A741B0A0000001 /* Viewport.swift */,
 				6DFE0001B8A741B0A0000001 /* Difficulty.swift */,
@@ -726,6 +745,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				34FE421B84F88AF987F82335 /* WorldNode+Villagers.swift */,
 				6D7ECC30B8A741B0A0000001 /* PixelArtSprites.swift */,
 				822A6808C3949DA510FEDB6A /* PixelUI.swift */,
+				D910532AA616EF2877CF875E /* Equipment.swift */,
 				C8C47CD8C1EEB528502CDCF7 /* PixelShape.swift */,
 				0C131F9D2F1E15B78F384627 /* PixelArtSprites+Floors.swift */,
 			);
@@ -760,7 +780,12 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				C19C96BF2B3EA7E6D69C8850 /* HUDOverlay+Buttons.swift */,
 				6DAAFD03B8A741B0A0000001 /* PaywallOverlay.swift */,
 				6D7E3002B8A741B0A0000001 /* ShopOverlay.swift */,
+				1F81B9B2EB90FA5573161C32 /* EquipmentText.swift */,
+				A84F4A57CB959BB03421DF39 /* ShopOverlay+Rows.swift */,
 				6D7E6002B8A741B0A0000001 /* InventoryOverlay.swift */,
+				9581BCDF312D7B565A29170C /* InventoryOverlay+Actions.swift */,
+				3B29D238F6CA4719F81CDDDD /* EquipmentPicker.swift */,
+				7DD74803D41CFA4E4E3E8CC1 /* EquipmentPicker+Build.swift */,
 				0ED2C1A36CDFE0B7E125266A /* InventoryOverlay+Rows.swift */,
 				6D7EAA03B8A741B0A0000001 /* DeathOverlay.swift */,
 				6D7EAA05B8A741B0A0000001 /* PauseOverlay.swift */,
@@ -775,6 +800,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6188427530326291F73AB918 /* LoreOverlay+Bestiary.swift */,
 				6D7EBB05B8A741B0A0000101 /* QuestLogOverlay.swift */,
 				AA10C0DE0000000000000001 /* PixelIcons.swift */,
+				330CC89E861BF548006801D0 /* PixelIcons+Arsenal.swift */,
 				6D7EBB07B8A741B0A0000001 /* MinimapOverlay.swift */,
 				6D7EBB21B8A741B0A0000001 /* WorldMapOverlay.swift */,
 				FA7AB39C7DD9B9DB753422D5 /* WorldMapOverlay+Build.swift */,
@@ -934,6 +960,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7EFA01B8A741B0A0000777 /* SkillTreeTests.swift */,
 				AA10WRLD000000000000TEST /* WorldLayoutTests.swift */,
 				4CDE19EAEEBBF282D48D5062 /* SaveDataTests.swift */,
+				142358BFAFED1627E2B79647 /* EquipmentTests.swift */,
 				BB10STORY00000000000TEST /* StoryFlowTests.swift */,
 				AA10FLOW000000000000TEST /* DialogueFlowTests.swift */,
 				AA10SPRT000000000000TEST /* BattleSpritesTests.swift */,
@@ -1152,6 +1179,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7EFA02B8A741B0A0000777 /* SkillTreeTests.swift in Sources */,
 				AA20WRLD000000000000TEST /* WorldLayoutTests.swift in Sources */,
 				71FA8620E66F84C63958EDB8 /* SaveDataTests.swift in Sources */,
+				3AF54E76EB2FAFBDB292B82E /* EquipmentTests.swift in Sources */,
 				BB20STORY00000000000TEST /* StoryFlowTests.swift in Sources */,
 				AA20FLOW000000000000TEST /* DialogueFlowTests.swift in Sources */,
 				AA20SPRT000000000000TEST /* BattleSpritesTests.swift in Sources */,
@@ -1189,6 +1217,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				57FE36C5B9B54850291E5B82 /* PrototypeContent+Act1Forest.swift in Sources */,
 				6D7E2002B8A741B0A0000001 /* GameState.swift in Sources */,
 				91EB5C10A89EED346C0665AD /* PlayerState+Persistence.swift in Sources */,
+				BB066348A2B791A67CCC435C /* PlayerState+Equipment.swift in Sources */,
 				914EACD4AED37FF3ED1CC602 /* SaveData.swift in Sources */,
 				6DFF0002B8A741B0A0000001 /* Viewport.swift in Sources */,
 				6DFE0002B8A741B0A0000001 /* Difficulty.swift in Sources */,
@@ -1210,6 +1239,8 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				3397CA17FE9B199ECC8CC0AF /* HUDOverlay+Input.swift in Sources */,
 				C4638D1787B60D2A751A1A85 /* HUDOverlay+Buttons.swift in Sources */,
 				6D7E3001B8A741B0A0000001 /* ShopOverlay.swift in Sources */,
+				33F9C0C2DEA7CDED283F3F99 /* EquipmentText.swift in Sources */,
+				02D682B3E2C65356E10DBB8D /* ShopOverlay+Rows.swift in Sources */,
 				6DCC7A02B8A741B0A0000001 /* RuinsLayout.swift in Sources */,
 				6DAB0004B8A741B0A0000001 /* VoidHeartLayout.swift in Sources */,
 				6DAAFE02B8A741B0A0000001 /* ThresholdLayout.swift in Sources */,
@@ -1312,6 +1343,9 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				EFA352B75C4426F6E6C2B3E7 /* AudioEngine+Playback.swift in Sources */,
 				FFEAF6B6780ADCA503F4F7E6 /* AudioEngine+Catalog.swift in Sources */,
 				6D7E6001B8A741B0A0000001 /* InventoryOverlay.swift in Sources */,
+				AB9962070F19C68D772DFFBB /* InventoryOverlay+Actions.swift in Sources */,
+				668944DAE5605C689C81F886 /* EquipmentPicker.swift in Sources */,
+				F9171548BEF36FDD43C6623A /* EquipmentPicker+Build.swift in Sources */,
 				64B2754DDB94E2674A5C9FAA /* InventoryOverlay+Rows.swift in Sources */,
 				6D7EAA02B8A741B0A0000001 /* MainMenuScene.swift in Sources */,
 				7D83114ECC9EE7140C07F1F6 /* MainMenuScene+Backdrop.swift in Sources */,
@@ -1332,6 +1366,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				F42F91EBFB71DC67569F2867 /* LoreOverlay+Bestiary.swift in Sources */,
 				6D7EBB06B8A741B0A0000101 /* QuestLogOverlay.swift in Sources */,
 				AA10C0DE0000000000000002 /* PixelIcons.swift in Sources */,
+				02EF0FD6792911FEE4111C2F /* PixelIcons+Arsenal.swift in Sources */,
 				6D7EBB08B8A741B0A0000001 /* MinimapOverlay.swift in Sources */,
 				6D7EBB22B8A741B0A0000001 /* WorldMapOverlay.swift in Sources */,
 				71D4A2FB0F7F215626E8B512 /* WorldMapOverlay+Build.swift in Sources */,
@@ -1374,6 +1409,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				6D7ECC21B8A741B0A0000001 /* LevelUpOverlay.swift in Sources */,
 				6D7ECC31B8A741B0A0000001 /* PixelArtSprites.swift in Sources */,
 				BDE5A889F335998FB3D5EEA5 /* PixelUI.swift in Sources */,
+				661D67546E1DF66D05769CBB /* Equipment.swift in Sources */,
 				F3EF7FDC597B85E755A6FA25 /* PixelShape.swift in Sources */,
 				C5BD3B3CCB842BDB4274AC47 /* PixelArtSprites+Floors.swift in Sources */,
 				6D7ECC41B8A741B0A0000001 /* InteractionBubble.swift in Sources */,

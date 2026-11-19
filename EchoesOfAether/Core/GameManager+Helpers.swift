@@ -54,6 +54,20 @@ extension GameManager {
                 self?.skills.moveSelection(dx: 0, dy: -1)
             }
         case "inventory": openInventory()
+        case "equipment", "accessories", "arsenal":
+            // Audit : arsenal complet (un palier par style) et les trois
+            // accessoires, sélecteur ouvert sur l'arme ou l'accessoire.
+            player.restoreEquipment(weaponLevel: 0,
+                                    ownedWeapons: ["blade3", "rapier2", "greatsword1", "echo2"],
+                                    equippedWeapon: "blade3",
+                                    ownedAccessories: ["ember", "shade", "resonance"],
+                                    equippedAccessory: "ember")
+            player.potions = 2
+            player.currentHP = player.currentMaxHP / 2
+            openInventory()
+            guard name != "arsenal" else { break }
+            inventory.perform(name == "equipment" ? .weapon : .accessory)
+            if name == "equipment" { inventory.moveSelection(-1) }
         case "questlog":  openQuestLog()
         case "lore":      openLore()
         // « tutorial » ou « tutorial:2 » pour ouvrir droit sur un panneau.

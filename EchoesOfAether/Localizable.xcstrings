@@ -11260,6 +11260,358 @@
         }
       }
     },
+    "equipment.compare.attack %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATK %1$lld → %2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATQ %1$lld → %2$lld"
+          }
+        }
+      }
+    },
+    "equipment.compare.crit %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crit %1$lld%% → %2$lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crit. %1$lld %% → %2$lld %%"
+          }
+        }
+      }
+    },
+    "equipment.compare.dodge %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodge %1$lld%% → %2$lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquive %1$lld %% → %2$lld %%"
+          }
+        }
+      }
+    },
+    "equipment.compare.mpRegen %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MP/hit %1$lld → %2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magie/coup %1$lld → %2$lld"
+          }
+        }
+      }
+    },
+    "equipment.compare.slash %lld %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slash %1$lld → %2$lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entaille %1$lld → %2$lld"
+          }
+        }
+      }
+    },
+    "equipment.equipped" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "EQUIPPED"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ÉQUIPÉ"
+          }
+        }
+      }
+    },
+    "equipment.picker.accessories" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ACCESSORIES"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ACCESSOIRES"
+          }
+        }
+      }
+    },
+    "equipment.picker.hint" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Equip    B · Back"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Équiper    B · Retour"
+          }
+        }
+      }
+    },
+    "equipment.picker.weapons" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "WEAPONS"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ARMES"
+          }
+        }
+      }
+    },
+    "equipment.picker.worn" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Already equipped"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Déjà équipé"
+          }
+        }
+      }
+    },
+    "equipment.stat.attack %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATK +%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ATQ +%lld"
+          }
+        }
+      }
+    },
+    "equipment.stat.crit %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crit +%lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Crit. +%lld %%"
+          }
+        }
+      }
+    },
+    "equipment.stat.dodgeDown %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodge -%lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquive -%lld %%"
+          }
+        }
+      }
+    },
+    "equipment.stat.dodgeUp %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dodge +%lld%%"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esquive +%lld %%"
+          }
+        }
+      }
+    },
+    "equipment.stat.maxHP %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Max HP +%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PV max +%lld"
+          }
+        }
+      }
+    },
+    "equipment.stat.mpRegen %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "MP/hit +%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Magie/coup +%lld"
+          }
+        }
+      }
+    },
+    "equipment.stat.separator" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : " · "
+          }
+        }
+      }
+    },
+    "equipment.stat.slash %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Slash +%lld"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Entaille +%lld"
+          }
+        }
+      }
+    },
+    "equipment.style.blade" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Balanced"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Équilibrée"
+          }
+        }
+      }
+    },
+    "equipment.style.echo" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arcane"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Arcane"
+          }
+        }
+      }
+    },
+    "equipment.style.greatsword" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Heavy"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lourde"
+          }
+        }
+      }
+    },
+    "equipment.style.rapier" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Swift"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapide"
+          }
+        }
+      }
+    },
     "fishing.cast" : {
       "localizations" : {
         "en" : {
@@ -12257,6 +12609,22 @@
         }
       }
     },
+    "inventory.accessory.none" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Accessory"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aucun accessoire"
+          }
+        }
+      }
+    },
     "inventory.armor.aetheritePlate" : {
       "localizations" : {
         "en" : {
@@ -12317,22 +12685,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Armure renforcée"
-          }
-        }
-      }
-    },
-    "inventory.attack %lld" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ATK: %lld"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ATQ : %lld"
           }
         }
       }
@@ -12434,6 +12786,38 @@
         }
       }
     },
+    "inventory.hint.accessory" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Change accessory"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Changer d'accessoire"
+          }
+        }
+      }
+    },
+    "inventory.hint.weapon" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Change weapon"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A · Changer d'arme"
+          }
+        }
+      }
+    },
     "inventory.maxHP" : {
       "localizations" : {
         "en" : {
@@ -12446,6 +12830,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "PV Max"
+          }
+        }
+      }
+    },
+    "inventory.potionCount %lld" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/3"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld/3"
           }
         }
       }
@@ -12579,22 +12979,6 @@
         }
       }
     },
-    "inventory.weapon.aetheriteBlade" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aetherite Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame d'Aetherite"
-          }
-        }
-      }
-    },
     "inventory.weapon.fists" : {
       "localizations" : {
         "en" : {
@@ -12607,38 +12991,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Poings nus"
-          }
-        }
-      }
-    },
-    "inventory.weapon.ironBlade" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iron Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame de fer"
-          }
-        }
-      }
-    },
-    "inventory.weapon.runicBlade" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Runic Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame runique"
           }
         }
       }
@@ -15698,22 +16050,6 @@
         }
       }
     },
-    "shop.acc.ember.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Doubles your critical hits (12% → 25%). For those who strike hard and fast."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Doublez vos coups critiques (12 % → 25 %). Pour qui frappe fort et vite."
-          }
-        }
-      }
-    },
     "shop.acc.ember.name" : {
       "localizations" : {
         "en" : {
@@ -15726,22 +16062,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Talisman de Braise"
-          }
-        }
-      }
-    },
-    "shop.acc.resonance.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Each physical attack restores 16 Magic instead of 6. To keep the spells coming."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Chaque attaque physique rend 16 Magie au lieu de 6. Pour enchaîner les sorts."
           }
         }
       }
@@ -15762,22 +16082,6 @@
         }
       }
     },
-    "shop.acc.shade.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Dodge far more often (10% → 25%). To survive the long fights."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Esquivez bien plus souvent (10 % → 25 %). Pour survivre aux longs combats."
-          }
-        }
-      }
-    },
     "shop.acc.shade.name" : {
       "localizations" : {
         "en" : {
@@ -15790,54 +16094,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Amulette d'Ombre"
-          }
-        }
-      }
-    },
-    "shop.bram.aetheriteBlade.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forged from Threshold crystal. ATK +22, Slash +35."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Forgée dans le cristal du Seuil. ATQ +22, Entaille +35."
-          }
-        }
-      }
-    },
-    "shop.bram.aetheriteBlade.name" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Aetherite Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame d'Aetherite"
-          }
-        }
-      }
-    },
-    "shop.bram.aetheritePlate.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The metal sings when Aether draws near. Max HP +50."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Le métal chante quand l'Aether approche. PV max +50."
           }
         }
       }
@@ -15858,22 +16114,6 @@
         }
       }
     },
-    "shop.bram.chainMail.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+50 max HP"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+50 HP max"
-          }
-        }
-      }
-    },
     "shop.bram.chainMail.name" : {
       "localizations" : {
         "en" : {
@@ -15890,54 +16130,6 @@
         }
       }
     },
-    "shop.bram.ironBlade.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+22 ATK / +35 Slash"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+22 ATK / +35 Entaille"
-          }
-        }
-      }
-    },
-    "shop.bram.ironBlade.name" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Iron Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame de Fer"
-          }
-        }
-      }
-    },
-    "shop.bram.reinforced.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+100 max HP"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+100 HP max"
-          }
-        }
-      }
-    },
     "shop.bram.reinforced.name" : {
       "localizations" : {
         "en" : {
@@ -15950,38 +16142,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Armure Renforcée"
-          }
-        }
-      }
-    },
-    "shop.bram.runicBlade.desc" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+44 ATK / +70 Slash"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "+44 ATK / +70 Entaille"
-          }
-        }
-      }
-    },
-    "shop.bram.runicBlade.name" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Runic Blade"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Lame Runique"
           }
         }
       }
@@ -17093,6 +17253,198 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Passer"
+          }
+        }
+      }
+    },
+    "weapon.blade1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame de fer"
+          }
+        }
+      }
+    },
+    "weapon.blade2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame runique"
+          }
+        }
+      }
+    },
+    "weapon.blade3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aetherite Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame d'Aetherite"
+          }
+        }
+      }
+    },
+    "weapon.echo1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Whispering Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame des Murmures"
+          }
+        }
+      }
+    },
+    "weapon.echo2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Echoing Blade"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame des Échos"
+          }
+        }
+      }
+    },
+    "weapon.echo3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Blade of Memories"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lame des Souvenirs"
+          }
+        }
+      }
+    },
+    "weapon.greatsword1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron Greatsword"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espadon de fer"
+          }
+        }
+      }
+    },
+    "weapon.greatsword2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Greatsword"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espadon runique"
+          }
+        }
+      }
+    },
+    "weapon.greatsword3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aetherite Greatsword"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Espadon d'Aetherite"
+          }
+        }
+      }
+    },
+    "weapon.rapier1.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iron Rapier"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapière de fer"
+          }
+        }
+      }
+    },
+    "weapon.rapier2.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runic Rapier"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapière runique"
+          }
+        }
+      }
+    },
+    "weapon.rapier3.name" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aetherite Rapier"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rapière d'Aetherite"
           }
         }
       }

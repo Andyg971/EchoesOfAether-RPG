@@ -16,6 +16,11 @@ struct NewGamePlusSeed {
     /// L'Arbre de l'Aether traverse aussi : le build fait partie des acquis,
     /// au même titre que l'arme et l'armure.
     let skillRanks: [String: Int]
+    /// Arsenal et accessoires : achetés une fois, gardés en New Game+.
+    let ownedWeapons: [String]?
+    let equippedWeapon: String?
+    let ownedAccessories: [String]
+    let equippedAccessory: String?
 
     /// Depuis une sauvegarde terminée → graine de la relance (palier +1).
     init(from data: SaveData) {
@@ -28,6 +33,10 @@ struct NewGamePlusSeed {
         aetherShards = data.aetherShards
         newGamePlus = (data.newGamePlus ?? 0) + 1
         skillRanks = data.skillRanks ?? [:]
+        ownedWeapons = data.ownedWeapons
+        equippedWeapon = data.equippedWeapon
+        ownedAccessories = data.ownedAccessories ?? []
+        equippedAccessory = data.equippedAccessory
     }
 
     /// Graine synthétique pour tests (`--ngplus N`) : Kael équipé, palier N.
@@ -36,6 +45,8 @@ struct NewGamePlusSeed {
         weaponLevel = 2; armorLevel = 2; potions = 3; aetherShards = 5
         newGamePlus = max(1, tier)
         skillRanks = [:]
+        ownedWeapons = nil; equippedWeapon = nil
+        ownedAccessories = []; equippedAccessory = nil
     }
 }
 
@@ -79,6 +90,11 @@ struct SaveData: Codable {
     let overworldChestsTaken: [String]?
     // Optionnel — retro-compatible (accessoire equipe)
     let equippedAccessory: String?
+    // Optionnels — arsenal (styles d'armes). Absents = sauvegarde d'avant :
+    // `weaponLevel` donne alors la lame portée.
+    let ownedWeapons: [String]?
+    let equippedWeapon: String?
+    let ownedAccessories: [String]?
     let talkedToSage: Bool
     let talkedToChild: Bool
     let talkedToVillager: Bool

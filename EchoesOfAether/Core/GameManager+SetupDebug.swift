@@ -63,7 +63,7 @@ extension GameManager {
             && !worldMap.isActive
             && (state == .exploration || state == .dialogue
                 || state == .combat || state == .shop
-                || (state == .inventory && inventory.canUsePotion)
+                || (state == .inventory && inventory.canConfirm)
                 || pause.isActive || death.isActive || tutorial.isActive)
         if actionButton.isHidden == showActionButton {
             actionButton.isHidden = !showActionButton

@@ -152,9 +152,10 @@ final class OverlayFlowTests: XCTestCase {
         XCTAssertEqual(gm.player.weaponLevel, 1, "l'arme monte d'un cran")
         XCTAssertEqual(gm.player.gold, 20)
 
-        shop.moveSelection(-1)    // cotte de mailles, 60 or
+        shop.moveSelection(-1)    // rapière de fer, 90 or
         shop.confirmSelection()
-        XCTAssertEqual(gm.player.armorLevel, 0, "trop pauvre : rien n'est vendu")
+        XCTAssertFalse(gm.player.ownedWeapons.contains("rapier1"), "trop pauvre : rien n'est vendu")
+        XCTAssertEqual(gm.player.equippedWeaponID, "blade1")
         XCTAssertEqual(gm.player.gold, 20)
 
         shop.dismiss()
@@ -199,6 +200,68 @@ final class OverlayFlowTests: XCTestCase {
 
         inventory.dismiss()
         XCTAssertTrue(closed)
+    }
+
+    func test_shop_scrollsToKeepCursorVisible() {
+        prepare()
+        defer { cleanup() }
+        let gm = GameManager()
+        let shop = ShopOverlay()
+        shop.attach(to: scene)
+        shop.layout(in: scene.size)
+        shop.open(title: "Bram", items: gm.bramItems(), player: gm.player) {}
+        let visible = shop.visibleRowCount
+        XCTAssertLessThan(visible, shop.items.count, "la vitrine dépasse une page")
+
+        for _ in 0..<visible { shop.moveSelection(-1) }
+        XCTAssertEqual(shop.selection, visible)
+        XCTAssertEqual(shop.scrollOffset, 1, "la liste a défilé d'une ligne")
+        shop.moveSelection(1)
+        shop.moveSelection(1)
+        XCTAssertEqual(shop.scrollOffset, 1, "remonter dans la fenêtre ne défile pas")
+        for _ in 0..<visible { shop.moveSelection(1) }
+        XCTAssertEqual(shop.scrollOffset, shop.items.count - visible, "retour par le haut : fin de liste")
+    }
+
+    func test_inventory_pickerSwapsWeapon_andBClosesPickerFirst() throws {
+        prepare()
+        defer { cleanup() }
+        let player = PlayerState()
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "rapier1")))
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "blade1")))
+        let inventory = InventoryOverlay()
+        inventory.attach(to: scene)
+        var closed = false
+        inventory.open(player: player) { closed = true }
+
+        XCTAssertTrue(inventory.canConfirm, "deux armes : la ligne arme est actionnable")
+        XCTAssertEqual(inventory.cursor, .weapon)
+        inventory.confirmSelection()
+        XCTAssertTrue(inventory.picker.isOpen)
+        XCTAssertEqual(inventory.picker.entries.map(\.id), ["blade1", "rapier1"])
+
+        inventory.moveSelection(-1)
+        inventory.confirmSelection()
+        XCTAssertEqual(player.equippedWeaponID, "rapier1")
+
+        inventory.back()
+        XCTAssertFalse(inventory.picker.isOpen, "B ferme d'abord le sélecteur")
+        XCTAssertFalse(closed)
+        inventory.back()
+        XCTAssertTrue(closed)
+    }
+
+    func test_inventory_singleWeapon_offersNoPicker() throws {
+        prepare()
+        defer { cleanup() }
+        let player = PlayerState()
+        player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "blade1")))
+        let inventory = InventoryOverlay()
+        inventory.attach(to: scene)
+        inventory.open(player: player) {}
+        XCTAssertFalse(inventory.canConfirm, "rien à choisir, pas de bouton A")
+        inventory.confirmSelection()
+        XCTAssertFalse(inventory.picker.isOpen)
     }
 
     // MARK: - Arbre de l'Aether

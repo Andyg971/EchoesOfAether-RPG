@@ -9,6 +9,9 @@ enum PixelIcons {
     enum Kind {
         case sword, shield, potion, gem, heart, bolt, darkMoon, coin
         case chat, bag, magnifier, door, skull
+        // Arsenal : un dessin par style d'arme, un par accessoire.
+        case rapier, greatsword, echoBlade
+        case emberTalisman, shadeAmulet, resonanceSeal
     }
 
     /// Construit l'icône `kind`. `pixel` = taille d'un pixel logique en pt
@@ -208,23 +211,29 @@ enum PixelIcons {
                 "..WWWW..",
                 "........",
             ], ["W": bone, "D": ironDark])
+
+        case .rapier, .greatsword, .echoBlade,
+             .emberTalisman, .shadeAmulet, .resonanceSeal:
+            return arsenalSpec(for: kind)
         }
     }
 
     // MARK: - Palette pixel art
 
-    private static let steel     = SKColor(red: 0.82, green: 0.85, blue: 0.92, alpha: 1)
-    private static let gold      = Palette.gold
-    private static let goldDark  = SKColor(red: 0.72, green: 0.55, blue: 0.18, alpha: 1)
-    private static let wood      = SKColor(red: 0.52, green: 0.36, blue: 0.20, alpha: 1)
-    private static let ironDark  = Palette.slate
-    private static let glass     = SKColor(red: 0.65, green: 0.85, blue: 0.95, alpha: 0.9)
-    private static let pink      = SKColor(red: 0.95, green: 0.35, blue: 0.55, alpha: 1)
-    private static let cyan      = SKColor(red: 0.35, green: 0.80, blue: 0.95, alpha: 1)
-    private static let cyanLight = Palette.iceBlue
-    private static let red       = SKColor(red: 0.90, green: 0.25, blue: 0.30, alpha: 1)
-    private static let redLight  = SKColor(red: 1.00, green: 0.55, blue: 0.60, alpha: 1)
-    private static let yellow    = Palette.goldBright
-    private static let violet    = SKColor(red: 0.60, green: 0.40, blue: 0.90, alpha: 1)
-    private static let bone      = SKColor(red: 0.92, green: 0.90, blue: 0.82, alpha: 1)
+    static let steel     = SKColor(red: 0.82, green: 0.85, blue: 0.92, alpha: 1)
+    static let gold      = Palette.gold
+    static let goldDark  = SKColor(red: 0.72, green: 0.55, blue: 0.18, alpha: 1)
+    static let wood      = SKColor(red: 0.52, green: 0.36, blue: 0.20, alpha: 1)
+    static let ironDark  = Palette.slate
+    static let glass     = SKColor(red: 0.65, green: 0.85, blue: 0.95, alpha: 0.9)
+    static let pink      = SKColor(red: 0.95, green: 0.35, blue: 0.55, alpha: 1)
+    static let cyan      = SKColor(red: 0.35, green: 0.80, blue: 0.95, alpha: 1)
+    static let cyanLight = Palette.iceBlue
+    static let red       = SKColor(red: 0.90, green: 0.25, blue: 0.30, alpha: 1)
+    static let redLight  = SKColor(red: 1.00, green: 0.55, blue: 0.60, alpha: 1)
+    static let yellow    = Palette.goldBright
+    static let violet    = SKColor(red: 0.60, green: 0.40, blue: 0.90, alpha: 1)
+    static let violetLight = SKColor(red: 0.82, green: 0.70, blue: 1.00, alpha: 1)
+    static let ember     = SKColor(red: 0.98, green: 0.55, blue: 0.20, alpha: 1)
+    static let bone      = SKColor(red: 0.92, green: 0.90, blue: 0.82, alpha: 1)
 }

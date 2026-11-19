@@ -70,7 +70,7 @@ enum CombatMath {
         return dmg
     }
 
-    /// ENTAILLE DOUBLE (capstone de la Lame) : la lame repasse à 55 %.
+    /// ENTAILLE DOUBLE (capstone du Poing) : le coup repasse à 55 %.
     /// Uniquement pour Kael (c'est SON arbre), uniquement si la cible tient
     /// encore debout après le premier coup — on ne frappe pas un cadavre.
     /// Rend 0 quand le second coup ne part pas.

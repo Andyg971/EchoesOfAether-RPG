@@ -22,7 +22,7 @@ final class InteractionBubble {
             switch self {
             case .talk:    return .chat
             case .shop:    return .bag
-            case .fight:   return .sword
+            case .fight:   return .fist
             case .examine: return .magnifier
             case .enter:   return .door
             }

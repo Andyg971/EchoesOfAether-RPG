@@ -124,7 +124,7 @@ extension BattleSprites {
         ///
         /// Les kits de sorts ne suivent PAS : ils appartiennent au personnage,
         /// pas au dessin. Kael garde Brasier / Tempête / Black Slash, Eran
-        /// garde Bourrasque / Lame ardente.
+        /// garde Bourrasque / Frappe de Braise.
         var pack: Pack {
             switch self {
             case .kael: return .fighter

@@ -206,7 +206,7 @@ final class TutorialOverlay {
         switch index {
         case 0:  return joystickDiagram()        // déplacement
         case 1:  return PixelIcons.node(.chat, pixel: 5)   // parler aux PNJ
-        case 2:  return PixelIcons.node(.sword, pixel: 5)  // combat
+        case 2:  return PixelIcons.node(.fist, pixel: 5)   // combat (Kael : aux poings)
         default: return PixelIcons.node(.gem, pixel: 5)    // sauvegarde (cristal)
         }
     }

@@ -102,7 +102,7 @@ final class PlayerState {
     var ownedAccessories: Set<String> = []
 
     /// Chance de coup critique : arme et accessoire (Talisman de Braise),
-    /// puis la voie de la Lame par-dessus.
+    /// puis la voie du Poing par-dessus.
     var critChance: Double {
         0.12 + equipmentBonus.crit + skillCritBonus
     }

@@ -68,9 +68,9 @@ enum CombatSpell: CaseIterable {
     /// GLACE **et** FOUDRE à la fois, et ne part qu'UNE FOIS par combat — un
     /// atout qu'on garde pour le bon moment, pas un bouton qu'on matraque.
     case tempest
-    /// Techniques d'Eran — ce ne sont pas des sorts mais des passes d'armes :
+    /// Techniques d'Eran — des passes de bâton de sorcier plus que des sorts :
     /// son pack l'anime en frappe tournoyante (vent) et frappe enflammée.
-    /// Elles coûtent peu de MP : un guerrier ne canalise pas, il frappe.
+    /// Elles coûtent peu de MP : il frappe plus qu'il ne canalise.
     case windBlade
     case emberStrike
 
@@ -93,8 +93,8 @@ enum CombatSpell: CaseIterable {
         case .frost: return .ice
         case .thunder: return .lightning
         case .mend, .blessing: return nil   // sacrés : aucune faiblesse à exploiter
-        case .windBlade: return .physical   // acier et vent, rien de magique
-        case .emberStrike: return .fire     // la lame s'embrase
+        case .windBlade: return .physical   // bâton et vent, rien de magique
+        case .emberStrike: return .fire     // le bâton s'embrase
         // Tempête : deux éléments à la fois. `element` n'en rend qu'un —
         // `elements` porte la vérité, et le calcul de faiblesse l'utilise.
         case .tempest: return .ice
@@ -130,7 +130,7 @@ enum CombatSpell: CaseIterable {
         case .thunder: return 12
         case .mend: return 12
         case .blessing: return 20   // le soin de groupe se paie
-        case .windBlade: return 6    // techniques d'arme : peu coûteuses
+        case .windBlade: return 6    // techniques de bâton : peu coûteuses
         case .emberStrike: return 10
         case .tempest: return 26    // cher : c'est l'atout du combat
         }

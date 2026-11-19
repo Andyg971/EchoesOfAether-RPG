@@ -35,7 +35,7 @@ final class SkillTreeOverlay {
     private static func icon(for node: SkillNode) -> PixelIcons.Kind {
         if node.isCapstone { return .darkMoon }
         switch node.branch {
-        case .blade:  return .sword
+        case .blade:  return .fist   // voie du Poing : Kael se bat à mains nues
         case .aether: return .gem
         case .breath: return .heart
         }

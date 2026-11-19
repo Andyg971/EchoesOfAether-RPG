@@ -3144,13 +3144,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "'Kael, Blade of the Void, Soul Collector, Executor of the Corrupted Source.'"
+            "value" : "'Kael, Fist of the Void, Soul Collector, Executor of the Corrupted Source.'"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "'Kael, Lame du Vide, Collecteur d'Âmes, Exécuteur de la Source Corrompue.'"
+            "value" : "'Kael, Poing du Vide, Collecteur d'Âmes, Exécuteur de la Source Corrompue.'"
           }
         }
       }
@@ -6481,13 +6481,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "My forge… I still hear the hammer. I promised a blade to the boy from Solis."
+            "value" : "My forge… I still hear the hammer. I promised gauntlets to the boy from Solis."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ma forge… j'entends encore le marteau. J'avais promis une lame au garçon de Solis."
+            "value" : "Ma forge… j'entends encore le marteau. J'avais promis des gantelets au garçon de Solis."
           }
         }
       }
@@ -6498,13 +6498,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Then the fire may die down. Farewell, blade-bearer."
+            "value" : "Then the fire may die down. Farewell, iron-fisted boy."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Alors le feu peut s'éteindre. Adieu, porteur de lame."
+            "value" : "Alors le feu peut s'éteindre. Adieu, gamin aux poings de fer."
           }
         }
       }
@@ -6515,13 +6515,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The blade was forged. It carried me all the way here. Your promise is kept."
+            "value" : "The gauntlets were forged. They carried me all the way here. Your promise is kept."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La lame a été forgée. Elle m'a mené jusqu'ici. Votre promesse est tenue."
+            "value" : "Les gantelets ont été forgés. Ils m'ont mené jusqu'ici. Votre promesse est tenue."
           }
         }
       }
@@ -16782,13 +16782,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Blade"
+            "value" : "Fist"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Lame"
+            "value" : "Poing"
           }
         }
       }

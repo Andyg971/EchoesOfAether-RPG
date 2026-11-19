@@ -92,7 +92,7 @@ extension CombatSystem {
             showEffect(String(localized: "combat.effect.burnAether"), color: SKColor(red: 0.95, green: 0.35, blue: 1.00, alpha: 1))
         }
         foe.combatant.hp = max(0, foe.combatant.hp - finalDmg)
-        // ENTAILLE DOUBLE (capstone de la voie de la Lame) : la lame repasse
+        // ENTAILLE DOUBLE (capstone de la voie du Poing) : le coup repasse
         // aussitôt, à 55 %. Second coup uniquement pour Kael — c'est son arbre.
         let echoDmg = CombatMath.doubleSlashEcho(
             primaryDamage: finalDmg, isKael: actingAlly == nil,

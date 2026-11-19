@@ -154,25 +154,28 @@ final class DeathOverlay {
 
     // MARK: - Private
 
-    /// Épée plantée dans un tertre — mémorial pixel art dessiné en code.
-    /// Lame vers le bas (point-down), garde en croix, poignée en cuir.
+    /// Stèle sur un tertre, gravée de la marque de Kael — mémorial pixel art
+    /// dessiné en code. Kael se bat aux poings (jamais d'épée) : l'ancienne
+    /// épée plantée le contredisait, et un poing en acier se lisait à cette
+    /// taille comme un visage. La marque de sa main, elle, est sans ambiguïté.
     private func makeFallenMemorial() -> SKNode {
         let map = [
-            "....HHH....",
-            "....HHH....",
-            "..GGGGGGG..",
-            "....XeX....",
-            "....XeX....",
-            "....XeX....",
-            "..mmXeXmm..",
-            ".mmmmmmmmm.",
+            "...DSSSD...",
+            "..DSSSSSD..",
+            "..DSSLSSD..",
+            "..DSLVLSD..",
+            "..DSSLSSD..",
+            "..DSSSSSD..",
+            "..DSSSSSD..",
+            "..DSSSSSD..",
+            ".mmDDDDDmm.",
             "mmmmmmmmmmm"
         ]
         let palette: [Character: SKColor] = [
-            "H": Palette.woodBrass,   // cuir
-            "G": Palette.goldDark,   // garde (or terni)
-            "X": SKColor(red: 0.50, green: 0.54, blue: 0.62, alpha: 1),   // acier
-            "e": SKColor(red: 0.70, green: 0.74, blue: 0.82, alpha: 1),   // reflet de lame
+            "S": SKColor(red: 0.46, green: 0.47, blue: 0.54, alpha: 1),   // pierre
+            "D": SKColor(red: 0.30, green: 0.30, blue: 0.36, alpha: 1),   // arête sombre
+            "V": SKColor(red: 0.60, green: 0.40, blue: 0.90, alpha: 1),   // marque (cœur)
+            "L": SKColor(red: 0.82, green: 0.70, blue: 1.00, alpha: 1),   // marque (éclat)
             "m": SKColor(red: 0.17, green: 0.15, blue: 0.20, alpha: 1)    // terre sombre
         ]
         return PixelIcons.custom(map: map, palette: palette, pixel: 4)

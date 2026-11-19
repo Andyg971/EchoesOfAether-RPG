@@ -288,6 +288,7 @@ extension GameManager {
             "caveEnter": C.caveEnterDialogue + C.caveEnterLyraLines,
             "desertBossPost": C.desertBossPostDialogue + C.desertBossPostLyraLines,
             "act4Prologue": C.act4PrologueDialogue,
+            "smithReflection": C.act4ReflectionDialogue(id: "smith"),
             "mergeEnding": C.act4MergeEndingDialogue
         ]
     }

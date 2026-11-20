@@ -1599,6 +1599,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5WUC3D8BMJ;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EchoesOfAether/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Echoes of Aether";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -1631,6 +1632,7 @@ AA10C0DE0000000000000001 /* PixelIcons.swift */ = {isa = PBXFileReference; lastK
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 5WUC3D8BMJ;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = EchoesOfAether/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Echoes of Aether";
 				INFOPLIST_KEY_LSRequiresIPhoneOS = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

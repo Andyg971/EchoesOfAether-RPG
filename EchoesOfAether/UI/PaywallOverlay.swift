@@ -45,7 +45,10 @@ final class PaywallOverlay {
         pitchLabel.fontSize = 13
         pitchLabel.fontColor = SKColor(white: 0.82, alpha: 1)
         pitchLabel.horizontalAlignmentMode = .center
-        pitchLabel.numberOfLines = 3
+        // Ancré par le HAUT : en ligne de base, un texte de trois lignes
+        // grandissait vers le haut et passait sous le titre (anglais).
+        pitchLabel.verticalAlignmentMode = .top
+        pitchLabel.numberOfLines = 0
         pitchLabel.preferredMaxLayoutWidth = 260
         root.addChild(pitchLabel)
 
@@ -74,8 +77,8 @@ final class PaywallOverlay {
         emblem.position = CGPoint(x: 0, y: panelHeight / 2 + 30)
         titleLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 26)
         pitchLabel.preferredMaxLayoutWidth = panelWidth - 32
-        pitchLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 62)
-        priceLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 104)
+        pitchLabel.position = CGPoint(x: 0, y: panelHeight / 2 - 42)
+        fitPitch()
         statusLabel.preferredMaxLayoutWidth = panelWidth - 32
         statusLabel.position = CGPoint(x: 0, y: -panelHeight / 2 + 18)
 
@@ -102,10 +105,23 @@ final class PaywallOverlay {
     /// Bouton B : équivaut à « Plus tard ».
     func dismiss() { onLater?() }
 
+    /// Le texte de présentation tient en trois lignes sous le titre (police
+    /// réduite s'il le faut, FR et EN n'ont pas la même longueur) ; le prix
+    /// se cale juste dessous.
+    private func fitPitch() {
+        pitchLabel.fontSize = 13
+        while pitchLabel.frame.height > 54, pitchLabel.fontSize > 11 {
+            pitchLabel.fontSize -= 1
+        }
+        let pitchBottom = pitchLabel.position.y - pitchLabel.frame.height
+        priceLabel.position = CGPoint(x: 0, y: min(panelHeight / 2 - 104, pitchBottom - 20))
+    }
+
     /// Reflète l'état du store (prix chargé, achat en cours, erreur).
     func refreshTexts() {
         titleLabel.text = String(localized: "paywall.title")
         pitchLabel.text = String(localized: "paywall.pitch")
+        fitPitch()
 
         let store = StoreManager.shared
         if store.isPurchasing {

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- Clés que les réglages INFOPLIST_KEY_* ne savent pas générer (tableaux)
+	     ou qu'on veut voir ensemble. Xcode fusionne ce fichier avec le reste
+	     de l'Info.plist généré (GENERATE_INFOPLIST_FILE = YES). -->
+
+	<!-- Manettes PS4/PS5, Xbox, 8BitDo, MFi (profil « extended gamepad ») :
+	     l'App Store affiche le badge « Manettes prises en charge ». -->
+	<key>GCSupportedGameControllers</key>
+	<array>
+		<dict>
+			<key>ProfileName</key>
+			<string>ExtendedGamepad</string>
+		</dict>
+	</array>
+	<!-- Les menus se pilotent à la manette (curseur, A/B). -->
+	<key>GCSupportsControllerUserInteraction</key>
+	<true/>
+	<!-- Mode Jeu (iOS 18+) : moins d'activité en arrière-plan, latence
+	     Bluetooth réduite pour les manettes. -->
+	<key>GCSupportsGameMode</key>
+	<true/>
+
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.role-playing-games</string>
+
+	<!-- Aucun chiffrement propre : seulement StoreKit, iCloud et Game Center
+	     d'Apple. Évite la question de conformité à l'export à chaque envoi. -->
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+</dict>
+</plist>

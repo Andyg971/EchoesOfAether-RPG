@@ -15,6 +15,7 @@ private enum _StringsReferences {
 
     // Menu — slots de sauvegarde
     static let menuSlot:           LocalizedStringResource = "menu.slot %lld"
+    static let menuVersion:        LocalizedStringResource = "menu.version %@"
     static let menuSlotMeta:       LocalizedStringResource = "menu.slot.meta %@ %lld %lld"
 
     // Tutoriel

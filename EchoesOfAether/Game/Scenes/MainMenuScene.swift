@@ -199,7 +199,10 @@ final class MainMenuScene: SKScene {
             withKey: "controllerSelection")
 
         let version = SKLabelNode(fontNamed: PixelUI.uiFont)
-        version.text = String(localized: "menu.version")
+        // Version lue dans le bundle : le libellé en dur « v0.3 » était resté
+        // à l'écran-titre de la build destinée à l'App Store.
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? ""
+        version.text = String(localized: "menu.version \(appVersion)")
         version.fontSize = 12
         version.fontColor = SKColor(white: 0.46, alpha: 0.9)
         version.horizontalAlignmentMode = .center

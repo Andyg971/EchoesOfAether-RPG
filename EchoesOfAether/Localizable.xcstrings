@@ -14163,18 +14163,18 @@
         }
       }
     },
-    "menu.version" : {
+    "menu.version %@" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "v0.3 (Acts I–IV)"
+            "value" : "Version %@"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "v0.3 (Actes I à IV)"
+            "value" : "Version %@"
           }
         }
       }

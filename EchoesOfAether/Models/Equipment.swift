@@ -19,7 +19,9 @@ enum Hero: String, CaseIterable, Sendable {
 }
 
 /// Style d'arme : à palier égal, chaque style échange un peu de puissance
-/// brute contre un atout. Aucun n'est meilleur que les autres.
+/// brute contre un atout. Aucun n'est meilleur que les autres : à
+/// accessoire égal, leurs dégâts moyens par tour restent à ±5 % des
+/// gantelets (cf. `EquipmentTests.test_kaelStyles_stayWithinFivePercent`).
 enum WeaponStyle: String, CaseIterable, Sendable {
     // Kael — armes de poing
     /// Gantelets : référence équilibrée (les stats d'avant la refonte).
@@ -115,25 +117,25 @@ enum EquipmentCatalog {
                nameKey: "weapon.gauntlets3.name", bonus: EquipmentBonus(attack: 66, slash: 105)),
 
         Weapon(id: "wraps1", style: .wraps, tier: 1, price: 90, nameKey: "weapon.wraps1.name",
-               bonus: EquipmentBonus(attack: 17, slash: 26, crit: 0.05, dodge: 0.02)),
+               bonus: EquipmentBonus(attack: 18, slash: 28, crit: 0.08, dodge: 0.03)),
         Weapon(id: "wraps2", style: .wraps, tier: 2, price: 200, nameKey: "weapon.wraps2.name",
-               bonus: EquipmentBonus(attack: 34, slash: 52, crit: 0.10, dodge: 0.04)),
+               bonus: EquipmentBonus(attack: 36, slash: 56, crit: 0.15, dodge: 0.06)),
         Weapon(id: "wraps3", style: .wraps, tier: 3, price: 440, nameKey: "weapon.wraps3.name",
-               bonus: EquipmentBonus(attack: 51, slash: 78, crit: 0.15, dodge: 0.06)),
+               bonus: EquipmentBonus(attack: 54, slash: 84, crit: 0.22, dodge: 0.09)),
 
         Weapon(id: "knuckles1", style: .knuckles, tier: 1, price: 95, nameKey: "weapon.knuckles1.name",
-               bonus: EquipmentBonus(attack: 30, slash: 46, dodge: -0.03)),
+               bonus: EquipmentBonus(attack: 25, slash: 38, dodge: -0.04)),
         Weapon(id: "knuckles2", style: .knuckles, tier: 2, price: 210, nameKey: "weapon.knuckles2.name",
-               bonus: EquipmentBonus(attack: 60, slash: 92, dodge: -0.06)),
+               bonus: EquipmentBonus(attack: 50, slash: 76, dodge: -0.08)),
         Weapon(id: "knuckles3", style: .knuckles, tier: 3, price: 460, nameKey: "weapon.knuckles3.name",
-               bonus: EquipmentBonus(attack: 90, slash: 138, dodge: -0.09)),
+               bonus: EquipmentBonus(attack: 75, slash: 114, dodge: -0.12)),
 
         Weapon(id: "gloves1", style: .gloves, tier: 1, price: 100, nameKey: "weapon.gloves1.name",
-               bonus: EquipmentBonus(attack: 14, slash: 50, mpRegen: 3)),
+               bonus: EquipmentBonus(attack: 14, slash: 44, mpRegen: 2)),
         Weapon(id: "gloves2", style: .gloves, tier: 2, price: 220, nameKey: "weapon.gloves2.name",
-               bonus: EquipmentBonus(attack: 28, slash: 100, mpRegen: 6)),
+               bonus: EquipmentBonus(attack: 28, slash: 88, mpRegen: 4)),
         Weapon(id: "gloves3", style: .gloves, tier: 3, price: 480, nameKey: "weapon.gloves3.name",
-               bonus: EquipmentBonus(attack: 42, slash: 150, mpRegen: 9))
+               bonus: EquipmentBonus(attack: 42, slash: 132, mpRegen: 6))
     ]
 
     private static let lyraWeapons: [Weapon] = [
@@ -169,15 +171,16 @@ enum EquipmentCatalog {
     ]
 
     /// Un seul accessoire se porte à la fois (Kael) : c'est un arbitrage de
-    /// build. Les valeurs reprennent l'ancien comportement (critique
-    /// 12 → 25 %, esquive 10 → 25 %, Magie par coup 6 → 16).
+    /// build. Critique 12 → 25 %, esquive 10 → 25 %, Magie par coup 6 → 11
+    /// (16 avant l'équilibrage : le Sceau doublait le rythme des Entailles
+    /// et valait +13 % de dégâts contre +6 % pour la Braise).
     static let accessories: [Accessory] = [
         Accessory(id: "ember", price: 140, nameKey: "shop.acc.ember.name",
                   bonus: EquipmentBonus(crit: 0.13)),
         Accessory(id: "shade", price: 160, nameKey: "shop.acc.shade.name",
                   bonus: EquipmentBonus(dodge: 0.15)),
         Accessory(id: "resonance", price: 180, nameKey: "shop.acc.resonance.name",
-                  bonus: EquipmentBonus(mpRegen: 10))
+                  bonus: EquipmentBonus(mpRegen: 5))
     ]
 
     /// Ids de la première version de l'arsenal (des épées, contraires au

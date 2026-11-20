@@ -116,6 +116,53 @@ final class EquipmentTests: XCTestCase {
 
     // MARK: - Effets
 
+    // MARK: - Équilibrage
+
+    /// Dégâts moyens par tour de Kael : une Entaille noire (14 Magie) dès que
+    /// les attaques physiques ont rendu assez de Magie, des attaques sinon,
+    /// combo compris, critiques en moyenne. Même formule que le combat.
+    private func averageDamagePerTurn(level: Int, weapon: Weapon?, accessory: String? = nil) -> Double {
+        let player = PlayerState()
+        player.level = level
+        if let weapon { player.acquire(weapon) }
+        player.ownedAccessories = accessory.map { [$0] } ?? []
+        player.equippedAccessory = accessory
+        let attack = Double(player.attackDamage)
+        let slash = Double(player.blackSlashDamage)
+        let attacksPerSlash = Int((14.0 / Double(player.attackMPRegen)).rounded(.up))
+        let combo: (Int) -> Double = { $0 >= 5 ? 1.4 : ($0 >= 3 ? 1.2 : 1.0) }
+        let physical = (1...attacksPerSlash).reduce(0.0) { $0 + attack * combo($1) }
+        return (physical + slash) / Double(attacksPerSlash + 1) * (1 + 0.5 * player.critChance)
+    }
+
+    /// Aucun style de poing ne doit écraser les autres : à palier égal et
+    /// sans accessoire, tous restent à ±6 % des gantelets (la référence).
+    /// Les poings de fer payent leur surplus en esquive, les bandelettes
+    /// rendent leur dégât en critiques.
+    func test_kaelStyles_stayWithinSixPercent() throws {
+        for (level, tier) in [(3, 1), (10, 2), (20, 3), (28, 3)] {
+            let reference = averageDamagePerTurn(
+                level: level, weapon: EquipmentCatalog.weapon(style: .gauntlets, tier: tier))
+            for style in EquipmentCatalog.styles(for: .kael) {
+                let weapon = try XCTUnwrap(EquipmentCatalog.weapon(style: style, tier: tier))
+                let ratio = averageDamagePerTurn(level: level, weapon: weapon) / reference
+                XCTAssertEqual(ratio, 1.0, accuracy: 0.06,
+                               "\(style) palier \(tier) niveau \(level) : \(Int((ratio - 1) * 100)) % vs gantelets")
+            }
+        }
+    }
+
+    /// Le Sceau de Résonance valait +13 % de dégâts contre +6 % pour la
+    /// Braise : on garde la Braise comme meilleur accessoire offensif.
+    func test_resonanceSeal_doesNotOutdamageTheEmberTalisman() throws {
+        for (level, tier) in [(10, 2), (20, 3)] {
+            let weapon = EquipmentCatalog.weapon(style: .gauntlets, tier: tier)
+            let ember = averageDamagePerTurn(level: level, weapon: weapon, accessory: "ember")
+            let seal = averageDamagePerTurn(level: level, weapon: weapon, accessory: "resonance")
+            XCTAssertLessThan(seal, ember, "niveau \(level)")
+        }
+    }
+
     func test_accessories_matchTheirFormerValues() {
         let player = PlayerState()
         player.ownedAccessories = ["ember", "shade", "resonance"]
@@ -124,7 +171,7 @@ final class EquipmentTests: XCTestCase {
         player.equipAccessory(id: "shade")
         XCTAssertEqual(player.dodgeChance, 0.25, accuracy: 0.0001)
         player.equipAccessory(id: "resonance")
-        XCTAssertEqual(player.attackMPRegen, 16)
+        XCTAssertEqual(player.attackMPRegen, 11)
     }
 
     func test_styles_tradeAttackForPerks() throws {
@@ -154,7 +201,8 @@ final class EquipmentTests: XCTestCase {
         let preview = player.preview(hero: .kael, weaponID: "knuckles3", accessoryID: "ember")
         XCTAssertEqual(player.equippedWeaponID, "gauntlets1")
         XCTAssertNil(player.equippedAccessory)
-        XCTAssertEqual(preview.attack, 42 + 90)
+        let knuckles = try XCTUnwrap(EquipmentCatalog.weapon(id: "knuckles3"))
+        XCTAssertEqual(preview.attack, 42 + knuckles.bonus.attack)
         XCTAssertEqual(preview.critPercent, 25)
     }
 

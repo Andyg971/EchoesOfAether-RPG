@@ -148,7 +148,7 @@ extension CombatSystem {
     case .windBlade:
         break   // pure puissance, aucun statut
     case .emberStrike:
-        // La lame embrasée laisse brûler, comme le sort de feu de Kael.
+        // Le bâton embrasé laisse brûler, comme le sort de feu de Kael.
         if wasWeak || boosted {
             foe.combatant.statusEffect = .aetherBurn
             foe.combatant.statusTicks = boosted ? 3 : 2

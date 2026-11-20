@@ -41,8 +41,9 @@ extension CombatSystem {
     /// Kael est le mage élémentaire : son pack fournit feu, glace ET foudre,
     /// il les a toutes, plus l'Aether qui lui est propre. Lyra est prêtresse :
     /// la glace et la foudre ne sont pas à elle — ses sorts sont sacrés (soin,
-    /// bénédiction), et ce sont ceux que son pack anime. Eran est un guerrier :
-    /// il frappe, et son Aether tranche.
+    /// bénédiction), et ce sont ceux que son pack anime. Eran est sorcier :
+    /// vent, braise et foudre au bâton, plus l'Entaille noire du porteur de
+    /// marque qu'il est (le Premier Gardien).
     var currentActorButtons: [SKShapeNode] {
     switch actingAlly?.kind {
     case .lyra:     return [attackButton, healButton, blessingButton]
@@ -52,7 +53,8 @@ extension CombatSystem {
     // des coups à 60. Le reste de sa fiche disait déjà l'inverse de son
     // menu : l'Écho porte le plus haut multiplicateur de sorts du jeu (1.18).
     case .lyraEcho: return [attackButton, healButton, blessingButton]
-    case .eran:     return [attackButton, windButton, emberButton, blackSlashButton]
+    case .eran:     return [attackButton, windButton, emberButton, lightningButton,
+                            blackSlashButton]
     // Kael : le brasier au quotidien, la Tempête comme atout (1x), et
     // l'Aether. Glace et foudre ne sont plus des sorts a part - elles
     // vivent fusionnees dans la Tempete.

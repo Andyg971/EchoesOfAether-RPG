@@ -282,6 +282,22 @@ final class EquipmentTests: XCTestCase {
         XCTAssertEqual(player.arsenal(for: .eran).map(\.tier), [3, 3])
     }
 
+    /// Canon : Eran est SORCIER (bâtons de sorcier). Sa fiche était celle
+    /// d'un guerrier — 18 de Magie, sorts à ×1,05 — si bien que ses bâtons
+    /// renforçaient une magie qu'il n'avait pas.
+    func test_eran_isASorcerer() {
+        let eran = CombatAllyKind.eran, lyra = CombatAllyKind.lyra
+        for level in [18, 25] {
+            XCTAssertGreaterThanOrEqual(eran.maxMP(level: level), lyra.maxMP(level: level) - 5,
+                                        "réserve de sorcier, proche de celle de Lyra")
+        }
+        XCTAssertGreaterThan(eran.spellMultiplier, lyra.spellMultiplier)
+        XCTAssertLessThanOrEqual(eran.attackDamage(level: 20), lyra.attackDamage(level: 20),
+                                 "il frappe au bâton, pas à l'épée")
+        // De quoi lancer plusieurs sorts avant de devoir frapper.
+        XCTAssertGreaterThanOrEqual(eran.maxMP(level: 18) / CombatSpell.emberStrike.mpCost, 6)
+    }
+
     func test_allyPreview_comparesStaffs() throws {
         let player = PlayerState()
         player.acquire(try XCTUnwrap(EquipmentCatalog.weapon(id: "sacred1")))

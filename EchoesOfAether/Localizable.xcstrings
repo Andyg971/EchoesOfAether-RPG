@@ -2227,22 +2227,6 @@
         }
       }
     },
-    "combat.turn.ally %@" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@'s turn!"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Au tour de %@ !"
-          }
-        }
-      }
-    },
     "combat.turn.enemy %@" : {
       "localizations" : {
         "en" : {
@@ -2259,6 +2243,22 @@
         }
       }
     },
+    "combat.turn.eran" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Eran's turn!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Au tour d'Eran !"
+          }
+        }
+      }
+    },
     "combat.turn.intent %@" : {
       "localizations" : {
         "en" : {
@@ -2271,6 +2271,38 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@ prépare une attaque…"
+          }
+        }
+      }
+    },
+    "combat.turn.lyra" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lyra's turn!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Au tour de Lyra !"
+          }
+        }
+      }
+    },
+    "combat.turn.lyraEcho" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The Echo's turn!"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Au tour de l'Écho de Lyra !"
           }
         }
       }

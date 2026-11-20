@@ -68,9 +68,8 @@ enum CombatSpell: CaseIterable {
     /// GLACE **et** FOUDRE à la fois, et ne part qu'UNE FOIS par combat — un
     /// atout qu'on garde pour le bon moment, pas un bouton qu'on matraque.
     case tempest
-    /// Techniques d'Eran — des passes de bâton de sorcier plus que des sorts :
-    /// son pack l'anime en frappe tournoyante (vent) et frappe enflammée.
-    /// Elles coûtent peu de MP : il frappe plus qu'il ne canalise.
+    /// Sorts d'Eran, sorcier au bâton : bourrasque (vent tranchant) et
+    /// braise (le bâton s'embrase). Il lance aussi la Foudre (`thunder`).
     case windBlade
     case emberStrike
 
@@ -93,7 +92,7 @@ enum CombatSpell: CaseIterable {
         case .frost: return .ice
         case .thunder: return .lightning
         case .mend, .blessing: return nil   // sacrés : aucune faiblesse à exploiter
-        case .windBlade: return .physical   // bâton et vent, rien de magique
+        case .windBlade: return .physical   // vent tranchant : brise les gardes physiques
         case .emberStrike: return .fire     // le bâton s'embrase
         // Tempête : deux éléments à la fois. `element` n'en rend qu'un —
         // `elements` porte la vérité, et le calcul de faiblesse l'utilise.
@@ -130,8 +129,8 @@ enum CombatSpell: CaseIterable {
         case .thunder: return 12
         case .mend: return 12
         case .blessing: return 20   // le soin de groupe se paie
-        case .windBlade: return 6    // techniques de bâton : peu coûteuses
-        case .emberStrike: return 10
+        case .windBlade: return 10   // sorts d'Eran : sa réserve est celle d'un sorcier
+        case .emberStrike: return 14
         case .tempest: return 26    // cher : c'est l'atout du combat
         }
     }
@@ -222,6 +221,16 @@ enum CombatAllyKind {
         }
     }
 
+    /// Bandeau de début de tour. Une phrase par allié : le français élide
+    /// (« d'Eran », « de l'Écho de Lyra »), un format « de %@ » ne le peut pas.
+    var turnBanner: String {
+        switch self {
+        case .lyra:     String(localized: "combat.turn.lyra")
+        case .lyraEcho: String(localized: "combat.turn.lyraEcho")
+        case .eran:     String(localized: "combat.turn.eran")
+        }
+    }
+
     var displayName: String {
         switch self {
         case .lyra: return "Lyra"
@@ -234,28 +243,28 @@ enum CombatAllyKind {
         switch self {
         case .lyra: return 160 + (level - 1) * 14
         case .lyraEcho: return 140 + (level - 1) * 12   // spectrale, fragile
-        case .eran: return 190 + (level - 1) * 15       // esprit endurci
+        case .eran: return 170 + (level - 1) * 13       // sorcier : moins de PV que l'Écho n'en perd
         }
     }
 
     /// Réserve de Magie. Elle dit qui est qui : Lyra vit dans le sacré et
     /// en a le plus ; l'Écho n'est plus qu'un souffle, mais un souffle de
-    /// magie pure ; Eran frappe de son bâton de sorcier et canalise peu.
-    /// Ses techniques coûtent d'ailleurs deux fois moins cher.
+    /// magie pure ; Eran est un sorcier — une réserve presque égale à celle
+    /// de Lyra (il en avait 18, celle d'un guerrier, avant d'être recadré).
     /// (Canon armes : Lyra bâton de prêtresse, Eran bâton de sorcier — les
     /// bonus de bâton s'ajoutent à ces bases, cf. `AllyState.weaponBonus`.)
     func maxMP(level: Int) -> Int {
         switch self {
         case .lyra:     return 42 + (level - 1) * 5
         case .lyraEcho: return 38 + (level - 1) * 5
-        case .eran:     return 18 + (level - 1) * 2
+        case .eran:     return 40 + (level - 1) * 5
         }
     }
 
     func attackDamage(level: Int) -> Int {
         switch self {
         case .lyra, .lyraEcho: return 30 + (level - 1) * 3
-        case .eran: return 36 + (level - 1) * 3
+        case .eran: return 30 + (level - 1) * 3   // frappe au bâton, comme Lyra
         }
     }
 
@@ -264,7 +273,7 @@ enum CombatAllyKind {
         switch self {
         case .lyra: return 1.10
         case .lyraEcho: return 1.18
-        case .eran: return 1.05
+        case .eran: return 1.15   // sorcier : derrière l'Écho (1.18), devant Lyra
         }
     }
 

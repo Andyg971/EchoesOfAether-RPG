@@ -194,9 +194,8 @@ final class PlayerState {
     /// Points de Magie : réserve qui alimente les sorts et l'Entaille noire.
     /// Kael est mage : il porte trois éléments et doit pouvoir les enchaîner,
     /// d'où la réserve la plus large du groupe (L1 = 46, L30 = 191). Lyra la
-    /// suit de près (42), Eran l'homme d'acier plafonne à 18 — ses techniques
-    /// coûtent aussi deux fois moins. Les attaques physiques n'en coûtent pas
-    /// et en régénèrent un peu.
+    /// suit de près (42), Eran le sorcier aussi (40). Les attaques physiques
+    /// n'en coûtent pas et en régénèrent un peu.
     var maxMP: Int             { 46 + (level - 1) * 5 + skillMaxMPBonus }
 
     var potionsFull: Bool { potions >= 3 }

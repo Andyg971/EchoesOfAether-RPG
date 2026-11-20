@@ -88,7 +88,7 @@ let breakLabel = SKLabelNode(fontNamed: PixelUI.uiFont)
             let hp = kind.maxHP(level: level)
             // Les alliés ont leur propre réserve de Magie. Elle dépend de ce
             // qu'ils sont : Lyra canalise le sacré à longueur de journée,
-            // Eran est un homme d'acier — sa magie tient dans son bâton.
+            // Eran est sorcier : sa réserve rivalise avec celle de Lyra.
             let mp = kind.maxMP(level: level) + weaponBonus.maxMP
             self.combatant = Combatant(name: kind.displayName, maxHP: hp, hp: hp,
                                        mp: mp, maxMP: mp)

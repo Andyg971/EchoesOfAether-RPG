@@ -52,7 +52,7 @@ extension CombatSystem {
     actingAllyIndex = index
     retargetIfNeeded()
     statusLabel.text = ""
-    showTurnBanner(String(localized: "combat.turn.ally \(allies[index].kind.displayName)"),
+    showTurnBanner(allies[index].kind.turnBanner,
                    color: allies[index].kind.accentColor)
     refreshTurnOrder(currentEnemyIndex: nil)
     layoutActionMenu()
@@ -73,7 +73,7 @@ extension CombatSystem {
     switch actingAlly?.kind {
     case .lyra:      order = [.frost, .mend, .thunder]
     case .lyraEcho:  order = [.frost, .mend]
-    case .eran:      order = [.thunder]
+    case .eran:      order = [.windBlade, .emberStrike, .thunder]
     case nil:        order = [.ember]
     }
     let spell = order[fxDemoIndex % order.count]

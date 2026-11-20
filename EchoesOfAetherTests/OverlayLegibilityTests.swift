@@ -53,6 +53,18 @@ final class OverlayLegibilityTests: XCTestCase {
         }
     }
 
+    /// Menu pause, cas le plus haut (avec le bouton « Débloquer ») : six
+    /// boutons empilés plus le titre. Il débordait en paysage, ses boutons du
+    /// bas passant sous le bord de l'écran.
+    func test_pause_tientSansReduction() {
+        for scene in [scenePhone, sceneIPad] {
+            let f = UIScale.fittingFactor(for: scene,
+                                          contentHeight: PauseOverlay.panelHeight(showsUnlock: true) + 8)
+            XCTAssertEqual(f, 1.0, accuracy: 0.001,
+                           "le menu pause doit tenir sans réduction dans \(scene)")
+        }
+    }
+
     // MARK: - Le seuil de lisibilité, exprimé en points rendus
 
     /// Formulation directe de la règle : un libellé de 15 pt dans le panneau

@@ -69,6 +69,17 @@ enum UIScale {
         root.setScale(factor(for: sceneSize))
     }
 
+    /// Comme `apply`, mais le facteur peut descendre SOUS 1.0 pour faire tenir
+    /// un panneau de `contentHeight` points en hauteur (cf. `fittingFactor`) —
+    /// le même filet que l'inventaire et les options, pour les overlays dont
+    /// les enfants sont en coordonnées écran absolues (menu pause).
+    static func applyFitting(to root: SKNode, sceneSize: CGSize, contentHeight: CGFloat) {
+        let s = fittingFactor(for: sceneSize, contentHeight: contentHeight)
+        root.setScale(s)
+        let c = CGPoint(x: sceneSize.width / 2, y: sceneSize.height / 2)
+        root.position = CGPoint(x: c.x * (1 - s), y: c.y * (1 - s))
+    }
+
     /// Facteur qui garantit qu'un panneau de `contentHeight` pt tient dans
     /// la hauteur de l'écran (marge comprise). Contrairement à `factor`,
     /// il peut descendre SOUS 1.0 — indispensable en paysage iPhone où les

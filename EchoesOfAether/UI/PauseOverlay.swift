@@ -21,6 +21,19 @@ final class PauseOverlay {
 
     var isActive: Bool { root.parent != nil && !root.isHidden }
 
+    /// Dimensions du panneau, exposées pour le test de lisibilité :
+    /// le menu doit tenir SANS réduction en paysage iPhone (393 pt de haut).
+    static let buttonSize = CGSize(width: 200, height: 44)
+    /// Pas vertical entre deux boutons (centre à centre).
+    static let buttonSpacing: CGFloat = 46
+    static let panelWidth: CGFloat = 280
+
+    /// Hauteur du panneau selon qu'on affiche ou non le bouton « Débloquer ».
+    /// Resserrée pour tenir dans la hauteur paysage sans rétrécir le texte.
+    static func panelHeight(showsUnlock: Bool) -> CGFloat {
+        showsUnlock ? 372 : 316
+    }
+
     func attach(to scene: SKScene) {
         root.zPosition = 1_500
         root.isHidden = true
@@ -40,8 +53,8 @@ final class PauseOverlay {
         root.addChild(scrim)
 
         // Panel central — cadre pixel SNES (coins carrés, double bordure)
-        let panelW: CGFloat = 280
-        let panelH: CGFloat = showsUnlockButton ? 480 : 420
+        let panelW = Self.panelWidth
+        let panelH = Self.panelHeight(showsUnlock: showsUnlockButton)
         let panel = SKShapeNode()
         PixelUI.stylePanel(panel, size: CGSize(width: panelW, height: panelH),
                            fill: SKColor(red: 0.05, green: 0.05, blue: 0.10, alpha: 0.96),
@@ -62,44 +75,49 @@ final class PauseOverlay {
         title.alpha = 0
         root.addChild(title)
 
-        // Boutons
+        // Boutons — empilés à pas régulier, le groupe centré dans le panneau
+        // (un peu sous le centre pour laisser le titre respirer au-dessus).
         let centerX = scene.size.width / 2
         let centerY = scene.size.height / 2
+        let buttonCount = showsUnlockButton ? 6 : 5
+        let spacing = Self.buttonSpacing
+        let topCenterY = centerY - 18 + CGFloat(buttonCount - 1) * spacing / 2
+        func buttonY(_ index: Int) -> CGFloat { topCenterY - CGFloat(index) * spacing }
 
         let resumeBtn = PixelUI.makeButton(String(localized: "pause.resume"),
-            size: CGSize(width: 200, height: 48),
+            size: Self.buttonSize,
             fill: SKColor(red: 0.10, green: 0.20, blue: 0.12, alpha: 1),
             accent: SKColor(red: 0.30, green: 0.70, blue: 0.40, alpha: 1),
             fontSize: 20, name: "pauseResume")
-        resumeBtn.position = CGPoint(x: centerX, y: centerY + 90)
+        resumeBtn.position = CGPoint(x: centerX, y: buttonY(0))
         resumeBtn.alpha = 0
         root.addChild(resumeBtn)
 
         let saveBtn = PixelUI.makeButton(String(localized: "pause.save"),
-            size: CGSize(width: 200, height: 48),
+            size: Self.buttonSize,
             fill: Palette.panelNight,
             accent: SKColor(red: 0.30, green: 0.45, blue: 0.80, alpha: 1),
             fontSize: 20, name: "pauseSave")
-        saveBtn.position = CGPoint(x: centerX, y: centerY + 32)
+        saveBtn.position = CGPoint(x: centerX, y: buttonY(1))
         saveBtn.alpha = 0
         root.addChild(saveBtn)
 
         let optionsBtn = PixelUI.makeButton(String(localized: "pause.options"),
-            size: CGSize(width: 200, height: 48),
+            size: Self.buttonSize,
             fill: Palette.panelNight,
             accent: Palette.panelBorder,
             fontSize: 20, name: "pauseOptions")
-        optionsBtn.position = CGPoint(x: centerX, y: centerY - 84)
+        optionsBtn.position = CGPoint(x: centerX, y: buttonY(3))
         optionsBtn.alpha = 0
         root.addChild(optionsBtn)
 
         // Arbre de l'Aether — pastille dorée quand des points dorment.
         let skillsBtn = PixelUI.makeButton(String(localized: "pause.skills"),
-            size: CGSize(width: 200, height: 48),
+            size: Self.buttonSize,
             fill: Palette.panelNight,
             accent: Palette.aether,
             fontSize: 20, name: "pauseSkills")
-        skillsBtn.position = CGPoint(x: centerX, y: centerY - 26)
+        skillsBtn.position = CGPoint(x: centerX, y: buttonY(2))
         skillsBtn.alpha = 0
         if pendingSkillPoints > 0 {
             let badge = SKShapeNode()
@@ -119,11 +137,11 @@ final class PauseOverlay {
         root.addChild(skillsBtn)
 
         let menuBtn = PixelUI.makeButton(String(localized: "pause.mainMenu"),
-            size: CGSize(width: 200, height: 48),
+            size: Self.buttonSize,
             fill: Palette.nightBlack,
             accent: SKColor(red: 0.55, green: 0.20, blue: 0.20, alpha: 0.9),
             fontSize: 20, name: "pauseMenu")
-        menuBtn.position = CGPoint(x: centerX, y: centerY - 142)
+        menuBtn.position = CGPoint(x: centerX, y: buttonY(4))
         menuBtn.alpha = 0
         root.addChild(menuBtn)
 
@@ -131,11 +149,11 @@ final class PauseOverlay {
         var unlockBtn: SKNode?
         if showsUnlockButton {
             let btn = PixelUI.makeButton(String(localized: "pause.unlock"),
-                size: CGSize(width: 200, height: 48),
+                size: Self.buttonSize,
                 fill: SKColor(red: 0.16, green: 0.12, blue: 0.05, alpha: 1),
                 accent: PixelUI.gold,
                 fontSize: 20, name: "pauseUnlock")
-            btn.position = CGPoint(x: centerX, y: centerY - 200)
+            btn.position = CGPoint(x: centerX, y: buttonY(5))
             btn.alpha = 0
             root.addChild(btn)
             unlockBtn = btn
@@ -157,8 +175,9 @@ final class PauseOverlay {
             menuBtn.run(.sequence([.wait(forDuration: 0.22), fadeIn, ready]))
         }
 
-        // iPad : agrandit l'overlay (centre fixe). iPhone → facteur 1.
-        UIScale.apply(to: root, sceneSize: scene.size)
+        // Agrandit sur iPad, et RÉDUIT au besoin pour tenir en hauteur (le
+        // panneau débordait en paysage, ses boutons passant hors de l'écran).
+        UIScale.applyFitting(to: root, sceneSize: scene.size, contentHeight: panelH + 8)
         AccessibilitySettings.announce(String(localized: "pause.title"))
     }
 
